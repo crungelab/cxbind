@@ -1,0 +1,27 @@
+@PACKAGE_INIT@
+
+# Location of cxbind/cxbind.h
+# This will be relative unless explicitly set as absolute
+set(cxbind_INCLUDE_DIR "@cxbind_INCLUDEDIR@")
+
+set(cxbind_LIBRARY "")
+set(cxbind_DEFINITIONS USING_cxbind)
+set(cxbind_VERSION_TYPE "@cxbind_VERSION_TYPE@")
+
+check_required_components(cxbind)
+
+include("${CMAKE_CURRENT_LIST_DIR}/cxbindTargets.cmake")
+
+# Easier to use / remember
+add_library(cxbind::headers IMPORTED INTERFACE)
+set_target_properties(cxbind::headers PROPERTIES INTERFACE_LINK_LIBRARIES
+                                                   cxbind::cxbind_headers)
+
+include("${CMAKE_CURRENT_LIST_DIR}/cxbindTools.cmake")
+
+if(NOT cxbind_FIND_QUIETLY)
+  message(
+    STATUS
+      "Found cxbind: ${cxbind_INCLUDE_DIR} (found version \"${cxbind_VERSION}${cxbind_VERSION_TYPE}\")"
+  )
+endif()
