@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "cxbind"
-version = "0.1.0"
+version = "0.1.1"
 description = 'pybind11 binding generator'
 readme = "README.md"
 requires-python = ">=3.8"
@@ -23,12 +23,10 @@ classifiers = [
 ]
 
 dependencies = [
-    "click ==8.1.3",
-    "toml ==0.10.2",
-    #clang = "^14.0"
+    "click >=8.1.3",
     "Jinja2 ==3.1.2",
-    "loguru ==0.6.0",
-    "pyyaml ==6.0"
+    "loguru >=0.7.0",
+    "pyyaml >=6.0"
 ]
 
 #dynamic = ["version"]
