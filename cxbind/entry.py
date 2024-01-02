@@ -1,7 +1,7 @@
-import re
 from enum import Enum
 
-from .clang import cindex
+from clang import cindex
+
 from .context import EntryContext
 
 class EntryKind(Enum):
@@ -11,6 +11,7 @@ class EntryKind(Enum):
     METHOD = 3
     STRUCT = 4
     CLASS = 5
+    ENUM = 6
 
 class Entry:
     context: EntryContext = None
@@ -22,6 +23,7 @@ class Entry:
     children: list["Entry"] = []
     exclude: bool = False
     overload: bool = False
+    readonly: bool = False
 
     def __init__(self, context: EntryContext, fqname: str, config: dict={}, node: cindex.Cursor = None):
         self.context = context
@@ -72,8 +74,11 @@ class ClassEntry(StructOrClassEntry):
     pass
 
 class EnumEntry(Entry):
-    pass
-
-class EnumConstEntry(Entry):
     def create_pyname(self, name):
         return self.context.format_enum(name)
+
+class EnumConstEntry(Entry):
+    pass
+
+class TypedefEntry(Entry):
+    pass

@@ -4,13 +4,14 @@ import importlib
 from loguru import logger
 import jinja2
 
-from .clang import cindex
+from clang import cindex
 
 from .generator_base import GeneratorBase
 from .yaml import load_yaml
 
-from .entry import EntryContext, Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructOrClassEntry, StructEntry, ClassEntry
+from . import cu
 from . import UserSet
+from .entry import EntryContext, Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructOrClassEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
 
 class Options:
     def __init__(self, *options, **kwargs):
@@ -31,7 +32,6 @@ class Overloaded(UserSet):
 class Generator(GeneratorBase):
     def __init__(self, config, **kwargs):
         super().__init__()
-        self.context = EntryContext()
         self.excludes = []
         self.overloads = []
         self.config = config
@@ -104,10 +104,14 @@ class Generator(GeneratorBase):
         with open(filename,'w') as fh:
             fh.write(rendered)
 
+    def visit_none(self, node):
+        logger.debug(f"visit_none: {node.spelling}")
+
+    '''
     def visit_enum(self, node):
         if self.is_forward_declaration(node):
             return
-        if node.is_scoped_enum:
+        if node.is_scoped_enum():
             return self.visit_scoped_enum(node)
         self(
             f'py::enum_<{self.spell(node)}>({self.module}, "{self.format_type(node.spelling)}", py::arithmetic())'
@@ -116,6 +120,47 @@ class Generator(GeneratorBase):
             for child in node.get_children():
                 self(
                     f'.value("{self.format_enum(child.spelling)}", {child.spelling})'
+                )
+            self(".export_values();")
+        self()
+    '''
+    def visit_typedef_decl(self, node):
+        logger.debug(node.spelling)
+        #if not self.is_typedef_mappable(node):
+        #    return
+        entry: Entry = self.lookup_or_create(f'typedef.{self.spell(node)}', node=node)
+        logger.debug(entry)
+        self.push_entry(entry)
+        self.visit_children(node)
+        self.pop_entry()
+
+    def visit_enum(self, node):
+        logger.debug(node.spelling)
+        if self.is_forward_declaration(node):
+            return
+        if node.is_scoped_enum():
+            return self.visit_scoped_enum(node)
+        
+        typedef_parent = self.entry if isinstance(self.entry, TypedefEntry) else None
+
+        if typedef_parent:
+            fqname = typedef_parent.fqname
+            pyname = typedef_parent.pyname
+        else:
+            fqname = self.spell(node)
+            pyname = self.format_type(node.spelling)
+
+        #TODO: for some reason it's visiting the same enum twice when typedef'd
+        if not pyname:
+            return
+        
+        self(
+            f'py::enum_<{fqname}>({self.module}, "{pyname}", py::arithmetic())'
+        )
+        with self:
+            for child in node.get_children():
+                self(
+                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
                 )
             self(".export_values();")
         self()
@@ -137,7 +182,7 @@ class Generator(GeneratorBase):
         self("")
 
     def visit_scoped_enum(self, node):
-        #logger.debug(node.spelling)
+        logger.debug(node.spelling)
         fqname = self.spell(node)
         # logger.debug(fqname)
         pyname = self.format_type(node.spelling)
@@ -155,9 +200,13 @@ class Generator(GeneratorBase):
 
     # TODO: Handle is_deleted_method
     def visit_constructor(self, node):
+        if not self.is_function_mappable(node):
+            return
         #TODO: This should be in Clang 15.06, but it's not ...
         #if node.is_deleted_method():
         #    return
+        if self.entry.readonly:
+            return
         self.entry.has_constructor = True
         arguments = [a for a in node.get_arguments()]
         if len(arguments):
@@ -169,6 +218,7 @@ class Generator(GeneratorBase):
         else:
             self(f"{self.scope}.def(py::init<>());")
 
+
     def visit_field(self, node):
         if not self.is_field_mappable(node):
             return
@@ -176,20 +226,27 @@ class Generator(GeneratorBase):
         self.entry.add_child(entry)
         #logger.debug(entry)
 
-        # Need to log/track this because pointers can be a source of problems        
-        if node.type.get_canonical().kind == cindex.TypeKind.POINTER:
-            ptr = node.type.get_canonical().get_pointee().kind
-            #logger.debug(f"{node.spelling}: {ptr}")
+        '''
+        self.print_type_info(node)
+        if node.spelling == 'disposeCallback':
+            breakpoint()
+        '''
 
+        logger.debug(f'{node.type.spelling}, {node.type.kind}: {node.displayname}')
+        
         if self.is_field_readonly(node):
             self(f'{self.scope}.def_readonly("{entry.pyname}", &{entry.fqname});')
         else:
-            if self.is_char_pointer(node):
+            if self.is_char_ptr(node):
                 #logger.debug(f"{node.spelling}: is char*")
                 self.visit_char_ptr_field(node, entry.pyname)
+            elif self.is_fn_ptr(node):
+                #logger.debug(f"{node.spelling}: is fn*")
+                self.visit_fn_ptr_field(node, entry.pyname)
             else:
                 self(f'{self.scope}.def_readwrite("{entry.pyname}", &{entry.fqname});')
 
+    #TODO: I am sure this is creating memory leaks
     def visit_char_ptr_field(self, node, pyname):
         pname = self.spell(node.semantic_parent)
         name = node.spelling
@@ -203,6 +260,22 @@ class Generator(GeneratorBase):
             ' char* c = (char *)malloc(source.size());'
             ' strcpy(c, source.c_str());'
             f' self.{name} = c;'
+            ' }'
+            )
+        self(');')
+
+    def visit_fn_ptr_field(self, node, pyname):
+        pname = self.spell(node.semantic_parent)
+        name = node.spelling
+        typename = node.type.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[]({pname}& self)' '{'
+            f' return self.{name};'
+            ' },'
+            f'[]({pname}& self, {typename} source)' '{'
+            f' self.{name} = source;'
             ' }'
             )
         self(');')
@@ -240,6 +313,11 @@ class Generator(GeneratorBase):
         if not self.is_class_mappable(node):
             return
         entry: StructEntry = self.lookup_or_create(f'struct.{self.spell(node)}', node=node)
+        fqname = entry.fqname
+        pyname = entry.pyname
+        if not pyname:
+            return
+
         #logger.debug(entry)
         children = list(node.get_children())  # it's an iterator
         wrapped = False
@@ -254,10 +332,14 @@ class Generator(GeneratorBase):
                     base = child
             if base:
                 basename = self.spell(base)
-                self(f"PYCLASS_INHERIT_BEGIN({self.module}, {entry.fqname}, {basename}, {entry.pyname})")
+                self(f"PYSUBCLASS_BEGIN({self.module}, {fqname}, {basename}, {pyname})")
             else:
-                self(f"PYCLASS_BEGIN({self.module}, {entry.fqname}, {entry.pyname})")
+                self(f"PYCLASS_BEGIN({self.module}, {fqname}, {pyname})")
         with self.enter(entry):
+            #TODO: this is a can of worms trying to map substructures.  Might be worth it if I can figure it out.
+            # May add a flag to the yaml to indicate whether to map substructures or not.  example: traverse: shallow|deep
+            self.visit_children(node)
+            '''
             for child in node.get_children():
                 # logger.debug(f"{child.kind} : {child.spelling}")
                 if child.kind == cindex.CursorKind.CONSTRUCTOR:
@@ -270,15 +352,14 @@ class Generator(GeneratorBase):
                     self.visit_struct_enum(child)
                 elif child.kind == cindex.CursorKind.USING_DECLARATION:
                     self.visit_using_decl(child)
-
-            #if not entry.has_constructor:
+            '''
             if entry.gen_init:
                 self.gen_init()
             elif entry.gen_kw_init:
                 self.gen_kw_init()
 
         if not wrapped:
-            self(f"PYCLASS_END({self.module}, {entry.fqname}, {entry.pyname})\n")
+            self(f"PYCLASS_END({self.module}, {fqname}, {pyname})\n")
 
     def visit_class(self, node):
         if not self.is_class_mappable(node):
@@ -289,7 +370,6 @@ class Generator(GeneratorBase):
         with self.enter(entry):
             self.visit_children(node)
 
-            #if not entry.has_constructor:
             if entry.gen_init:
                 self.gen_init()
             elif entry.gen_kw_init:
@@ -300,21 +380,8 @@ class Generator(GeneratorBase):
     def gen_init(self):
         self(f"{self.scope}.def(py::init<>());")
 
-    """
-    ShaderModuleWGSLDescriptor.def(py::init([](const py::kwargs& kwargs) {
-        wgpu::ShaderModuleWGSLDescriptor obj;
-        if (kwargs.contains("source")) {
-            auto _source = kwargs["source"].cast<std::string>();
-            char* source = (char*)malloc(_source.size());
-            strcpy(source, _source.c_str());
-            obj.source = source;
-        }
-        return obj;
-    }), py::return_value_policy::automatic_reference);
-    """
     def gen_kw_init(self):
         entry = self.entry
-        #self(f"{self.scope}.def(py::init<>());")
         self(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
         self("{")
         with self:
@@ -322,20 +389,16 @@ class Generator(GeneratorBase):
             for child in entry.children:
                 node = child.node
                 typename = None
-                is_char_pointer = self.is_char_pointer(node)
-                if is_char_pointer:
+                is_char_ptr = self.is_char_ptr(node)
+                if is_char_ptr:
                     typename = 'std::string'
                 else:
                     typename = node.type.spelling
                 if type(child) is FieldEntry:
-                    #self(str(child))
                     self(f'if (kwargs.contains("{child.pyname}"))')
                     self("{")
                     with self:
-                        #self(f'//{str(child)}')
-                        #self(f'auto _value = kwargs["{child.pyname}"].cast<std::string>();')
-                        #self(f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();')
-                        if is_char_pointer:
+                        if is_char_ptr:
                             self(f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();')
                             self(f'char* value = (char*)malloc(_value.size());')
                             self(f'strcpy(value, _value.c_str());')

@@ -22,7 +22,7 @@ class Registry {
 
 #define PYCLASS_BEGIN(_module, _class, _name) py::class_<_class> _name(_module, #_name);
 
-#define PYCLASS_INHERIT_BEGIN(_module, _class, _base, _name) py::class_<_class, _base> _name(_module, #_name);
+#define PYSUBCLASS_BEGIN(_module, _class, _base, _name) py::class_<_class, _base> _name(_module, #_name);
 
 #define PYCLASS_END(_module, _class, _name) registry.on(_module, #_name, _name);
 

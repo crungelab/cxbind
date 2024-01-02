@@ -4,10 +4,10 @@ from contextlib import contextmanager
 
 from loguru import logger
 
-#from clang import cindex
-from .clang import cindex
+from clang import cindex
 
-from .entry import EntryContext, Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructEntry, ClassEntry
+from . import cu
+from .entry import EntryContext, Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
 
 entry_cls_map = {
     'function': FunctionEntry,
@@ -15,11 +15,14 @@ entry_cls_map = {
     'field': FieldEntry,
     'method': MethodEntry,
     'struct': StructEntry,
-    'class': ClassEntry
+    'class': ClassEntry,
+    'enum': EnumEntry,
+    'typedef': TypedefEntry,
 }
 
-class GeneratorBase:
+class GeneratorBase(EntryContext):
     def __init__(self):
+        super().__init__()
         self.indentation = 0
         self.text = ''
         self.source = ''
@@ -33,7 +36,6 @@ class GeneratorBase:
         self.excludes = []
         self.overloads = []
 
-        self.context = None
         self.entries = {}
         self.entry_stack = []
 
@@ -45,17 +47,23 @@ class GeneratorBase:
 
     @contextmanager
     def enter(self, entry):
-        self.entry_stack.append(entry)
+        self.push_entry(entry)
         self.indent()
         yield entry
         self.dedent()
-        self.entry_stack.pop()
+        self.pop_entry()
 
     def __enter__(self):
         self.indent()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.dedent()
+
+    def push_entry(self, entry):
+        self.entry_stack.append(entry)
+
+    def pop_entry(self):
+        self.entry_stack.pop()
 
     def indent(self):
         self.indentation +=1
@@ -69,25 +77,8 @@ class GeneratorBase:
             return None
         return self.entry_stack [-1]
 
-    @property
-    def prefix(self):
-        return self._prefix
-
-    @prefix.setter
-    def prefix(self, value):
-        self._prefix = value
-        self.context.prefix = value
-
-    @property
-    def short_prefix(self):
-        return self._short_prefix
-
-    @short_prefix.setter
-    def short_prefix(self, value):
-        self._short_prefix = value
-        self.context.short_prefix = value
-
     def lookup(self, entry_key: str):
+        print(entry_key)
         kind, key = entry_key.split('.')
         if key in self.entries:
             return self.entries[key]
@@ -103,20 +94,9 @@ class GeneratorBase:
 
     def create_entry(self, entry_key: str, config: dict = {}, node: cindex.Cursor = None):
         kind, fqname = entry_key.split('.')
-        """
-        name = fqname.split('::')[-1]
-        pyname = None
-        if kind == 'field':
-            pyname = self.format_field(name)
-        elif kind == 'enum':
-            pyname = self.format_enum(name)
-        else:
-            pyname = self.format_type(name)
-        """
         cls = entry_cls_map[kind]
         #TODO: make produce class method?
-        #entry = cls(fqname, name, pyname, config, node)
-        entry = cls(self.context, fqname, config, node)
+        entry = cls(self, fqname, config, node)
 
         if entry.exclude:
             self.excludes.append(fqname)
@@ -126,52 +106,6 @@ class GeneratorBase:
         self.entries[fqname] = entry
 
         return entry
-
-    @classmethod
-    def spell(cls, node):
-        if node is None:
-            return ''
-        elif node.kind == cindex.CursorKind.TRANSLATION_UNIT:
-            return ''
-        else:
-            res = cls.spell(node.semantic_parent)
-            if res != '':
-                return res + '::' + node.spelling
-        return node.spelling
-
-    @classmethod
-    def snake(cls, name):
-        s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-        #return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
-        return re.sub('([a-z])([A-Z])', r'\1_\2', s1).lower()
-
-    @classmethod
-    def format_field(self, name):
-        name = self.snake(name)
-        name = name.rstrip('_')
-        name = name.replace('__', '_')
-        return name
-
-    def format_type(self, name):
-        #name = name.replace(self.prefix, '')
-        name = name.replace(self.prefix, '', 1)
-        #name = name.replace(self.short_prefix, '')
-        name = name.replace(self.short_prefix, '', 1)
-        name = name.replace('<', '_')
-        name = name.replace('>', '')
-        name = name.replace(' ', '')
-        name = name.rstrip('_')
-        return name
-
-    def format_enum(self, name):
-        #name = name.replace(self.prefix, '')
-        name = name.replace(self.prefix, '', 1)
-        #name = name.replace(self.short_prefix, '')
-        name = name.replace(self.short_prefix, '', 1)
-        name = self.snake(name).upper()
-        name = name.replace('__', '_')
-        name = name.rstrip('_')
-        return name
 
     @property
     def scope(self):
@@ -201,11 +135,15 @@ class GeneratorBase:
             return False
         if node.access_specifier == cindex.AccessSpecifier.PRIVATE:
             return False
+        if node.access_specifier == cindex.AccessSpecifier.PROTECTED:
+            return False
         #print(node.location.file.name)
         if node.location.file:
             node_path = Path(node.location.file.name)
             return node_path.name in self.mapped
-        return False
+        if cu.is_template(node):
+            return False
+        return True
 
     def is_field_mappable(self, node):
         return self.is_node_mappable(node)
@@ -217,10 +155,24 @@ class GeneratorBase:
             return False
         return True
 
+    def is_rvalue_ref(self, param):
+        return param.kind == cindex.TypeKind.RVALUEREFERENCE
+
+    def process_function_decl(self, decl):
+        for param in decl.get_children():
+            if param.kind == cindex.CursorKind.PARM_DECL:
+                param_type = param.type
+                if self.is_rvalue_ref(param_type):
+                    print(f"Found rvalue reference in function {decl.spelling}")
+                    return False
+        return True
+
     def is_function_mappable(self, node):
         if not self.is_node_mappable(node):
             return False
         if 'operator' in node.spelling:
+            return False
+        if not self.process_function_decl(node):
             return False
         for argument in node.get_arguments():
             if argument.type.get_canonical().kind == cindex.TypeKind.POINTER:
@@ -231,10 +183,19 @@ class GeneratorBase:
                 return False
         return True
 
-    def is_char_pointer(self, node):
+    def is_char_ptr(self, node):
         if node.type.get_canonical().kind == cindex.TypeKind.POINTER:
             ptr = node.type.get_canonical().get_pointee().kind
+            #logger.debug(f'{ptr}: {node.spelling}')
             if ptr == cindex.TypeKind.CHAR_S:
+                return True
+        return False
+
+    def is_fn_ptr(self, node):
+        if node.type.kind in [cindex.TypeKind.POINTER, cindex.TypeKind.TYPEDEF]:
+            ptr = node.type.get_canonical().get_pointee().kind
+            #logger.debug(f'{ptr}: {node.spelling}')
+            if ptr == cindex.TypeKind.FUNCTIONPROTO:
                 return True
         return False
 
@@ -255,6 +216,10 @@ class GeneratorBase:
         return result.kind == cindex.TypeKind.VOID
 
     def is_field_readonly(self, node):
+        if self.entry.readonly:
+            return True
+        if node.type.is_const_qualified():
+            return True
         if node.type.kind == cindex.TypeKind.CONSTANTARRAY:
             return True
         return False

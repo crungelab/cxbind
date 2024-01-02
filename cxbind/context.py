@@ -1,6 +1,6 @@
 import re
 
-from .clang import cindex
+from clang import cindex
 
 class EntryContext:
     def __init__(self) -> None:
