@@ -11,7 +11,9 @@ from .yaml import load_yaml
 
 from . import cu
 from . import UserSet
-from .entry import EntryContext, Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructOrClassEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
+from .context import GeneratorContext
+from .entry import Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructOrClassEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
+from .argument import Argument, ArgumentList
 
 class Options:
     def __init__(self, *options, **kwargs):
@@ -41,6 +43,7 @@ class Generator(GeneratorBase):
             if '.' in key:
                 self.create_entry(key, value)
             else:
+                logger.debug(f"setting {key} to {value}")
                 setattr(self, key, value)
 
         for key in kwargs:
@@ -58,6 +61,8 @@ class Generator(GeneratorBase):
         BASE_PATH = Path('.')
         self.path = BASE_PATH / self.source
         self.mapped.append(self.path.name)
+
+        logger.debug(self.wrapped)
 
     @classmethod
     def create(self, name="cxbind"):
@@ -83,7 +88,6 @@ class Generator(GeneratorBase):
 
     def generate(self):
         #logger.debug(self.path)
-        #tu = cindex.Index.create().parse(self.path, args=self.flags)
         tu = cindex.TranslationUnit.from_source(self.path, args=self.flags, options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
 
         with self:
@@ -107,27 +111,8 @@ class Generator(GeneratorBase):
     def visit_none(self, node):
         logger.debug(f"visit_none: {node.spelling}")
 
-    '''
-    def visit_enum(self, node):
-        if self.is_forward_declaration(node):
-            return
-        if node.is_scoped_enum():
-            return self.visit_scoped_enum(node)
-        self(
-            f'py::enum_<{self.spell(node)}>({self.module}, "{self.format_type(node.spelling)}", py::arithmetic())'
-        )
-        with self:
-            for child in node.get_children():
-                self(
-                    f'.value("{self.format_enum(child.spelling)}", {child.spelling})'
-                )
-            self(".export_values();")
-        self()
-    '''
     def visit_typedef_decl(self, node):
         logger.debug(node.spelling)
-        #if not self.is_typedef_mappable(node):
-        #    return
         entry: Entry = self.lookup_or_create(f'typedef.{self.spell(node)}', node=node)
         logger.debug(entry)
         self.push_entry(entry)
@@ -179,7 +164,7 @@ class Generator(GeneratorBase):
                     f'.value("{self.format_enum(child.spelling)}", {entry.fqname}::Enum::{child.spelling})'
                 )
             self(".export_values();")
-        self("")
+        self()
 
     def visit_scoped_enum(self, node):
         logger.debug(node.spelling)
@@ -195,7 +180,7 @@ class Generator(GeneratorBase):
                     f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
                 )
             self(".export_values();")
-        self(f"PYENUM_SCOPED_END({self.module}, {fqname}, {pyname})\n")
+        self(f"PYENUM_SCOPED_END({self.module}, {fqname}, {pyname})")
         self()
 
     # TODO: Handle is_deleted_method
@@ -226,12 +211,6 @@ class Generator(GeneratorBase):
         self.entry.add_child(entry)
         #logger.debug(entry)
 
-        '''
-        self.print_type_info(node)
-        if node.spelling == 'disposeCallback':
-            breakpoint()
-        '''
-
         logger.debug(f'{node.type.spelling}, {node.type.kind}: {node.displayname}')
         
         if self.is_field_readonly(node):
@@ -246,7 +225,7 @@ class Generator(GeneratorBase):
             else:
                 self(f'{self.scope}.def_readwrite("{entry.pyname}", &{entry.fqname});')
 
-    #TODO: I am sure this is creating memory leaks
+    #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def visit_char_ptr_field(self, node, pyname):
         pname = self.spell(node.semantic_parent)
         name = node.spelling
@@ -257,7 +236,7 @@ class Generator(GeneratorBase):
             f' return self.{name};'
             ' },'
             f'[]({pname}& self, std::string source)' '{'
-            ' char* c = (char *)malloc(source.size());'
+            ' char* c = (char *)malloc(source.size() + 1);'
             ' strcpy(c, source.c_str());'
             f' self.{name} = c;'
             ' }'
@@ -286,6 +265,7 @@ class Generator(GeneratorBase):
     def visit_method(self, node):
         self.visit_function_or_method(node)
 
+    '''
     def visit_function_or_method(self, node):
         #logger.debug(node.spelling)
         if not self.is_function_mappable(node):
@@ -302,7 +282,40 @@ class Generator(GeneratorBase):
             ret = "" if self.is_function_void_return(node) else "auto ret = "
             with self:
                 self(f"{ret}{self.spell(node)}({self.arg_names(arguments)});")
-                self(f"return {self.get_function_return(node)};")
+                self(f"return {self.get_function_result(node)};")
+            self("}")
+        else:
+            self(f'{mname}.def("{pyname}", {cname}')
+        self.write_pyargs(arguments)
+        self(f", {self.get_return_policy(node)});\n")
+    '''
+    def visit_function_or_method(self, node):
+        #logger.debug(node.spelling)
+        if not self.is_function_mappable(node):
+            return
+        mname = self.scope
+        arguments = [a for a in node.get_arguments()]
+        cname = "&" + self.spell(node)
+        pyname = self.format_field(node.spelling)
+        if self.is_overloaded(node):
+            cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname})"
+        if self.should_wrap_function(node):
+            self(f'{mname}.def("{pyname}", []({self.arg_string(arguments)})')
+            self("{")
+            ret = "" if self.is_function_void_return(node) else "auto ret = "
+
+            result = f"{self.spell(node)}({self.arg_names(arguments)})"
+            result_type = node.result_type
+            logger.debug(f'result_type: {result_type.spelling}')
+            result_type_name = result_type.spelling.split(' ')[0]
+
+            if result_type_name in self.wrapped:
+                result_type_name = self.wrapped[result_type_name].gen_wrapper['type']
+                result = f"new {result_type_name}({result})"
+
+            with self:
+                self(f"{ret}{result};")
+                self(f"return {self.get_function_result(node)};")
             self("}")
         else:
             self(f'{mname}.def("{pyname}", {cname}')
@@ -313,6 +326,11 @@ class Generator(GeneratorBase):
         if not self.is_class_mappable(node):
             return
         entry: StructEntry = self.lookup_or_create(f'struct.{self.spell(node)}', node=node)
+        #TODO: I added this because structures were getting visited twice.  It's new, so keep an eye on it.
+        if entry.visited:
+            return
+        entry.visited = True
+
         fqname = entry.fqname
         pyname = entry.pyname
         if not pyname:
@@ -419,17 +437,18 @@ class Generator(GeneratorBase):
         pass
 
     def visit(self, node):
+        logger.debug(f"{node.kind} : {node.spelling}")
+        if not self.is_node_mappable(node):
+            return
+        if not node.kind in self.actions:
+            return
         self.actions[node.kind](self, node)
 
     def visit_children(self, node):
         for child in node.get_children():
-            if not self.is_node_mappable(child):
-                continue
-            # logger.debug(child.spelling, ':  ', child.kind)
-            kind = child.kind
-            if kind in self.actions:
-                self.visit(child)
+            self.visit(child)
 
+    # TODO: This is a mess
     def visit_overloads(self, node):
         for child in node.get_children():
             if child.kind in [

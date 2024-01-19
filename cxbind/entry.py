@@ -2,7 +2,7 @@ from enum import Enum
 
 from clang import cindex
 
-from .context import EntryContext
+from .context import GeneratorContext
 
 class EntryKind(Enum):
     FUNCTION = 0
@@ -14,7 +14,7 @@ class EntryKind(Enum):
     ENUM = 6
 
 class Entry:
-    context: EntryContext = None
+    context: GeneratorContext = None
     fqname: str = None
     name: str = None
     pyname: str = None
@@ -25,7 +25,7 @@ class Entry:
     overload: bool = False
     readonly: bool = False
 
-    def __init__(self, context: EntryContext, fqname: str, config: dict={}, node: cindex.Cursor = None):
+    def __init__(self, context: GeneratorContext, fqname: str, config: dict={}, node: cindex.Cursor = None):
         self.context = context
         self.fqname = fqname
         self.name = fqname.split('::')[-1]
@@ -33,6 +33,7 @@ class Entry:
         self.node = node
         self.children = []
         self.configure(config)
+        self.visited = False
 
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__} fqname={self.fqname}, name={self.name}, pyname={self.pyname}>'
@@ -66,6 +67,7 @@ class StructOrClassEntry(Entry):
     has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
+    gen_wrapper: dict = None
 
 class StructEntry(StructOrClassEntry):
     pass
@@ -81,4 +83,5 @@ class EnumConstEntry(Entry):
     pass
 
 class TypedefEntry(Entry):
-    pass
+    gen_init: bool = False
+    gen_kw_init: bool = False

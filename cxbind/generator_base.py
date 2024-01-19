@@ -1,4 +1,4 @@
-import re
+from typing import List, Dict, Tuple, Optional, Union
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -7,7 +7,8 @@ from loguru import logger
 from clang import cindex
 
 from . import cu
-from .entry import EntryContext, Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
+from .context import GeneratorContext
+from .entry import Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
 
 entry_cls_map = {
     'function': FunctionEntry,
@@ -20,24 +21,24 @@ entry_cls_map = {
     'typedef': TypedefEntry,
 }
 
-class GeneratorBase(EntryContext):
+class GeneratorBase(GeneratorContext):
     def __init__(self):
         super().__init__()
         self.indentation = 0
         self.text = ''
         self.source = ''
-        self.mapped = [] #headers we want to generate bindings for
+        self.mapped: List[str] = [] #headers we want to generate bindings for
         self.target = ''
         self._prefix = ''
         self._short_prefix = ''
         self.module = ''
-        self.flags = []
-        self.defaults = {}
-        self.excludes = []
-        self.overloads = []
+        self.flags: List[str] = []
+        self.defaults: Dict[str, str] = {}
+        self.excludes: List[str] = []
+        self.overloads: List[str] = []
 
-        self.entries = {}
-        self.entry_stack = []
+        self.entries: Dict[str, Entry] = {}
+        self.entry_stack: List[Entry] = []
 
     def __call__(self, line=""):
         if len(line):
@@ -78,7 +79,7 @@ class GeneratorBase(EntryContext):
         return self.entry_stack [-1]
 
     def lookup(self, entry_key: str):
-        print(entry_key)
+        logger.debug(f'Looking up {entry_key}')
         kind, key = entry_key.split('.')
         if key in self.entries:
             return self.entries[key]
@@ -102,6 +103,9 @@ class GeneratorBase(EntryContext):
             self.excludes.append(fqname)
         if entry.overload:
             self.overloads.append(fqname)
+        if hasattr(entry, 'gen_wrapper') and entry.gen_wrapper:
+            logger.debug(f'Adding wrapped {fqname}')
+            self.wrapped[fqname] = entry
 
         self.entries[fqname] = entry
 
@@ -137,7 +141,6 @@ class GeneratorBase(EntryContext):
             return False
         if node.access_specifier == cindex.AccessSpecifier.PROTECTED:
             return False
-        #print(node.location.file.name)
         if node.location.file:
             node_path = Path(node.location.file.name)
             return node_path.name in self.mapped
@@ -215,6 +218,13 @@ class GeneratorBase(EntryContext):
         result = node.type.get_result()
         return result.kind == cindex.TypeKind.VOID
 
+    def is_function_wrapped_return(self, node):
+        result_type = node.result_type
+        logger.debug(f'result_type: {result_type.spelling}')
+        result_type_name = result_type.spelling.split(' ')[0]
+        if result_type_name in self.wrapped:
+            return True
+
     def is_field_readonly(self, node):
         if self.entry.readonly:
             return True
@@ -224,20 +234,35 @@ class GeneratorBase(EntryContext):
             return True
         return False
 
-    def is_overloaded(self, node):
+    def is_overloaded(self, node) -> bool:
         return self.spell(node) in self.overloaded
 
-    def should_wrap_function(self, node):
+    def should_wrap_function(self, node) -> bool:
         if node.type.is_function_variadic():
             return True
+
+        result_type = node.result_type
+        logger.debug(f'result_type: {result_type.spelling}')
+        result_type_name = result_type.spelling.split(' ')[0]
+        if result_type_name in self.wrapped:
+            return True
+
         for arg in node.get_arguments():
             if arg.type.kind == cindex.TypeKind.CONSTANTARRAY:
                 return True
             if self.should_return_argument(arg):
                 return True
+
+            logger.debug(f'wrapped: {arg.spelling}: {self.arg_type(arg)}')
+            logger.debug(self.wrapped)
+
+            type_name = arg.type.spelling.split(' ')[0]
+            if type_name in self.wrapped:
+                logger.debug(f'Found wrapped {arg.spelling}')
+                return True
         return False
 
-    def should_return_argument(self, argument):
+    def should_return_argument(self, argument) -> bool:
         argtype = argument.type.get_canonical()
         if argtype.kind == cindex.TypeKind.LVALUEREFERENCE:
             if not argtype.get_pointee().is_const_qualified():
@@ -260,33 +285,14 @@ class GeneratorBase(EntryContext):
                 return True
         return False
 
-    def arg_type(self, argument):
-        if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return f'std::array<{argument.type.get_array_element_type().spelling}, {argument.type.get_array_size()}>&'
-        return argument.type.spelling
-
-    def arg_name(self, argument):
-        if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return f'&{argument.spelling}[0]'
-        return argument.spelling
-
-    def arg_types(self, arguments):
-        return ', '.join([self.arg_type(a) for a in arguments])
-
-    def arg_names(self, arguments):
-        return ', '.join([self.arg_name(a) for a in arguments])
-
-    def arg_string(self, arguments):
-        return ', '.join(['{} {}'.format(self.arg_type(a), a.spelling) for a in arguments])
-
-    def default_from_tokens(self, tokens):
+    def default_from_tokens(self, tokens) -> str:
         joined = ''.join([t.spelling for t in tokens])
         parts = joined.split('=')
         if len(parts) == 2:
             return parts[1]
         return ''
 
-    def get_function_return(self, node):
+    def get_function_result(self, node) -> str:
         returned = [
             a.spelling for a in node.get_arguments() if self.should_return_argument(a)
         ]
@@ -298,7 +304,7 @@ class GeneratorBase(EntryContext):
             return returned[0]
         return ""
 
-    def get_return_policy(self, node):
+    def get_return_policy(self, node) -> str:
         result = node.type.get_result()
         if result.kind == cindex.TypeKind.LVALUEREFERENCE:
             return "py::return_value_policy::reference"
