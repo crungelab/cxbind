@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class Entry(BaseModel):
     """Base class for all entries."""
     kind: str
-    name: str
+    fqname: str
     exclude: Optional[bool] = False
     overload: Optional[bool] = False
     readonly: Optional[bool] = False

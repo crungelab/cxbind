@@ -11,10 +11,12 @@ from .yaml import load_yaml
 from . import cu
 from . import UserSet
 
-from .generator_config import GeneratorConfig
-from .entry import Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructOrClassEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
 from .node import Node, FunctionNode, CtorNode, FieldNode, MethodNode, StructOrClassNode, StructNode, ClassNode, EnumNode, TypedefNode
-from .generator_base import GeneratorBase
+
+#from .generator_base import GeneratorBase
+from .generator_config import GeneratorConfig
+from .builder import Builder
+from .builder_context import BuilderContext
 
 #TODO: Use pydantic settings
 class Options:
@@ -33,19 +35,23 @@ class Overloaded(UserSet):
     def is_overloaded(self, cursor):
         return self.name(cursor) in self
 
-class Generator(GeneratorBase):
+class Generator(Builder):
     def __init__(self, name: str, config: GeneratorConfig, **kwargs):
-        super().__init__()
+        super().__init__(BuilderContext())
         logger.debug(f"Generator: {name}")
         self.name = name
         self.config = config
-        self.excludes = []
-        self.overloads = []
+        #self.excludes = []
+        #self.overloads = []
         self.options = { 'save': True }
 
         #self.__dict__.update(config.model_dump())
+        '''
         for attr in vars(config):
             setattr(self, attr, getattr(config, attr))
+        '''
+        for attr in vars(config):
+            setattr(self.context, attr, getattr(config, attr))
 
         '''
         self.source = config.source
@@ -56,7 +62,11 @@ class Generator(GeneratorBase):
 
         for entry in config.function:
             self.register_entry(entry)
+        for entry in config.method:
+            self.register_entry(entry)
         for entry in config.struct:
+            self.register_entry(entry)
+        for entry in config.cls:
             self.register_entry(entry)
         for entry in config.field:
             self.register_entry(entry)
@@ -97,8 +107,8 @@ class Generator(GeneratorBase):
         data = {}
         for key, value in yaml_data.items():
             if '.' in key:
-                entry_kind, entry_name = key.split('.')
-                value['name'] = entry_name
+                entry_kind, entry_fqname = key.split('.')
+                value['fqname'] = entry_fqname
                 value['kind'] = entry_kind
                 if entry_kind in data:
                     data[entry_kind].append(value)
@@ -341,7 +351,7 @@ class Generator(GeneratorBase):
             self("}")
         else:
             self(f'{mname}.def("{pyname}", {cname}')
-        self.write_pyargs(node, arguments)
+        self.write_pyargs(arguments, node)
         self(f", {self.get_return_policy(cursor)});\n")
 
     def visit_struct(self, cursor):
@@ -355,6 +365,10 @@ class Generator(GeneratorBase):
 
         fqname = node.fqname
         pyname = node.pyname
+
+        if fqname == pyname:
+            logger.debug(f"fqname == pyname: {fqname}")
+            exit()
         if not pyname:
             return
 
@@ -421,7 +435,7 @@ class Generator(GeneratorBase):
                     typename = 'std::string'
                 else:
                     typename = cursor.type.spelling
-                if type(child) is FieldEntry:
+                if type(child) is FieldNode:
                     self(f'if (kwargs.contains("{child.pyname}"))')
                     self("{")
                     with self:

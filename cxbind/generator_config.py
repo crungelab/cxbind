@@ -1,8 +1,8 @@
 from typing import List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-from .entry import Entry, FunctionEntry, StructEntry, FieldEntry
+from .entry import Entry, FunctionEntry, MethodEntry, StructEntry, ClassEntry, FieldEntry
 
 class GeneratorConfig(BaseModel):
     """Generator configuration."""
@@ -11,7 +11,10 @@ class GeneratorConfig(BaseModel):
     module: str
     prefixes: Optional[str | List[str]] = None
     flags: List[str]
+    defaults: Optional[dict] = None
     #
     function: Optional[List[FunctionEntry]] = []
+    method: Optional[List[MethodEntry]] = []
     struct: Optional[List[StructEntry]] = []
+    cls: Optional[List[ClassEntry]] = Field([], alias='class')
     field: Optional[List[FieldEntry]] = []

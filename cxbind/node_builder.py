@@ -6,15 +6,18 @@ from loguru import logger
 from .node import Node, FunctionNode, CtorNode, FieldNode, MethodNode, StructOrClassNode, StructNode, ClassNode, EnumNode, TypedefNode
 from .entry import Entry, FunctionEntry, CtorEntry, FieldEntry, MethodEntry, StructEntry, ClassEntry, EnumEntry, TypedefEntry
 
-from .context import GeneratorContext
+#from .context import GeneratorContext
+from .builder import Builder
+from .builder_context import BuilderContext
 
 # Define a generic type variable
 T_Node = TypeVar("T_Node", bound=Node)
 
 
-class NodeBuilder(Generic[T_Node]):
-    def __init__(self, context: GeneratorContext, fqname: str, cursor: cindex.Cursor = None, entry: Entry=None) -> None:
-        self.context = context
+class NodeBuilder(Builder, Generic[T_Node]):
+    def __init__(self, context: BuilderContext, fqname: str, cursor: cindex.Cursor = None, entry: Entry=None) -> None:
+        #self.context = context
+        super().__init__(context)
         self.fqname = fqname
         self.cursor = cursor
         self.entry = entry
@@ -22,7 +25,8 @@ class NodeBuilder(Generic[T_Node]):
         self.node: T_Node = None
 
     def create_pyname(self, name):
-        return self.context.format_type(name)
+        #return self.context.format_type(name)
+        return self.format_type(name)
 
     def build(self) -> T_Node:
         self.create_node()

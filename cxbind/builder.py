@@ -7,7 +7,7 @@ from loguru import logger
 from clang import cindex
 
 from . import cu
-from .context import GeneratorContext
+from .builder_context import BuilderContext
 from .entry import (
     Entry,
     FunctionEntry,
@@ -31,6 +31,7 @@ from .node import (
     EnumNode,
     TypedefNode,
 )
+'''
 from .node_builder import (
     NodeBuilder,
     FunctionNodeBuilder,
@@ -53,11 +54,13 @@ node_builder_cls_map = {
     "enum": EnumNodeBuilder,
     "typedef": TypedefNodeBuilder,
 }
+'''
 
-
-class GeneratorBase(GeneratorContext):
-    def __init__(self):
+class Builder:
+    def __init__(self, context: BuilderContext):
         super().__init__()
+        self.context = context
+        '''
         self.indentation = 0
         self.text = ""
         self.source = ""
@@ -73,13 +76,94 @@ class GeneratorBase(GeneratorContext):
 
         self.nodes: Dict[str, Node] = {}
         self.node_stack: List[Node] = []
+        '''
 
+    @property
+    def prefixes(self):
+        return self.context.prefixes
+    
+    @property
+    def wrapped(self):
+        return self.context.wrapped
+    
+    @property
+    def indent(self):
+        return self.context.indentation
+    
+    @property
+    def text(self):
+        return self.context.text
+    
+    @property
+    def source(self):
+        return self.context.source
+    
+    @property
+    def mapped(self):
+        return self.context.mapped
+    
+    @property
+    def target(self):
+        return self.context.target
+    
+    @property
+    def module(self):
+        return self.context.module
+    
+    @property
+    def flags(self):
+        return self.context.flags
+    
+    @property
+    def defaults(self):
+        return self.context.defaults
+    
+    @property
+    def excludes(self):
+        return self.context.excludes
+    
+    @property
+    def overloads(self):
+        return self.context.overloads
+    
+    @property
+    def entries(self):
+        return self.context.entries
+    
+    @property
+    def nodes(self):
+        return self.context.nodes
+    
+    @property
+    def node_stack(self):
+        return self.context.node_stack
+    
+    '''
+    def write(self, text: str):
+        self.text += text
+    '''
+    def write(self, text: str):
+        self.context.write(text)
+
+    '''
+    def write_indented(self, text: str):
+        self.write(" " * self.indentation * 4)
+        self.write(text)
+    '''
+    def write_indented(self, text: str):
+        self.context.write_indented(text)
+
+    '''
     def __call__(self, line=""):
         if len(line):
-            self.text += " " * self.indentation * 4
-            self.text += line.replace(">>", "> >")
-        self.text += "\n"
+            line = line.replace(">>", "> >")
+            self.write_indented(line)
+        self.write("\n")
+    '''
+    def __call__(self, line=""):
+        self.context(line)
 
+    '''
     @contextmanager
     def enter(self, node):
         self.push_node(node)
@@ -87,31 +171,96 @@ class GeneratorBase(GeneratorContext):
         yield node
         self.dedent()
         self.pop_node()
+    '''
+    @contextmanager
+    def enter(self, node):
+        self.context.push_node(node)
+        self.context.indent()
+        yield node
+        self.context.dedent()
+        self.context.pop_node()
 
+    '''
     def __enter__(self):
         self.indent()
+    '''
+    def __enter__(self):
+        self.context.__enter__()
 
+    '''
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.dedent()
+    '''
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.context.__exit__(exc_type, exc_val, exc_tb)
 
+    '''
     def push_node(self, node):
         self.node_stack.append(node)
+    '''
+    def push_node(self, node):
+        self.context.push_node(node)
 
+    '''
     def pop_node(self):
         self.node_stack.pop()
+    '''
+    def pop_node(self):
+        self.context.pop_node()
 
+    '''
     def indent(self):
         self.indentation += 1
+    '''
+    def indent(self):
+        self.context.indent()
 
+    '''
     def dedent(self):
         self.indentation -= 1
+    '''
+    def dedent(self):
+        self.context.dedent()
 
+    '''
     @property
     def top_node(self):
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
+    '''
+    @property
+    def top_node(self):
+        return self.context.top_node
+    
+    def spell(self, node: cindex.Cursor):
+        return self.context.spell(node)
+    
+    def format_field(self, name: str):
+        return self.context.format_field(name)
+    
+    def format_type(self, name: str):
+        return self.context.format_type(name)
+    
+    def format_enum(self, name: str):
+        return self.context.format_enum(name)
+    
+    def arg_type(self, argument):
+        return self.context.arg_type(argument)
 
+    def arg_types(self, argument):
+        return self.context.arg_types(argument)
+
+    def arg_name(self, argument):
+        return self.context.arg_name(argument)
+    
+    def arg_names(self, arguments: List[cindex.Cursor]):
+        return self.context.arg_names(arguments)
+    
+    def arg_string(self, arguments):
+        return self.context.arg_string(arguments)
+
+    '''
     def create_node(
         self, entry_key: str, cursor: cindex.Cursor = None, entry: Entry = None
     ) -> Node:
@@ -122,7 +271,10 @@ class GeneratorBase(GeneratorContext):
         self.nodes[fqname] = node
 
         return node
-
+    '''
+    def create_node(self, entry_key: str, cursor: cindex.Cursor = None, entry: Entry = None) -> Node:
+        return self.context.create_node(entry_key, cursor, entry)
+    
     def lookup_node(self, entry_key: str) -> Node:
         #logger.debug(f"Looking up {entry_key}")
         kind, key = entry_key.split(".")
@@ -149,7 +301,7 @@ class GeneratorBase(GeneratorContext):
         return node
 
     def register_entry(self, entry: Entry):
-        fqname = entry.name
+        fqname = entry.fqname
         if entry.exclude:
             self.excludes.append(fqname)
         if entry.overload:
@@ -161,7 +313,7 @@ class GeneratorBase(GeneratorContext):
         self.entries[fqname] = entry
 
         return entry
-
+    
     @property
     def scope(self):
         node = self.top_node
@@ -362,7 +514,7 @@ class GeneratorBase(GeneratorContext):
             return parts[1]
         return ""
     
-    def write_pyargs(self, node: FunctionNode, arguments):
+    def write_pyargs(self, arguments, node: FunctionNode=None):
         for argument in arguments:
             default = self.default_from_tokens(argument.get_tokens())
             for child in argument.get_children():
@@ -371,12 +523,12 @@ class GeneratorBase(GeneratorContext):
                 elif not len(default):
                     default = self.default_from_tokens(child.get_tokens())
             default = self.defaults.get(argument.spelling, default)
-            if node.arguments and argument.spelling in node.arguments:
+            if node and node.arguments and argument.spelling in node.arguments:
                 node_argument = node.arguments[argument.spelling]
                 #logger.debug(f"node_argument: {node_argument}")
                 #exit()
                 #default = node.arguments[argument.spelling].default
-                default = str(node.arguments[argument.spelling]['default'])
+                default = str(node_argument['default'])
             # logger.debug(argument.spelling)
             # logger.debug(default)
             if len(default):
