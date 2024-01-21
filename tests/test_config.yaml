@@ -1,0 +1,10 @@
+source: 'src/simple.h'
+target: 'src/generated.cpp'
+
+module: _core
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]

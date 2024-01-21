@@ -2,7 +2,7 @@ import os, sys
 
 from pathlib import Path
 import importlib.util
-
+from loguru import logger
 from clang import cindex
 
 from . import generator as dot_cxbind
@@ -18,6 +18,7 @@ class Runner:
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
     def gen(self, name):
+        logger.debug(f"gen: {name}")
         global dot_cxbind
         path = Path(os.getcwd(), '.cxbind', '__init__.py')
         if os.path.exists(path):

@@ -1,0 +1,19 @@
+source: 'src/test.h'
+target: 'src/generated.cpp'
+
+module: _core
+
+prefixes: SDL_
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+'function.Test::ignore_me': {exclude: true}
+
+'function.Test::add':
+  arguments:
+    i: { default: 0}
+    j: { default: 0}

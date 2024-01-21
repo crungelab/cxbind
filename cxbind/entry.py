@@ -1,63 +1,34 @@
-from enum import Enum
+from typing import List, Dict, Optional, Any
 
-from clang import cindex
+from pydantic import BaseModel
 
-from .context import GeneratorContext
+class Entry(BaseModel):
+    """Base class for all entries."""
+    kind: str
+    name: str
+    exclude: Optional[bool] = False
+    overload: Optional[bool] = False
+    readonly: Optional[bool] = False
 
-class EntryKind(Enum):
-    FUNCTION = 0
-    CTOR = 1
-    FIELD = 2
-    METHOD = 3
-    STRUCT = 4
-    CLASS = 5
-    ENUM = 6
-
-class Entry:
-    context: GeneratorContext = None
-    fqname: str = None
-    name: str = None
-    pyname: str = None
-    config: dict = {}
-    node: cindex.Cursor = None
-    children: list["Entry"] = []
-    exclude: bool = False
-    overload: bool = False
-    readonly: bool = False
-
-    def __init__(self, context: GeneratorContext, fqname: str, config: dict={}, node: cindex.Cursor = None):
-        self.context = context
-        self.fqname = fqname
-        self.name = fqname.split('::')[-1]
-        self.pyname = self.create_pyname(self.name)
-        self.node = node
-        self.children = []
-        self.configure(config)
-        self.visited = False
-
-    def __repr__(self) -> str:
-        return f'<{self.__class__.__name__} fqname={self.fqname}, name={self.name}, pyname={self.pyname}>'
-
-    def create_pyname(self, name):
-        return self.context.format_type(name)
-
-    def configure(self, config):
-        #logger.debug(f"config: {config}")
-        for key, value in config.items():
-            setattr(self, key, value)
-
-    def add_child(self, entry: "Entry"):
-        self.children.append(entry)
+class Argument(BaseModel):
+    default: Optional[Any] = None
 
 class FunctionEntry(Entry):
-    pass
+    #arguments: List[str] = []
+    #arguments: Dict[str, Any] = {}
+    arguments: Optional[Dict[str, Argument]] = {}
+    return_type: Optional[str] = None
+    omit_ret: Optional[bool] = False
+    check_result: Optional[bool] = False
+
+    def model_post_init(self, __context) -> None:
+        self.arguments = {k: Argument(**v) if isinstance(v, dict) else v for k, v in self.arguments.items()}
 
 class CtorEntry(Entry):
     pass
 
 class FieldEntry(Entry):
-    def create_pyname(self, name):
-        return self.context.format_field(name)
+    pass
 
 class MethodEntry(Entry):
     pass
@@ -76,12 +47,12 @@ class ClassEntry(StructOrClassEntry):
     pass
 
 class EnumEntry(Entry):
-    def create_pyname(self, name):
-        return self.context.format_enum(name)
+    pass
 
 class EnumConstEntry(Entry):
     pass
 
 class TypedefEntry(Entry):
-    gen_init: bool = False
-    gen_kw_init: bool = False
+    pass
+    #gen_init: bool = False
+    #gen_kw_init: bool = False

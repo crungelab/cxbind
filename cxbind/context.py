@@ -1,10 +1,11 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List
 if TYPE_CHECKING:
     from cxbind.entry import Entry
 
 import re
 
 from clang import cindex
+from loguru import logger
 
 class GeneratorContext:
     def __init__(self) -> None:
@@ -29,6 +30,7 @@ class GeneratorContext:
         return re.sub('([a-z])([A-Z])', r'\1_\2', s1).lower()
 
     def strip_prefixes(self, name: str):
+        #logger.debug(f"prefixes: {self.prefixes}")
         if isinstance(self.prefixes, str):
             name = name.replace(self.prefixes, '', 1)
         elif isinstance(self.prefixes, list):
@@ -76,7 +78,7 @@ class GeneratorContext:
     def arg_types(self, arguments):
         return ', '.join([self.arg_type(a) for a in arguments])
 
-    def arg_names(self, arguments):
+    def arg_names(self, arguments: List[cindex.Cursor]):
         returned = []
         for a in arguments:
             type_name = a.type.spelling.split(' ')[0]

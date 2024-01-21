@@ -1,0 +1,12 @@
+source: 'src/advanced.h'
+target: 'src/generated.cpp'
+
+module: _core
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+'function.Advanced::ignore_me': {exclude: true}

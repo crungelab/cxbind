@@ -24,10 +24,11 @@ classifiers = [
 
 dependencies = [
     "clang ==15.0.7",
-    "click >=8.1.7",
-    "Jinja2 ==3.1.2",
-    "loguru >=0.7.2",
-    "PyYAML >=6.0.1"
+    "click ~=8.1.7",
+    "Jinja2 ~=3.1.2",
+    "loguru ~=0.7.2",
+    "PyYAML ~=6.0.1",
+    "pydantic ~=2.5.3",
 ]
 
 #dynamic = ["version"]
