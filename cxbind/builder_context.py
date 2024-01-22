@@ -1,8 +1,8 @@
-from typing import TYPE_CHECKING, Type, Dict, List
+from typing import TYPE_CHECKING, Type, Dict, List, Any, Callable
 
-#if TYPE_CHECKING:
-#    from cxbind.entry import Entry
-from cxbind.entry import Entry
+if TYPE_CHECKING:
+    from cxbind.node_builder import NodeBuilder
+
 
 import re
 from contextlib import contextmanager
@@ -11,6 +11,7 @@ from clang import cindex
 from loguru import logger
 
 from .node import Node
+from .entry import Entry
 
 class BuilderContext:
     def __init__(self) -> None:
@@ -32,6 +33,8 @@ class BuilderContext:
 
         self.nodes: Dict[str, Node] = {}
         self.node_stack: List[Node] = []
+
+        self.actions: Dict[cindex.CursorKind, Callable] = {}
 
     def write(self, text: str):
         self.text += text
@@ -78,18 +81,26 @@ class BuilderContext:
             return None
         return self.node_stack[-1]
 
-    def create_node(
-        self, entry_key: str, cursor: cindex.Cursor = None, entry: Entry = None
-    ) -> Node:
-        from .node_builder_cls_map import NODE_BUILDER_CLS_MAP
+    def lookup_entry(self, key: str) -> Entry:
+        #logger.debug(f"Looking up {entry_key}")
+        if key in self.entries:
+            return self.entries[key]
+        return None
+
+    def lookup_node(self, key: str) -> Node:
+        #logger.debug(f"Looking up {entry_key}")
+        if key in self.nodes:
+            return self.nodes[key]
+        return None
+
+    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "NodeBuilder":
+        from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP
         from .node_builder import NodeBuilder
         kind, fqname = entry_key.split(".")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
+        entry = self.lookup_entry(fqname)
         builder = builder_cls(self, fqname, cursor, entry)
-        node = builder.build()
-        self.nodes[fqname] = node
-
-        return node
+        return builder
 
     @classmethod
     def spell(cls, node: cindex.Cursor):

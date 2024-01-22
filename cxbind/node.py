@@ -33,26 +33,26 @@ class Node:
         self.children.append(entry)
 
 
-class FunctionNode(Node):
+class Function(Node):
     arguments: Dict[str, Any] = {}
     return_type: str = None
     omit_ret: bool = False
     check_result: bool = False
 
 
-class CtorNode(Node):
+class Ctor(Node):
     pass
 
 
-class FieldNode(Node):
+class Field(Node):
     pass
 
 
-class MethodNode(Node):
+class Method(Node):
     pass
 
 
-class StructOrClassNode(Node):
+class StructOrClass(Node):
     constructible: bool = True
     has_constructor: bool = False
     gen_init: bool = False
@@ -60,22 +60,22 @@ class StructOrClassNode(Node):
     gen_wrapper: dict = None
 
 
-class StructNode(StructOrClassNode):
+class Struct(StructOrClass):
     pass
 
 
-class ClassNode(StructOrClassNode):
+class Class(StructOrClass):
     pass
 
 
-class EnumNode(Node):
+class Enum(Node):
     pass
 
 
-class EnumConstNode(Node):
+class EnumConst(Node):
     pass
 
 
-class TypedefNode(Node):
+class Typedef(Node):
     gen_init: bool = False
     gen_kw_init: bool = False

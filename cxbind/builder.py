@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Optional, Union
+from typing import List, Dict, Tuple, Optional, Union, Any
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -8,75 +8,24 @@ from clang import cindex
 
 from . import cu
 from .builder_context import BuilderContext
-from .entry import (
-    Entry,
-    FunctionEntry,
-    CtorEntry,
-    FieldEntry,
-    MethodEntry,
-    StructEntry,
-    ClassEntry,
-    EnumEntry,
-    TypedefEntry,
-)
+from .entry import Entry
 from .node import (
     Node,
-    FunctionNode,
-    CtorNode,
-    FieldNode,
-    MethodNode,
-    StructOrClassNode,
-    StructNode,
-    ClassNode,
-    EnumNode,
-    TypedefNode,
+    Function,
+    Ctor,
+    Field,
+    Method,
+    StructOrClass,
+    Struct,
+    Class,
+    Enum,
+    Typedef,
 )
-'''
-from .node_builder import (
-    NodeBuilder,
-    FunctionNodeBuilder,
-    CtorNodeBuilder,
-    FieldNodeBuilder,
-    MethodNodeBuilder,
-    StructNodeBuilder,
-    ClassNodeBuilder,
-    EnumNodeBuilder,
-    TypedefNodeBuilder,
-)
-
-node_builder_cls_map = {
-    "function": FunctionNodeBuilder,
-    "ctor": CtorNodeBuilder,
-    "field": FieldNodeBuilder,
-    "method": MethodNodeBuilder,
-    "struct": StructNodeBuilder,
-    "class": ClassNodeBuilder,
-    "enum": EnumNodeBuilder,
-    "typedef": TypedefNodeBuilder,
-}
-'''
 
 class Builder:
     def __init__(self, context: BuilderContext):
         super().__init__()
         self.context = context
-        '''
-        self.indentation = 0
-        self.text = ""
-        self.source = ""
-        self.mapped: List[str] = []  # headers we want to generate bindings for
-        self.target = ""
-        self.module = ""
-        self.flags: List[str] = []
-        self.defaults: Dict[str, str] = {}
-        self.excludes: List[str] = []
-        self.overloads: List[str] = []
-
-        self.entries: Dict[str, Entry] = {}
-
-        self.nodes: Dict[str, Node] = {}
-        self.node_stack: List[Node] = []
-        '''
 
     @property
     def prefixes(self):
@@ -117,14 +66,22 @@ class Builder:
     @property
     def defaults(self):
         return self.context.defaults
-    
+
     @property
     def excludes(self):
         return self.context.excludes
-    
+
+    @property
+    def excluded(self):
+        return self.context.excluded
+
     @property
     def overloads(self):
         return self.context.overloads
+
+    @property
+    def overloaded(self):
+        return self.context.overloaded
     
     @property
     def entries(self):
@@ -138,40 +95,15 @@ class Builder:
     def node_stack(self):
         return self.context.node_stack
     
-    '''
-    def write(self, text: str):
-        self.text += text
-    '''
     def write(self, text: str):
         self.context.write(text)
 
-    '''
-    def write_indented(self, text: str):
-        self.write(" " * self.indentation * 4)
-        self.write(text)
-    '''
     def write_indented(self, text: str):
         self.context.write_indented(text)
 
-    '''
-    def __call__(self, line=""):
-        if len(line):
-            line = line.replace(">>", "> >")
-            self.write_indented(line)
-        self.write("\n")
-    '''
     def __call__(self, line=""):
         self.context(line)
 
-    '''
-    @contextmanager
-    def enter(self, node):
-        self.push_node(node)
-        self.indent()
-        yield node
-        self.dedent()
-        self.pop_node()
-    '''
     @contextmanager
     def enter(self, node):
         self.context.push_node(node)
@@ -180,55 +112,24 @@ class Builder:
         self.context.dedent()
         self.context.pop_node()
 
-    '''
-    def __enter__(self):
-        self.indent()
-    '''
     def __enter__(self):
         self.context.__enter__()
 
-    '''
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dedent()
-    '''
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.context.__exit__(exc_type, exc_val, exc_tb)
 
-    '''
-    def push_node(self, node):
-        self.node_stack.append(node)
-    '''
     def push_node(self, node):
         self.context.push_node(node)
 
-    '''
-    def pop_node(self):
-        self.node_stack.pop()
-    '''
     def pop_node(self):
         self.context.pop_node()
 
-    '''
-    def indent(self):
-        self.indentation += 1
-    '''
     def indent(self):
         self.context.indent()
 
-    '''
-    def dedent(self):
-        self.indentation -= 1
-    '''
     def dedent(self):
         self.context.dedent()
 
-    '''
-    @property
-    def top_node(self):
-        if len(self.node_stack) == 0:
-            return None
-        return self.node_stack[-1]
-    '''
     @property
     def top_node(self):
         return self.context.top_node
@@ -260,47 +161,17 @@ class Builder:
     def arg_string(self, arguments):
         return self.context.arg_string(arguments)
 
-    '''
-    def create_node(
-        self, entry_key: str, cursor: cindex.Cursor = None, entry: Entry = None
-    ) -> Node:
-        kind, fqname = entry_key.split(".")
-        builder_cls: NodeBuilder = node_builder_cls_map[kind]
-        builder = builder_cls(self, fqname, cursor, entry)
-        node = builder.build()
-        self.nodes[fqname] = node
+    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> Node:
+        return self.context.create_builder(entry_key, cursor)
 
-        return node
-    '''
-    def create_node(self, entry_key: str, cursor: cindex.Cursor = None, entry: Entry = None) -> Node:
-        return self.context.create_node(entry_key, cursor, entry)
+    def lookup_node(self, key: str) -> Node:
+        return self.context.lookup_node(key)
     
-    def lookup_node(self, entry_key: str) -> Node:
-        #logger.debug(f"Looking up {entry_key}")
-        kind, key = entry_key.split(".")
-        if key in self.nodes:
-            return self.nodes[key]
-        return None
-
-    def lookup_entry(self, entry_key: str) -> Entry:
-        #logger.debug(f"Looking up {entry_key}")
-        kind, key = entry_key.split(".")
-        if key in self.entries:
-            return self.entries[key]
-        return None
-
-    def lookup_or_create_node(
-        self, entry_key: str, cursor: cindex.Cursor = None
-    ) -> Node:
-        node = self.lookup_node(entry_key)
-        if not node:
-            entry = self.lookup_entry(entry_key)
-            node = self.create_node(entry_key, cursor, entry)
-        else:
-            node.cursor = cursor
-        return node
-
+    def lookup_entry(self, key: str) -> Entry:
+        return self.context.lookup_entry(key)
+    
     def register_entry(self, entry: Entry):
+        logger.debug(f"Registering {entry}")
         fqname = entry.fqname
         if entry.exclude:
             self.excludes.append(fqname)
@@ -488,7 +359,7 @@ class Builder:
                 return True
         return False
 
-    def get_function_result(self, node: FunctionNode, cursor) -> str:
+    def get_function_result(self, node: Function, cursor) -> str:
         returned = [
             a.spelling for a in cursor.get_arguments() if self.should_return_argument(a)
         ]
@@ -514,7 +385,7 @@ class Builder:
             return parts[1]
         return ""
     
-    def write_pyargs(self, arguments, node: FunctionNode=None):
+    def write_pyargs(self, arguments, node: Function=None):
         for argument in arguments:
             default = self.default_from_tokens(argument.get_tokens())
             for child in argument.get_children():
@@ -534,3 +405,179 @@ class Builder:
             if len(default):
                 default = " = " + default
             self(f', py::arg("{self.format_field(argument.spelling)}"){default}')
+
+    def visit(self, cursor):
+        #logger.debug(f"{cursor.kind} : {cursor.spelling}")
+        if not self.is_cursor_mappable(cursor):
+            return
+        if not cursor.kind in self.actions:
+            return
+        self.actions[cursor.kind](self, cursor)
+
+    def visit_children(self, cursor):
+        for child in cursor.get_children():
+            self.visit(child)
+
+    def visit_none(self, cursor):
+        logger.debug(f"visit_none: {cursor.spelling}")
+
+    def visit_typedef_decl(self, cursor):
+        logger.debug(cursor.spelling)
+        builder = self.create_builder(f'typedef.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
+        logger.debug(node)
+        #print(self.text)
+        #exit()
+
+
+    def visit_enum(self, cursor):
+        logger.debug(cursor.spelling)
+        if self.is_forward_declaration(cursor):
+            return
+        if cursor.is_scoped_enum():
+            return self.visit_scoped_enum(cursor)
+        
+        typedef_parent = self.top_node if isinstance(self.top_node, Typedef) else None
+
+        if typedef_parent:
+            fqname = typedef_parent.fqname
+            pyname = typedef_parent.pyname
+        else:
+            fqname = self.spell(cursor)
+            pyname = self.format_type(cursor.spelling)
+
+        #TODO: for some reason it's visiting the same enum twice when typedef'd
+        if not pyname:
+            return
+        
+        self(
+            f'py::enum_<{fqname}>({self.module}, "{pyname}", py::arithmetic())'
+        )
+        with self:
+            for child in cursor.get_children():
+                self(
+                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
+                )
+            self(".export_values();")
+        self()
+
+    def visit_struct_enum(self, cursor):
+        node = self.top_node
+        if not cursor.get_children():
+            return
+        self(
+            f'py::enum_<{self.spell(cursor)}>({self.module}, "{node.pyname}", py::arithmetic())'
+        )
+        logger.debug(cursor.spelling)
+        with self:
+            for child in cursor.get_children():
+                self(
+                    f'.value("{self.format_enum(child.spelling)}", {node.fqname}::Enum::{child.spelling})'
+                )
+            self(".export_values();")
+        self()
+
+    def visit_scoped_enum(self, cursor):
+        logger.debug(cursor.spelling)
+        fqname = self.spell(cursor)
+        # logger.debug(fqname)
+        pyname = self.format_type(cursor.spelling)
+        self(f"PYENUM_SCOPED_BEGIN({self.module}, {fqname}, {pyname})")
+        self(pyname)
+        with self:
+            for child in cursor.get_children():
+                #logger.debug(child.kind) #CursorKind.ENUM_CONSTANT_DECL
+                self(
+                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
+                )
+            self(".export_values();")
+        self(f"PYENUM_SCOPED_END({self.module}, {fqname}, {pyname})")
+        self()
+
+
+    def visit_field(self, cursor):
+        if not self.is_field_mappable(cursor):
+            return
+        builder = self.create_builder(f'field.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
+
+        self.top_node.add_child(node)
+        #logger.debug(node)
+
+    #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
+    def visit_char_ptr_field(self, cursor, pyname):
+        pname = self.spell(cursor.semantic_parent)
+        name = cursor.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[](const {pname}& self)' '{'
+            f' return self.{name};'
+            ' },'
+            )
+            self(
+            f'[]({pname}& self, std::string source)' '{'
+            ' char* c = (char *)malloc(source.size() + 1);'
+            ' strcpy(c, source.c_str());'
+            f' self.{name} = c;'
+            ' }'
+            )
+        self(');')
+
+    def visit_fn_ptr_field(self, cursor, pyname):
+        pname = self.spell(cursor.semantic_parent)
+        name = cursor.spelling
+        typename = cursor.type.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[]({pname}& self)' '{'
+            f' return self.{name};'
+            ' },')
+            self(
+            f'[]({pname}& self, {typename} source)' '{'
+            f' self.{name} = source;'
+            ' }'
+            )
+        self(');')
+
+    # TODO: Handle is_deleted_method
+    def visit_constructor(self, cursor):
+        if not self.is_function_mappable(cursor):
+            return
+        builder = self.create_builder(f'ctor.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
+
+    def visit_function(self, cursor):
+        self.visit_function_or_method(cursor)
+
+    def visit_method(self, cursor):
+        self.visit_function_or_method(cursor)
+
+    def visit_function_or_method(self, cursor):
+        #logger.debug(cursor.spelling)
+        if not self.is_function_mappable(cursor):
+            return
+        builder = self.create_builder(f'function.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
+
+    def visit_struct(self, cursor):
+        if not self.is_class_mappable(cursor):
+            return
+        builder = self.create_builder(f'struct.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
+
+    def visit_class(self, cursor):
+        if not self.is_class_mappable(cursor):
+            return
+        builder = self.create_builder(f'class.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
+
+
+    def visit_var(self, cursor):
+        #logger.debug(f"Not implemented:  visit_var: {cursor.spelling}")
+        pass
+
+    def visit_using_decl(self, cursor):
+        #logger.debug(f"Not implemented:  visit_using_decl: {cursor.spelling}")
+        pass

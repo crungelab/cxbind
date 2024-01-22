@@ -54,5 +54,3 @@ class EnumConstEntry(Entry):
 
 class TypedefEntry(Entry):
     pass
-    #gen_init: bool = False
-    #gen_kw_init: bool = False

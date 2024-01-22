@@ -16,7 +16,7 @@ data = {}
 for key, value in yaml_data.items():
     if '.' in key:
         kind, name = key.split('.')
-        value['name'] = name
+        value['fqname'] = name
         value['kind'] = kind
         if kind in data:
             data[kind].append(value)
