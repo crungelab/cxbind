@@ -48,7 +48,7 @@ class EnumBuilder(NodeBuilder[Enum]):
         self()
 
     def visit_scoped_enum(self, cursor):
-        logger.debug(cursor.spelling)
+        #logger.debug(cursor.spelling)
         fqname = self.spell(cursor)
         # logger.debug(fqname)
         pyname = self.format_type(cursor.spelling)

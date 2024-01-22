@@ -1,4 +1,4 @@
-from .struct_or_class_builder import StructOrClassBuilder
+from .struct_base_builder import StructBaseBuilder
 from .class_builder import ClassBuilder
 from .method_builder import MethodBuilder
 from .field_builder import FieldBuilder

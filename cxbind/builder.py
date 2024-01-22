@@ -15,7 +15,7 @@ from .node import (
     Ctor,
     Field,
     Method,
-    StructOrClass,
+    StructBase,
     Struct,
     Class,
     Enum,
@@ -70,16 +70,8 @@ class Builder:
         return self.context.defaults
 
     @property
-    def excludes(self):
-        return self.context.excludes
-
-    @property
     def excluded(self):
         return self.context.excluded
-
-    @property
-    def overloads(self):
-        return self.context.overloads
 
     @property
     def overloaded(self):
@@ -163,18 +155,17 @@ class Builder:
     def arg_string(self, arguments):
         return self.context.arg_string(arguments)
 
-    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> Node:
-        return self.context.create_builder(entry_key, cursor)
+    def register_entry(self, entry: Entry):
+        return self.context.register_entry(entry)
+
+    def lookup_entry(self, key: str) -> Entry:
+        return self.context.lookup_entry(key)
 
     def lookup_node(self, key: str) -> Node:
         return self.context.lookup_node(key)
-    
-    def lookup_entry(self, key: str) -> Entry:
-        return self.context.lookup_entry(key)
-    
 
-    def register_entry(self, entry: Entry):
-        return self.context.register_entry(entry)
+    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> Node:
+        return self.context.create_builder(entry_key, cursor)
 
     @property
     def scope(self):
@@ -211,43 +202,8 @@ class Builder:
             return False
         return True
 
-    def is_field_mappable(self, cursor):
-        return self.is_cursor_mappable(cursor)
-
-    def is_class_mappable(self, cursor):
-        if not self.is_cursor_mappable(cursor):
-            return False
-        if not cursor.is_definition():
-            return False
-        return True
-
     def is_rvalue_ref(self, param):
         return param.kind == cindex.TypeKind.RVALUEREFERENCE
-
-    def process_function_decl(self, decl):
-        for param in decl.get_children():
-            if param.kind == cindex.CursorKind.PARM_DECL:
-                param_type = param.type
-                if self.is_rvalue_ref(param_type):
-                    logger.debug(f"Found rvalue reference in function {decl.spelling}")
-                    return False
-        return True
-
-    def is_function_mappable(self, cursor):
-        if not self.is_cursor_mappable(cursor):
-            return False
-        if "operator" in cursor.spelling:
-            return False
-        if not self.process_function_decl(cursor):
-            return False
-        for argument in cursor.get_arguments():
-            if argument.type.get_canonical().kind == cindex.TypeKind.POINTER:
-                ptr = argument.type.get_canonical().get_pointee().kind
-                if ptr == cindex.TypeKind.FUNCTIONPROTO:
-                    return False
-            if argument.type.spelling == "va_list":
-                return False
-        return True
 
     def is_char_ptr(self, cursor):
         if cursor.type.get_canonical().kind == cindex.TypeKind.POINTER:
@@ -276,125 +232,7 @@ class Builder:
         # are in the same translation unit. This cursor is the forward declaration if
         # it is _not_ the definition.
         return cursor != definition
-
-    def is_function_void_return(self, cursor):
-        result = cursor.type.get_result()
-        return result.kind == cindex.TypeKind.VOID
-
-    def is_function_wrapped_return(self, cursor):
-        result_type = cursor.result_type
-        logger.debug(f"result_type: {result_type.spelling}")
-        result_type_name = result_type.spelling.split(" ")[0]
-        if result_type_name in self.wrapped:
-            return True
-
-    def is_field_readonly(self, cursor):
-        if self.top_node.readonly:
-            return True
-        if cursor.type.is_const_qualified():
-            return True
-        if cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return True
-        return False
-
-    def is_overloaded(self, cursor) -> bool:
-        return self.spell(cursor) in self.overloaded
-
-    def should_wrap_function(self, cursor) -> bool:
-        if cursor.type.is_function_variadic():
-            return True
-
-        result_type = cursor.result_type
-        #logger.debug(f"result_type: {result_type.spelling}")
-        result_type_name = result_type.spelling.split(" ")[0]
-        if result_type_name in self.wrapped:
-            return True
-
-        for arg in cursor.get_arguments():
-            if arg.type.kind == cindex.TypeKind.CONSTANTARRAY:
-                return True
-            if self.should_return_argument(arg):
-                return True
-
-            #logger.debug(f"wrapped: {arg.spelling}: {self.arg_type(arg)}")
-            #logger.debug(self.wrapped)
-
-            type_name = arg.type.spelling.split(" ")[0]
-            if type_name in self.wrapped:
-                logger.debug(f"Found wrapped {arg.spelling}")
-                return True
-        return False
-
-    def should_return_argument(self, argument) -> bool:
-        argtype = argument.type.get_canonical()
-        if argtype.kind == cindex.TypeKind.LVALUEREFERENCE:
-            if not argtype.get_pointee().is_const_qualified():
-                return True
-        if argtype.kind == cindex.TypeKind.CONSTANTARRAY:
-            return True
-        if argtype.kind == cindex.TypeKind.POINTER:
-            ptr = argtype.get_pointee()
-            kinds = [
-                cindex.TypeKind.BOOL,
-                cindex.TypeKind.FLOAT,
-                cindex.TypeKind.DOUBLE,
-                cindex.TypeKind.INT,
-                cindex.TypeKind.UINT,
-                cindex.TypeKind.USHORT,
-                cindex.TypeKind.ULONG,
-                cindex.TypeKind.ULONGLONG,
-            ]
-            if not ptr.is_const_qualified() and ptr.kind in kinds:
-                return True
-        return False
-
-    def get_function_result(self, node: Function, cursor) -> str:
-        returned = [
-            a.spelling for a in cursor.get_arguments() if self.should_return_argument(a)
-        ]
-        if not self.is_function_void_return(cursor) and not node.omit_ret:
-            returned.insert(0, "ret")
-        if len(returned) > 1:
-            return "std::make_tuple({})".format(", ".join(returned))
-        if len(returned) == 1:
-            return returned[0]
-        return ""
-
-    def get_return_policy(self, cursor) -> str:
-        result = cursor.type.get_result()
-        if result.kind == cindex.TypeKind.LVALUEREFERENCE:
-            return "py::return_value_policy::reference"
-        else:
-            return "py::return_value_policy::automatic_reference"
-
-    def default_from_tokens(self, tokens) -> str:
-        joined = "".join([t.spelling for t in tokens])
-        parts = joined.split("=")
-        if len(parts) == 2:
-            return parts[1]
-        return ""
     
-    def write_pyargs(self, arguments, node: Function=None):
-        for argument in arguments:
-            default = self.default_from_tokens(argument.get_tokens())
-            for child in argument.get_children():
-                if child.type.kind in [cindex.TypeKind.POINTER]:
-                    default = "nullptr"
-                elif not len(default):
-                    default = self.default_from_tokens(child.get_tokens())
-            default = self.defaults.get(argument.spelling, default)
-            if node and node.arguments and argument.spelling in node.arguments:
-                node_argument = node.arguments[argument.spelling]
-                #logger.debug(f"node_argument: {node_argument}")
-                #exit()
-                #default = node.arguments[argument.spelling].default
-                default = str(node_argument['default'])
-            # logger.debug(argument.spelling)
-            # logger.debug(default)
-            if len(default):
-                default = " = " + default
-            self(f', py::arg("{self.format_field(argument.spelling)}"){default}')
-
     def visit(self, cursor):
         #logger.debug(f"{cursor.kind} : {cursor.spelling}")
         if not self.is_cursor_mappable(cursor):
@@ -415,18 +253,10 @@ class Builder:
         node = builder.build()
 
     def visit_enum(self, cursor):
-        '''
-        if self.is_forward_declaration(cursor):
-            return
-        '''
         builder = self.create_builder(f'enum.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
     def visit_field(self, cursor):
-        '''
-        if not self.is_field_mappable(cursor):
-            return
-        '''
         builder = self.create_builder(f'field.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
@@ -434,10 +264,6 @@ class Builder:
 
     # TODO: Handle is_deleted_method
     def visit_constructor(self, cursor):
-        '''
-        if not self.is_function_mappable(cursor):
-            return
-        '''
         builder = self.create_builder(f'ctor.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
@@ -448,26 +274,14 @@ class Builder:
         self.visit_function_or_method(cursor)
 
     def visit_function_or_method(self, cursor):
-        '''
-        if not self.is_function_mappable(cursor):
-            return
-        '''
         builder = self.create_builder(f'function.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
     def visit_struct(self, cursor):
-        '''
-        if not self.is_class_mappable(cursor):
-            return
-        '''
         builder = self.create_builder(f'struct.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
     def visit_class(self, cursor):
-        '''
-        if not self.is_class_mappable(cursor):
-            return
-        '''
         builder = self.create_builder(f'class.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 

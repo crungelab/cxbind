@@ -1,13 +1,10 @@
-from .node_builder import NodeBuilder
+from .function_base_builder import FunctionBaseBuilder
 from ..node import Ctor
 
 
-class CtorBuilder(NodeBuilder[Ctor]):
+class CtorBuilder(FunctionBaseBuilder[Ctor]):
     def create_node(self):
         self.node = Ctor(self.fqname, self.cursor)
-
-    def should_cancel(self):
-        return super().should_cancel() or not self.is_function_mappable(self.cursor)
 
     def build_node(self):
         super().build_node()

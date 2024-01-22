@@ -33,23 +33,20 @@ class FieldEntry(Entry):
 class MethodEntry(Entry):
     pass
 
-class StructOrClassEntry(Entry):
+class StructBaseEntry(Entry):
     constructible: bool = True
     has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
     gen_wrapper: dict = None
 
-class StructEntry(StructOrClassEntry):
+class StructEntry(StructBaseEntry):
     pass
 
-class ClassEntry(StructOrClassEntry):
+class ClassEntry(StructBaseEntry):
     pass
 
 class EnumEntry(Entry):
-    pass
-
-class EnumConstEntry(Entry):
     pass
 
 class TypedefEntry(Entry):

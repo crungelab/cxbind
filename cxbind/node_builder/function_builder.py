@@ -1,13 +1,10 @@
-from .node_builder import NodeBuilder
+from .function_base_builder import FunctionBaseBuilder
 from ..node import Function
 
 
-class FunctionBuilder(NodeBuilder[Function]):
+class FunctionBuilder(FunctionBaseBuilder[Function]):
     def create_node(self):
         self.node = Function(self.fqname, self.cursor)
-
-    def should_cancel(self):
-        return super().should_cancel() or not self.is_function_mappable(self.cursor)
 
     def build_node(self):
         super().build_node()

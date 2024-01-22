@@ -52,7 +52,7 @@ class Method(Node):
     pass
 
 
-class StructOrClass(Node):
+class StructBase(Node):
     constructible: bool = True
     has_constructor: bool = False
     gen_init: bool = False
@@ -60,19 +60,15 @@ class StructOrClass(Node):
     gen_wrapper: dict = None
 
 
-class Struct(StructOrClass):
+class Struct(StructBase):
     pass
 
 
-class Class(StructOrClass):
+class Class(StructBase):
     pass
 
 
 class Enum(Node):
-    pass
-
-
-class EnumConst(Node):
     pass
 
 

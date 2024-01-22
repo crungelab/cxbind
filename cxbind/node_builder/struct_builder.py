@@ -1,11 +1,10 @@
 from clang import cindex
 
-from . import StructOrClassBuilder
+from . import StructBaseBuilder
 from ..node import Struct, Field
 
 
-#class StructBuilder(NodeBuilder[Struct]):
-class StructBuilder(StructOrClassBuilder):
+class StructBuilder(StructBaseBuilder[Struct]):
     def create_node(self):
         self.node = Struct(self.fqname, self.cursor)
 

@@ -1,19 +1,26 @@
-from .node_builder import NodeBuilder
-from ..node import StructOrClass, Field, Typedef
+from .node_builder import NodeBuilder, T_Node
+from ..node import StructBase, Field, Typedef
 
 
-class StructOrClassBuilder(NodeBuilder[StructOrClass]):
+class StructBaseBuilder(NodeBuilder[T_Node]):
     def create_node(self):
-        self.node = StructOrClass(self.fqname, self.cursor)
+        self.node = StructBase(self.fqname, self.cursor)
 
     def create_pyname(self, name):
         pyname = super().create_pyname(name)
-        if isinstance(self.top_node, StructOrClass):
+        if isinstance(self.top_node, StructBase):
             return f'{self.top_node.pyname}{pyname}'
         return pyname
 
     def should_cancel(self):
         return super().should_cancel() or not self.is_class_mappable(self.cursor) or isinstance(self.top_node, Typedef)
+
+    def is_class_mappable(self, cursor):
+        if not self.is_cursor_mappable(cursor):
+            return False
+        if not cursor.is_definition():
+            return False
+        return True
 
     def gen_init(self):
         self(f"{self.scope}.def(py::init<>());")
