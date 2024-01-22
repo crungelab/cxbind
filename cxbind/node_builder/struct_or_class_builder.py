@@ -1,5 +1,5 @@
 from .node_builder import NodeBuilder
-from ..node import StructOrClass, Field
+from ..node import StructOrClass, Field, Typedef
 
 
 class StructOrClassBuilder(NodeBuilder[StructOrClass]):
@@ -11,6 +11,9 @@ class StructOrClassBuilder(NodeBuilder[StructOrClass]):
         if isinstance(self.top_node, StructOrClass):
             return f'{self.top_node.pyname}{pyname}'
         return pyname
+
+    def should_cancel(self):
+        return super().should_cancel() or not self.is_class_mappable(self.cursor) or isinstance(self.top_node, Typedef)
 
     def gen_init(self):
         self(f"{self.scope}.def(py::init<>());")

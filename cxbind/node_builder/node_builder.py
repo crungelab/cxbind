@@ -19,23 +19,21 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.fqname = fqname
         self.cursor = cursor
         self.entry = entry
-        logger.debug(entry)
-
         self.node: T_Node = None
 
     def create_pyname(self, name):
         return self.format_type(name)
 
+    def should_cancel(self):
+        if self.lookup_node(self.fqname) is not None:
+            return True
+
     def build(self) -> T_Node:
-        if node := self.lookup_node(self.fqname) is not None:
+        if self.should_cancel():
             return None
-        
+                
         self.create_node()
 
-        '''
-        if not self.node.pyname:
-            return self.node
-        '''
         self.build_node()
         #self.build_children()
         return self.node

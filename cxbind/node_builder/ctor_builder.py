@@ -6,6 +6,9 @@ class CtorBuilder(NodeBuilder[Ctor]):
     def create_node(self):
         self.node = Ctor(self.fqname, self.cursor)
 
+    def should_cancel(self):
+        return super().should_cancel() or not self.is_function_mappable(self.cursor)
+
     def build_node(self):
         super().build_node()
 

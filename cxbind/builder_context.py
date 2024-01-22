@@ -6,15 +6,37 @@ if TYPE_CHECKING:
 
 import re
 from contextlib import contextmanager
+from . import UserSet
 
 from clang import cindex
 from loguru import logger
 
 from .node import Node
 from .entry import Entry
+from .generator_config import GeneratorConfig
+
+
+#TODO: Use pydantic settings
+class Options:
+    def __init__(self, *options, **kwargs):
+        for dictionary in options:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
+
+class Overloaded(UserSet):
+    def __init__(self, data) -> None:
+        super().__init__(data)
+        self.visited = set()
+
+    def is_overloaded(self, cursor):
+        return self.name(cursor) in self
+
 
 class BuilderContext:
-    def __init__(self) -> None:
+    def __init__(self, config: GeneratorConfig, **kwargs) -> None:
+        self.options = { 'save': True }
         self.prefixes = None
         self.wrapped: Dict[Entry] = {}
 
@@ -34,7 +56,31 @@ class BuilderContext:
         self.nodes: Dict[str, Node] = {}
         self.node_stack: List[Node] = []
 
-        self.actions: Dict[cindex.CursorKind, Callable] = {}
+        for attr in vars(config):
+            setattr(self, attr, getattr(config, attr))
+
+        for entry in config.function:
+            self.register_entry(entry)
+        for entry in config.method:
+            self.register_entry(entry)
+        for entry in config.struct:
+            self.register_entry(entry)
+        for entry in config.cls:
+            self.register_entry(entry)
+        for entry in config.field:
+            self.register_entry(entry)
+
+        for key in kwargs:
+            if key == 'options':
+                options: Dict = kwargs[key]
+                options.update(self.options)
+                self.options = options
+
+            setattr(self, key, kwargs[key])
+        
+        self.options = Options(self.options)
+        self.excluded = set(self.excludes)
+        self.overloaded = Overloaded(self.overloads)
 
     def write(self, text: str):
         self.text += text
@@ -80,6 +126,21 @@ class BuilderContext:
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
+
+    def register_entry(self, entry: Entry):
+        logger.debug(f"Registering {entry}")
+        fqname = entry.fqname
+        if entry.exclude:
+            self.excludes.append(fqname)
+        if entry.overload:
+            self.overloads.append(fqname)
+        if hasattr(entry, "gen_wrapper") and entry.gen_wrapper:
+            logger.debug(f"Adding wrapped {fqname}")
+            self.wrapped[fqname] = entry
+
+        self.entries[fqname] = entry
+
+        return entry
 
     def lookup_entry(self, key: str) -> Entry:
         #logger.debug(f"Looking up {entry_key}")

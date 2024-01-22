@@ -11,13 +11,16 @@ class FieldBuilder(NodeBuilder[Field]):
     def create_pyname(self, name):
         return self.context.format_field(name)
 
+    def should_cancel(self):
+        return super().should_cancel() or not self.is_field_mappable(self.cursor)
+    
     def build_node(self):
         super().build_node()
         
         node = self.node
         cursor = self.cursor
 
-        logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
+        #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
         
         if self.is_field_readonly(cursor):
             self(f'{self.scope}.def_readonly("{node.pyname}", &{node.fqname});')
@@ -30,3 +33,40 @@ class FieldBuilder(NodeBuilder[Field]):
                 self.visit_fn_ptr_field(cursor, node.pyname)
             else:
                 self(f'{self.scope}.def_readwrite("{node.pyname}", &{node.fqname});')
+
+    #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
+    def visit_char_ptr_field(self, cursor, pyname):
+        pname = self.spell(cursor.semantic_parent)
+        name = cursor.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[](const {pname}& self)' '{'
+            f' return self.{name};'
+            ' },'
+            )
+            self(
+            f'[]({pname}& self, std::string source)' '{'
+            ' char* c = (char *)malloc(source.size() + 1);'
+            ' strcpy(c, source.c_str());'
+            f' self.{name} = c;'
+            ' }'
+            )
+        self(');')
+
+    def visit_fn_ptr_field(self, cursor, pyname):
+        pname = self.spell(cursor.semantic_parent)
+        name = cursor.spelling
+        typename = cursor.type.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[]({pname}& self)' '{'
+            f' return self.{name};'
+            ' },')
+            self(
+            f'[]({pname}& self, {typename} source)' '{'
+            f' self.{name} = source;'
+            ' }'
+            )
+        self(');')

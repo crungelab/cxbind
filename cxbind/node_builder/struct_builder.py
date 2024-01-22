@@ -4,7 +4,6 @@ from . import StructOrClassBuilder
 from ..node import Struct, Field
 
 
-#Struct
 #class StructBuilder(NodeBuilder[Struct]):
 class StructBuilder(StructOrClassBuilder):
     def create_node(self):

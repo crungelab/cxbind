@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Optional, Union, Any
+from typing import List, Dict, Tuple, Optional, Union, Any, Callable
 from pathlib import Path
 from contextlib import contextmanager
 
@@ -23,6 +23,8 @@ from .node import (
 )
 
 class Builder:
+    actions: Dict[cindex.CursorKind, Callable] = {}
+
     def __init__(self, context: BuilderContext):
         super().__init__()
         self.context = context
@@ -170,21 +172,10 @@ class Builder:
     def lookup_entry(self, key: str) -> Entry:
         return self.context.lookup_entry(key)
     
+
     def register_entry(self, entry: Entry):
-        logger.debug(f"Registering {entry}")
-        fqname = entry.fqname
-        if entry.exclude:
-            self.excludes.append(fqname)
-        if entry.overload:
-            self.overloads.append(fqname)
-        if hasattr(entry, "gen_wrapper") and entry.gen_wrapper:
-            logger.debug(f"Adding wrapped {fqname}")
-            self.wrapped[fqname] = entry
+        return self.context.register_entry(entry)
 
-        self.entries[fqname] = entry
-
-        return entry
-    
     @property
     def scope(self):
         node = self.top_node
@@ -200,8 +191,6 @@ class Builder:
             return node.pyname
 
     def is_excluded(self, cursor):
-        # logger.debug(self.spell(cursor))
-        # logger.debug(cursor.spelling)
         if self.spell(cursor) in self.excluded:
             return True
         if cursor.spelling.startswith("_"):
@@ -240,7 +229,7 @@ class Builder:
             if param.kind == cindex.CursorKind.PARM_DECL:
                 param_type = param.type
                 if self.is_rvalue_ref(param_type):
-                    print(f"Found rvalue reference in function {decl.spelling}")
+                    logger.debug(f"Found rvalue reference in function {decl.spelling}")
                     return False
         return True
 
@@ -422,129 +411,33 @@ class Builder:
         logger.debug(f"visit_none: {cursor.spelling}")
 
     def visit_typedef_decl(self, cursor):
-        logger.debug(cursor.spelling)
         builder = self.create_builder(f'typedef.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
-        logger.debug(node)
-        #print(self.text)
-        #exit()
-
 
     def visit_enum(self, cursor):
-        logger.debug(cursor.spelling)
+        '''
         if self.is_forward_declaration(cursor):
             return
-        if cursor.is_scoped_enum():
-            return self.visit_scoped_enum(cursor)
-        
-        typedef_parent = self.top_node if isinstance(self.top_node, Typedef) else None
-
-        if typedef_parent:
-            fqname = typedef_parent.fqname
-            pyname = typedef_parent.pyname
-        else:
-            fqname = self.spell(cursor)
-            pyname = self.format_type(cursor.spelling)
-
-        #TODO: for some reason it's visiting the same enum twice when typedef'd
-        if not pyname:
-            return
-        
-        self(
-            f'py::enum_<{fqname}>({self.module}, "{pyname}", py::arithmetic())'
-        )
-        with self:
-            for child in cursor.get_children():
-                self(
-                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
-                )
-            self(".export_values();")
-        self()
-
-    def visit_struct_enum(self, cursor):
-        node = self.top_node
-        if not cursor.get_children():
-            return
-        self(
-            f'py::enum_<{self.spell(cursor)}>({self.module}, "{node.pyname}", py::arithmetic())'
-        )
-        logger.debug(cursor.spelling)
-        with self:
-            for child in cursor.get_children():
-                self(
-                    f'.value("{self.format_enum(child.spelling)}", {node.fqname}::Enum::{child.spelling})'
-                )
-            self(".export_values();")
-        self()
-
-    def visit_scoped_enum(self, cursor):
-        logger.debug(cursor.spelling)
-        fqname = self.spell(cursor)
-        # logger.debug(fqname)
-        pyname = self.format_type(cursor.spelling)
-        self(f"PYENUM_SCOPED_BEGIN({self.module}, {fqname}, {pyname})")
-        self(pyname)
-        with self:
-            for child in cursor.get_children():
-                #logger.debug(child.kind) #CursorKind.ENUM_CONSTANT_DECL
-                self(
-                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
-                )
-            self(".export_values();")
-        self(f"PYENUM_SCOPED_END({self.module}, {fqname}, {pyname})")
-        self()
-
+        '''
+        builder = self.create_builder(f'enum.{self.spell(cursor)}', cursor=cursor)
+        node = builder.build()
 
     def visit_field(self, cursor):
+        '''
         if not self.is_field_mappable(cursor):
             return
+        '''
         builder = self.create_builder(f'field.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
         self.top_node.add_child(node)
-        #logger.debug(node)
-
-    #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
-    def visit_char_ptr_field(self, cursor, pyname):
-        pname = self.spell(cursor.semantic_parent)
-        name = cursor.spelling
-        self(f'{self.scope}.def_property("{pyname}",')
-        with self:
-            self(
-            f'[](const {pname}& self)' '{'
-            f' return self.{name};'
-            ' },'
-            )
-            self(
-            f'[]({pname}& self, std::string source)' '{'
-            ' char* c = (char *)malloc(source.size() + 1);'
-            ' strcpy(c, source.c_str());'
-            f' self.{name} = c;'
-            ' }'
-            )
-        self(');')
-
-    def visit_fn_ptr_field(self, cursor, pyname):
-        pname = self.spell(cursor.semantic_parent)
-        name = cursor.spelling
-        typename = cursor.type.spelling
-        self(f'{self.scope}.def_property("{pyname}",')
-        with self:
-            self(
-            f'[]({pname}& self)' '{'
-            f' return self.{name};'
-            ' },')
-            self(
-            f'[]({pname}& self, {typename} source)' '{'
-            f' self.{name} = source;'
-            ' }'
-            )
-        self(');')
 
     # TODO: Handle is_deleted_method
     def visit_constructor(self, cursor):
+        '''
         if not self.is_function_mappable(cursor):
             return
+        '''
         builder = self.create_builder(f'ctor.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
@@ -555,21 +448,26 @@ class Builder:
         self.visit_function_or_method(cursor)
 
     def visit_function_or_method(self, cursor):
-        #logger.debug(cursor.spelling)
+        '''
         if not self.is_function_mappable(cursor):
             return
+        '''
         builder = self.create_builder(f'function.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
     def visit_struct(self, cursor):
+        '''
         if not self.is_class_mappable(cursor):
             return
+        '''
         builder = self.create_builder(f'struct.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
     def visit_class(self, cursor):
+        '''
         if not self.is_class_mappable(cursor):
             return
+        '''
         builder = self.create_builder(f'class.{self.spell(cursor)}', cursor=cursor)
         node = builder.build()
 
