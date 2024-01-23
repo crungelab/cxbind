@@ -1,19 +1,16 @@
 from .node_builder import NodeBuilder, T_Node
-from ..node import StructBase, Field, Typedef
+from ..node import StructBaseNode, FieldNode, TypedefNode
 
 
 class StructBaseBuilder(NodeBuilder[T_Node]):
-    def create_node(self):
-        self.node = StructBase(self.name, self.cursor)
-
     def create_pyname(self, name):
         pyname = super().create_pyname(name)
-        if isinstance(self.top_node, StructBase):
+        if isinstance(self.top_node, StructBaseNode):
             return f'{self.top_node.pyname}{pyname}'
         return pyname
 
     def should_cancel(self):
-        return super().should_cancel() or not self.is_class_mappable(self.cursor) or isinstance(self.top_node, Typedef)
+        return super().should_cancel() or not self.is_class_mappable(self.cursor) or isinstance(self.top_node, TypedefNode)
 
     def is_class_mappable(self, cursor):
         if not self.is_cursor_mappable(cursor):
@@ -39,7 +36,7 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
                     typename = 'std::string'
                 else:
                     typename = cursor.type.spelling
-                if type(child) is Field:
+                if type(child) is FieldNode:
                     self(f'if (kwargs.contains("{child.pyname}"))')
                     self("{")
                     with self:

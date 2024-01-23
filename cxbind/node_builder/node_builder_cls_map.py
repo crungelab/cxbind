@@ -2,7 +2,6 @@ from typing import Type, Any, Dict, List
 from clang import cindex
 from loguru import logger
 
-from ..entry import Entry
 from ..node import Node
 
 from . import (

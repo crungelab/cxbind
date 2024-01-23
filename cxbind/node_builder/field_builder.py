@@ -2,12 +2,12 @@ from clang import cindex
 from loguru import logger
 
 from .node_builder import NodeBuilder
-from ..node import Field
+from ..node import FieldNode
 
 
-class FieldBuilder(NodeBuilder[Field]):
+class FieldBuilder(NodeBuilder[FieldNode]):
     def create_node(self):
-        self.node = Field(self.name, self.cursor)
+        self.node = FieldNode(name=self.name, cursor=self.cursor)
 
     def create_pyname(self, name):
         return self.context.format_field(name)

@@ -1,10 +1,10 @@
 from .function_base_builder import FunctionBaseBuilder
-from ..node import Ctor
+from ..node import CtorNode
 
 
-class CtorBuilder(FunctionBaseBuilder[Ctor]):
+class CtorBuilder(FunctionBaseBuilder[CtorNode]):
     def create_node(self):
-        self.node = Ctor(self.name, self.cursor)
+        self.node = CtorNode(name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()

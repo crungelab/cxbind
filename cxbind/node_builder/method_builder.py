@@ -1,7 +1,7 @@
 from .function_base_builder import FunctionBaseBuilder
-from ..node import Method
+from ..node import MethodNode
 
 
-class MethodBuilder(FunctionBaseBuilder[Method]):
+class MethodBuilder(FunctionBaseBuilder[MethodNode]):
     def create_node(self):
-        self.node = Method(self.name, self.cursor)
+        self.node = MethodNode(name=self.name, cursor=self.cursor)

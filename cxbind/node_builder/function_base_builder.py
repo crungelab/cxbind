@@ -2,7 +2,7 @@ from clang import cindex
 from loguru import logger
 
 from .node_builder import NodeBuilder, T_Node
-from ..node import Function
+from ..node import FunctionNode
 
 
 class FunctionBaseBuilder(NodeBuilder[T_Node]):
@@ -89,7 +89,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 return True
         return False
 
-    def get_function_result(self, node: Function, cursor) -> str:
+    def get_function_result(self, node: FunctionNode, cursor) -> str:
         returned = [
             a.spelling for a in cursor.get_arguments() if self.should_return_argument(a)
         ]
@@ -108,7 +108,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         else:
             return "py::return_value_policy::automatic_reference"
 
-    def write_pyargs(self, arguments, node: Function=None):
+    def write_pyargs(self, arguments, node: FunctionNode=None):
         for argument in arguments:
             default = self.default_from_tokens(argument.get_tokens())
             for child in argument.get_children():
@@ -122,7 +122,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 #logger.debug(f"node_argument: {node_argument}")
                 #exit()
                 #default = node.arguments[argument.spelling].default
-                default = str(node_argument['default'])
+                default = str(node_argument.default)
             # logger.debug(argument.spelling)
             # logger.debug(default)
             if len(default):

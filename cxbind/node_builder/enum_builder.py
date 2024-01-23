@@ -1,12 +1,12 @@
 from loguru import logger
 
 from .node_builder import NodeBuilder
-from ..node import Enum, Typedef
+from ..node import EnumNode, TypedefNode
 
 
-class EnumBuilder(NodeBuilder[Enum]):
+class EnumBuilder(NodeBuilder[EnumNode]):
     def create_node(self):
-        self.node = Enum(self.name, self.cursor)
+        self.node = EnumNode(name=self.name, cursor=self.cursor)
 
     def create_pyname(self, name):
         return self.context.format_enum(name)
@@ -23,7 +23,7 @@ class EnumBuilder(NodeBuilder[Enum]):
         if cursor.is_scoped_enum():
             return self.visit_scoped_enum(cursor)
         
-        typedef_parent = self.top_node if isinstance(self.top_node, Typedef) else None
+        typedef_parent = self.top_node if isinstance(self.top_node, TypedefNode) else None
 
         if typedef_parent:
             name = typedef_parent.name

@@ -1,10 +1,10 @@
 from .function_base_builder import FunctionBaseBuilder
-from ..node import Function
+from ..node import FunctionNode
 
 
-class FunctionBuilder(FunctionBaseBuilder[Function]):
+class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
     def create_node(self):
-        self.node = Function(self.name, self.cursor)
+        self.node = FunctionNode(name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()

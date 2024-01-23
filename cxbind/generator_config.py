@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from .entry import FunctionEntry, MethodEntry, StructEntry, ClassEntry, FieldEntry
+from .node import FunctionNode, MethodNode, StructNode, ClassNode, FieldNode
 
 class GeneratorConfig(BaseModel):
     """Generator configuration."""
@@ -13,8 +13,8 @@ class GeneratorConfig(BaseModel):
     flags: List[str]
     defaults: Optional[dict] = {}
     #
-    function: Optional[List[FunctionEntry]] = []
-    method: Optional[List[MethodEntry]] = []
-    struct: Optional[List[StructEntry]] = []
-    cls: Optional[List[ClassEntry]] = Field([], alias='class')
-    field: Optional[List[FieldEntry]] = []
+    function: Optional[List[FunctionNode]] = []
+    method: Optional[List[MethodNode]] = []
+    struct: Optional[List[StructNode]] = []
+    cls: Optional[List[ClassNode]] = Field([], alias='class')
+    field: Optional[List[FieldNode]] = []

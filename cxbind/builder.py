@@ -8,18 +8,17 @@ from clang import cindex
 
 from . import cu
 from .builder_context import BuilderContext
-from .entry import Entry
 from .node import (
     Node,
-    Function,
-    Ctor,
-    Field,
-    Method,
-    StructBase,
-    Struct,
-    Class,
-    Enum,
-    Typedef,
+    FunctionNode,
+    CtorNode,
+    FieldNode,
+    MethodNode,
+    StructBaseNode,
+    StructNode,
+    ClassNode,
+    EnumNode,
+    TypedefNode,
 )
 
 class Builder:
@@ -155,11 +154,8 @@ class Builder:
     def arg_string(self, arguments):
         return self.context.arg_string(arguments)
 
-    def register_entry(self, entry: Entry):
-        return self.context.register_entry(entry)
-
-    def lookup_entry(self, key: str) -> Entry:
-        return self.context.lookup_entry(key)
+    def register_node(self, node: Node):
+        return self.context.register_node(node)
 
     def lookup_node(self, key: str) -> Node:
         return self.context.lookup_node(key)

@@ -1,10 +1,10 @@
 from . import StructBaseBuilder
-from ..node import Class
+from ..node import ClassNode
 
 
-class ClassBuilder(StructBaseBuilder[Class]):
+class ClassBuilder(StructBaseBuilder[ClassNode]):
     def create_node(self):
-        self.node = Class(self.name, self.cursor)
+        self.node = ClassNode(kind='class', name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()

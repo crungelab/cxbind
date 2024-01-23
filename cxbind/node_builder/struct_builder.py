@@ -1,22 +1,18 @@
 from clang import cindex
 
 from . import StructBaseBuilder
-from ..node import Struct, Field
+from ..node import StructNode, FieldNode
 
 
-class StructBuilder(StructBaseBuilder[Struct]):
+class StructBuilder(StructBaseBuilder[StructNode]):
     def create_node(self):
-        self.node = Struct(self.name, self.cursor)
+        self.node = StructNode(name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()
 
         node = self.node
         cursor = self.cursor
-
-        if node.visited:
-            return
-        node.visited = True
 
         name = node.name
         pyname = node.pyname

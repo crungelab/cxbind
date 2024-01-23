@@ -12,7 +12,6 @@ from clang import cindex
 from loguru import logger
 
 from .node import Node
-from .entry import Entry
 from .generator_config import GeneratorConfig
 
 
@@ -38,7 +37,7 @@ class BuilderContext:
     def __init__(self, config: GeneratorConfig, **kwargs) -> None:
         self.options = { 'save': True }
         self.prefixes = None
-        self.wrapped: Dict[Entry] = {}
+        self.wrapped: Dict[Node] = {}
 
         self.indentation = 0
         self.text = ""
@@ -51,24 +50,22 @@ class BuilderContext:
         self.excludes: List[str] = []
         self.overloads: List[str] = []
 
-        self.entries: Dict[str, Entry] = {}
-
         self.nodes: Dict[str, Node] = {}
         self.node_stack: List[Node] = []
 
         for attr in vars(config):
             setattr(self, attr, getattr(config, attr))
 
-        for entry in config.function:
-            self.register_entry(entry)
-        for entry in config.method:
-            self.register_entry(entry)
-        for entry in config.struct:
-            self.register_entry(entry)
-        for entry in config.cls:
-            self.register_entry(entry)
-        for entry in config.field:
-            self.register_entry(entry)
+        for node in config.function:
+            self.register_node(node)
+        for node in config.method:
+            self.register_node(node)
+        for node in config.struct:
+            self.register_node(node)
+        for node in config.cls:
+            self.register_node(node)
+        for node in config.field:
+            self.register_node(node)
 
         for key in kwargs:
             if key == 'options':
@@ -127,26 +124,20 @@ class BuilderContext:
             return None
         return self.node_stack[-1]
 
-    def register_entry(self, entry: Entry):
-        logger.debug(f"Registering {entry}")
-        name = entry.name
-        if entry.exclude:
+    def register_node(self, node: Node):
+        logger.debug(f"Registering {node}")
+        name = node.name
+        if node.exclude:
             self.excludes.append(name)
-        if entry.overload:
+        if node.overload:
             self.overloads.append(name)
-        if hasattr(entry, "gen_wrapper") and entry.gen_wrapper:
+        if hasattr(node, "gen_wrapper") and node.gen_wrapper:
             logger.debug(f"Adding wrapped {name}")
-            self.wrapped[name] = entry
+            self.wrapped[name] = node
 
-        self.entries[name] = entry
+        self.nodes[name] = node
 
-        return entry
-
-    def lookup_entry(self, key: str) -> Entry:
-        #logger.debug(f"Looking up {entry_key}")
-        if key in self.entries:
-            return self.entries[key]
-        return None
+        return node
 
     def lookup_node(self, key: str) -> Node:
         #logger.debug(f"Looking up {entry_key}")
@@ -159,8 +150,8 @@ class BuilderContext:
         from .node_builder import NodeBuilder
         kind, name = entry_key.split(".")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
-        entry = self.lookup_entry(name)
-        builder = builder_cls(self, name, cursor, entry)
+        node = self.lookup_node(name)
+        builder = builder_cls(self, name, cursor, node)
         return builder
 
     @classmethod

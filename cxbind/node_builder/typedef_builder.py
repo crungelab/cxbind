@@ -1,12 +1,12 @@
 from loguru import logger
 
 from .node_builder import NodeBuilder
-from ..node import Typedef
+from ..node import TypedefNode
 
 
-class TypedefBuilder(NodeBuilder[Typedef]):
+class TypedefBuilder(NodeBuilder[TypedefNode]):
     def create_node(self):
-        self.node = Typedef(self.name, self.cursor)
+        self.node = TypedefNode(name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()
