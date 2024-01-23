@@ -14,9 +14,9 @@ T_Node = TypeVar("T_Node", bound=Node)
 
 
 class NodeBuilder(Builder, Generic[T_Node]):
-    def __init__(self, context: BuilderContext, fqname: str, cursor: cindex.Cursor = None, entry: Entry=None) -> None:
+    def __init__(self, context: BuilderContext, name: str, cursor: cindex.Cursor = None, entry: Entry=None) -> None:
         super().__init__(context)
-        self.fqname = fqname
+        self.name = name
         self.cursor = cursor
         self.entry = entry
         self.node: T_Node = None
@@ -25,7 +25,7 @@ class NodeBuilder(Builder, Generic[T_Node]):
         return self.format_type(name)
 
     def should_cancel(self):
-        if self.lookup_node(self.fqname) is not None:
+        if self.lookup_node(self.name) is not None:
             return True
 
     def build(self) -> T_Node:
@@ -44,10 +44,10 @@ class NodeBuilder(Builder, Generic[T_Node]):
     def build_node(self):
         if self.entry is not None:
             self.node.__dict__.update(self.entry.model_dump())
-        self.node.pyname = self.create_pyname(self.node.name)
+        self.node.pyname = self.create_pyname(self.node.first_name)
 
         if self.node.exclude:
-            logger.debug(f"Exclude: {self.node.fqname}")
+            logger.debug(f"Exclude: {self.node.name}")
             exit()
 
 

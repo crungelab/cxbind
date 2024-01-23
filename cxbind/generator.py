@@ -45,8 +45,8 @@ class Generator(Builder):
         data = {}
         for key, value in yaml_data.items():
             if '.' in key:
-                entry_kind, entry_fqname = key.split('.')
-                value['fqname'] = entry_fqname
+                entry_kind, entry_name = key.split('.')
+                value['name'] = entry_name
                 value['kind'] = entry_kind
                 if entry_kind in data:
                     data[entry_kind].append(value)

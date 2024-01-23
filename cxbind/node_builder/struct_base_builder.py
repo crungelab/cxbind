@@ -4,7 +4,7 @@ from ..node import StructBase, Field, Typedef
 
 class StructBaseBuilder(NodeBuilder[T_Node]):
     def create_node(self):
-        self.node = StructBase(self.fqname, self.cursor)
+        self.node = StructBase(self.name, self.cursor)
 
     def create_pyname(self, name):
         pyname = super().create_pyname(name)
@@ -30,7 +30,7 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         self(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
         self("{")
         with self:
-            self(f'{node.fqname} obj;')
+            self(f'{node.name} obj;')
             for child in node.children:
                 cursor = child.cursor
                 typename = None

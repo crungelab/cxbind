@@ -4,7 +4,7 @@ from ..node import Class
 
 class ClassBuilder(StructBaseBuilder[Class]):
     def create_node(self):
-        self.node = Class(self.fqname, self.cursor)
+        self.node = Class(self.name, self.cursor)
 
     def build_node(self):
         super().build_node()
@@ -12,7 +12,7 @@ class ClassBuilder(StructBaseBuilder[Class]):
         node = self.node
         cursor = self.cursor
 
-        self(f"PYCLASS_BEGIN({self.module}, {node.fqname}, {node.pyname})")
+        self(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname})")
         with self.enter(node):
             self.visit_children(cursor)
 
@@ -21,4 +21,4 @@ class ClassBuilder(StructBaseBuilder[Class]):
             elif node.gen_kw_init:
                 self.gen_kw_init()
 
-        self(f"PYCLASS_END({self.module}, {node.fqname}, {node.pyname})\n")
+        self(f"PYCLASS_END({self.module}, {node.name}, {node.pyname})\n")

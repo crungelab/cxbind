@@ -4,7 +4,7 @@ from ..node import Ctor
 
 class CtorBuilder(FunctionBaseBuilder[Ctor]):
     def create_node(self):
-        self.node = Ctor(self.fqname, self.cursor)
+        self.node = Ctor(self.name, self.cursor)
 
     def build_node(self):
         super().build_node()

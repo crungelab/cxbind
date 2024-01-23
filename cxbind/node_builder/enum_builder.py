@@ -6,7 +6,7 @@ from ..node import Enum, Typedef
 
 class EnumBuilder(NodeBuilder[Enum]):
     def create_node(self):
-        self.node = Enum(self.fqname, self.cursor)
+        self.node = Enum(self.name, self.cursor)
 
     def create_pyname(self, name):
         return self.context.format_enum(name)
@@ -26,10 +26,10 @@ class EnumBuilder(NodeBuilder[Enum]):
         typedef_parent = self.top_node if isinstance(self.top_node, Typedef) else None
 
         if typedef_parent:
-            fqname = typedef_parent.fqname
+            name = typedef_parent.name
             pyname = typedef_parent.pyname
         else:
-            fqname = self.spell(cursor)
+            name = self.spell(cursor)
             pyname = self.format_type(cursor.spelling)
 
         #TODO: for some reason it's visiting the same enum twice when typedef'd
@@ -37,29 +37,29 @@ class EnumBuilder(NodeBuilder[Enum]):
             return
         
         self(
-            f'py::enum_<{fqname}>({self.module}, "{pyname}", py::arithmetic())'
+            f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())'
         )
         with self:
             for child in cursor.get_children():
                 self(
-                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
+                    f'.value("{self.format_enum(child.spelling)}", {name}::{child.spelling})'
                 )
             self(".export_values();")
         self()
 
     def visit_scoped_enum(self, cursor):
         #logger.debug(cursor.spelling)
-        fqname = self.spell(cursor)
-        # logger.debug(fqname)
+        name = self.spell(cursor)
+        # logger.debug(name)
         pyname = self.format_type(cursor.spelling)
-        self(f"PYENUM_SCOPED_BEGIN({self.module}, {fqname}, {pyname})")
+        self(f"PYENUM_SCOPED_BEGIN({self.module}, {name}, {pyname})")
         self(pyname)
         with self:
             for child in cursor.get_children():
                 #logger.debug(child.kind) #CursorKind.ENUM_CONSTANT_DECL
                 self(
-                    f'.value("{self.format_enum(child.spelling)}", {fqname}::{child.spelling})'
+                    f'.value("{self.format_enum(child.spelling)}", {name}::{child.spelling})'
                 )
             self(".export_values();")
-        self(f"PYENUM_SCOPED_END({self.module}, {fqname}, {pyname})")
+        self(f"PYENUM_SCOPED_END({self.module}, {name}, {pyname})")
         self()

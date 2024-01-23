@@ -4,7 +4,7 @@ from ..node import Function
 
 class FunctionBuilder(FunctionBaseBuilder[Function]):
     def create_node(self):
-        self.node = Function(self.fqname, self.cursor)
+        self.node = Function(self.name, self.cursor)
 
     def build_node(self):
         super().build_node()

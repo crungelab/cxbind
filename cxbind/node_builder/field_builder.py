@@ -7,7 +7,7 @@ from ..node import Field
 
 class FieldBuilder(NodeBuilder[Field]):
     def create_node(self):
-        self.node = Field(self.fqname, self.cursor)
+        self.node = Field(self.name, self.cursor)
 
     def create_pyname(self, name):
         return self.context.format_field(name)
@@ -24,7 +24,7 @@ class FieldBuilder(NodeBuilder[Field]):
         #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
         
         if self.is_field_readonly(cursor):
-            self(f'{self.scope}.def_readonly("{node.pyname}", &{node.fqname});')
+            self(f'{self.scope}.def_readonly("{node.pyname}", &{node.name});')
         else:
             if self.is_char_ptr(cursor):
                 #logger.debug(f"{cursor.spelling}: is char*")
@@ -33,7 +33,7 @@ class FieldBuilder(NodeBuilder[Field]):
                 #logger.debug(f"{cursor.spelling}: is fn*")
                 self.visit_fn_ptr_field(cursor, node.pyname)
             else:
-                self(f'{self.scope}.def_readwrite("{node.pyname}", &{node.fqname});')
+                self(f'{self.scope}.def_readwrite("{node.pyname}", &{node.name});')
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def visit_char_ptr_field(self, cursor, pyname):

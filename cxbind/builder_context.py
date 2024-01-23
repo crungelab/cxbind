@@ -129,16 +129,16 @@ class BuilderContext:
 
     def register_entry(self, entry: Entry):
         logger.debug(f"Registering {entry}")
-        fqname = entry.fqname
+        name = entry.name
         if entry.exclude:
-            self.excludes.append(fqname)
+            self.excludes.append(name)
         if entry.overload:
-            self.overloads.append(fqname)
+            self.overloads.append(name)
         if hasattr(entry, "gen_wrapper") and entry.gen_wrapper:
-            logger.debug(f"Adding wrapped {fqname}")
-            self.wrapped[fqname] = entry
+            logger.debug(f"Adding wrapped {name}")
+            self.wrapped[name] = entry
 
-        self.entries[fqname] = entry
+        self.entries[name] = entry
 
         return entry
 
@@ -157,10 +157,10 @@ class BuilderContext:
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "NodeBuilder":
         from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP
         from .node_builder import NodeBuilder
-        kind, fqname = entry_key.split(".")
+        kind, name = entry_key.split(".")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
-        entry = self.lookup_entry(fqname)
-        builder = builder_cls(self, fqname, cursor, entry)
+        entry = self.lookup_entry(name)
+        builder = builder_cls(self, name, cursor, entry)
         return builder
 
     @classmethod

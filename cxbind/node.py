@@ -7,8 +7,8 @@ from .entry import Entry
 
 
 class Node:
-    fqname: str = None
     name: str = None
+    first_name: str = None
     pyname: str = None
     cursor: cindex.Cursor = None
     children: list["Node"] = []
@@ -16,18 +16,18 @@ class Node:
     overload: bool = False
     readonly: bool = False
 
-    def __init__(self, fqname: str, cursor: cindex.Cursor = None):
-        self.fqname = fqname
-        self.name = fqname.split("::")[-1]
+    def __init__(self, name: str, cursor: cindex.Cursor = None):
+        self.name = name
+        self.first_name = name.split("::")[-1]
         #if not self.name:
-        #    logger.debug(f"fqname: {fqname}")
+        #    logger.debug(f"name: {name}")
         #    exit()
         self.cursor = cursor
         self.children = []
         self.visited = False
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} fqname={self.fqname}, name={self.name}, pyname={self.pyname}>"
+        return f"<{self.__class__.__name__} name={self.name}, name={self.name}, pyname={self.pyname}>"
 
     def add_child(self, entry: "Node"):
         self.children.append(entry)
