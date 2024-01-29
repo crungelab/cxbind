@@ -171,13 +171,19 @@ class BuilderContext:
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         return re.sub("([a-z])([A-Z])", r"\1_\2", s1).lower()
 
+    def strip_prefix(self, text: str, prefixes: List[str]):
+        for prefix in prefixes:
+            #if text.startswith(prefix):
+            if text.startswith(prefix) and len(text) > len(prefix) and text[len(prefix)].isupper():
+                return text[len(prefix):]
+        return text
+
     def strip_prefixes(self, name: str):
         # logger.debug(f"prefixes: {self.prefixes}")
         if isinstance(self.prefixes, str):
-            name = name.replace(self.prefixes, "", 1)
+            name = self.strip_prefix(name, [self.prefixes])
         elif isinstance(self.prefixes, list):
-            for prefix in self.prefixes:
-                name = name.replace(prefix, "", 1)
+            name = self.strip_prefix(name, self.prefixes)
         return name
 
     def format_field(self, name: str):
