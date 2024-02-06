@@ -46,8 +46,7 @@ class Node(BaseModel):
 class Argument(BaseModel):
     default: Optional[Any] = None
 
-class FunctionNode(Node):
-    kind: str = 'function'
+class FunctionBaseNode(Node):
     arguments: Optional[Dict[str, Argument]] = {}
     return_type: Optional[str] = None
     omit_ret: Optional[bool] = False
@@ -57,17 +56,17 @@ class FunctionNode(Node):
         super().model_post_init(__context)
         self.arguments = {k: Argument(**v) if isinstance(v, dict) else v for k, v in self.arguments.items()}
 
+class FunctionNode(FunctionBaseNode):
+    kind: str = 'function'
 
-class CtorNode(Node):
+class MethodNode(FunctionBaseNode):
+    kind: str = 'method'
+
+class CtorNode(FunctionBaseNode):
     kind: str = 'ctor'
-
 
 class FieldNode(Node):
     kind: str = 'field'
-
-
-class MethodNode(Node):
-    kind: str = 'method'
 
 
 class StructBaseNode(Node):

@@ -16,7 +16,10 @@ class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
         cname = "&" + self.spell(cursor)
         pyname = self.format_field(cursor.spelling)
         if self.is_overloaded(cursor):
-            cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname})"
+            extra = ""
+            if cursor.is_const_method():
+                extra = ", py::const_"
+            cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
         if self.should_wrap_function(cursor):
             self(f'{mname}.def("{pyname}", []({self.arg_string(arguments)})')
             self("{")

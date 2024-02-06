@@ -29,7 +29,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
             if self.is_char_ptr(cursor):
                 #logger.debug(f"{cursor.spelling}: is char*")
                 self.visit_char_ptr_field(cursor, node.pyname)
-            elif self.is_fn_ptr(cursor):
+            elif self.is_function_pointer(cursor):
                 #logger.debug(f"{cursor.spelling}: is fn*")
                 self.visit_fn_ptr_field(cursor, node.pyname)
             else:

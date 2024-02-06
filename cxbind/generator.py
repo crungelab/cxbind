@@ -55,15 +55,15 @@ class Generator(Builder):
             else:
                 data[key] = value
 
-        logger.debug(f"processed_data: {data}")
+        #logger.debug(f"processed_data: {data}")
 
         # Validate with Pydantic
         config = GeneratorConfig.model_validate(data)
 
-        logger.debug(f"config: {config}")
+        #logger.debug(f"config: {config}")
 
         # Dump the Pydantic model
-        logger.debug(f"config.json(): {config.model_dump_json()}")
+        #logger.debug(f"config.json(): {config.model_dump_json()}")
 
         instance = Generator(name, config)
         instance.import_actions()

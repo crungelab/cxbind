@@ -125,7 +125,7 @@ class BuilderContext:
         return self.node_stack[-1]
 
     def register_node(self, node: Node):
-        logger.debug(f"Registering {node}")
+        #logger.debug(f"Registering {node}")
         name = node.name
         if node.exclude:
             self.excludes.append(name)
@@ -207,43 +207,3 @@ class BuilderContext:
         name = name.replace("__", "_")
         name = name.rstrip("_")
         return name
-
-    def arg_type(self, argument):
-        if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return f"std::array<{argument.type.get_array_element_type().spelling}, {argument.type.get_array_size()}>&"
-
-        type_name = argument.type.spelling.split(" ")[0]
-        if type_name in self.wrapped:
-            return argument.type.spelling.replace(
-                type_name, self.wrapped[type_name].gen_wrapper["type"]
-            )
-
-        return argument.type.spelling
-
-    def arg_name(self, argument):
-        if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return f"&{argument.spelling}[0]"
-        return argument.spelling
-
-    def arg_types(self, arguments):
-        return ", ".join([self.arg_type(a) for a in arguments])
-
-    def arg_names(self, arguments: List[cindex.Cursor]):
-        returned = []
-        for a in arguments:
-            type_name = a.type.spelling.split(" ")[0]
-            if type_name in self.wrapped:
-                returned.append(f"{self.arg_name(a)}->get()")
-            else:
-                returned.append(self.arg_name(a))
-        return ", ".join(returned)
-
-    """
-    def arg_names(self, arguments):
-        return ', '.join([self.arg_name(a) for a in arguments])
-    """
-
-    def arg_string(self, arguments):
-        return ", ".join(
-            ["{} {}".format(self.arg_type(a), a.spelling) for a in arguments]
-        )
