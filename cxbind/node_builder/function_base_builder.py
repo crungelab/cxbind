@@ -29,15 +29,8 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         if not self.process_function_decl(cursor):
             return False
         for argument in cursor.get_arguments():
-            #if self.is_function_pointer(argument):
-            if self.arg_is_function_pointer(argument):
+            if self.is_function_pointer(argument):
                 return False
-            '''
-            if argument.type.get_canonical().kind == cindex.TypeKind.POINTER:
-                ptr = argument.type.get_canonical().get_pointee().kind
-                if ptr == cindex.TypeKind.FUNCTIONPROTO:
-                    return False
-            '''
             if argument.type.spelling == "va_list":
                 return False
         return True

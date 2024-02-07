@@ -212,71 +212,21 @@ class Builder:
                 return True
         return False
 
-    """
     def resolve_type(self, type):
         # If the type is a typedef, resolve it to the actual type it refers to
         while type.kind == cindex.TypeKind.TYPEDEF:
             type = type.get_declaration().underlying_typedef_type
         return type
-    """
-
-    def resolve_type(self, type):
-        # Resolve the type if it is a typedef or an alias, potentially recursively
-        while type.kind == cindex.TypeKind.TYPEDEF:
-            decl = type.get_declaration()
-            if decl.kind in [
-                cindex.CursorKind.TYPEDEF_DECL,
-                cindex.CursorKind.TYPE_ALIAS_DECL,
-                cindex.CursorKind.USING_DECLARATION,
-                cindex.CursorKind.USING_DIRECTIVE,
-            ]:
-                type = decl.underlying_typedef_type
-                # logger.debug(f"Resolving type: {type.kind} {type.spelling}")
-            else:
-                break
-        return type
 
     def is_function_pointer(self, cursor):
         # logger.debug(f"Checking if {cursor.spelling} is a function pointer")
         # Resolve any typedef or alias and check if the type is a pointer to a function
-        resolved_type = self.resolve_type(cursor.type)
+        type = self.resolve_type(cursor.type)
         # logger.debug(f"Resolved type: {resolved_type.spelling}")
         return (
-            resolved_type.kind == cindex.TypeKind.POINTER
-            and resolved_type.get_pointee().kind == cindex.TypeKind.FUNCTIONPROTO
+            type.kind == cindex.TypeKind.POINTER
+            and type.get_pointee().kind == cindex.TypeKind.FUNCTIONPROTO
         )
-
-    def arg_is_function_pointer(self, argument):
-        name = argument.spelling
-        result = self.is_function_pointer(argument)
-        '''
-        if name == "callback":
-            logger.debug(f"Checking if {name} is a function pointer: {result}")
-            logger.debug(
-                f"kind: {argument.kind} type.kind: {argument.type.kind} {argument.type.spelling} {argument.type.get_canonical().kind} {argument.type.get_canonical().spelling}"
-            )
-            logger.debug(argument.type.get_pointee().kind)
-            resolved_type = self.resolve_type(argument.type)
-            logger.debug(f"Resolved type: {resolved_type.spelling}")
-        '''
-        return result
-
-    """
-    def is_function_pointer(self, cursor):
-        type = self.resolve_type(cursor.type)
-        if type.kind in [
-            cindex.TypeKind.POINTER,
-            cindex.TypeKind.TYPEDEF,
-            cindex.CursorKind.TYPE_ALIAS_DECL,
-            cindex.CursorKind.USING_DECLARATION,
-            cindex.CursorKind.USING_DIRECTIVE,
-        ]:
-            ptr = cursor.type.get_canonical().get_pointee().kind
-            if ptr == cindex.TypeKind.FUNCTIONPROTO:
-                logger.debug(f"Function pointer: {ptr}: {cursor.spelling}")
-                return True
-        return False
-    """
 
     """
     def is_function_pointer(self, cursor):
