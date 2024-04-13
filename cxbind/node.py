@@ -28,14 +28,6 @@ class Node(BaseModel):
 
     def model_post_init(self, __context) -> None:
         self.first_name = self.name.split("::")[-1]
-    '''
-    def __init__(self, name: str, cursor: cindex.Cursor = None):
-        self.name = name
-        self.first_name = name.split("::")[-1]
-        self.cursor = cursor
-        self.children = []
-        self.visited = False
-    '''
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
@@ -75,6 +67,7 @@ class StructBaseNode(Node):
     gen_init: bool = False
     gen_kw_init: bool = False
     gen_wrapper: dict = None
+    holder: Optional[str] = None
 
 
 class StructNode(StructBaseNode):

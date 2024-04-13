@@ -12,7 +12,10 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
         node = self.node
         cursor = self.cursor
 
-        self(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname})")
+        extra = f",{node.holder}<{node.name}>" if node.holder else ""
+
+        #self(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname})")
+        self(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname} {extra})")
         with self.enter(node):
             self.visit_children(cursor)
 

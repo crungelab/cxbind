@@ -47,6 +47,46 @@ class FieldBuilder(NodeBuilder[FieldNode]):
             ' },'
             )
             self(
+            f'[]({pname}& self, const char* source)' '{'
+            f' self.{name} = strdup(source);'
+            ' }'
+            )
+        self(');')
+
+    """
+    def visit_char_ptr_field(self, cursor, pyname):
+        pname = self.spell(cursor.semantic_parent)
+        name = cursor.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[](const {pname}& self)' '{'
+            f' return self.{name};'
+            ' },'
+            )
+            self(
+            f'[]({pname}& self, std::string source)' '{'
+            ' char* c = (char *)malloc(source.size() + 1);'
+            ' strncpy(c, source.c_str(), source.size());'
+            ' c[source.size()] = 0;'
+            f' self.{name} = c;'
+            ' }'
+            )
+        self(');')
+    """
+
+    """
+    def visit_char_ptr_field(self, cursor, pyname):
+        pname = self.spell(cursor.semantic_parent)
+        name = cursor.spelling
+        self(f'{self.scope}.def_property("{pyname}",')
+        with self:
+            self(
+            f'[](const {pname}& self)' '{'
+            f' return self.{name};'
+            ' },'
+            )
+            self(
             f'[]({pname}& self, std::string source)' '{'
             ' char* c = (char *)malloc(source.size() + 1);'
             ' strcpy(c, source.c_str());'
@@ -54,7 +94,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
             ' }'
             )
         self(');')
-
+    """
     def visit_fn_ptr_field(self, cursor, pyname):
         pname = self.spell(cursor.semantic_parent)
         name = cursor.spelling
