@@ -249,12 +249,14 @@ class Builder:
             return f"std::array<{argument.type.get_array_element_type().spelling}, {argument.type.get_array_size()}>&"
 
         type_name = argument.type.spelling.split(" ")[0]
+        #type_name = argument.type.get_canonical().spelling
         if type_name in self.wrapped:
             return argument.type.spelling.replace(
                 type_name, self.wrapped[type_name].gen_wrapper["type"]
             )
 
-        return argument.type.spelling
+        #return argument.type.spelling
+        return argument.type.get_canonical().spelling
 
     def arg_name(self, argument):
         if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:

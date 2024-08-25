@@ -13,7 +13,7 @@ class TypedefBuilder(NodeBuilder[TypedefNode]):
 
         node = self.node
         cursor = self.cursor
-        logger.debug(node)
+        #logger.debug(node)
         self.push_node(node)
         self.visit_children(cursor)
         self.pop_node()

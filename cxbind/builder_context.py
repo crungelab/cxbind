@@ -38,6 +38,7 @@ class BuilderContext:
         self.options = { 'save': True }
         self.prefixes = None
         self.wrapped: Dict[Node] = {}
+        self.visited: Dict[Node] = {}
 
         self.indentation = 0
         self.text = ""
@@ -59,6 +60,8 @@ class BuilderContext:
         for node in config.function:
             self.register_node(node)
         for node in config.method:
+            self.register_node(node)
+        for node in config.ctor:
             self.register_node(node)
         for node in config.struct:
             self.register_node(node)

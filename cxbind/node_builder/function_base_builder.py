@@ -18,10 +18,14 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                     return False
         return True
 
-    def is_overloaded(self, cursor) -> bool:
+    def is_overloaded(self, cursor: cindex.Cursor) -> bool:
         return self.spell(cursor) in self.overloaded
 
-    def is_function_mappable(self, cursor):
+    def is_function_mappable(self, cursor: cindex.Cursor) -> bool:
+        #TODO: This should be in Clang 15.06, but it's not ...
+        if cursor.is_deleted_method():
+            return False
+
         if not self.is_cursor_mappable(cursor):
             return False
         if "operator" in cursor.spelling:
@@ -35,7 +39,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 return False
         return True
 
-    def is_function_void_return(self, cursor):
+    def is_function_void_return(self, cursor: cindex.Cursor):
         result = cursor.type.get_result()
         return result.kind == cindex.TypeKind.VOID
 
@@ -87,7 +91,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 return True
         return False
 
-    def get_function_result(self, node: FunctionNode, cursor) -> str:
+    def get_function_result(self, node: FunctionNode, cursor: cindex.Cursor) -> str:
         returned = [
             a.spelling for a in cursor.get_arguments() if self.should_return_argument(a)
         ]

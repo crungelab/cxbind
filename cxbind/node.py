@@ -26,14 +26,14 @@ class Node(BaseModel):
             cindex.Cursor: lambda v: "Cursor Object"
         }
 
-    def model_post_init(self, __context) -> None:
+    def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
-    def add_child(self, entry: "Node"):
-        self.children.append(entry)
+    def add_child(self, child: "Node"):
+        self.children.append(child)
 
 class Argument(BaseModel):
     default: Optional[Any] = None
@@ -44,7 +44,7 @@ class FunctionBaseNode(Node):
     omit_ret: Optional[bool] = False
     check_result: Optional[bool] = False
 
-    def model_post_init(self, __context) -> None:
+    def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
         self.arguments = {k: Argument(**v) if isinstance(v, dict) else v for k, v in self.arguments.items()}
 

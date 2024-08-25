@@ -35,3 +35,26 @@ def is_template(cursor):
             return True
         parent = parent.semantic_parent
     return False
+
+'''
+def fully_qualified(c):
+    if c is None:
+        return ''
+    elif c.kind == cindex.CursorKind.TRANSLATION_UNIT:
+        return ''
+    else:
+        res = fully_qualified(c.semantic_parent)
+        if res != '':
+            return res + '::' + c.spelling
+    return c.spelling
+
+def fully_qualified_type(t):
+    if t.kind == cindex.TypeKind.ELABORATED:
+        return fully_qualified_type(t.get_named_type())
+    elif t.kind == cindex.TypeKind.RECORD:
+        return fully_qualified(t.get_declaration())
+    elif t.kind == cindex.TypeKind.TYPEDEF:
+        return fully_qualified_type(t.get_canonical())
+    else:
+        return t.spelling
+'''

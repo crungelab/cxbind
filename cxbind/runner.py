@@ -13,7 +13,8 @@ class Runner:
             cindex.Config.set_library_path('/usr/local/opt/llvm@6/lib')
         elif sys.platform == 'linux':
             #TODO: make this configurable
-            cindex.Config.set_library_file('/usr/lib/llvm-15/lib/libclang.so.1')
+            #cindex.Config.set_library_file('/usr/lib/llvm-15/lib/libclang.so.1')
+            cindex.Config.set_library_file('/usr/lib/llvm-17/lib/libclang.so.1')
         else:
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
