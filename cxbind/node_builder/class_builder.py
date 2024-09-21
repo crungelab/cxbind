@@ -14,8 +14,7 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
 
         extra = f",{node.holder}<{node.name}>" if node.holder else ""
 
-        #self(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname})")
-        self(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname} {extra})")
+        self.out(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname} {extra})")
         with self.enter(node):
             self.visit_children(cursor)
 
@@ -24,4 +23,4 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
             elif node.gen_kw_init:
                 self.gen_kw_init()
 
-        self(f"PYCLASS_END({self.module}, {node.name}, {node.pyname})\n")
+        self.out(f"PYCLASS_END({self.module}, {node.name}, {node.pyname})")

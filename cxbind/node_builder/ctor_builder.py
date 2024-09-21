@@ -28,10 +28,10 @@ class CtorBuilder(FunctionBaseBuilder[CtorNode]):
         self.top_node.has_constructor = True
         arguments = [a for a in self.cursor.get_arguments()]
         if len(arguments):
-            self(
+            self.out(
                 f"{self.scope}.def(py::init<{self.arg_types(arguments)}>()"
             )
             self.write_pyargs(arguments)
-            self(");")
+            self.out(");")
         else:
-            self(f"{self.scope}.def(py::init<>());")
+            self.out(f"{self.scope}.def(py::init<>());")

@@ -82,7 +82,7 @@ class Generator(Builder):
     def generate(self):
         tu = cindex.TranslationUnit.from_source(self.path, args=self.flags, options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD)
 
-        with self:
+        with self.out:
             self.visit_overloads(tu.cursor)
             self.visit_children(tu.cursor)
 

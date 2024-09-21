@@ -16,8 +16,7 @@ void init_generated(py::module &_core, Registry &registry) {
         , py::arg("i")
         , py::arg("j")
         , py::return_value_policy::automatic_reference);
-
+        
     PYCLASS_END(_core, Advanced, Advanced)
-
 
 }

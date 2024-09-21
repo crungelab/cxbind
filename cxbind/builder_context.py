@@ -13,6 +13,7 @@ from loguru import logger
 
 from .node import Node
 from .generator_config import GeneratorConfig
+from .code_stream import CodeStream
 
 
 #TODO: Use pydantic settings
@@ -40,8 +41,10 @@ class BuilderContext:
         self.wrapped: Dict[Node] = {}
         self.visited: Dict[Node] = {}
 
-        self.indentation = 0
-        self.text = ""
+        self.out = CodeStream()
+        #self.indentation = 0
+        #self.text = ""
+
         self.source = ""
         self.mapped: List[str] = []  # headers we want to generate bindings for
         self.target = ""
@@ -82,6 +85,7 @@ class BuilderContext:
         self.excluded = set(self.excludes)
         self.overloaded = Overloaded(self.overloads)
 
+    """
     def write(self, text: str):
         self.text += text
 
@@ -108,6 +112,7 @@ class BuilderContext:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.dedent()
+    """
 
     def push_node(self, node):
         self.node_stack.append(node)

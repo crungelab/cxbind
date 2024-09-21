@@ -19,7 +19,8 @@ class StructBuilder(StructBaseBuilder[StructNode]):
 
         #TODO: Shouldn't need this?
         if not pyname:
-            return
+            #return
+            raise ValueError(f"Missing pyname for {name}")
 
         #logger.debug(entry)
         children = list(cursor.get_children())  # it's an iterator
@@ -35,9 +36,9 @@ class StructBuilder(StructBaseBuilder[StructNode]):
                     base = child
             if base:
                 basename = self.spell(base)
-                self(f"PYSUBCLASS_BEGIN({self.module}, {name}, {basename}, {pyname})")
+                self.out(f"PYSUBCLASS_BEGIN({self.module}, {name}, {basename}, {pyname})")
             else:
-                self(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
+                self.out(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
         with self.enter(node):
             #TODO: this is a can of worms trying to map substructures.  Might be worth it if I can figure it out.
             # May add a flag to the yaml to indicate whether to map substructures or not.  example: traverse: shallow|deep
@@ -49,7 +50,7 @@ class StructBuilder(StructBaseBuilder[StructNode]):
                 self.gen_kw_init()
 
         if not wrapped:
-            self(f"PYCLASS_END({self.module}, {name}, {pyname})\n")
+            self.out(f"PYCLASS_END({self.module}, {name}, {pyname})")
 
         '''
         self.push_node(node)

@@ -36,30 +36,30 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         if not pyname:
             return
         
-        self(
+        self.out(
             f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())'
         )
-        with self:
+        with self.out:
             for child in cursor.get_children():
-                self(
+                self.out(
                     f'.value("{self.format_enum(child.spelling)}", {name}::{child.spelling})'
                 )
-            self(".export_values();")
-        self()
+            self.out(".export_values();")
+        self.out()
 
     def visit_scoped_enum(self, cursor):
         #logger.debug(cursor.spelling)
         name = self.spell(cursor)
         # logger.debug(name)
         pyname = self.format_type(cursor.spelling)
-        self(f"PYENUM_SCOPED_BEGIN({self.module}, {name}, {pyname})")
-        self(pyname)
-        with self:
+        self.out(f"PYENUM_SCOPED_BEGIN({self.module}, {name}, {pyname})")
+        self.out(pyname)
+        with self.out:
             for child in cursor.get_children():
                 #logger.debug(child.kind) #CursorKind.ENUM_CONSTANT_DECL
-                self(
+                self.out(
                     f'.value("{self.format_enum(child.spelling)}", {name}::{child.spelling})'
                 )
-            self(".export_values();")
-        self(f"PYENUM_SCOPED_END({self.module}, {name}, {pyname})")
-        self()
+            self.out(".export_values();")
+        self.out(f"PYENUM_SCOPED_END({self.module}, {name}, {pyname})")
+        self.out()

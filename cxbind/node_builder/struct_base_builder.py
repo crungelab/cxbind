@@ -35,14 +35,14 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         return True
 
     def gen_init(self):
-        self(f"{self.scope}.def(py::init<>());")
+        self.out(f"{self.scope}.def(py::init<>());")
 
     def gen_kw_init(self):
         node = self.top_node
-        self(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
-        self("{")
-        with self:
-            self(f'{node.name} obj{{}};')
+        self.out(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
+        self.out("{")
+        with self.out:
+            self.out(f'{node.name} obj{{}};')
             for child in node.children:
                 cursor = child.cursor
                 typename = None
@@ -53,16 +53,16 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
                     #typename = cursor.type.spelling
                     typename = cursor.type.get_canonical().spelling
                 if type(child) is FieldNode:
-                    self(f'if (kwargs.contains("{child.pyname}"))')
-                    self("{")
-                    with self:
+                    self.out(f'if (kwargs.contains("{child.pyname}"))')
+                    self.out("{")
+                    with self.out:
                         if is_char_ptr:
-                            self(f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();')
-                            self(f'char* value = (char*)malloc(_value.size());')
-                            self(f'strcpy(value, _value.c_str());')
+                            self.out(f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();')
+                            self.out(f'char* value = (char*)malloc(_value.size());')
+                            self.out(f'strcpy(value, _value.c_str());')
                         else:
-                            self(f'auto value = kwargs["{child.pyname}"].cast<{typename}>();')
-                        self(f'obj.{child.name} = value;')
-                    self("}")
-            self('return obj;')
-        self("}), py::return_value_policy::automatic_reference);")
+                            self.out(f'auto value = kwargs["{child.pyname}"].cast<{typename}>();')
+                        self.out(f'obj.{child.name} = value;')
+                    self.out("}")
+            self.out('return obj;')
+        self.out("}), py::return_value_policy::automatic_reference);")

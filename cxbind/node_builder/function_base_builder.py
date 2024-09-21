@@ -129,7 +129,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             # logger.debug(default)
             if len(default):
                 default = " = " + default
-            self(f', py::arg("{self.format_field(argument.spelling)}"){default}')
+            self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
 
     def default_from_tokens(self, tokens) -> str:
         joined = "".join([t.spelling for t in tokens])

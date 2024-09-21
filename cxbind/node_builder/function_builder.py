@@ -21,8 +21,8 @@ class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
                 extra = ", py::const_"
             cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
         if self.should_wrap_function(cursor):
-            self(f'{mname}.def("{pyname}", []({self.arg_string(arguments)})')
-            self("{")
+            self.out(f'{mname}.def("{pyname}", []({self.arg_string(arguments)})')
+            self.out("{")
             ret = "" if self.is_function_void_return(cursor) else "auto ret = "
 
             result = f"{self.spell(cursor)}({self.arg_names(arguments)})"
@@ -34,11 +34,11 @@ class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
                 result_type_name = self.wrapped[result_type_name].gen_wrapper['type']
                 result = f"new {result_type_name}({result})"
 
-            with self:
-                self(f"{ret}{result};")
-                self(f"return {self.get_function_result(node, cursor)};")
-            self("}")
+            with self.out:
+                self.out(f"{ret}{result};")
+                self.out(f"return {self.get_function_result(node, cursor)};")
+            self.out("}")
         else:
-            self(f'{mname}.def("{pyname}", {cname}')
+            self.out(f'{mname}.def("{pyname}", {cname}')
         self.write_pyargs(arguments, node)
-        self(f", {self.get_return_policy(cursor)});\n")
+        self.out(f", {self.get_return_policy(cursor)});\n")

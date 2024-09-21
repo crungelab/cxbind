@@ -12,7 +12,6 @@ class Node(BaseModel):
     first_name: Optional[str] = None
     pyname: Optional[str] = None
     children: List['Node'] = []
-    #children: List['Node'] = Field([], exclude=True, repr=False)
     exclude: Optional[bool] = False
     overload: Optional[bool] = False
     readonly: Optional[bool] = False

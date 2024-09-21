@@ -8,18 +8,7 @@ from clang import cindex
 
 from . import cu
 from .builder_context import BuilderContext
-from .node import (
-    Node,
-    FunctionNode,
-    CtorNode,
-    FieldNode,
-    MethodNode,
-    StructBaseNode,
-    StructNode,
-    ClassNode,
-    EnumNode,
-    TypedefNode,
-)
+from .node import Node
 
 
 class Builder:
@@ -28,6 +17,7 @@ class Builder:
     def __init__(self, context: BuilderContext):
         super().__init__()
         self.context = context
+        self.out = context.out
 
     @property
     def prefixes(self):
@@ -43,7 +33,8 @@ class Builder:
 
     @property
     def text(self):
-        return self.context.text
+        #return self.context.text
+        return self.out.text
 
     @property
     def source(self):
@@ -89,6 +80,15 @@ class Builder:
     def node_stack(self):
         return self.context.node_stack
 
+    @contextmanager
+    def enter(self, node):
+        self.context.push_node(node)
+        self.out.indent()
+        yield node
+        self.out.dedent()
+        self.context.pop_node()
+
+    """
     def write(self, text: str):
         self.context.write(text)
 
@@ -97,7 +97,7 @@ class Builder:
 
     def __call__(self, line=""):
         self.context(line)
-
+    
     @contextmanager
     def enter(self, node):
         self.context.push_node(node)
@@ -112,17 +112,19 @@ class Builder:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.context.__exit__(exc_type, exc_val, exc_tb)
 
-    def push_node(self, node):
-        self.context.push_node(node)
-
-    def pop_node(self):
-        self.context.pop_node()
-
     def indent(self):
         self.context.indent()
 
     def dedent(self):
         self.context.dedent()
+
+    """
+
+    def push_node(self, node):
+        self.context.push_node(node)
+
+    def pop_node(self):
+        self.context.pop_node()
 
     @property
     def top_node(self):
