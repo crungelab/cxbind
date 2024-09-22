@@ -179,6 +179,18 @@ class BuilderContext:
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         return re.sub("([a-z])([A-Z])", r"\1_\2", s1).lower()
 
+    def _strip_prefixes(self, text: str, prefixes: List[str]):
+        for prefix in prefixes:
+            #if text.startswith(prefix):
+            if text.startswith(prefix) and len(text) > len(prefix) and text[len(prefix)].isupper():
+                return text[len(prefix):]
+        return text
+
+    def strip_prefixes(self, text: str, prefixes: List[str] = []):
+        return self._strip_prefixes(text, prefixes + self.prefixes)
+        #return self._strip_prefixes(text, self.prefixes + prefixes)
+
+    '''
     def strip_prefix(self, text: str, prefixes: List[str]):
         for prefix in prefixes:
             #if text.startswith(prefix):
@@ -193,6 +205,7 @@ class BuilderContext:
         elif isinstance(self.prefixes, list):
             name = self.strip_prefix(name, self.prefixes)
         return name
+    '''
 
     def format_field(self, name: str):
         name = self.strip_prefixes(name)
@@ -215,3 +228,19 @@ class BuilderContext:
         name = name.replace("__", "_")
         name = name.rstrip("_")
         return name
+
+    def format_enum_constant(self, name: str, enum_name: str = None):
+        name = self.strip_prefixes(name, [enum_name])
+        name = self.snake(name).upper()
+        name = name.replace("__", "_")
+        name = name.rstrip("_")
+        return name
+
+    '''
+    def format_enum_constant(self, name: str):
+        name = self.strip_prefixes(name)
+        name = self.snake(name).upper()
+        name = name.replace("__", "_")
+        name = name.rstrip("_")
+        return name
+    '''

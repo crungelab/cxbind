@@ -139,8 +139,13 @@ class Builder:
     def format_type(self, name: str):
         return self.context.format_type(name)
 
-    def format_enum(self, name: str):
-        return self.context.format_enum(name)
+    def format_enum_constant(self, name: str, enum_name: str):
+        return self.context.format_enum_constant(name, enum_name)
+
+    '''
+    def format_enum_constant(self, name: str):
+        return self.context.format_enum_constant(name)
+    '''
 
     """
     def arg_type(self, argument):

@@ -16,6 +16,7 @@ class EnumBuilder(NodeBuilder[EnumNode]):
 
     def build_node(self):
         super().build_node()
+        logger.debug(f"Building Enum: {self.node.name}")
 
         node = self.node
         cursor = self.cursor
@@ -42,7 +43,7 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         with self.out:
             for child in cursor.get_children():
                 self.out(
-                    f'.value("{self.format_enum(child.spelling)}", {name}::{child.spelling})'
+                    f'.value("{self.format_enum_constant(child.spelling, self.node.first_name)}", {name}::{child.spelling})'
                 )
             self.out(".export_values();")
         self.out()
@@ -58,7 +59,7 @@ class EnumBuilder(NodeBuilder[EnumNode]):
             for child in cursor.get_children():
                 #logger.debug(child.kind) #CursorKind.ENUM_CONSTANT_DECL
                 self.out(
-                    f'.value("{self.format_enum(child.spelling)}", {name}::{child.spelling})'
+                    f'.value("{self.format_enum_constant(child.spelling, self.node.first_name)}", {name}::{child.spelling})'
                 )
             self.out(".export_values();")
         self.out(f"PYENUM_SCOPED_END({self.module}, {name}, {pyname})")
