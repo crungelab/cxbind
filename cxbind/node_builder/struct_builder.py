@@ -38,7 +38,8 @@ class StructBuilder(StructBaseBuilder[StructNode]):
                 basename = self.spell(base)
                 self.out(f"PYSUBCLASS_BEGIN({self.module}, {name}, {basename}, {pyname})")
             else:
-                self.out(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
+                #self.out(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
+                self.out(f"PYCLASS({self.module}, {name}, {pyname})")
         with self.enter(node):
             #TODO: this is a can of worms trying to map substructures.  Might be worth it if I can figure it out.
             # May add a flag to the yaml to indicate whether to map substructures or not.  example: traverse: shallow|deep
@@ -49,11 +50,8 @@ class StructBuilder(StructBaseBuilder[StructNode]):
             elif node.gen_kw_init:
                 self.gen_kw_init()
 
+        '''
         if not wrapped:
             self.out(f"PYCLASS_END({self.module}, {name}, {pyname})")
-
         '''
-        self.push_node(node)
-        self.visit_children(cursor)
-        self.pop_node()
-        '''
+        self.out(";")

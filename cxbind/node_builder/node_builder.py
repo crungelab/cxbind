@@ -32,11 +32,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
         if self.context.visited.get(self.name):
             return True
         return False
-        #TODO: Do we need this?
-        #'''
-        if self.node is not None and self.node.visited:
-            return True
-        #'''
 
     def build(self) -> T_Node:
         if self.should_cancel():
@@ -46,7 +41,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
             self.create_node()
 
         self.build_node()
-        #self.node.visited = True
         self.context.visited[self.name] = self.node
         return self.node
 

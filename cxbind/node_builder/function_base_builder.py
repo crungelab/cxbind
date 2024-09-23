@@ -22,7 +22,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         return self.spell(cursor) in self.overloaded
 
     def is_function_mappable(self, cursor: cindex.Cursor) -> bool:
-        #TODO: This should be in Clang 15.06, but it's not ...
         if cursor.is_deleted_method():
             return False
 

@@ -22,6 +22,7 @@ class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
             cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
         if self.should_wrap_function(cursor):
             self.out(f'{mname}.def("{pyname}", []({self.arg_string(arguments)})')
+            #self.out(f'.def("{pyname}", []({self.arg_string(arguments)})')
             self.out("{")
             ret = "" if self.is_function_void_return(cursor) else "auto ret = "
 
@@ -40,5 +41,9 @@ class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
             self.out("}")
         else:
             self.out(f'{mname}.def("{pyname}", {cname}')
-        self.write_pyargs(arguments, node)
-        self.out(f", {self.get_return_policy(cursor)});\n")
+            #self.out(f'.def("{pyname}", {cname}')
+        
+        with self.out:
+            self.write_pyargs(arguments, node)
+            self.out(f", {self.get_return_policy(cursor)});\n")
+            #self.out(f", {self.get_return_policy(cursor)})")

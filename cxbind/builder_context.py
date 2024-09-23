@@ -85,35 +85,6 @@ class BuilderContext:
         self.excluded = set(self.excludes)
         self.overloaded = Overloaded(self.overloads)
 
-    """
-    def write(self, text: str):
-        self.text += text
-
-    def write_indented(self, text: str):
-        self.write(" " * self.indentation * 4)
-        self.write(text)
-
-    def __call__(self, line=""):
-        if len(line):
-            line = line.replace(">>", "> >")
-            self.write_indented(line)
-        self.write("\n")
-
-    @contextmanager
-    def enter(self, node):
-        self.push_node(node)
-        self.indent()
-        yield node
-        self.dedent()
-        self.pop_node()
-
-    def __enter__(self):
-        self.indent()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.dedent()
-    """
-
     def push_node(self, node):
         self.node_stack.append(node)
 

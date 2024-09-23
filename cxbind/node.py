@@ -17,7 +17,6 @@ class Node(BaseModel):
     readonly: Optional[bool] = False
 
     cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
-    visited: Optional[bool] = Field(False, exclude=True, repr=False)
 
     class Config:
         arbitrary_types_allowed = True

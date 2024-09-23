@@ -88,38 +88,6 @@ class Builder:
         self.out.dedent()
         self.context.pop_node()
 
-    """
-    def write(self, text: str):
-        self.context.write(text)
-
-    def write_indented(self, text: str):
-        self.context.write_indented(text)
-
-    def __call__(self, line=""):
-        self.context(line)
-    
-    @contextmanager
-    def enter(self, node):
-        self.context.push_node(node)
-        self.context.indent()
-        yield node
-        self.context.dedent()
-        self.context.pop_node()
-
-    def __enter__(self):
-        self.context.__enter__()
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.context.__exit__(exc_type, exc_val, exc_tb)
-
-    def indent(self):
-        self.context.indent()
-
-    def dedent(self):
-        self.context.dedent()
-
-    """
-
     def push_node(self, node):
         self.context.push_node(node)
 
@@ -141,28 +109,6 @@ class Builder:
 
     def format_enum_constant(self, name: str, enum_name: str):
         return self.context.format_enum_constant(name, enum_name)
-
-    '''
-    def format_enum_constant(self, name: str):
-        return self.context.format_enum_constant(name)
-    '''
-
-    """
-    def arg_type(self, argument):
-        return self.context.arg_type(argument)
-
-    def arg_types(self, argument):
-        return self.context.arg_types(argument)
-
-    def arg_name(self, argument):
-        return self.context.arg_name(argument)
-    
-    def arg_names(self, arguments: List[cindex.Cursor]):
-        return self.context.arg_names(arguments)
-    
-    def arg_string(self, arguments):
-        return self.context.arg_string(arguments)
-    """
 
     def register_node(self, node: Node):
         return self.context.register_node(node)
@@ -334,11 +280,19 @@ class Builder:
 
         self.top_node.add_child(node)
 
-    # TODO: Handle is_deleted_method
     def visit_constructor(self, cursor):
         builder = self.create_builder(f"ctor.{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
+    def visit_function(self, cursor):
+        builder = self.create_builder(f"function.{self.spell(cursor)}", cursor=cursor)
+        node = builder.build()
+
+    def visit_method(self, cursor):
+        builder = self.create_builder(f"method.{self.spell(cursor)}", cursor=cursor)
+        node = builder.build()
+
+    '''
     def visit_function(self, cursor):
         self.visit_function_or_method(cursor)
 
@@ -348,6 +302,7 @@ class Builder:
     def visit_function_or_method(self, cursor):
         builder = self.create_builder(f"function.{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
+    '''
 
     def visit_struct(self, cursor):
         builder = self.create_builder(f"struct.{self.spell(cursor)}", cursor=cursor)

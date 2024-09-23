@@ -12,8 +12,10 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         return pyname
 
     def should_cancel(self):
-        #return super().should_cancel() or not self.is_class_mappable(self.cursor) or isinstance(self.top_node, TypedefNode)
         if not self.is_class_mappable(self.cursor):
+            return True
+        # Only map top level classes for now
+        if isinstance(self.top_node, StructBaseNode):
             return True
         if isinstance(self.top_node, TypedefNode):
             return True
@@ -22,12 +24,6 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
     def is_class_mappable(self, cursor):
         if(cursor.spelling == 'Init'):
             return False
-        # Only map top level classes for now
-        '''
-        if isinstance(self.top_node, StructBaseNode):
-            logger.debug(f"top node for {self.name}: {self.top_node}")
-            return False
-        '''
         if not self.is_cursor_mappable(cursor):
             return False
         if not cursor.is_definition():
@@ -35,11 +31,13 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         return True
 
     def gen_init(self):
-        self.out(f"{self.scope}.def(py::init<>());")
+        #self.out(f"{self.scope}.def(py::init<>());")
+        self.out(f".def(py::init<>())")
 
     def gen_kw_init(self):
         node = self.top_node
-        self.out(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
+        #self.out(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
+        self.out(f'.def(py::init([](const py::kwargs& kwargs)')
         self.out("{")
         with self.out:
             self.out(f'{node.name} obj{{}};')

@@ -20,6 +20,12 @@ class Registry {
     }
 };
 
+#define PYCLASS(_module, _class, _name, ...) py::class_<_class __VA_OPT__(,) __VA_ARGS__> \
+    _name(_module, #_name); \
+    registry.on(_module, #_name, _name); \
+    _name \
+
+
 #define PYCLASS_BEGIN(_module, _class, _name, ...) py::class_<_class __VA_OPT__(,) __VA_ARGS__> _name(_module, #_name);
 
 #define PYSUBCLASS_BEGIN(_module, _class, _base, _name) py::class_<_class, _base> _name(_module, #_name);
