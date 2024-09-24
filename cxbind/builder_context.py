@@ -161,23 +161,6 @@ class BuilderContext:
         return self._strip_prefixes(text, prefixes + self.prefixes)
         #return self._strip_prefixes(text, self.prefixes + prefixes)
 
-    '''
-    def strip_prefix(self, text: str, prefixes: List[str]):
-        for prefix in prefixes:
-            #if text.startswith(prefix):
-            if text.startswith(prefix) and len(text) > len(prefix) and text[len(prefix)].isupper():
-                return text[len(prefix):]
-        return text
-
-    def strip_prefixes(self, name: str):
-        # logger.debug(f"prefixes: {self.prefixes}")
-        if isinstance(self.prefixes, str):
-            name = self.strip_prefix(name, [self.prefixes])
-        elif isinstance(self.prefixes, list):
-            name = self.strip_prefix(name, self.prefixes)
-        return name
-    '''
-
     def format_field(self, name: str):
         name = self.strip_prefixes(name)
         name = self.snake(name)
