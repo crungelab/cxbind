@@ -31,12 +31,10 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         return True
 
     def gen_init(self):
-        #self.out(f"{self.scope}.def(py::init<>());")
         self.out(f".def(py::init<>())")
 
     def gen_kw_init(self):
         node = self.top_node
-        #self.out(f'{self.scope}.def(py::init([](const py::kwargs& kwargs)')
         self.out(f'.def(py::init([](const py::kwargs& kwargs)')
         self.out("{")
         with self.out:

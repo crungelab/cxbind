@@ -10,10 +10,15 @@
 namespace py = pybind11;
 
 void init_generated(py::module &_core, Registry &registry) {
-    _core.def("add", &add
+    _core
+    .def("add", &add
         , py::arg("x")
         , py::arg("y")
-        , py::return_value_policy::automatic_reference);
-        
+        , py::return_value_policy::automatic_reference)
+    .def("sub", &sub
+        , py::arg("x")
+        , py::arg("y")
+        , py::return_value_policy::automatic_reference)
+    ;
 
 }

@@ -40,10 +40,9 @@ class BuilderContext:
         self.prefixes = None
         self.wrapped: Dict[Node] = {}
         self.visited: Dict[Node] = {}
+        self.chaining = False
 
         self.out = CodeStream()
-        #self.indentation = 0
-        #self.text = ""
 
         self.source = ""
         self.mapped: List[str] = []  # headers we want to generate bindings for
@@ -189,12 +188,3 @@ class BuilderContext:
         name = name.replace("__", "_")
         name = name.rstrip("_")
         return name
-
-    '''
-    def format_enum_constant(self, name: str):
-        name = self.strip_prefixes(name)
-        name = self.snake(name).upper()
-        name = name.replace("__", "_")
-        name = name.rstrip("_")
-        return name
-    '''

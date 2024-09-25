@@ -26,7 +26,6 @@ class MethodBuilder(FunctionBaseBuilder[MethodNode]):
                 extra = ", py::const_"
             cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
         if self.should_wrap_function(cursor):
-            #self.out(f'{mname}.def("{pyname}", []({self.arg_string(arguments)})')
             self.out(f'.def("{pyname}", []({self.arg_string(arguments)})')
             self.out("{")
             ret = "" if self.is_function_void_return(cursor) else "auto ret = "
@@ -45,10 +44,10 @@ class MethodBuilder(FunctionBaseBuilder[MethodNode]):
                 self.out(f"return {self.get_function_result(node, cursor)};")
             self.out("}")
         else:
-            #self.out(f'{mname}.def("{pyname}", {cname}')
             self.out(f'.def("{pyname}", {cname}')
         
-        with self.out:
+        with self.out as out:
             self.write_pyargs(arguments, node)
-            #self.out(f", {self.get_return_policy(cursor)});\n")
-            self.out(f", {self.get_return_policy(cursor)})")
+            out(f", {self.get_return_policy(cursor)})")
+
+        self.out()

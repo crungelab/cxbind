@@ -22,6 +22,10 @@ class StructBuilder(StructBaseBuilder[StructNode]):
             #return
             raise ValueError(f"Missing pyname for {name}")
 
+        if self.chaining:
+            self.end_chain()
+        self.chaining = True
+
         #logger.debug(entry)
         children = list(cursor.get_children())  # it's an iterator
         wrapped = False
@@ -40,9 +44,8 @@ class StructBuilder(StructBaseBuilder[StructNode]):
             else:
                 #self.out(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
                 self.out(f"PYCLASS({self.module}, {name}, {pyname})")
+
         with self.enter(node):
-            #TODO: this is a can of worms trying to map substructures.  Might be worth it if I can figure it out.
-            # May add a flag to the yaml to indicate whether to map substructures or not.  example: traverse: shallow|deep
             self.visit_children(cursor)
 
             if node.gen_init:
@@ -54,4 +57,6 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         if not wrapped:
             self.out(f"PYCLASS_END({self.module}, {name}, {pyname})")
         '''
-        self.out(";")
+
+        self.end_chain()
+        self.out()

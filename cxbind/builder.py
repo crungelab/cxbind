@@ -27,9 +27,27 @@ class Builder:
     def wrapped(self):
         return self.context.wrapped
 
+    '''
     @property
     def indent(self):
         return self.context.indentation
+    '''
+
+    @property
+    def chaining(self) -> bool:
+        return self.context.chaining
+    
+    @chaining.setter
+    def chaining(self, value) -> None:
+        self.context.chaining = value
+    
+    def begin_chain(self):
+        self.context.chaining = True
+        self.out(self.scope)
+
+    def end_chain(self):
+        self.context.chaining = False
+        self.out(";")
 
     @property
     def text(self):

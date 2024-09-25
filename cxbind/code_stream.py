@@ -20,6 +20,8 @@ class CodeStream:
             for line in text:
                 self.write_indented(line)
                 self.write("\n")
+        else:
+            self.write("\n")
         return self
 
     def __lshift__(self, text: str):
@@ -29,6 +31,7 @@ class CodeStream:
 
     def __enter__(self):
         self.indent()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.dedent()

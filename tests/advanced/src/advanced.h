@@ -1,3 +1,7 @@
+int add(int x, int y) {
+    return x + y;
+}
+
 struct Advanced
 {
     Advanced() {}
@@ -13,3 +17,7 @@ struct Advanced
         return i + j;
     }
 };
+
+int sub(int x, int y) {
+    return x - y;
+}

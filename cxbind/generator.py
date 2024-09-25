@@ -85,6 +85,8 @@ class Generator(Builder):
         with self.out:
             self.visit_overloads(tu.cursor)
             self.visit_children(tu.cursor)
+            if self.chaining:
+                self.end_chain()
 
         #Jinja
         context = {

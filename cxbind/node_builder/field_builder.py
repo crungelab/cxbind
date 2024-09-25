@@ -24,7 +24,6 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
         
         if self.is_field_readonly(cursor):
-            #self.out(f'{self.scope}.def_readonly("{node.pyname}", &{node.name});')
             self.out(f'.def_readonly("{node.pyname}", &{node.name})')
         else:
             if self.is_char_ptr(cursor):
@@ -34,14 +33,13 @@ class FieldBuilder(NodeBuilder[FieldNode]):
                 #logger.debug(f"{cursor.spelling}: is fn*")
                 self.visit_fn_ptr_field(cursor, node.pyname)
             else:
-                #self.out(f'{self.scope}.def_readwrite("{node.pyname}", &{node.name});')
                 self.out(f'.def_readwrite("{node.pyname}", &{node.name})')
+        self.out()
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def visit_char_ptr_field(self, cursor, pyname):
         pname = self.spell(cursor.semantic_parent)
         name = cursor.spelling
-        #self.out(f'{self.scope}.def_property("{pyname}",')
         self.out(f'.def_property("{pyname}",')
         with self.out:
             self.out(
@@ -54,56 +52,12 @@ class FieldBuilder(NodeBuilder[FieldNode]):
             f' self.{name} = strdup(source);'
             ' }'
             )
-        #self.out(');')
         self.out(')')
 
-    """
-    def visit_char_ptr_field(self, cursor, pyname):
-        pname = self.spell(cursor.semantic_parent)
-        name = cursor.spelling
-        self.out(f'{self.scope}.def_property("{pyname}",')
-        with self.out:
-            self.out(
-            f'[](const {pname}& self)' '{'
-            f' return self.{name};'
-            ' },'
-            )
-            self.out(
-            f'[]({pname}& self, std::string source)' '{'
-            ' char* c = (char *)malloc(source.size() + 1);'
-            ' strncpy(c, source.c_str(), source.size());'
-            ' c[source.size()] = 0;'
-            f' self.{name} = c;'
-            ' }'
-            )
-        self.out(');')
-    """
-
-    """
-    def visit_char_ptr_field(self, cursor, pyname):
-        pname = self.spell(cursor.semantic_parent)
-        name = cursor.spelling
-        self.out(f'{self.scope}.def_property("{pyname}",')
-        with self.out:
-            self.out(
-            f'[](const {pname}& self)' '{'
-            f' return self.{name};'
-            ' },'
-            )
-            self.out(
-            f'[]({pname}& self, std::string source)' '{'
-            ' char* c = (char *)malloc(source.size() + 1);'
-            ' strcpy(c, source.c_str());'
-            f' self.{name} = c;'
-            ' }'
-            )
-        self.out(');')
-    """
     def visit_fn_ptr_field(self, cursor, pyname):
         pname = self.spell(cursor.semantic_parent)
         name = cursor.spelling
         typename = cursor.type.spelling
-        #self.out(f'{self.scope}.def_property("{pyname}",')
         self.out(f'.def_property("{pyname}",')
         with self.out:
             self.out(
@@ -115,7 +69,6 @@ class FieldBuilder(NodeBuilder[FieldNode]):
             f' self.{name} = source;'
             ' }'
             )
-        #self.out(');')
         self.out(')')
 
     def is_field_mappable(self, cursor):

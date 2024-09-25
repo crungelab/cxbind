@@ -121,8 +121,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             if node and node.arguments and argument.spelling in node.arguments:
                 node_argument = node.arguments[argument.spelling]
                 #logger.debug(f"node_argument: {node_argument}")
-                #exit()
-                #default = node.arguments[argument.spelling].default
                 default = str(node_argument.default)
             # logger.debug(argument.spelling)
             # logger.debug(default)

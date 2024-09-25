@@ -18,11 +18,12 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         super().build_node()
         logger.debug(f"Building Enum: {self.node.name}")
 
+        if self.chaining:
+            self.end_chain()
+        self.chaining = True
+
         node = self.node
         cursor = self.cursor
-
-        if cursor.is_scoped_enum():
-            return self.visit_scoped_enum(cursor)
         
         typedef_parent = self.top_node if isinstance(self.top_node, TypedefNode) else None
 
@@ -40,27 +41,11 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         self.out(
             f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())'
         )
-        with self.out:
+        with self.out as out:
             for child in cursor.get_children():
-                self.out(
+                out(
                     f'.value("{self.format_enum_constant(child.spelling, self.node.first_name)}", {name}::{child.spelling})'
                 )
-            self.out(".export_values();")
-        self.out()
-
-    def visit_scoped_enum(self, cursor):
-        #logger.debug(cursor.spelling)
-        name = self.spell(cursor)
-        # logger.debug(name)
-        pyname = self.format_type(cursor.spelling)
-        self.out(f"PYENUM_SCOPED_BEGIN({self.module}, {name}, {pyname})")
-        self.out(pyname)
-        with self.out:
-            for child in cursor.get_children():
-                #logger.debug(child.kind) #CursorKind.ENUM_CONSTANT_DECL
-                self.out(
-                    f'.value("{self.format_enum_constant(child.spelling, self.node.first_name)}", {name}::{child.spelling})'
-                )
-            self.out(".export_values();")
-        self.out(f"PYENUM_SCOPED_END({self.module}, {name}, {pyname})")
+            out(".export_values()")
+        self.end_chain()
         self.out()
