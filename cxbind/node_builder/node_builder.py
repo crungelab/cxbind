@@ -51,5 +51,4 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.node.pyname = self.create_pyname(self.node.first_name)
 
         if self.node.exclude:
-            logger.debug(f"Exclude: {self.node.name}")
-            exit()
+            raise Exception(f"Node excluded: {self.node.name}")
