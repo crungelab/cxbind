@@ -39,7 +39,7 @@ class Generator(Builder):
         #logger.debug(path)
         yaml_data = load_yaml(path)
 
-        logger.debug(f"yaml_data: {yaml_data}")
+        #logger.debug(f"yaml_data: {yaml_data}")
 
         # Process the entries
         data = {}

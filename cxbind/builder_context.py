@@ -11,7 +11,7 @@ from . import UserSet
 from clang import cindex
 from loguru import logger
 
-from .node import Node
+from .node import Node, StructBaseNode
 from .generator_config import GeneratorConfig
 from .code_stream import CodeStream
 
@@ -38,7 +38,8 @@ class BuilderContext:
     def __init__(self, config: GeneratorConfig, **kwargs) -> None:
         self.options = { 'save': True }
         self.prefixes = None
-        self.wrapped: Dict[Node] = {}
+        #self.wrapped: Dict[Node] = {}
+        self.wrapped: Dict[StructBaseNode] = {}
         self.visited: Dict[Node] = {}
         self.chaining = False
 
@@ -84,32 +85,26 @@ class BuilderContext:
         self.excluded = set(self.excludes)
         self.overloaded = Overloaded(self.overloads)
 
-    def push_node(self, node):
+    def push_node(self, node) -> None:
         self.node_stack.append(node)
 
-    def pop_node(self):
+    def pop_node(self) -> Node:
         self.node_stack.pop()
 
-    def indent(self):
-        self.indentation += 1
-
-    def dedent(self):
-        self.indentation -= 1
-
     @property
-    def top_node(self):
+    def top_node(self) -> Node:
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
 
-    def register_node(self, node: Node):
+    def register_node(self, node: Node) -> Node:
         #logger.debug(f"Registering {node}")
         name = node.name
         if node.exclude:
             self.excludes.append(name)
         if node.overload:
             self.overloads.append(name)
-        if hasattr(node, "gen_wrapper") and node.gen_wrapper:
+        if hasattr(node, "wrapper") and node.wrapper:
             logger.debug(f"Adding wrapped {name}")
             self.wrapped[name] = node
 
@@ -133,7 +128,7 @@ class BuilderContext:
         return builder
 
     @classmethod
-    def spell(cls, node: cindex.Cursor):
+    def spell(cls, node: cindex.Cursor) -> str:
         if node is None:
             return ""
         elif node.kind == cindex.CursorKind.TRANSLATION_UNIT:
@@ -145,29 +140,29 @@ class BuilderContext:
         return node.spelling
 
     @classmethod
-    def snake(cls, name: str):
+    def snake(cls, name: str) -> str:
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         return re.sub("([a-z])([A-Z])", r"\1_\2", s1).lower()
 
-    def _strip_prefixes(self, text: str, prefixes: List[str]):
+    def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
         for prefix in prefixes:
             #if text.startswith(prefix):
             if text.startswith(prefix) and len(text) > len(prefix) and text[len(prefix)].isupper():
                 return text[len(prefix):]
         return text
 
-    def strip_prefixes(self, text: str, prefixes: List[str] = []):
+    def strip_prefixes(self, text: str, prefixes: List[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
         #return self._strip_prefixes(text, self.prefixes + prefixes)
 
-    def format_field(self, name: str):
+    def format_field(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.snake(name)
         name = name.rstrip("_")
         name = name.replace("__", "_")
         return name
 
-    def format_type(self, name: str):
+    def format_type(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = name.replace("<", "_")
         name = name.replace(">", "")
@@ -175,14 +170,14 @@ class BuilderContext:
         name = name.rstrip("_")
         return name
 
-    def format_enum(self, name: str):
+    def format_enum(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.snake(name).upper()
         name = name.replace("__", "_")
         name = name.rstrip("_")
         return name
 
-    def format_enum_constant(self, name: str, enum_name: str = None):
+    def format_enum_constant(self, name: str, enum_name: str = None) -> str:
         name = self.strip_prefixes(name, [enum_name])
         name = self.snake(name).upper()
         name = name.replace("__", "_")

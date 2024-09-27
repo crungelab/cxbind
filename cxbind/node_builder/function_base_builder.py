@@ -3,7 +3,7 @@ from loguru import logger
 
 from .node_builder import NodeBuilder, T_Node
 from ..node import FunctionNode
-
+from .. import cu
 
 class FunctionBaseBuilder(NodeBuilder[T_Node]):
     def should_cancel(self):
@@ -11,7 +11,8 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
     def build_node(self):
         super().build_node()
-        
+
+        out = self.out
         node = self.node
         cursor = self.cursor
         arguments = [a for a in cursor.get_arguments()]
@@ -28,32 +29,34 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
 
         if self.should_wrap_function(cursor):
-            self.out(f'.def("{pyname}", []({self.arg_string(arguments)})')
-            with self.out:
-                self.out("{")
+            out(f'.def("{pyname}", []({self.arg_string(arguments)})')
+            with out:
+                out("{")
                 ret = "" if self.is_function_void_return(cursor) else "auto ret = "
 
                 result = f"{self.spell(cursor)}({self.arg_names(arguments)})"
-                result_type = cursor.result_type
-                #logger.debug(f'result_type: {result_type.spelling}')
-                result_type_name = result_type.spelling.split(' ')[0]
+                result_type: cindex.Cursor = cursor.result_type
+                result_type_name = cu.get_base_type_name(result_type)
 
                 if result_type_name in self.wrapped:
-                    result_type_name = self.wrapped[result_type_name].gen_wrapper['type']
-                    result = f"new {result_type_name}({result})"
+                    wrapper = self.wrapped[result_type_name].wrapper
+                    extra = ""
+                    if wrapper == "py::capsule":
+                        extra = f', "{result_type_name}"'
+                    result = f"{wrapper}({result}{extra})"
 
-                with self.out:
-                    self.out(f"{ret}{result};")
-                    self.out(f"return {self.get_function_result(node, cursor)};")
-                self.out("}")
+                with out:
+                    out(f"{ret}{result};")
+                    out(f"return {self.get_function_result(node, cursor)};")
+                out("}")
         else:
-            self.out(f'.def("{pyname}", {cname}')
+            out(f'.def("{pyname}", {cname}')
         
-        with self.out:
+        with out:
             self.write_pyargs(arguments, node)
-            self.out(f", {self.get_return_policy(cursor)})")
+            out(f", {self.get_return_policy(cursor)})")
 
-        self.out()
+        out()
 
     def process_function_decl(self, decl):
         for param in decl.get_children():
@@ -88,14 +91,21 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         result = cursor.type.get_result()
         return result.kind == cindex.TypeKind.VOID
 
+    def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
+        type_name = cu.get_base_type_name(cursor)
+        #logger.debug(f"type_name: {result_type_name}")
+        if type_name in self.wrapped:
+            return True
+        return False
+
     def should_wrap_function(self, cursor) -> bool:
         if cursor.type.is_function_variadic():
             return True
 
         result_type = cursor.result_type
         #logger.debug(f"result_type: {result_type.spelling}")
-        result_type_name = result_type.spelling.split(" ")[0]
-        if result_type_name in self.wrapped:
+
+        if self.is_wrapped_type(result_type):
             return True
 
         for arg in cursor.get_arguments():
@@ -103,13 +113,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 return True
             if self.should_return_argument(arg):
                 return True
-
-            #logger.debug(f"wrapped: {arg.spelling}: {self.arg_type(arg)}")
-            #logger.debug(self.wrapped)
-
-            type_name = arg.type.spelling.split(" ")[0]
-            if type_name in self.wrapped:
-                logger.debug(f"Found wrapped {arg.spelling}")
+            if self.is_wrapped_type(arg.type):
                 return True
         return False
 

@@ -3,7 +3,7 @@ from loguru import logger
 from clang import cindex
 
 
-def print_type_info(node):
+def print_type_info(node) -> None:
     print("Node:", node.spelling)
     print("Node Kind:", node.kind)
     print("Node Parent:", node.semantic_parent.spelling)
@@ -15,7 +15,7 @@ def print_type_info(node):
         print("Pointee Type Kind:", pointee_type.kind)
 
 # This was ChatGPT's idea.  Doesn't work.
-def find_parent_typedef(cursor):
+def find_parent_typedef(cursor : cindex.Cursor) -> cindex.Cursor:
     # Traverse up the AST from the current cursor and look for a typedef
     parent = cursor.semantic_parent
     while parent is not None:
@@ -25,9 +25,9 @@ def find_parent_typedef(cursor):
     return None
 
 # This was ChatGPT's idea.  Doesn't work.
-def is_template(cursor):
+def is_template(cursor: cindex.Cursor) -> bool:
     # Traverse up the AST and check if this is part of a template declaration
-    parent = cursor.semantic_parent
+    parent: cindex.Cursor = cursor.semantic_parent
     while parent is not None:
         if parent.kind in [cindex.CursorKind.FUNCTION_TEMPLATE,
                            cindex.CursorKind.CLASS_TEMPLATE,
@@ -36,25 +36,23 @@ def is_template(cursor):
         parent = parent.semantic_parent
     return False
 
-'''
-def fully_qualified(c):
-    if c is None:
-        return ''
-    elif c.kind == cindex.CursorKind.TRANSLATION_UNIT:
-        return ''
-    else:
-        res = fully_qualified(c.semantic_parent)
-        if res != '':
-            return res + '::' + c.spelling
-    return c.spelling
+# Function to get the base type name without qualifiers or pointers
+def get_base_type_name(typ):
+    # Loop to remove qualifiers like 'const' or 'volatile' and dereference pointers/references
+    while True:
+        # Remove const/volatile qualifiers
+        if typ.is_const_qualified() or typ.is_volatile_qualified():
+            typ = typ.get_canonical()
 
-def fully_qualified_type(t):
-    if t.kind == cindex.TypeKind.ELABORATED:
-        return fully_qualified_type(t.get_named_type())
-    elif t.kind == cindex.TypeKind.RECORD:
-        return fully_qualified(t.get_declaration())
-    elif t.kind == cindex.TypeKind.TYPEDEF:
-        return fully_qualified_type(t.get_canonical())
-    else:
-        return t.spelling
-'''
+        # If the type is a pointer or reference, dereference it
+        if typ.kind == cindex.TypeKind.POINTER:
+            typ = typ.get_pointee()
+        elif typ.kind == cindex.TypeKind.LVALUEREFERENCE or typ.kind == cindex.TypeKind.RVALUEREFERENCE:
+            typ = typ.get_pointee()
+        else:
+            # When no more qualifiers or pointers, break out of the loop
+            break
+    
+    # Return the base type name
+    #return typ.spelling
+    return typ.spelling.replace("const ", "").replace("volatile ", "")

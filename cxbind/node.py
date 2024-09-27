@@ -64,7 +64,7 @@ class StructBaseNode(Node):
     has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
-    gen_wrapper: dict = None
+    wrapper: str = None
     holder: Optional[str] = None
 
 
