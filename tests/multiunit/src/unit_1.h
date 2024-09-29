@@ -1,6 +1,6 @@
-struct Simple
+struct Unit1
 {
-    Simple() {}
+    Unit1() {}
     
     int add(int i, int j)
     {

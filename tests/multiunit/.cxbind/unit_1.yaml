@@ -1,0 +1,10 @@
+source: 'src/unit_1.h'
+target: 'src/unit_1_py_auto.cpp'
+
+#module: _multiunit
+
+#flags: [
+#    '-x', 'c++',
+#    '-std=c++17',
+#    '-I./src'
+#]

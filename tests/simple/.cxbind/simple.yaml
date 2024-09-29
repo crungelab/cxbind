@@ -1,5 +1,5 @@
 source: 'src/simple.h'
-target: 'src/generated.cpp'
+target: 'src/simple_py_auto.cpp'
 
 module: _core
 

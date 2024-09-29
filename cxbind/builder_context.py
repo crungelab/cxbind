@@ -12,7 +12,7 @@ from clang import cindex
 from loguru import logger
 
 from .node import Node, StructBaseNode
-from .generator_config import GeneratorConfig
+from .unit import Unit
 from .code_stream import CodeStream
 
 
@@ -35,7 +35,9 @@ class Overloaded(UserSet):
 
 
 class BuilderContext:
-    def __init__(self, config: GeneratorConfig, **kwargs) -> None:
+    def __init__(self, unit: Unit, **kwargs) -> None:
+        self.unit = unit
+
         self.options = { 'save': True }
         self.prefixes = None
         #self.wrapped: Dict[Node] = {}
@@ -57,20 +59,20 @@ class BuilderContext:
         self.nodes: Dict[str, Node] = {}
         self.node_stack: List[Node] = []
 
-        for attr in vars(config):
-            setattr(self, attr, getattr(config, attr))
+        for attr in vars(unit):
+            setattr(self, attr, getattr(unit, attr))
 
-        for node in config.function:
+        for node in unit.function:
             self.register_node(node)
-        for node in config.method:
+        for node in unit.method:
             self.register_node(node)
-        for node in config.ctor:
+        for node in unit.ctor:
             self.register_node(node)
-        for node in config.struct:
+        for node in unit.struct:
             self.register_node(node)
-        for node in config.cls:
+        for node in unit.cls:
             self.register_node(node)
-        for node in config.field:
+        for node in unit.field:
             self.register_node(node)
 
         for key in kwargs:

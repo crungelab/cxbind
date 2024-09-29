@@ -4,11 +4,10 @@
 
 namespace py = pybind11;
 
-void init_main(py::module &, Registry &registry);
-void init_generated(py::module &, Registry &registry);
+void init_simple_py_auto(py::module &, Registry &registry);
 
 PYBIND11_MODULE(_core, m)
 {
     Registry r;
-    init_generated(m, r);
+    init_simple_py_auto(m, r);
 }

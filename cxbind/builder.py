@@ -20,6 +20,10 @@ class Builder:
         self.out = context.out
 
     @property
+    def unit(self):
+        return self.context.unit
+
+    @property
     def prefixes(self) -> list[str]:
         return self.context.prefixes
 

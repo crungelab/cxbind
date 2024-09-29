@@ -1,11 +1,14 @@
 
-import yaml
 from pathlib import Path
+import yaml
 from loguru import logger
-from cxbind.generator_config import GeneratorConfig
+
+from cxbind.unit import Unit
+from cxbind.project import Project
+
 
 # Load the YAML file
-file_path = Path('test_entry.yaml')
+file_path = Path('test_project.yaml')
 with open(file_path, 'r') as file:
     yaml_data = yaml.safe_load(file)
 
@@ -28,9 +31,9 @@ for key, value in yaml_data.items():
 logger.debug(f"processed_data: {data}")
 
 # Validate with Pydantic
-config = GeneratorConfig.model_validate(data)
+project = Project.model_validate(data)
 
-logger.debug(f"config: {config}")
+logger.debug(f"project: {project}")
 
 # Dump the Pydantic model
-logger.debug(f"config.json(): {config.model_dump_json()}")
+logger.debug(f"project.json(): {project.model_dump_json()}")

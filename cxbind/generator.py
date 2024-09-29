@@ -9,17 +9,14 @@ from clang import cindex
 from .yaml import load_yaml
 
 
-from .generator_config import GeneratorConfig
+from .unit import Unit
 from .builder import Builder
 from .builder_context import BuilderContext
 
 
 class Generator(Builder):
-    def __init__(self, name: str, config: GeneratorConfig, **kwargs):
-        super().__init__(BuilderContext(config, **kwargs))
-        logger.debug(f"Generator: {name}")
-        self.name = name
-        self.config = config
+    def __init__(self, unit: Unit, **kwargs):
+        super().__init__(BuilderContext(unit, **kwargs))
 
         BASE_PATH = Path('.')
         self.path = BASE_PATH / self.source
@@ -31,8 +28,33 @@ class Generator(Builder):
         loader = jinja2.FileSystemLoader(searchpath=searchpath)
         self.jinja_env = jinja2.Environment(loader=loader)
 
+    '''
+    def __init__(self, name: str, unit: Unit, **kwargs):
+        super().__init__(BuilderContext(unit, **kwargs))
+        logger.debug(f"Generator: {name}")
+        self.name = name
+        self.unit = unit
+
+        BASE_PATH = Path('.')
+        self.path = BASE_PATH / self.source
+        self.mapped.append(self.path.name)
+
+        config_searchpath = BASE_PATH  / '.cxbind' / 'templates'
+        default_searchpath = Path(os.path.dirname(os.path.abspath(__file__)), 'templates')
+        searchpath = [config_searchpath, default_searchpath]
+        loader = jinja2.FileSystemLoader(searchpath=searchpath)
+        self.jinja_env = jinja2.Environment(loader=loader)
+    '''
+
     @classmethod
-    def create(self, name="cxbind"):
+    def produce(self, unit: Unit):
+        instance = Generator(unit)
+        instance.import_actions()
+        return instance
+
+    '''
+    @classmethod
+    def produce(self, name="cxbind"):
         filename = f'{name}.yaml'
         print(f'processing:  {filename}')
         path = Path(os.getcwd(), '.cxbind', filename)
@@ -58,16 +80,17 @@ class Generator(Builder):
         #logger.debug(f"processed_data: {data}")
 
         # Validate with Pydantic
-        config = GeneratorConfig.model_validate(data)
+        unit = Unit.model_validate(data)
 
-        #logger.debug(f"config: {config}")
+        #logger.debug(f"unit: {unit}")
 
         # Dump the Pydantic model
-        #logger.debug(f"config.json(): {config.model_dump_json()}")
+        #logger.debug(f"unit.json(): {unit.model_dump_json()}")
 
-        instance = Generator(name, config)
+        instance = Generator(name, unit)
         instance.import_actions()
         return instance
+    '''
 
     def import_actions(self):
         path = Path(os.path.dirname(os.path.abspath(__file__)), 'actions.py')
@@ -93,7 +116,7 @@ class Generator(Builder):
             'body': self.text
         }
 
-        template = self.jinja_env.get_template(f'{self.name}.cpp')
+        template = self.jinja_env.get_template(f'{self.unit.name}.cpp')
         rendered = template.render(context)
         filename = self.target
         with open(filename,'w') as fh:

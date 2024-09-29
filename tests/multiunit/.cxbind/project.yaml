@@ -1,0 +1,11 @@
+module: _multiunit
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+unit_files:
+  - path: unit_1.yaml
+  - path: unit_2.yaml
