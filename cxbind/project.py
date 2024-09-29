@@ -15,9 +15,8 @@ class UnitFile(BaseModel):
 
 
 class Project(UnitBase):
-    #name: str
     unit_files: list[UnitFile]
-    #units: Optional[list[Unit]] = Field([], exclude=True, repr=False)
+
     path: Path = Field(None, exclude=True, repr=False)
     units: list[Unit] = Field([], exclude=True, repr=False)
     units_by_name: dict[str, Unit] = Field({}, exclude=True, repr=False)

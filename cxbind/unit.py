@@ -8,15 +8,10 @@ from pydantic import Field
 from .node import FunctionNode, MethodNode, StructNode, ClassNode, FieldNode, CtorNode
 from .unit_base import UnitBase
 
-#class Unit(BaseModel):
 class Unit(UnitBase):
     source: str
     target: str
-    #module: str
-    #prefixes: Optional[str | List[str]] = []
-    #flags: List[str]
-    #defaults: Optional[dict] = {}
-    #
+
     struct: Optional[List[StructNode]] = []
     cls: Optional[List[ClassNode]] = Field([], alias='class')
     field: Optional[List[FieldNode]] = []

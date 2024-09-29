@@ -224,7 +224,7 @@ class Builder:
             return f"std::array<{argument.type.get_array_element_type().spelling}, {argument.type.get_array_size()}>&"
 
         type_name = cu.get_base_type_name(argument.type)
-        print(f"arg_type: {type_name}")
+        #logger.debug(f"arg_type: {type_name}")
 
         if type_name in self.wrapped:
             wrapper = self.wrapped[type_name].wrapper

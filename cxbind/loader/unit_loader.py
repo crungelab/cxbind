@@ -37,6 +37,10 @@ class UnitLoader(UnitBaseLoader):
                 unit.flags = project.flags
             else:
                 raise ValueError("flags are required")
+            
+        #unit.prefixes = project.prefixes + unit.prefixes
+        # Order needs to be from specific to generic.  Example: prefixes: [SDL_EVENT_, SDL_]
+        unit.prefixes = unit.prefixes + project.prefixes
 
         logger.debug(f"unit: {unit}")
 
