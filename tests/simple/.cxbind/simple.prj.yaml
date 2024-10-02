@@ -1,0 +1,12 @@
+module: _core
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  simple:
+    source: 'src/simple.h'
+    target: 'src/simple_py_auto.cpp'

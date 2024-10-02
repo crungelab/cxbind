@@ -56,12 +56,19 @@ class BuilderContext:
         self.excludes: List[str] = []
         self.overloads: List[str] = []
 
-        self.nodes: Dict[str, Node] = {}
+        #self.nodes: Dict[str, Node] = {}
+        self.nodes = unit.nodes.copy()
         self.node_stack: List[Node] = []
 
         for attr in vars(unit):
             setattr(self, attr, getattr(unit, attr))
 
+        
+        #for name, node in unit.nodes.items():
+        for name, node in self.nodes.items():
+            self.register_node(node)
+
+        '''
         for node in unit.function:
             self.register_node(node)
         for node in unit.method:
@@ -74,6 +81,7 @@ class BuilderContext:
             self.register_node(node)
         for node in unit.field:
             self.register_node(node)
+        '''
 
         for key in kwargs:
             if key == 'options':
@@ -99,7 +107,7 @@ class BuilderContext:
             return None
         return self.node_stack[-1]
 
-    def register_node(self, node: Node) -> Node:
+    def register_node(self, node: Node) -> None:
         #logger.debug(f"Registering {node}")
         name = node.name
         if node.exclude:
@@ -110,15 +118,11 @@ class BuilderContext:
             logger.debug(f"Adding wrapped {name}")
             self.wrapped[name] = node
 
-        self.nodes[name] = node
+        #self.nodes[name] = node
 
-        return node
 
-    def lookup_node(self, key: str) -> Node:
-        #logger.debug(f"Looking up {entry_key}")
-        if key in self.nodes:
-            return self.nodes[key]
-        return None
+    def lookup_node(self, name: str) -> Node:
+        return self.nodes.get(name)
 
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "NodeBuilder":
         from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP

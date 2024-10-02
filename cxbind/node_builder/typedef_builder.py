@@ -6,7 +6,7 @@ from ..node import TypedefNode
 
 class TypedefBuilder(NodeBuilder[TypedefNode]):
     def create_node(self):
-        self.node = TypedefNode(name=self.name, cursor=self.cursor)
+        self.node = TypedefNode(kind='typedef', name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()

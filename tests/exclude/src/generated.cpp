@@ -10,13 +10,16 @@
 namespace py = pybind11;
 
 void init_generated(py::module &_core, Registry &registry) {
-    PYCLASS_BEGIN(_core, Test, Test)
-        Test.def("add", &Test::add
-        , py::arg("i")
-        , py::arg("j")
-        , py::return_value_policy::automatic_reference);
-
-    PYCLASS_END(_core, Test, Test)
+    PYCLASS(_core, Test, Test)
+        .def("add", &Test::add
+            , py::arg("i")
+            , py::arg("j")
+            , py::return_value_policy::automatic_reference)
+        .def("sub", &Test::sub
+            , py::arg("i")
+            , py::arg("j")
+            , py::return_value_policy::automatic_reference)
+    ;
 
 
 }

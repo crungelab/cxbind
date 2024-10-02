@@ -1,0 +1,5 @@
+source: 'src/advanced.h'
+target: 'src/advanced_py_auto.cpp'
+
+nodes:
+  'function.Advanced::ignore_me': {exclude: true}

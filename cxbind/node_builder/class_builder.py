@@ -31,4 +31,4 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
 
         self.end_chain()
         #self.out(f"PYCLASS_END({self.module}, {node.name}, {node.pyname})")
-        self.out()
+        #self.out()

@@ -14,4 +14,4 @@ class MethodBuilder(FunctionBaseBuilder[MethodNode]):
         return super().should_cancel()
 
     def create_node(self):
-        self.node = MethodNode(name=self.name, cursor=self.cursor)
+        self.node = MethodNode(kind='method', name=self.name, cursor=self.cursor)

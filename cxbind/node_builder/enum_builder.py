@@ -6,7 +6,7 @@ from ..node import EnumNode, TypedefNode
 
 class EnumBuilder(NodeBuilder[EnumNode]):
     def create_node(self):
-        self.node = EnumNode(name=self.name, cursor=self.cursor)
+        self.node = EnumNode(kind='enum', name=self.name, cursor=self.cursor)
 
     def create_pyname(self, name):
         return self.context.format_enum(name)
@@ -16,7 +16,7 @@ class EnumBuilder(NodeBuilder[EnumNode]):
 
     def build_node(self):
         super().build_node()
-        logger.debug(f"Building Enum: {self.node.name}")
+        #logger.debug(f"Building Enum: {self.node.name}")
 
         if self.chaining:
             self.end_chain()
@@ -48,4 +48,4 @@ class EnumBuilder(NodeBuilder[EnumNode]):
                 )
             out(".export_values()")
         self.end_chain()
-        self.out()
+        #self.out()

@@ -1,6 +1,7 @@
-from typing import List, Dict, Optional, Any
+from typing_extensions import Annotated
+from typing import List, Dict, Optional, Any, Literal, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, BeforeValidator
 
 from clang import cindex
 from loguru import logger
@@ -47,16 +48,20 @@ class FunctionBaseNode(Node):
         self.arguments = {k: Argument(**v) if isinstance(v, dict) else v for k, v in self.arguments.items()}
 
 class FunctionNode(FunctionBaseNode):
-    kind: str = 'function'
+    #kind: str = 'function'
+    kind: Literal['function']
 
 class MethodNode(FunctionBaseNode):
-    kind: str = 'method'
+    #kind: str = 'method'
+    kind: Literal['method']
 
 class CtorNode(FunctionBaseNode):
-    kind: str = 'ctor'
+    #kind: str = 'ctor'
+    kind: Literal['ctor']
 
 class FieldNode(Node):
-    kind: str = 'field'
+    #kind: str = 'field'
+    kind: Literal['field']
 
 
 class StructBaseNode(Node):
@@ -69,18 +74,39 @@ class StructBaseNode(Node):
 
 
 class StructNode(StructBaseNode):
-    kind: str = 'struct'
+    #kind: str = 'struct'
+    kind: Literal['struct']
 
 
 class ClassNode(StructBaseNode):
-    kind: str = 'class'
+    #kind: str = 'class'
+    kind: Literal['class']
 
 
 class EnumNode(Node):
-    kind: str = 'enum'
+    #kind: str = 'enum'
+    kind: Literal['enum']
 
 
 class TypedefNode(Node):
-    kind: str = 'typedef'
+    #kind: str = 'typedef'
+    kind: Literal['typedef']
     gen_init: bool = False
     gen_kw_init: bool = False
+
+NodeUnion = Union[StructNode, ClassNode, FieldNode, FunctionNode, MethodNode, CtorNode, EnumNode, TypedefNode]
+
+def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
+    #logger.debug(f"validate_node_dict: {v}")
+    data = {}
+    for key, value in v.items():
+        if '.' in key:
+            kind, name = key.split('.')
+            value['name'] = name
+            value['kind'] = kind
+            data[name] = value
+        else:
+            data[key] = value
+    return data
+
+NodeDict = Annotated[dict[str, NodeUnion], BeforeValidator(validate_node_dict)]

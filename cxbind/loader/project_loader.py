@@ -4,7 +4,6 @@ from pathlib import Path
 from loguru import logger
 
 from .unit_base_loader import UnitBaseLoader
-from .unit_loader import UnitLoader
 
 from ..project import Project
 from ..unit import Unit
@@ -25,16 +24,6 @@ class ProjectLoader(UnitBaseLoader):
         if project.name is None:
             project.name = path.stem
 
-        logger.debug(f"project: {project}")
-
-        for unit_file in project.unit_files:
-            unit_path = path.parent / unit_file.path
-            self.load_unit(unit_path)
+        #logger.debug(f"project: {project}")
 
         return project
-
-    def load_unit(self, path: Path) -> Unit:
-        project = self.project
-        unit = UnitLoader(project).load(path)
-        project.add_unit(unit)
-        return unit

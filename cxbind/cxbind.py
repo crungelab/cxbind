@@ -1,18 +1,20 @@
 import os, sys
-
 from pathlib import Path
 import importlib.util
+
 from loguru import logger
 from clang import cindex
 
 from . import generator as dot_cxbind
 from .project import Project
 from .unit import Unit
-from .loader.project_loader import ProjectLoader
+from .factory.project_factory import ProjectFactory
 
 
 class CxBind:
     def __init__(self):
+        self.prj_dir = Path(os.getcwd(), '.cxbind')
+
         if sys.platform == 'darwin':
             cindex.Config.set_library_path('/usr/local/opt/llvm@6/lib')
         elif sys.platform == 'linux':
@@ -21,9 +23,18 @@ class CxBind:
         else:
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
-    def load_project(self):
-        path = Path(os.getcwd(), '.cxbind', 'project.yaml')
-        project = ProjectLoader().load(path)
+    def load_project(self) -> Project:
+        #prj_dir = Path(os.getcwd(), '.cxbind')
+        path = next(self.prj_dir.glob('*.prj.yaml'), None)
+        if path is not None:
+            project = ProjectFactory().load(path)
+        else:
+            project = ProjectFactory().create(self.prj_dir, 'default')
+
+        if project.is_empty():
+            logger.error('No units found in project.')
+            sys.exit(1)
+
         return project
 
     def create_generator(self, unit: Unit):
@@ -53,31 +64,7 @@ class CxBind:
             return
         
         project = self.load_project()
-        for unit in project.units:
+
+        for unit in project.units.values():
             generator = self.create_generator(unit)
             generator.generate()
-
-    '''
-    def gen(self, name):
-        logger.debug(f"gen: {name}")
-        global dot_cxbind
-        path = Path(os.getcwd(), '.cxbind', '__init__.py')
-        if os.path.exists(path):
-            spec = importlib.util.spec_from_file_location(
-                "dot_cxbind", path
-            )
-            dot_cxbind = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(dot_cxbind)
-
-        generator = dot_cxbind.Generator.produce(name)
-        generator.generate()
-
-    def gen_all(self):
-        path = Path(os.getcwd(), '.cxbind')
-        if not path.exists():
-            print('No .cxbind directory found.')
-            return
-        files = path.glob('*.yaml')
-        for file in files:
-            self.gen(file.stem)
-    '''

@@ -6,7 +6,7 @@ from ..node import StructNode, FieldNode
 
 class StructBuilder(StructBaseBuilder[StructNode]):
     def create_node(self):
-        self.node = StructNode(name=self.name, cursor=self.cursor)
+        self.node = StructNode(kind='struct', name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()
@@ -59,4 +59,4 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         '''
 
         self.end_chain()
-        self.out()
+        #self.out()

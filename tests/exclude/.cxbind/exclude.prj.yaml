@@ -1,0 +1,14 @@
+module: _core
+
+flags: [
+  '-x', 'c++',
+  '-std=c++17',
+  '-I./src'
+]
+
+units:
+  exclude:
+    source: 'src/test.h'
+    target: 'src/generated.cpp'
+    nodes:
+      'function.Test::ignore_me': {exclude: true}

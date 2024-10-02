@@ -7,5 +7,5 @@ flags: [
 ]
 
 unit_files:
-  - path: unit_1.yaml
-  - path: unit_2.yaml
+  - path: unit_1.unit.yaml
+  - path: unit_2.unit.yaml

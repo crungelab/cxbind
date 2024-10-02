@@ -11,21 +11,6 @@ class UnitBaseLoader:
         with open(path, 'r') as file:
             yaml_data = yaml.safe_load(file)
 
-        logger.debug(f"yaml_data: {yaml_data}")
+        #logger.debug(f"yaml_data: {yaml_data}")
 
-        # Process the entries
-        data = {}
-        for key, value in yaml_data.items():
-            if '.' in key:
-                kind, name = key.split('.')
-                value['name'] = name
-                value['kind'] = kind
-                if kind in data:
-                    data[kind].append(value)
-                else:
-                    data[kind] = [value]
-            else:
-                data[key] = value
-
-        logger.debug(f"processed_data: {data}")
-        return data
+        return yaml_data

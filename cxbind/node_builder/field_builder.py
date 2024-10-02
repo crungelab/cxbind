@@ -7,7 +7,7 @@ from ..node import FieldNode
 
 class FieldBuilder(NodeBuilder[FieldNode]):
     def create_node(self):
-        self.node = FieldNode(name=self.name, cursor=self.cursor)
+        self.node = FieldNode(kind='field', name=self.name, cursor=self.cursor)
 
     def create_pyname(self, name):
         return self.context.format_field(name)

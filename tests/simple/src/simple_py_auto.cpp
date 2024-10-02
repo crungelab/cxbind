@@ -11,7 +11,9 @@ namespace py = pybind11;
 
 void init_simple_py_auto(py::module &_core, Registry &registry) {
     PYCLASS(_core, Simple, Simple)
+
         .def(py::init<>())
+
         .def("add", &Simple::add
             , py::arg("i")
             , py::arg("j")
@@ -21,7 +23,6 @@ void init_simple_py_auto(py::module &_core, Registry &registry) {
             , py::arg("i")
             , py::arg("j")
             , py::return_value_policy::automatic_reference)
-
     ;
 
 

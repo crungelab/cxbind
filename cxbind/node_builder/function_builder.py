@@ -4,4 +4,4 @@ from ..node import FunctionNode
 
 class FunctionBuilder(FunctionBaseBuilder[FunctionNode]):
     def create_node(self):
-        self.node = FunctionNode(name=self.name, cursor=self.cursor)
+        self.node = FunctionNode(kind='function', name=self.name, cursor=self.cursor)

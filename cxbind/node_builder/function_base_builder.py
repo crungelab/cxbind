@@ -21,6 +21,8 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         if not self.chaining:
             self.begin_chain()
+        else:
+            out()
 
         if self.is_overloaded(cursor):
             extra = ""
@@ -56,7 +58,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             self.write_pyargs(arguments, node)
             out(f", {self.get_return_policy(cursor)})")
 
-        out()
+        #out()
 
     def process_function_decl(self, decl):
         for param in decl.get_children():

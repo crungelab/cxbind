@@ -53,6 +53,7 @@ class Builder:
     def end_chain(self) -> None:
         self.context.chaining = False
         self.out(";")
+        self.out()
 
     @property
     def text(self) -> str:
