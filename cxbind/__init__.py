@@ -1,5 +1,7 @@
 from collections.abc import Hashable, MutableSet
 
+__version__ = '0.1.0'
+
 class UserSet(Hashable, MutableSet):
     __hash__ = MutableSet._hash
 

@@ -2,6 +2,8 @@ import os
 from pathlib import Path
 import importlib
 from loguru import logger
+from rich import print
+
 import jinja2
 
 from clang import cindex
@@ -121,6 +123,8 @@ class Generator(Builder):
         filename = self.target
         with open(filename,'w') as fh:
             fh.write(rendered)
+
+        print(f'[bold green]Generated[/bold green]: {filename}', ':thumbs_up:')
 
     def visit_overloads(self, cursor):
         for child in cursor.get_children():

@@ -1,0 +1,10 @@
+source: 'src/namespace.h'
+target: 'src/namespace_py_auto.cpp'
+
+module: _core
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]

@@ -24,7 +24,7 @@ class Unit(UnitBase):
     target: str
 
 def validate_unit_dict(v: dict[str, Unit]) -> dict[str, Unit]:
-    logger.debug(f"validate_unit_dict: {v}")
+    #logger.debug(f"validate_unit_dict: {v}")
     for key, value in v.items():
         value['name'] = key
     return v

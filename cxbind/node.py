@@ -1,7 +1,7 @@
 from typing_extensions import Annotated
 from typing import List, Dict, Optional, Any, Literal, Union
 
-from pydantic import BaseModel, Field, BeforeValidator
+from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 
 from clang import cindex
 from loguru import logger
@@ -19,11 +19,14 @@ class Node(BaseModel):
 
     cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
 
+    model_config = ConfigDict(arbitrary_types_allowed = True)
+    '''
     class Config:
         arbitrary_types_allowed = True
         json_encoders = {
             cindex.Cursor: lambda v: "Cursor Object"
         }
+    '''
 
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]

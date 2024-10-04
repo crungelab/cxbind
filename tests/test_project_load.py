@@ -4,12 +4,12 @@ import yaml
 from loguru import logger
 
 from cxbind.unit import Unit
-from cxbind.project import Project
+from cxbind.factory.project_factory import ProjectFactory
 
 
 file_path = Path('test_project.yaml')
 
-project = Project.load(file_path)
+project = ProjectFactory().load(file_path)
 
 logger.debug(f"project: {project}")
 

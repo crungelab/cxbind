@@ -1,2 +1,2 @@
 unit_files:
-  - file: test_unit.yaml
+  - path: test_unit.yaml
