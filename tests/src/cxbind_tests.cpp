@@ -11,6 +11,7 @@ void register_enums_py_auto(py::module &, Registry &registry);
 void register_exclude_py_auto(py::module &, Registry &registry);
 void register_functions_py_auto(py::module &, Registry &registry);
 void register_namespace_py_auto(py::module &, Registry &registry);
+void register_templates_py_auto(py::module &, Registry &registry);
 
 void register_unit_1_py_auto(py::module &, Registry &registry);
 void register_unit_2_py_auto(py::module &, Registry &registry);
@@ -40,6 +41,9 @@ PYBIND11_MODULE(cxbind_tests, m)
 
     auto _namespace = m.def_submodule("test_namespace");
     register_namespace_py_auto(_namespace, r);
+
+    auto _templates = m.def_submodule("test_templates");
+    register_templates_py_auto(_templates, r);
 
     auto _multiunit = m.def_submodule("test_multiunit");
     register_unit_1_py_auto(_multiunit, r);

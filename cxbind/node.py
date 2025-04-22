@@ -12,21 +12,14 @@ class Node(BaseModel):
     name: str
     first_name: Optional[str] = None
     pyname: Optional[str] = None
-    children: List['Node'] = []
+    children: List["Node"] = []
     exclude: Optional[bool] = False
     overload: Optional[bool] = False
     readonly: Optional[bool] = False
 
     cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
 
-    model_config = ConfigDict(arbitrary_types_allowed = True)
-    '''
-    class Config:
-        arbitrary_types_allowed = True
-        json_encoders = {
-            cindex.Cursor: lambda v: "Cursor Object"
-        }
-    '''
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
@@ -37,8 +30,10 @@ class Node(BaseModel):
     def add_child(self, child: "Node"):
         self.children.append(child)
 
+
 class Argument(BaseModel):
     default: Optional[Any] = None
+
 
 class FunctionBaseNode(Node):
     arguments: Optional[Dict[str, Argument]] = {}
@@ -48,23 +43,26 @@ class FunctionBaseNode(Node):
 
     def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
-        self.arguments = {k: Argument(**v) if isinstance(v, dict) else v for k, v in self.arguments.items()}
+        self.arguments = {
+            k: Argument(**v) if isinstance(v, dict) else v
+            for k, v in self.arguments.items()
+        }
+
 
 class FunctionNode(FunctionBaseNode):
-    #kind: str = 'function'
-    kind: Literal['function']
+    kind: Literal["function"]
+
 
 class MethodNode(FunctionBaseNode):
-    #kind: str = 'method'
-    kind: Literal['method']
+    kind: Literal["method"]
+
 
 class CtorNode(FunctionBaseNode):
-    #kind: str = 'ctor'
-    kind: Literal['ctor']
+    kind: Literal["ctor"]
+
 
 class FieldNode(Node):
-    #kind: str = 'field'
-    kind: Literal['field']
+    kind: Literal["field"]
 
 
 class StructBaseNode(Node):
@@ -77,39 +75,60 @@ class StructBaseNode(Node):
 
 
 class StructNode(StructBaseNode):
-    #kind: str = 'struct'
-    kind: Literal['struct']
+    kind: Literal["struct"]
 
 
 class ClassNode(StructBaseNode):
-    #kind: str = 'class'
-    kind: Literal['class']
+    kind: Literal["class"]
+
+class ClassSpecializationNode(ClassNode):
+    kind: Literal["class_specialization"]
+    args: List[str] = []
+
+class ClassTemplateSpecialization(BaseModel):
+    name: str
+    args: List[str]
+    
+class ClassTemplateNode(StructBaseNode):
+    kind: Literal["class_template"]
+    specializations: List[ClassTemplateSpecialization] = []
 
 
 class EnumNode(Node):
-    #kind: str = 'enum'
-    kind: Literal['enum']
+    kind: Literal["enum"]
 
 
 class TypedefNode(Node):
-    #kind: str = 'typedef'
-    kind: Literal['typedef']
+    kind: Literal["typedef"]
     gen_init: bool = False
     gen_kw_init: bool = False
 
-NodeUnion = Union[StructNode, ClassNode, FieldNode, FunctionNode, MethodNode, CtorNode, EnumNode, TypedefNode]
+
+NodeUnion = Union[
+    StructNode,
+    ClassNode,
+    ClassTemplateNode,
+    FieldNode,
+    FunctionNode,
+    MethodNode,
+    CtorNode,
+    EnumNode,
+    TypedefNode,
+]
+
 
 def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
-    #logger.debug(f"validate_node_dict: {v}")
+    # logger.debug(f"validate_node_dict: {v}")
     data = {}
     for key, value in v.items():
-        if '.' in key:
-            kind, name = key.split('.')
-            value['name'] = name
-            value['kind'] = kind
+        if "." in key:
+            kind, name = key.split(".")
+            value["name"] = name
+            value["kind"] = kind
             data[name] = value
         else:
             data[key] = value
     return data
+
 
 NodeDict = Annotated[dict[str, NodeUnion], BeforeValidator(validate_node_dict)]

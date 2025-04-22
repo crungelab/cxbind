@@ -34,7 +34,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
                 self.visit_fn_ptr_field(cursor, node.pyname)
             else:
                 self.out(f'.def_readwrite("{node.pyname}", &{node.name})')
-        self.out()
+        #self.out()
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def visit_char_ptr_field(self, cursor, pyname):

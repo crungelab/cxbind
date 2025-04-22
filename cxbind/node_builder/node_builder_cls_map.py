@@ -11,6 +11,7 @@ from . import (
     MethodBuilder,
     StructBuilder,
     ClassBuilder,
+    ClassTemplateBuilder,
     EnumBuilder,
     TypedefBuilder,
 )
@@ -22,6 +23,7 @@ NODE_BUILDER_CLS_MAP = {
     "method": MethodBuilder,
     "struct": StructBuilder,
     "class": ClassBuilder,
+    "class_template": ClassTemplateBuilder,
     "enum": EnumBuilder,
     "typedef": TypedefBuilder,
 }

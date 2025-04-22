@@ -1,5 +1,6 @@
 from .struct_base_builder import StructBaseBuilder
 from .class_builder import ClassBuilder
+from .class_template_builder import ClassTemplateBuilder
 from .method_builder import MethodBuilder
 from .field_builder import FieldBuilder
 from .enum_builder import EnumBuilder

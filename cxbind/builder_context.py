@@ -64,24 +64,8 @@ class BuilderContext:
             setattr(self, attr, getattr(unit, attr))
 
         
-        #for name, node in unit.nodes.items():
         for name, node in self.nodes.items():
             self.register_node(node)
-
-        '''
-        for node in unit.function:
-            self.register_node(node)
-        for node in unit.method:
-            self.register_node(node)
-        for node in unit.ctor:
-            self.register_node(node)
-        for node in unit.struct:
-            self.register_node(node)
-        for node in unit.cls:
-            self.register_node(node)
-        for node in unit.field:
-            self.register_node(node)
-        '''
 
         for key in kwargs:
             if key == 'options':
@@ -133,17 +117,54 @@ class BuilderContext:
         builder = builder_cls(self, name, cursor, node)
         return builder
 
-    @classmethod
-    def spell(cls, node: cindex.Cursor) -> str:
-        if node is None:
+    def spell(self, cursor: cindex.Cursor) -> str:
+        if cursor is None:
             return ""
-        elif node.kind == cindex.CursorKind.TRANSLATION_UNIT:
+        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
             return ""
         else:
-            res = cls.spell(node.semantic_parent)
+            res = self.spell(cursor.semantic_parent)
             if res != "":
-                return res + "::" + node.spelling
-        return node.spelling
+                node = self.top_node
+                if node is not None:
+                    return node.name + "::" + cursor.spelling
+
+                return res + "::" + cursor.spelling
+        return cursor.spelling
+
+    '''
+    @classmethod
+    def spell(cls, cursor: cindex.Cursor, node: Node = None) -> str:
+        if cursor is None:
+            return ""
+        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+            return ""
+        else:
+            res = cls.spell(cursor.semantic_parent, node)
+            if res != "":
+                #print(res)
+                if node is not None:
+                    print(node.name)
+                    return node.name + "::" + cursor.spelling
+
+                return res + "::" + cursor.spelling
+        return cursor.spelling
+    '''
+
+    '''
+    @classmethod
+    def spell(cls, cursor: cindex.Cursor) -> str:
+        if cursor is None:
+            return ""
+        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+            return ""
+        else:
+            res = cls.spell(cursor.semantic_parent)
+            if res != "":
+                #print(res)
+                return res + "::" + cursor.spelling
+        return cursor.spelling
+    '''
 
     @classmethod
     def snake(cls, name: str) -> str:
@@ -170,6 +191,7 @@ class BuilderContext:
 
     def format_type(self, name: str) -> str:
         name = self.strip_prefixes(name)
+        name = name.replace(",", "_")
         name = name.replace("<", "_")
         name = name.replace(">", "")
         name = name.replace(" ", "")

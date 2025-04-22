@@ -1,0 +1,21 @@
+module: _core
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  templates:
+    source: 'src/templates.h'
+    target: 'src/templates_py_auto.cpp'
+    nodes:
+      'class_template.MyClass':
+        specializations:
+          - name: MyClassFD
+            args: [float, double]
+      'class_template.MyClass2':
+        specializations:
+          - name: MyClassI
+            args: [int]

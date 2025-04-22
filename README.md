@@ -34,11 +34,21 @@ cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=cxbind
 cmake --install _build
 ```
 
-## Built Tests
+## Testing
+
+### Building the Tests
+
 ```bash
 cd tests
 mkdir build
 cd build
 cmake -G Ninja ..
 ninja
+```
+
+### Running the Tests
+
+```bash
+cd tests
+pytest
 ```

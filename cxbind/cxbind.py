@@ -23,6 +23,13 @@ class CxBind:
         else:
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
+        log_level = "DEBUG"
+        log_format = "<level>{level: <8}</level> | {file}:{line: >4} - {message}"
+        #logger.add(sys.stderr, level=log_level, format=log_format, colorize=True, backtrace=True, diagnose=True)
+        #logger.add(sys.stderr, level=log_level, colorize=True, backtrace=True, diagnose=True)
+        logger.add("cxbind.log", mode="w", level=log_level, format=log_format, colorize=False, backtrace=True, diagnose=True)
+        #logger.add("cxbind.log", level=log_level, colorize=False, backtrace=True, diagnose=True)
+
     def load_project(self) -> Project:
         #prj_dir = Path(os.getcwd(), '.cxbind')
         path = next(self.prj_dir.glob('*.prj.yaml'), None)

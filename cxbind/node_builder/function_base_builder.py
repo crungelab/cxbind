@@ -21,8 +21,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         if not self.chaining:
             self.begin_chain()
-        else:
-            out()
 
         if self.is_overloaded(cursor):
             extra = ""
@@ -31,12 +29,18 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
 
         if self.should_wrap_function(cursor):
-            out(f'.def("{pyname}", []({self.arg_string(arguments)})')
+            is_non_static_method = cursor.kind == cindex.CursorKind.CXX_METHOD and not cursor.is_static_method()
+            self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
+            self_call = f"self.{cursor.spelling}" if is_non_static_method else f"{self.spell(cursor)}::"
+            # ImFontAtlas& self
+            out(f'.def("{pyname}", []({self_arg}{self.arg_string(arguments)})')
             with out:
                 out("{")
                 ret = "" if self.is_function_void_return(cursor) else "auto ret = "
+                ### This is the part that needs to be changed
+                #result = f"{self.spell(cursor)}({self.arg_names(arguments)})"
+                result = f"{self_call}({self.arg_names(arguments)})"
 
-                result = f"{self.spell(cursor)}({self.arg_names(arguments)})"
                 result_type: cindex.Cursor = cursor.result_type
                 result_type_name = cu.get_base_type_name(result_type)
 
@@ -60,6 +64,59 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         #out()
 
+    '''
+    def build_node(self):
+        super().build_node()
+
+        out = self.out
+        node = self.node
+        cursor = self.cursor
+        arguments = [a for a in cursor.get_arguments()]
+        cname = "&" + self.spell(cursor)
+        pyname = self.format_field(cursor.spelling)
+
+        if not self.chaining:
+            self.begin_chain()
+
+        if self.is_overloaded(cursor):
+            extra = ""
+            if cursor.is_const_method():
+                extra = ", py::const_"
+            cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
+
+        if self.should_wrap_function(cursor):
+            out(f'.def("{pyname}", []({self.arg_string(arguments)})')
+            with out:
+                out("{")
+                ret = "" if self.is_function_void_return(cursor) else "auto ret = "
+                ### This is the part that needs to be changed
+
+                result = f"{self.spell(cursor)}({self.arg_names(arguments)})"
+
+                result_type: cindex.Cursor = cursor.result_type
+                result_type_name = cu.get_base_type_name(result_type)
+
+                if result_type_name in self.wrapped:
+                    wrapper = self.wrapped[result_type_name].wrapper
+                    extra = ""
+                    if wrapper == "py::capsule":
+                        extra = f', "{result_type_name}"'
+                    result = f"{wrapper}({result}{extra})"
+
+                with out:
+                    out(f"{ret}{result};")
+                    out(f"return {self.get_function_result(node, cursor)};")
+                out("}")
+        else:
+            out(f'.def("{pyname}", {cname}')
+        
+        with out:
+            self.write_pyargs(arguments, node)
+            out(f", {self.get_return_policy(cursor)})")
+
+        #out()
+    '''
+
     def process_function_decl(self, decl):
         for param in decl.get_children():
             if param.kind == cindex.CursorKind.PARM_DECL:
@@ -73,12 +130,13 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         return self.spell(cursor) in self.overloaded
 
     def is_function_mappable(self, cursor: cindex.Cursor) -> bool:
-        if cursor.is_deleted_method():
-            return False
-
         if not self.is_cursor_mappable(cursor):
             return False
+        if cursor.is_deleted_method():
+            return False
         if "operator" in cursor.spelling:
+            return False
+        if cursor.get_num_template_arguments() > 0:
             return False
         if not self.process_function_decl(cursor):
             return False

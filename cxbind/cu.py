@@ -24,6 +24,14 @@ def find_parent_typedef(cursor : cindex.Cursor) -> cindex.Cursor:
         parent = parent.semantic_parent
     return None
 
+def is_template(cursor: cindex.Cursor) -> bool:
+    if cursor.get_canonical().kind in [cindex.CursorKind.FUNCTION_TEMPLATE,
+                        cindex.CursorKind.CLASS_TEMPLATE,
+                        cindex.CursorKind.TEMPLATE_TYPE_PARAMETER]:
+        return True
+    return False
+
+'''
 # This was ChatGPT's idea.  Doesn't work.
 def is_template(cursor: cindex.Cursor) -> bool:
     # Traverse up the AST and check if this is part of a template declaration
@@ -35,6 +43,7 @@ def is_template(cursor: cindex.Cursor) -> bool:
             return True
         parent = parent.semantic_parent
     return False
+'''
 
 # Function to get the base type name without qualifiers or pointers
 def get_base_type_name(typ):

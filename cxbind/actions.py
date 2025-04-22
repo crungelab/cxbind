@@ -15,15 +15,12 @@ MAP = {
     cindex.CursorKind.TYPEDEF_DECL : lambda self, node : self.visit_typedef_decl(node),
 
     cindex.CursorKind.FUNCTION_TEMPLATE : lambda self, node : self.visit_none(node),
-    cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_none(node),
+    #cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_class_template(node),
     cindex.CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION : lambda self, node : self.visit_none(node),
     cindex.CursorKind.TYPE_ALIAS_TEMPLATE_DECL : lambda self, node : self.visit_none(node),
     cindex.CursorKind.TEMPLATE_REF : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.TEMPLATE_TYPE_PARAMETER : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.TEMPLATE_NON_TYPE_PARAMETER : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.TEMPLATE_TEMPLATE_PARAMETER : lambda self, node : self.visit_none(node),
 }
-
-'''
-        if parent.kind in [cindex.CursorKind.FUNCTION_TEMPLATE,
-                           cindex.CursorKind.CLASS_TEMPLATE,
-                           cindex.CursorKind.TEMPLATE_TYPE_PARAMETER]:
-            return True
-'''
