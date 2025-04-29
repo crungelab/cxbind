@@ -19,6 +19,12 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         cname = "&" + self.spell(cursor)
         pyname = self.format_field(cursor.spelling)
 
+        def_call = ""
+        if cursor.is_static_method():
+            def_call = ".def_static"
+        else:
+            def_call = ".def"
+
         if not self.chaining:
             self.begin_chain()
 
@@ -31,9 +37,9 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         if self.should_wrap_function(cursor):
             is_non_static_method = cursor.kind == cindex.CursorKind.CXX_METHOD and not cursor.is_static_method()
             self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
-            self_call = f"self.{cursor.spelling}" if is_non_static_method else f"{self.spell(cursor)}::"
-            # ImFontAtlas& self
-            out(f'.def("{pyname}", []({self_arg}{self.arg_string(arguments)})')
+            #self_call = f"self.{cursor.spelling}" if is_non_static_method else f"{self.spell(cursor)}::"
+            self_call = f"self.{cursor.spelling}" if is_non_static_method else f"{self.spell(cursor)}"
+            out(f'{def_call}("{pyname}", []({self_arg}{self.arg_string(arguments)})')
             with out:
                 out("{")
                 ret = "" if self.is_function_void_return(cursor) else "auto ret = "
@@ -56,8 +62,8 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                     out(f"return {self.get_function_result(node, cursor)};")
                 out("}")
         else:
-            out(f'.def("{pyname}", {cname}')
-        
+            out(f'{def_call}("{pyname}", {cname}')
+
         with out:
             self.write_pyargs(arguments, node)
             out(f", {self.get_return_policy(cursor)})")
@@ -219,6 +225,34 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         else:
             return "py::return_value_policy::automatic_reference"
 
+
+    def write_pyargs(self, arguments, node: FunctionNode=None):
+        for argument in arguments:
+            default = self.default_from_tokens(argument.get_tokens())
+            for child in argument.get_children():
+                if child.type.kind in [cindex.TypeKind.POINTER]:
+                    default = "nullptr"
+                elif not len(default):
+                    default = self.default_from_tokens(child.get_tokens())
+            default = self.defaults.get(argument.spelling, default)
+            if node and node.arguments and argument.spelling in node.arguments:
+                node_argument = node.arguments[argument.spelling]
+                #logger.debug(f"node_argument: {node_argument}")
+                default = str(node_argument.default)
+
+            # Handle complex default values like initializer lists
+            if default.startswith("{") and default.endswith("}"):
+                # Example: {0, 0} -> SkPoint{0, 0}
+                #default = f"{argument.type.spelling}{default}"
+                default = f"{cu.get_base_type_name(argument.type)}{default}"
+
+            # logger.debug(argument.spelling)
+            # logger.debug(default)
+            if len(default):
+                default = " = " + default
+            self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
+
+    '''
     def write_pyargs(self, arguments, node: FunctionNode=None):
         for argument in arguments:
             default = self.default_from_tokens(argument.get_tokens())
@@ -237,6 +271,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             if len(default):
                 default = " = " + default
             self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
+    '''
 
     def default_from_tokens(self, tokens) -> str:
         joined = "".join([t.spelling for t in tokens])

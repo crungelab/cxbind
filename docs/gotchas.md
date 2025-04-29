@@ -1,0 +1,1 @@
+If clang doesn't know a type it says it's an int.

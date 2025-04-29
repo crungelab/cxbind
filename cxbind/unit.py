@@ -22,6 +22,7 @@ from .unit_base import UnitBase
 class Unit(UnitBase):
     source: str
     target: str
+    template: Optional[str] = None
 
 def validate_unit_dict(v: dict[str, Unit]) -> dict[str, Unit]:
     #logger.debug(f"validate_unit_dict: {v}")

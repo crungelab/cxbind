@@ -117,8 +117,12 @@ class Generator(Builder):
         context = {
             'body': self.text
         }
-
-        template = self.jinja_env.get_template(f'{self.unit.name}.cpp')
+        unit_template_path = self.unit.template
+        if unit_template_path:
+            template = self.jinja_env.get_template(unit_template_path)
+        else:
+            template = self.jinja_env.get_template(f'{self.unit.name}.cpp')
+        #template = self.jinja_env.get_template(f'{self.unit.name}.cpp')
         rendered = template.render(context)
         filename = self.target
         with open(filename,'w') as fh:

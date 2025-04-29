@@ -228,7 +228,6 @@ class Builder:
         # logger.debug(arg_type.spelling)
         arg_type_kind = arg_type.kind
         # logger.debug(arg_type_kind)
-        # exit()
         if self.is_function_pointer(argument):
             logger.debug(f"Function pointer: {argument.spelling}")
             return argument.type.get_canonical().get_pointee().spelling
@@ -236,7 +235,8 @@ class Builder:
         if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
             logger.debug(f"Constant array: {argument.spelling}")
             element_type = argument.type.get_array_element_type()
-            element_type_name = argument.type.get_array_element_type().spelling
+            #element_type_name = argument.type.get_array_element_type().spelling
+            element_type_name = cu.get_base_type_name(argument.type.get_array_element_type()) # Strip qualifiers
             logger.debug(f"Element type: {element_type.spelling}")
             logger.debug(f"Element type kind: {element_type.kind}")
             if element_type.kind == cindex.TypeKind.UNEXPOSED:
@@ -354,9 +354,26 @@ class Builder:
         return ", ".join([self.arg_name(a) for a in arguments])
 
     def arg_string(self, arguments: List[cindex.Cursor]):
+        result = []
+        for a in arguments:
+            arg_type = self.arg_type(a)
+            arg_spelling = self.arg_spelling(a)
+
+            if arg_type.endswith("[]"):
+                # Remove the array brackets for the argument type
+                arg_type = arg_type[:-2]
+                # Add the array brackets to the argument spelling
+                arg_spelling = f"{arg_spelling}[]"
+
+            result.append(f"{arg_type} {arg_spelling}")
+        return ", ".join(result)
+
+    """
+    def arg_string(self, arguments: List[cindex.Cursor]):
         return ", ".join(
             ["{} {}".format(self.arg_type(a), self.arg_spelling(a)) for a in arguments]
         )
+    """
 
     """
     def arg_string(self, arguments: List[cindex.Cursor]):

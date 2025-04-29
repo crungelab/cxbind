@@ -12,6 +12,7 @@ void register_exclude_py_auto(py::module &, Registry &registry);
 void register_functions_py_auto(py::module &, Registry &registry);
 void register_namespace_py_auto(py::module &, Registry &registry);
 void register_templates_py_auto(py::module &, Registry &registry);
+void register_overloads_py_auto(py::module &, Registry &registry);
 
 void register_unit_1_py_auto(py::module &, Registry &registry);
 void register_unit_2_py_auto(py::module &, Registry &registry);
@@ -49,4 +50,6 @@ PYBIND11_MODULE(cxbind_tests, m)
     register_unit_1_py_auto(_multiunit, r);
     register_unit_2_py_auto(_multiunit, r);
 
+    auto _overloads = m.def_submodule("test_overloads");
+    register_overloads_py_auto(_overloads, r);
 }

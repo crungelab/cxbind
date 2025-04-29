@@ -1,0 +1,5 @@
+source: 'src/overloads.h'
+target: 'src/overloads_py_auto.cpp'
+
+nodes:
+  'function.Advanced::ignore_me': {exclude: true}

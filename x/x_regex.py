@@ -39,3 +39,11 @@ for test_pattern in test_patterns:
     print(f"Original: {test_pattern}")
     print(f"Translated: {regex_pattern}")
     print()
+
+# Example usage
+pattern = "MyClass::MyMethod{.*}"
+regex = re.compile(translate_to_regex(pattern))
+if regex.match("MyClass::MyMethod123"):
+    print("Matched!")
+else:
+    print("Not matched!")
