@@ -46,11 +46,17 @@ class Builder:
     def chaining(self, value) -> None:
         self.context.chaining = value
 
-    def begin_chain(self) -> None:
+    def begin_chain(self, emit_scope:bool = True) -> None:
+        if self.chaining:
+            return
         self.context.chaining = True
-        self.out(self.scope)
+        if emit_scope:
+            self.out(self.scope)
+        #self.out(self.scope)
 
     def end_chain(self) -> None:
+        if not self.chaining:
+            return
         self.context.chaining = False
         self.out(";")
         self.out()

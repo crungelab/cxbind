@@ -15,8 +15,10 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         if not self.is_class_mappable(self.cursor):
             return True
         # Only map top level classes for now
+        '''
         if isinstance(self.top_node, StructBaseNode):
             return True
+        '''
         if isinstance(self.top_node, TypedefNode):
             return True
         return super().should_cancel()
@@ -31,9 +33,11 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         return True
 
     def gen_init(self):
+        self.begin_chain()
         self.out(f".def(py::init<>())")
 
     def gen_kw_init(self):
+        self.begin_chain()
         node = self.top_node
         self.out(f'.def(py::init([](const py::kwargs& kwargs)')
         self.out("{")

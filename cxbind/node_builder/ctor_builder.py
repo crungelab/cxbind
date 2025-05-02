@@ -21,8 +21,11 @@ class CtorBuilder(MethodBuilder):
         if self.top_node.readonly:
             return
         
+        '''
         if not self.chaining:
             self.begin_chain()
+        '''
+        self.begin_chain()
         
         self.top_node.has_constructor = True
         arguments = [a for a in self.cursor.get_arguments()]

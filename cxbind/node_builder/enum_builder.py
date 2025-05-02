@@ -18,9 +18,19 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         super().build_node()
         #logger.debug(f"Building Enum: {self.node.name}")
 
+        '''
         if self.chaining:
             self.end_chain()
         self.chaining = True
+        '''
+        '''
+        if self.chaining:
+            self.end_chain()
+
+        self.begin_chain(emit_scope=False)
+        '''
+        self.end_chain()
+        self.begin_chain(emit_scope=False)
 
         node = self.node
         cursor = self.cursor

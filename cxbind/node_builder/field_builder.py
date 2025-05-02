@@ -23,6 +23,8 @@ class FieldBuilder(NodeBuilder[FieldNode]):
 
         #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
         
+        self.begin_chain()
+
         if self.is_field_readonly(cursor):
             self.out(f'.def_readonly("{node.pyname}", &{node.name})')
         else:

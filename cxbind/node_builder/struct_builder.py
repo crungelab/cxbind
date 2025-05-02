@@ -19,12 +19,16 @@ class StructBuilder(StructBaseBuilder[StructNode]):
 
         #TODO: Shouldn't need this?
         if not pyname:
-            #return
             raise ValueError(f"Missing pyname for {name}")
 
+        '''
         if self.chaining:
             self.end_chain()
         self.chaining = True
+        '''
+        #self.begin_chain()
+        self.end_chain()
+        #self.begin_chain(emit_scope=False)
 
         #logger.debug(entry)
         children = list(cursor.get_children())  # it's an iterator
@@ -33,17 +37,29 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         if len(children) == 1:
             first_child = children[0]
             wrapped = first_child.kind == cindex.CursorKind.ENUM_DECL
+
         if not wrapped:
+            #TODO: Don't use the base class for now.  Explicit definition in Node?
+            '''
             base = None
             for child in cursor.get_children():
                 if child.kind == cindex.CursorKind.CXX_BASE_SPECIFIER:
                     base = child
             if base:
                 basename = self.spell(base)
-                self.out(f"PYSUBCLASS_BEGIN({self.module}, {name}, {basename}, {pyname})")
+                #self.out(f"PYSUBCLASS_BEGIN({self.module}, {name}, {basename}, {pyname})")
+                #define PYSUBCLASS_BEGIN(_module, _class, _base, _name) py::class_<_class, _base> _name(_module, #_name);
+                self.out(f'py::class_<{node.name}, {basename}> {node.pyname}({self.module}, "{node.pyname}");')
+                self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
+
             else:
                 #self.out(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
-                self.out(f"PYCLASS({self.module}, {name}, {pyname})")
+                #self.out(f"PYCLASS({self.module}, {name}, {pyname})")
+                self.out(f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");')
+                self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
+            '''
+            self.out(f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");')
+            self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
 
         with self.enter(node):
             self.visit_children(cursor)

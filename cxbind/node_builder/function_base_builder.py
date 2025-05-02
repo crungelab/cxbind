@@ -25,8 +25,11 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         else:
             def_call = ".def"
 
+        '''
         if not self.chaining:
             self.begin_chain()
+        '''
+        self.begin_chain()
 
         if self.is_overloaded(cursor):
             extra = ""
