@@ -18,19 +18,7 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         super().build_node()
         #logger.debug(f"Building Enum: {self.node.name}")
 
-        '''
-        if self.chaining:
-            self.end_chain()
-        self.chaining = True
-        '''
-        '''
-        if self.chaining:
-            self.end_chain()
-
-        self.begin_chain(emit_scope=False)
-        '''
         self.end_chain()
-        self.begin_chain(emit_scope=False)
 
         node = self.node
         cursor = self.cursor
@@ -45,9 +33,15 @@ class EnumBuilder(NodeBuilder[EnumNode]):
             pyname = self.format_type(cursor.spelling)
 
         #TODO: for some reason it's visiting the same enum twice when typedef'd
+        #TODO: Shouldn't need this?
+        if not pyname:
+            raise ValueError(f"Missing pyname for {name}")
+
+        '''
         if not pyname:
             return
-        
+        '''
+
         self.out(
             f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())'
         )
@@ -57,5 +51,5 @@ class EnumBuilder(NodeBuilder[EnumNode]):
                     f'.value("{self.format_enum_constant(child.spelling, self.node.first_name)}", {name}::{child.spelling})'
                 )
             out(".export_values()")
-        self.end_chain()
-        #self.out()
+
+        self.out(";")

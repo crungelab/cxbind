@@ -9,6 +9,15 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
     def should_cancel(self):
         return super().should_cancel() or not self.is_function_mappable(self.cursor)
 
+    def find_or_create_node(self):
+        node = self.lookup_node(self.name)
+        logger.debug(f"FunctionBaseBuilder: find_or_create_node: {node}")
+
+        if node is None or self.is_overloaded(self.cursor):
+            self.create_node()
+        else:
+            self.node = node
+
     def build_node(self):
         super().build_node()
 
@@ -135,9 +144,11 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                     return False
         return True
 
+    '''
     def is_overloaded(self, cursor: cindex.Cursor) -> bool:
         return self.spell(cursor) in self.overloaded
-
+    '''
+    
     def is_function_mappable(self, cursor: cindex.Cursor) -> bool:
         if not self.is_cursor_mappable(cursor):
             return False

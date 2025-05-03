@@ -21,14 +21,7 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         if not pyname:
             raise ValueError(f"Missing pyname for {name}")
 
-        '''
-        if self.chaining:
-            self.end_chain()
-        self.chaining = True
-        '''
-        #self.begin_chain()
         self.end_chain()
-        #self.begin_chain(emit_scope=False)
 
         #logger.debug(entry)
         children = list(cursor.get_children())  # it's an iterator

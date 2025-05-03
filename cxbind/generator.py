@@ -136,6 +136,7 @@ class Generator(Builder):
     def visit_overloads(self, cursor):
         for child in cursor.get_children():
             if child.kind in [
+                cindex.CursorKind.CONSTRUCTOR,
                 cindex.CursorKind.CXX_METHOD,
                 cindex.CursorKind.FUNCTION_DECL,
             ]:

@@ -10,7 +10,6 @@ from loguru import logger
 class Node(BaseModel):
     kind: str
     name: str
-    signature: Optional[str] = None
     first_name: Optional[str] = None
     pyname: Optional[str] = None
     children: List["Node"] = []
@@ -22,14 +21,6 @@ class Node(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    @property
-    def key(self) -> str:
-        if self.signature:
-            #return f"{self.kind}.{self.name}.{self.signature}"
-            return f"{self.name}.{self.signature}"
-        #return f"{self.kind}.{self.name}"
-        return self.name
-    
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
 
@@ -49,6 +40,7 @@ class FunctionBaseNode(Node):
     return_type: Optional[str] = None
     omit_ret: Optional[bool] = False
     check_result: Optional[bool] = False
+    signature: Optional[str] = None
 
     def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
@@ -60,11 +52,37 @@ class FunctionBaseNode(Node):
 
 class FunctionNode(FunctionBaseNode):
     kind: Literal["function"]
+    #overloads: Dict[str, "FunctionNode"] = {}
+    overloads: Dict[str, "FunctionNode"] = Field(default_factory=dict)
 
+    def model_post_init(self, __context: Any) -> None:
+        super().model_post_init(__context)
+        new_overloads = {}
+        for sig, overload in self.overloads.items():
+            if isinstance(overload, dict):
+                overload = FunctionNode(kind="function", **overload)
+            overload.name = self.name
+            overload.signature = sig
+            new_overloads[sig] = overload
+        self.overloads = new_overloads
 
 class MethodNode(FunctionBaseNode):
     kind: Literal["method"]
+    #overloads: Dict[str, "MethodNode"] = {}
+    overloads: Dict[str, "MethodNode"] = Field(default_factory=dict)
 
+    '''
+    def model_post_init(self, __context: Any) -> None:
+        super().model_post_init(__context)
+        new_overloads = {}
+        for sig, overload in self.overloads.items():
+            if isinstance(overload, dict):
+                overload = MethodNode(kind="method", **overload)
+            overload.name = self.name
+            overload.signature = sig
+            new_overloads[sig] = overload
+        self.overloads = new_overloads
+    '''
 
 class CtorNode(FunctionBaseNode):
     kind: Literal["ctor"]
@@ -125,24 +143,32 @@ NodeUnion = Union[
     TypedefNode,
 ]
 
-def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
-    # logger.debug(f"validate_node_dict: {v}")
+def validate_node_dict(v: dict[str, dict]) -> dict[str, NodeUnion]:
     data = {}
+
     for key, value in v.items():
         if "." in key:
-            #kind, name = key.split(".")
-            kind, name, signature = None, None, None
-            parts = key.split(".")
-            if len(parts) == 2:
-                kind, name = parts
-            elif len(parts) == 3:
-                kind, name, signature = parts
-            value["name"] = name
+            kind, name = key.split(".", 1)
             value["kind"] = kind
-            value["signature"] = signature
+            value["name"] = name
+
+            # Preprocess overloads if present
+            overloads = value.get("overloads")
+            if overloads:
+                new_overloads = {}
+                for sig, overload_cfg in overloads.items():
+                    new_overloads[sig] = {
+                        "kind": kind,
+                        "name": name,
+                        "signature": sig,
+                        **overload_cfg,
+                    }
+                value["overloads"] = new_overloads
+
             data[name] = value
         else:
             data[key] = value
+
     return data
 
 '''

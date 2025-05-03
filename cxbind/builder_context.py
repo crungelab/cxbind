@@ -94,8 +94,10 @@ class BuilderContext:
     def register_node(self, node: Node) -> None:
         #logger.debug(f"Registering {node}")
         name = node.name
+        key = node.key
         if node.exclude:
-            self.excludes.append(name)
+            #self.excludes.append(name)
+            self.excludes.append(key)
         if node.overload:
             self.overloads.append(name)
         if hasattr(node, "wrapper") and node.wrapper:
@@ -113,8 +115,9 @@ class BuilderContext:
         from .node_builder import NodeBuilder
         kind, name = entry_key.split(".")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
-        node = self.lookup_node(name)
-        builder = builder_cls(self, name, cursor, node)
+        #node = self.lookup_node(name)
+        #builder = builder_cls(self, name, cursor, node)
+        builder = builder_cls(self, name, cursor)
         return builder
 
     def spell(self, cursor: cindex.Cursor) -> str:

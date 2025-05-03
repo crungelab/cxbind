@@ -10,4 +10,8 @@ struct Overloads
     {
         return i + j;
     }
+    double add(double i, double j)
+    {
+        return i + j;
+    }
 };

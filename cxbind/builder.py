@@ -167,9 +167,17 @@ class Builder:
         else:
             return node.pyname
 
+    def is_overloaded(self, cursor: cindex.Cursor) -> bool:
+        return self.spell(cursor) in self.overloaded
+
     def is_excluded(self, cursor: cindex.Cursor):
         if self.spell(cursor) in self.excluded:
             return True
+        if self.is_overloaded(cursor):
+            key = f"{self.spell(cursor)}.{cursor.type.spelling}" 
+            if key in self.excluded:
+                logger.debug(f"Excluded {key}")
+                return True
         if cursor.spelling.startswith("_"):
             return True
         return False
