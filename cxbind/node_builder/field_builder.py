@@ -40,7 +40,8 @@ class FieldBuilder(NodeBuilder[FieldNode]):
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def visit_char_ptr_field(self, cursor, pyname):
-        pname = self.spell(cursor.semantic_parent)
+        #pname = self.spell(cursor.semantic_parent)
+        pname = self.top_node.name
         name = cursor.spelling
         self.out(f'.def_property("{pyname}",')
         with self.out:
@@ -57,7 +58,8 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         self.out(')')
 
     def visit_fn_ptr_field(self, cursor, pyname):
-        pname = self.spell(cursor.semantic_parent)
+        #pname = self.spell(cursor.semantic_parent)
+        pname = self.top_node.name
         name = cursor.spelling
         typename = cursor.type.spelling
         self.out(f'.def_property("{pyname}",')
