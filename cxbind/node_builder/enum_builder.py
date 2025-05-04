@@ -42,9 +42,9 @@ class EnumBuilder(NodeBuilder[EnumNode]):
             return
         '''
 
-        self.out(
-            f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())'
-        )
+        #self.out(f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())')
+        self.out(f'py::enum_<{name}>({self.scope}, "{pyname}", py::arithmetic())')
+
         with self.out as out:
             for child in cursor.get_children():
                 out(
