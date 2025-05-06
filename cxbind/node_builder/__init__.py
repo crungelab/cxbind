@@ -6,7 +6,7 @@ from .field_builder import FieldBuilder
 from .enum_builder import EnumBuilder
 from .struct_builder import StructBuilder
 from .function_builder import FunctionBuilder
-from .typedef_builder import TypedefBuilder
+#from .typedef_builder import TypedefBuilder
 from .ctor_builder import CtorBuilder
 from .node_builder import NodeBuilder
 from .node_builder_cls_map import NODE_BUILDER_CLS_MAP

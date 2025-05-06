@@ -4,6 +4,7 @@ enum SimpleEnum {
   VALUE_3
 };
 
+// Scoped enum
 enum class ScopedEnum {
   Value1,
   Value2,
@@ -24,4 +25,20 @@ enum NsRedundantEnum {
   NsRedundantEnumValue2,
   NsRedundantEnumValue3
 };
+};
+
+// Typedef enum
+typedef enum {
+  TypedefEnumValue1,
+  TypedefEnumValue2,
+  TypedefEnumValue3
+} TypedefEnum;
+
+// Pre c++11 scoped enum
+struct EnumStruct {
+  enum Enum {
+    Value1,
+    Value2,
+    Value3
+  };
 };

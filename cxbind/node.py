@@ -156,12 +156,12 @@ class ClassTemplateNode(StructBaseNode):
 class EnumNode(Node):
     kind: Literal["enum"]
 
-
+'''
 class TypedefNode(Node):
     kind: Literal["typedef"]
     gen_init: bool = False
     gen_kw_init: bool = False
-
+'''
 
 NodeUnion = Union[
     StructNode,
@@ -172,7 +172,7 @@ NodeUnion = Union[
     MethodNode,
     CtorNode,
     EnumNode,
-    TypedefNode,
+    #TypedefNode,
 ]
 
 def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:

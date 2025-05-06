@@ -1,7 +1,8 @@
 from loguru import logger
 
 from .node_builder import NodeBuilder
-from ..node import EnumNode, TypedefNode
+#from ..node import EnumNode, TypedefNode
+from ..node import EnumNode
 
 
 class EnumBuilder(NodeBuilder[EnumNode]):
@@ -12,8 +13,10 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         return self.context.format_enum(name)
 
     def should_cancel(self):
+        '''
         if isinstance(self.top_node, TypedefNode): #TODO: for some reason it's visiting the same node twice when typedef'd
             return True
+        '''
         if self.is_forward_declaration(self.cursor):
             return True
         return super().should_cancel()

@@ -1,7 +1,8 @@
 from loguru import logger
 
 from .node_builder import NodeBuilder, T_Node
-from ..node import StructBaseNode, FieldNode, TypedefNode
+#from ..node import StructBaseNode, FieldNode, TypedefNode
+from ..node import StructBaseNode, FieldNode
 from .. import cu
 
 class StructBaseBuilder(NodeBuilder[T_Node]):
@@ -19,8 +20,11 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         if isinstance(self.top_node, StructBaseNode):
             return True
         '''
+
+        '''
         if isinstance(self.top_node, TypedefNode): #TODO: for some reason it's visiting the same node twice when typedef'd
             return True
+        '''
         return super().should_cancel()
 
     def is_class_mappable(self, cursor):
