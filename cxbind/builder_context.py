@@ -53,7 +53,8 @@ class BuilderContext:
         self.module = ""
         self.flags: List[str] = []
         self.defaults: Dict[str, str] = {}
-        self.excludes: List[str] = []
+        #self.excludes: List[str] = []
+        self.excludes = unit.excludes.copy()
         self.overloads: List[str] = []
 
         #self.nodes: Dict[str, Node] = {}
@@ -115,8 +116,6 @@ class BuilderContext:
         from .node_builder import NodeBuilder
         kind, name = entry_key.split(".")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
-        #node = self.lookup_node(name)
-        #builder = builder_cls(self, name, cursor, node)
         builder = builder_cls(self, name, cursor)
         return builder
 

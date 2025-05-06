@@ -19,4 +19,10 @@ struct Exclude
         return i + j;
     }
 
+    // This function should not be exposed
+    int ignore_me_2(int i, int j)
+    {
+        return i + j;
+    }
+    
 };

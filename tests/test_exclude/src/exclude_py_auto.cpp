@@ -10,15 +10,14 @@
 namespace py = pybind11;
 
 void register_exclude_py_auto(py::module &_core, Registry &registry) {
-    PYCLASS(_core, Exclude, Exclude)
-
+    py::class_<Exclude> Exclude(_core, "Exclude");
+    registry.on(_core, "Exclude", Exclude);
+        Exclude
         .def(py::init<>())
-
         .def("add", &Exclude::add
             , py::arg("i")
             , py::arg("j")
             , py::return_value_policy::automatic_reference)
-
         .def("sub", &Exclude::sub
             , py::arg("i")
             , py::arg("j")

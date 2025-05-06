@@ -1,20 +1,10 @@
-from typing import TYPE_CHECKING, Optional
-
-'''
-if TYPE_CHECKING:
-    from .project import Project
-'''
-
 from typing_extensions import Annotated
 from typing import List, Dict, Optional, Any, Literal, Union
-
-from pathlib import Path
 
 from pydantic import BaseModel, Field, BeforeValidator
 
 
 from loguru import logger
-import yaml
 from pydantic import Field
 
 from .unit_base import UnitBase

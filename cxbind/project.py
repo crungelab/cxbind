@@ -15,7 +15,6 @@ class UnitFile(BaseModel):
 
 class Project(UnitBase):
     unit_files: list[UnitFile] = {}
-    #units: dict[str, Unit] = {}
     units: UnitDict = {}
 
     path: Path = Field(None, exclude=True, repr=False)

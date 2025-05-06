@@ -11,3 +11,4 @@ class UnitBase(BaseModel):
     prefixes: Optional[List[str]] = []
     defaults: Optional[dict] = {}
     nodes: Optional[NodeDict] = {}
+    excludes: Optional[List[str]] = []
