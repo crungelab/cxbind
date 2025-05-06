@@ -25,11 +25,61 @@ class Node(BaseModel):
     @property
     def key(self) -> str:
         if self.signature:
-            #return f"{self.kind}.{self.name}.{self.signature}"
-            return f"{self.name}.{self.signature}"
-        #return f"{self.kind}.{self.name}"
-        return self.name
+            return f"{self.kind}.{self.name}.{self.signature}"
+            #return f"{self.name}.{self.signature}"
+        return f"{self.kind}.{self.name}"
+        #return self.name
     
+    @classmethod
+    def spell(cls, cursor: cindex.Cursor) -> str:
+        if cursor is None:
+            return ""
+        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+            return ""
+        else:
+            res = cls.spell(cursor.semantic_parent)
+            if res != "":
+                return res + "::" + cursor.spelling
+            '''
+            if res != "":
+                node = self.top_node
+                if node is not None:
+                    return node.name + "::" + cursor.spelling
+
+                return res + "::" + cursor.spelling
+            '''
+        return cursor.spelling
+
+    @classmethod
+    def make_key(cls, cursor: cindex.Cursor, overload: bool = False) -> str:
+        kind = None
+        if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+            kind = "translation_unit"
+        elif cursor.kind == cindex.CursorKind.CLASS_DECL:
+            kind = "class"
+        elif cursor.kind == cindex.CursorKind.STRUCT_DECL:
+            kind = "struct"
+        elif cursor.kind == cindex.CursorKind.ENUM_DECL:
+            kind = "enum"
+        elif cursor.kind == cindex.CursorKind.FIELD_DECL:
+            kind = "field"
+        elif cursor.kind == cindex.CursorKind.FUNCTION_DECL:
+            kind = "function"
+        elif cursor.kind == cindex.CursorKind.CXX_METHOD:
+            kind = "method"
+        elif cursor.kind == cindex.CursorKind.CONSTRUCTOR:
+            kind = "ctor"
+        elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
+            kind = "typedef"
+
+        name = cls.spell(cursor)
+        if overload:
+            key = f"{kind}.{name}.{cursor.type.spelling}"
+        else:
+            key = f"{kind}.{name}"
+
+        return key
+
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
 
@@ -140,7 +190,8 @@ def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
             value["name"] = name
             value["kind"] = kind
             value["signature"] = signature
-            data[name] = value
+            #data[name] = value
+            data[key] = value
         else:
             data[key] = value
     return data

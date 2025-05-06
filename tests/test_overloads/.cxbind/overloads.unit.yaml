@@ -3,3 +3,4 @@ target: 'src/overloads_py_auto.cpp'
 
 nodes:
   'method.Overloads::add.double (double, double)' : { exclude: true }
+  'method.Overloads::add.double (const OtherClass &, double)' : { exclude: true }

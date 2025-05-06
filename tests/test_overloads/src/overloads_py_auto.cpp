@@ -10,6 +10,13 @@
 namespace py = pybind11;
 
 void register_overloads_py_auto(py::module &_core, Registry &registry) {
+    py::class_<OtherClass> OtherClass(_core, "OtherClass");
+    registry.on(_core, "OtherClass", OtherClass);
+        OtherClass
+        .def_readwrite("i", &OtherClass::i)
+        .def_readwrite("j", &OtherClass::j)
+    ;
+
     py::class_<Overloads> Overloads(_core, "Overloads");
     registry.on(_core, "Overloads", Overloads);
         Overloads

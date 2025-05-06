@@ -37,7 +37,8 @@ class NodeBuilder(Builder, Generic[T_Node]):
         return False
 
     def find_or_create_node(self):
-        node = self.lookup_node(self.name)
+        #node = self.lookup_node(self.name)
+        node = self.lookup_node(Node.make_key(self.cursor))
         if node is None:
             self.create_node()
         else:

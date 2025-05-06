@@ -14,12 +14,12 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
     def should_cancel(self):
         if not self.is_class_mappable(self.cursor):
             return True
-        # Only map top level classes for now
         '''
+        # Only map top level classes for now
         if isinstance(self.top_node, StructBaseNode):
             return True
         '''
-        if isinstance(self.top_node, TypedefNode):
+        if isinstance(self.top_node, TypedefNode): #TODO: for some reason it's visiting the same node twice when typedef'd
             return True
         return super().should_cancel()
 

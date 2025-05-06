@@ -12,7 +12,12 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         return self.context.format_enum(name)
 
     def should_cancel(self):
-        return super().should_cancel() or self.is_forward_declaration(self.cursor)
+        if isinstance(self.top_node, TypedefNode): #TODO: for some reason it's visiting the same node twice when typedef'd
+            return True
+        if self.is_forward_declaration(self.cursor):
+            return True
+        return super().should_cancel()
+
 
     def build_node(self):
         super().build_node()
@@ -22,25 +27,9 @@ class EnumBuilder(NodeBuilder[EnumNode]):
 
         node = self.node
         cursor = self.cursor
-        
-        typedef_parent = self.top_node if isinstance(self.top_node, TypedefNode) else None
 
-        if typedef_parent:
-            name = typedef_parent.name
-            pyname = typedef_parent.pyname
-        else:
-            name = self.spell(cursor)
-            pyname = self.format_type(cursor.spelling)
-
-        #TODO: for some reason it's visiting the same enum twice when typedef'd
-        #TODO: Shouldn't need this?
-        if not pyname:
-            raise ValueError(f"Missing pyname for {name}")
-
-        '''
-        if not pyname:
-            return
-        '''
+        name = self.spell(cursor)
+        pyname = self.format_type(cursor.spelling)
 
         #self.out(f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())')
         self.out(f'py::enum_<{name}>({self.scope}, "{pyname}", py::arithmetic())')

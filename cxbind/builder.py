@@ -169,14 +169,19 @@ class Builder:
 
     def is_overloaded(self, cursor: cindex.Cursor) -> bool:
         return self.spell(cursor) in self.overloaded
+        #return cursor.spelling in self.overloaded
 
     def is_excluded(self, cursor: cindex.Cursor):
-        if self.spell(cursor) in self.excluded:
+        #if self.spell(cursor) in self.excluded:
+        if Node.make_key(cursor) in self.excluded:
+        #if cursor.spelling in self.excluded:
             return True
         if self.is_overloaded(cursor):
-            key = f"{self.spell(cursor)}.{cursor.type.spelling}" 
+            #key = f"{self.spell(cursor)}.{cursor.type.spelling}" 
+            key = Node.make_key(cursor, overload=True)
+            logger.debug(f"Checking overloaded: {key}")
             if key in self.excluded:
-                logger.debug(f"Excluded {key}")
+                logger.debug(f"Excluded: {key}")
                 return True
         if cursor.spelling.startswith("_"):
             return True
@@ -417,8 +422,8 @@ class Builder:
         logger.debug(
             f"Visiting {cursor.spelling} kind={cursor.kind} type={cursor.type.spelling}"
         )
-        logger.debug(f"canonical_type={cursor.type.get_canonical().spelling}")
-        logger.debug(f"canonical_kind={cursor.type.get_canonical().kind}")
+        #logger.debug(f"canonical_type={cursor.type.get_canonical().spelling}")
+        #logger.debug(f"canonical_kind={cursor.type.get_canonical().kind}")
 
         self.actions[cursor.kind](self, cursor)
 

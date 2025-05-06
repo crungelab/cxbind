@@ -1,3 +1,9 @@
+struct OtherClass
+{
+    int i;
+    int j;
+};
+
 struct Overloads
 {
     Overloads() {}
@@ -10,7 +16,7 @@ struct Overloads
     {
         return i + j;
     }
-    double add(double i, double j)
+    double add(const OtherClass& other, double j)
     {
         return i + j;
     }

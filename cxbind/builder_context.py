@@ -97,18 +97,18 @@ class BuilderContext:
         key = node.key
         if node.exclude:
             #self.excludes.append(name)
+            logger.debug(f"Excluding: {key}")
             self.excludes.append(key)
         if node.overload:
-            self.overloads.append(name)
+            #self.overloads.append(name)
+            self.overloads.append(key)
         if hasattr(node, "wrapper") and node.wrapper:
-            logger.debug(f"Adding wrapped {name}")
+            logger.debug(f"Adding wrapped: {name}")
             self.wrapped[name] = node
 
-        #self.nodes[name] = node
 
-
-    def lookup_node(self, name: str) -> Node:
-        return self.nodes.get(name)
+    def lookup_node(self, key: str) -> Node:
+        return self.nodes.get(key)
 
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "NodeBuilder":
         from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP

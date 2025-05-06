@@ -14,19 +14,11 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         node = self.node
         cursor = self.cursor
 
-        name = node.name
-        pyname = node.pyname
-
-        #TODO: Shouldn't need this?
-        if not pyname:
-            raise ValueError(f"Missing pyname for {name}")
-
         self.end_chain()
 
-        #logger.debug(entry)
+        # Handle the case of a struct with one enum child
         children = list(cursor.get_children())  # it's an iterator
         wrapped = False
-        # Handle the case of a struct with one enum child
         if len(children) == 1:
             first_child = children[0]
             wrapped = first_child.kind == cindex.CursorKind.ENUM_DECL
@@ -40,14 +32,10 @@ class StructBuilder(StructBaseBuilder[StructNode]):
                     base = child
             if base:
                 basename = self.spell(base)
-                #self.out(f"PYSUBCLASS_BEGIN({self.module}, {name}, {basename}, {pyname})")
-                #define PYSUBCLASS_BEGIN(_module, _class, _base, _name) py::class_<_class, _base> _name(_module, #_name);
                 self.out(f'py::class_<{node.name}, {basename}> {node.pyname}({self.module}, "{node.pyname}");')
                 self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
 
             else:
-                #self.out(f"PYCLASS_BEGIN({self.module}, {name}, {pyname})")
-                #self.out(f"PYCLASS({self.module}, {name}, {pyname})")
                 self.out(f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");')
                 self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
             '''
@@ -61,11 +49,6 @@ class StructBuilder(StructBaseBuilder[StructNode]):
                 self.gen_init()
             elif node.gen_kw_init:
                 self.gen_kw_init()
-
-        '''
-        if not wrapped:
-            self.out(f"PYCLASS_END({self.module}, {name}, {pyname})")
-        '''
 
         self.end_chain()
         #self.out()

@@ -10,6 +10,24 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         return super().should_cancel() or not self.is_function_mappable(self.cursor)
 
     def find_or_create_node(self):
+        key = None
+        if self.is_overloaded(self.cursor):
+           #key = f"{self.cursor.spelling}.{self.cursor.type.spelling}"
+           key = FunctionNode.make_key(self.cursor, True)
+        else:
+            #key = self.cursor.spelling
+            key = FunctionNode.make_key(self.cursor)
+        #node = self.lookup_node(self.name)
+        node = self.lookup_node(key)
+        logger.debug(f"FunctionBaseBuilder: find_or_create_node: {node}")
+
+        if node is None:
+            self.create_node()
+        else:
+            self.node = node
+
+    '''
+    def find_or_create_node(self):
         node = self.lookup_node(self.name)
         logger.debug(f"FunctionBaseBuilder: find_or_create_node: {node}")
 
@@ -17,6 +35,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             self.create_node()
         else:
             self.node = node
+    '''
 
     def build_node(self):
         super().build_node()
@@ -34,10 +53,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         else:
             def_call = ".def"
 
-        '''
-        if not self.chaining:
-            self.begin_chain()
-        '''
         self.begin_chain()
 
         if self.is_overloaded(cursor):
@@ -240,14 +255,77 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             return "py::return_value_policy::automatic_reference"
 
 
+    def get_default(self, argument, node: FunctionNode=None):
+        #default = ""
+        default = self.default_from_tokens(argument.get_tokens())
+        for child in argument.get_children():
+            #logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
+
+            if argument.spelling in self.defaults:
+                default = self.defaults.get(argument.spelling, default)
+            elif child.type.kind in [cindex.TypeKind.POINTER]:
+                default = "nullptr"
+            elif child.referenced is not None and child.referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL:
+                referenced = child.referenced
+                #logger.debug(f"referenced: {referenced.spelling}, {referenced.kind}, {referenced.type.spelling}, {referenced.type.kind}")
+                default = f"{referenced.type.spelling}::{referenced.spelling}"
+            elif not len(default):
+                default = self.default_from_tokens(child.get_tokens())
+
+        #default = self.defaults.get(argument.spelling, default)
+
+        if node and node.arguments and argument.spelling in node.arguments:
+            node_argument = node.arguments[argument.spelling]
+            #logger.debug(f"node_argument: {node_argument}")
+            default = str(node_argument.default)
+
+        # Handle complex default values like initializer lists
+        if default.startswith("{") and default.endswith("}"):
+            # Example: {0, 0} -> SkPoint{0, 0}
+            #default = f"{argument.type.spelling}{default}"
+            default = f"{cu.get_base_type_name(argument.type)}{default}"
+
+        # logger.debug(argument.spelling)
+        # logger.debug(default)
+        if len(default):
+            default = " = " + default
+
+        return default
+
     def write_pyargs(self, arguments, node: FunctionNode=None):
         for argument in arguments:
+            #logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
+            default = self.get_default(argument, node)
+            self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
+
+
+    def default_from_tokens(self, tokens) -> str:
+        joined = "".join([t.spelling for t in tokens])
+        #logger.debug(f"joined: {joined}")
+        parts = joined.split("=")
+        if len(parts) == 2:
+            return parts[1]
+        return ""
+    
+    '''
+    def write_pyargs(self, arguments, node: FunctionNode=None):
+        for argument in arguments:
+            logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
             default = self.default_from_tokens(argument.get_tokens())
             for child in argument.get_children():
+                logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
+                referenced = child.referenced
+                if referenced and referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL:
+                    logger.debug(f"referenced: {referenced.spelling}, {referenced.kind}, {referenced.type.spelling}, {referenced.type.kind}")
+
+                arg_type_decl = child.type.get_declaration()
+                logger.debug(f"arg_type_decl: {arg_type_decl.spelling}, {arg_type_decl.kind}")
+
                 if child.type.kind in [cindex.TypeKind.POINTER]:
                     default = "nullptr"
                 elif not len(default):
                     default = self.default_from_tokens(child.get_tokens())
+
             default = self.defaults.get(argument.spelling, default)
             if node and node.arguments and argument.spelling in node.arguments:
                 node_argument = node.arguments[argument.spelling]
@@ -267,29 +345,3 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
 
     '''
-    def write_pyargs(self, arguments, node: FunctionNode=None):
-        for argument in arguments:
-            default = self.default_from_tokens(argument.get_tokens())
-            for child in argument.get_children():
-                if child.type.kind in [cindex.TypeKind.POINTER]:
-                    default = "nullptr"
-                elif not len(default):
-                    default = self.default_from_tokens(child.get_tokens())
-            default = self.defaults.get(argument.spelling, default)
-            if node and node.arguments and argument.spelling in node.arguments:
-                node_argument = node.arguments[argument.spelling]
-                #logger.debug(f"node_argument: {node_argument}")
-                default = str(node_argument.default)
-            # logger.debug(argument.spelling)
-            # logger.debug(default)
-            if len(default):
-                default = " = " + default
-            self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
-    '''
-
-    def default_from_tokens(self, tokens) -> str:
-        joined = "".join([t.spelling for t in tokens])
-        parts = joined.split("=")
-        if len(parts) == 2:
-            return parts[1]
-        return ""
