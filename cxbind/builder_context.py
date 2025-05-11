@@ -12,6 +12,7 @@ from clang import cindex
 from loguru import logger
 
 from .node import Node, StructBaseNode
+from .spec import Spec
 from .unit import Unit
 from .code_stream import CodeStream
 
@@ -57,16 +58,16 @@ class BuilderContext:
         self.excludes = unit.excludes.copy()
         self.overloads: List[str] = []
 
-        #self.nodes: Dict[str, Node] = {}
-        self.nodes = unit.nodes.copy()
+        #self.specs: Dict[str, Node] = {}
+        self.specs = unit.specs.copy()
         self.node_stack: List[Node] = []
 
         for attr in vars(unit):
             setattr(self, attr, getattr(unit, attr))
 
         
-        for name, node in self.nodes.items():
-            self.register_node(node)
+        for name, spec in self.specs.items():
+            self.register_spec(spec)
 
         for key in kwargs:
             if key == 'options':
@@ -92,29 +93,28 @@ class BuilderContext:
             return None
         return self.node_stack[-1]
 
-    def register_node(self, node: Node) -> None:
-        #logger.debug(f"Registering {node}")
-        name = node.name
-        key = node.key
-        if node.exclude:
-            #self.excludes.append(name)
+    def register_spec(self, spec: Spec) -> None:
+        logger.debug(f"Registering spec: {spec.name}")
+        name = spec.name
+        key = spec.key
+        if spec.exclude:
             logger.debug(f"Excluding: {key}")
             self.excludes.append(key)
-        if node.overload:
-            #self.overloads.append(name)
+        if spec.overload:
             self.overloads.append(key)
-        if hasattr(node, "wrapper") and node.wrapper:
+        if hasattr(spec, "wrapper") and spec.wrapper:
             logger.debug(f"Adding wrapped: {name}")
-            self.wrapped[name] = node
+            self.wrapped[name] = spec
 
 
-    def lookup_node(self, key: str) -> Node:
-        return self.nodes.get(key)
+    def lookup_spec(self, key: str) -> Spec:
+        spec = self.specs.get(key)
+        return spec
 
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "NodeBuilder":
         from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP
         from .node_builder import NodeBuilder
-        kind, name = entry_key.split(".")
+        kind, name = entry_key.split("/")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
         builder = builder_cls(self, name, cursor)
         return builder
@@ -133,40 +133,6 @@ class BuilderContext:
 
                 return res + "::" + cursor.spelling
         return cursor.spelling
-
-    '''
-    @classmethod
-    def spell(cls, cursor: cindex.Cursor, node: Node = None) -> str:
-        if cursor is None:
-            return ""
-        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
-            return ""
-        else:
-            res = cls.spell(cursor.semantic_parent, node)
-            if res != "":
-                #print(res)
-                if node is not None:
-                    print(node.name)
-                    return node.name + "::" + cursor.spelling
-
-                return res + "::" + cursor.spelling
-        return cursor.spelling
-    '''
-
-    '''
-    @classmethod
-    def spell(cls, cursor: cindex.Cursor) -> str:
-        if cursor is None:
-            return ""
-        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
-            return ""
-        else:
-            res = cls.spell(cursor.semantic_parent)
-            if res != "":
-                #print(res)
-                return res + "::" + cursor.spelling
-        return cursor.spelling
-    '''
 
     @classmethod
     def snake(cls, name: str) -> str:

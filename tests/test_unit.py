@@ -14,8 +14,8 @@ logger.debug(f"yaml_data: {yaml_data}")
 # Process the entries
 data = {}
 for key, value in yaml_data.items():
-    if '.' in key:
-        kind, name = key.split('.')
+    if '/' in key:
+        kind, name = key.split('/')
         value['name'] = name
         value['kind'] = kind
         if kind in data:

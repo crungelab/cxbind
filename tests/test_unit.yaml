@@ -9,4 +9,4 @@ flags: [
     '-I./src'
 ]
 
-'function.ImGui::CreateContext': {exclude: true}
+'function/ImGui::CreateContext': {exclude: true}

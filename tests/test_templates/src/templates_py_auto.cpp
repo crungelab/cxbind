@@ -12,7 +12,7 @@ namespace py = pybind11;
 void register_templates_py_auto(py::module &_core, Registry &registry) {
     py::class_<MyClass<float, double>> MyClass_float_double(_core, "MyClass_float_double");
     registry.on(_core, "MyClass_float_double", MyClass_float_double);
-    MyClass_float_double
+        MyClass_float_double
         .def(py::init<float, double>()
         , py::arg("value")
         , py::arg("value2")
@@ -36,7 +36,7 @@ void register_templates_py_auto(py::module &_core, Registry &registry) {
 
     py::class_<MyClass2<int>> MyClass2_int(_core, "MyClass2_int");
     registry.on(_core, "MyClass2_int", MyClass2_int);
-    MyClass2_int
+        MyClass2_int
         .def(py::init<int>()
         , py::arg("value")
         )

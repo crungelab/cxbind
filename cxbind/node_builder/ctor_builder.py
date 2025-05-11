@@ -18,7 +18,7 @@ class CtorBuilder(MethodBuilder):
         NodeBuilder.build_node(self)
         out = self.out
 
-        if self.top_node.readonly:
+        if self.top_node.spec.readonly:
             return
         
         self.begin_chain()
@@ -29,24 +29,7 @@ class CtorBuilder(MethodBuilder):
             out(
                 f".def(py::init<{self.arg_types(arguments)}>()"
             )
-            self.write_pyargs(arguments)
+            self.write_pyargs(arguments, self.node)
             out(")")
         else:
             out(".def(py::init<>())")
-
-    '''
-    def build_node(self):
-        super().build_node()
-        if self.top_node.readonly:
-            return
-        self.top_node.has_constructor = True
-        arguments = [a for a in self.cursor.get_arguments()]
-        if len(arguments):
-            self.out(
-                f".def(py::init<{self.arg_types(arguments)}>()"
-            )
-            self.write_pyargs(arguments)
-            self.out(")")
-        else:
-            self.out(f".def(py::init<>())")
-    '''

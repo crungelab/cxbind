@@ -3,39 +3,25 @@ from loguru import logger
 
 from .node_builder import NodeBuilder, T_Node
 from ..node import FunctionNode
+from ..spec import Spec, create_spec
 from .. import cu
 
 class FunctionBaseBuilder(NodeBuilder[T_Node]):
     def should_cancel(self):
         return super().should_cancel() or not self.is_function_mappable(self.cursor)
 
-    def find_or_create_node(self):
+    def find_spec(self) -> Spec:
         key = None
         if self.is_overloaded(self.cursor):
-           #key = f"{self.cursor.spelling}.{self.cursor.type.spelling}"
            key = FunctionNode.make_key(self.cursor, True)
         else:
-            #key = self.cursor.spelling
             key = FunctionNode.make_key(self.cursor)
-        #node = self.lookup_node(self.name)
-        node = self.lookup_node(key)
-        logger.debug(f"FunctionBaseBuilder: find_or_create_node: {node}")
+        spec = self.lookup_spec(key)
+        if spec is None:
+            spec = create_spec(key)
 
-        if node is None:
-            self.create_node()
-        else:
-            self.node = node
-
-    '''
-    def find_or_create_node(self):
-        node = self.lookup_node(self.name)
-        logger.debug(f"FunctionBaseBuilder: find_or_create_node: {node}")
-
-        if node is None or self.is_overloaded(self.cursor):
-            self.create_node()
-        else:
-            self.node = node
-    '''
+        logger.debug(f"FunctionBaseBuilder: find_spec: {spec}")
+        return spec
 
     def build_node(self):
         super().build_node()
@@ -239,7 +225,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         returned = [
             a.spelling for a in cursor.get_arguments() if self.should_return_argument(a)
         ]
-        if not self.is_function_void_return(cursor) and not node.omit_ret:
+        if not self.is_function_void_return(cursor) and not node.spec.omit_ret:
             returned.insert(0, "ret")
         if len(returned) > 1:
             return "std::make_tuple({})".format(", ".join(returned))
@@ -247,7 +233,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             return returned[0]
         return ""
 
-    def get_return_policy(self, cursor) -> str:
+    def get_return_policy(self, cursor: cindex.Cursor) -> str:
         result = cursor.type.get_result()
         if result.kind == cindex.TypeKind.LVALUEREFERENCE:
             return "py::return_value_policy::reference"
@@ -255,8 +241,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             return "py::return_value_policy::automatic_reference"
 
 
-    def get_default(self, argument, node: FunctionNode=None):
-        #default = ""
+    def get_default(self, argument: cindex.Cursor, node: FunctionNode=None):
         default = self.default_from_tokens(argument.get_tokens())
         for child in argument.get_children():
             #logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
@@ -272,17 +257,15 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             elif not len(default):
                 default = self.default_from_tokens(child.get_tokens())
 
-        #default = self.defaults.get(argument.spelling, default)
-
-        if node and node.arguments and argument.spelling in node.arguments:
-            node_argument = node.arguments[argument.spelling]
+        spec = node.spec
+        if spec.arguments and argument.spelling in spec.arguments:
+            node_argument = spec.arguments[argument.spelling]
             #logger.debug(f"node_argument: {node_argument}")
             default = str(node_argument.default)
 
         # Handle complex default values like initializer lists
         if default.startswith("{") and default.endswith("}"):
             # Example: {0, 0} -> SkPoint{0, 0}
-            #default = f"{argument.type.spelling}{default}"
             default = f"{cu.get_base_type_name(argument.type)}{default}"
 
         # logger.debug(argument.spelling)
@@ -306,42 +289,3 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         if len(parts) == 2:
             return parts[1]
         return ""
-    
-    '''
-    def write_pyargs(self, arguments, node: FunctionNode=None):
-        for argument in arguments:
-            logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
-            default = self.default_from_tokens(argument.get_tokens())
-            for child in argument.get_children():
-                logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
-                referenced = child.referenced
-                if referenced and referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL:
-                    logger.debug(f"referenced: {referenced.spelling}, {referenced.kind}, {referenced.type.spelling}, {referenced.type.kind}")
-
-                arg_type_decl = child.type.get_declaration()
-                logger.debug(f"arg_type_decl: {arg_type_decl.spelling}, {arg_type_decl.kind}")
-
-                if child.type.kind in [cindex.TypeKind.POINTER]:
-                    default = "nullptr"
-                elif not len(default):
-                    default = self.default_from_tokens(child.get_tokens())
-
-            default = self.defaults.get(argument.spelling, default)
-            if node and node.arguments and argument.spelling in node.arguments:
-                node_argument = node.arguments[argument.spelling]
-                #logger.debug(f"node_argument: {node_argument}")
-                default = str(node_argument.default)
-
-            # Handle complex default values like initializer lists
-            if default.startswith("{") and default.endswith("}"):
-                # Example: {0, 0} -> SkPoint{0, 0}
-                #default = f"{argument.type.spelling}{default}"
-                default = f"{cu.get_base_type_name(argument.type)}{default}"
-
-            # logger.debug(argument.spelling)
-            # logger.debug(default)
-            if len(default):
-                default = " = " + default
-            self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
-
-    '''

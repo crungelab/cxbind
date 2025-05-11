@@ -1,8 +1,0 @@
-source: 'src/overloads.h'
-target: 'src/overloads_py_auto.cpp'
-
-nodes:
-  'method.Overloads::add':
-    overloads:
-      #'double (double, double)' : { kind: method, name: 'Overloads::add', exclude: true }
-      'double (double, double)' : { exclude: true }

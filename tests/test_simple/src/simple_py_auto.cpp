@@ -10,15 +10,14 @@
 namespace py = pybind11;
 
 void register_simple_py_auto(py::module &_core, Registry &registry) {
-    PYCLASS(_core, Simple, Simple)
-
+    py::class_<Simple> Simple(_core, "Simple");
+    registry.on(_core, "Simple", Simple);
+        Simple
         .def(py::init<>())
-
         .def("add", &Simple::add
             , py::arg("i")
             , py::arg("j")
             , py::return_value_policy::automatic_reference)
-
         .def("sub", &Simple::sub
             , py::arg("i")
             , py::arg("j")

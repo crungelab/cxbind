@@ -26,4 +26,4 @@ class UnitConfigurator:
         # Order needs to be from specific to generic.  Example: prefixes: [SDL_EVENT_, SDL_]
         unit.prefixes = unit.prefixes + project.prefixes
 
-        unit.nodes = {**project.nodes, **unit.nodes}
+        unit.specs = {**project.specs, **unit.specs}

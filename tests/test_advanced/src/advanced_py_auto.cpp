@@ -17,10 +17,10 @@ void register_advanced_py_auto(py::module &_core, Registry &registry) {
         , py::return_value_policy::automatic_reference)
     ;
 
-    PYCLASS(_core, Advanced, Advanced)
-
+    py::class_<Advanced> Advanced(_core, "Advanced");
+    registry.on(_core, "Advanced", Advanced);
+        Advanced
         .def(py::init<>())
-
         .def("add", &Advanced::add
             , py::arg("i")
             , py::arg("j")

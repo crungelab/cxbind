@@ -11,7 +11,7 @@ units:
     source: 'src/exclude.h'
     target: 'src/exclude_py_auto.cpp'
     excludes: [
-      'method.Exclude::ignore_me_2'
+      'method/Exclude::ignore_me_2'
     ]
-    nodes:
-      'method.Exclude::ignore_me': {exclude: true}
+    specs:
+      'method/Exclude::ignore_me': {exclude: true}

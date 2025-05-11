@@ -11,10 +11,10 @@ units:
     source: 'src/arguments.h'
     target: 'src/arguments_py_auto.cpp'
 
-    nodes:
-      'function.Test::ignore_me': {exclude: true}
+    specs:
+      'method/Arguments::ignore_me': {exclude: true}
 
-      'function.Test::add':
+      'method/Arguments::add':
         arguments:
           i: { default: 0}
           j: { default: 0}

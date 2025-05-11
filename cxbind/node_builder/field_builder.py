@@ -79,7 +79,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         return self.is_cursor_mappable(cursor)
 
     def is_field_readonly(self, cursor):
-        if self.top_node.readonly:
+        if self.top_node.spec.readonly:
             return True
         if cursor.type.is_const_qualified():
             return True

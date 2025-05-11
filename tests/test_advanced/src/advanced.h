@@ -1,3 +1,5 @@
+//namespace test_advanced {
+
 int add(int x, int y) {
     return x + y;
 }
@@ -21,3 +23,5 @@ struct Advanced
 int sub(int x, int y) {
     return x - y;
 }
+
+//} // namespace test_advanced

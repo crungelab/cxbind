@@ -145,10 +145,10 @@ class Builder:
         return self.context.format_enum_constant(name, enum_name)
 
     def register_node(self, node: Node) -> str:
-        return self.context.register_node(node)
+        return self.context.register_spec(node)
 
-    def lookup_node(self, key: str) -> Node:
-        return self.context.lookup_node(key)
+    def lookup_spec(self, key: str) -> Node:
+        return self.context.lookup_spec(key)
 
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> Node:
         return self.context.create_builder(entry_key, cursor)
@@ -177,7 +177,6 @@ class Builder:
         #if cursor.spelling in self.excluded:
             return True
         if self.is_overloaded(cursor):
-            #key = f"{self.spell(cursor)}.{cursor.type.spelling}" 
             key = Node.make_key(cursor, overload=True)
             logger.debug(f"Checking overloaded: {key}")
             if key in self.excluded:
@@ -262,7 +261,7 @@ class Builder:
                 resolved_type = element_type.get_canonical()
                 specialization_node = self.top_node
                 resolved_type_name = self.resolve_template_type(
-                    resolved_type.spelling, specialization_node.args
+                    resolved_type.spelling, specialization_node.spec.args
                 )
                 logger.debug(f"Resolved type: {resolved_type_name}")
                 element_type_name = resolved_type_name
@@ -272,13 +271,17 @@ class Builder:
 
         # Handle template parameters (placeholders)
         if arg_type_kind == cindex.TypeKind.UNEXPOSED:
+        #if arg_type_kind == cindex.TypeKind.UNEXPOSED and self.top_node.__class__.__name__ == "ClassSpecializationNode":
             specialization_node = self.top_node
+            logger.debug(f"specialization_node: {specialization_node}")
+            logger.debug(f"specialization_node.spec: {specialization_node.spec}")
             # Attempt to get the canonical type spelling for the template argument
             resolved_type = argument.type.get_canonical()
             # resolved_type = argument.type
             # resolved_type_name = resolved_type.spelling
+            #exit()
             resolved_type_name = self.resolve_template_type(
-                resolved_type.spelling, specialization_node.args
+                resolved_type.spelling, specialization_node.spec.args
             )
             logger.debug(f"Resolved template parameter: {resolved_type}")
             logger.debug(f"Resolved template parameter: {resolved_type_name}")
@@ -435,42 +438,42 @@ class Builder:
         logger.debug(f"visit_none: {cursor.spelling}")
 
     def visit_typedef_decl(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"typedef.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"typedef/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_enum(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"enum.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"enum/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_field(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"field.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"field/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
         self.top_node.add_child(node)
 
     def visit_constructor(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"ctor.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"ctor/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_function(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"function.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"function/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_method(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"method.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"method/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_struct(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"struct.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"struct/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_class(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"class.{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"class/{self.spell(cursor)}", cursor=cursor)
         node = builder.build()
 
     def visit_class_template(self, cursor: cindex.Cursor):
         builder = self.create_builder(
-            f"class_template.{self.spell(cursor)}", cursor=cursor
+            f"class_template/{self.spell(cursor)}", cursor=cursor
         )
         node = builder.build()
 

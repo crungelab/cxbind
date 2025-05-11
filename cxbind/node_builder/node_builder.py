@@ -4,6 +4,7 @@ from clang import cindex
 from loguru import logger
 
 from ..node import Node
+from ..spec import Spec, create_spec
 
 from ..builder import Builder
 from ..builder_context import BuilderContext
@@ -18,12 +19,10 @@ class NodeBuilder(Builder, Generic[T_Node]):
         context: BuilderContext,
         name: str,
         cursor: cindex.Cursor = None,
-        # node: Node = None,
     ) -> None:
         super().__init__(context)
         self.name = name
         self.cursor = cursor
-        # self.node = node
         self.node: T_Node = None
 
     def create_pyname(self, name):
@@ -36,23 +35,22 @@ class NodeBuilder(Builder, Generic[T_Node]):
         '''
         return False
 
-    def find_or_create_node(self):
-        #node = self.lookup_node(self.name)
-        node = self.lookup_node(Node.make_key(self.cursor))
-        if node is None:
-            self.create_node()
-        else:
-            self.node = node
+    def find_spec(self):
+        key = Node.make_key(self.cursor)
+        spec = self.lookup_spec(key)
+        return spec
 
     def build(self) -> T_Node:
         if self.should_cancel():
             return None
 
-        self.find_or_create_node()
-        '''
-        if self.node is None:
-            self.create_node()
-        '''
+        self.create_node()
+        spec = self.find_spec()
+        if spec is None:
+            key = Node.make_key(self.cursor)
+            #logger.debug(f"Spec not found for {key}")
+            spec = create_spec(key)
+        self.node.spec = spec
 
         self.build_node()
         self.context.visited[self.name] = self.node
@@ -64,5 +62,5 @@ class NodeBuilder(Builder, Generic[T_Node]):
     def build_node(self):
         self.node.pyname = self.create_pyname(self.node.first_name)
 
-        if self.node.exclude:
+        if self.node.spec.exclude:
             raise Exception(f"Node excluded: {self.node.name}")

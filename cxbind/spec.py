@@ -6,21 +6,19 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from .spec import Spec
 
-class Node(BaseModel):
+class Spec(BaseModel):
     kind: str
     name: str
     signature: Optional[str] = None
     first_name: Optional[str] = None
     pyname: Optional[str] = None
-    children: List["Node"] = []
-    #exclude: Optional[bool] = False
-    #overload: Optional[bool] = False
-    #readonly: Optional[bool] = False
+    #children: List["Spec"] = []
+    exclude: Optional[bool] = False
+    overload: Optional[bool] = False
+    readonly: Optional[bool] = False
 
-    cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
-    spec: Optional[Spec] = Field(None, exclude=True, repr=False)
+    #cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -63,8 +61,6 @@ class Node(BaseModel):
             kind = "ctor"
         elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
             kind = "typedef"
-        elif cursor.kind == cindex.CursorKind.CLASS_TEMPLATE:
-            kind = "class_template"
 
         name = cls.spell(cursor)
         if overload:
@@ -80,17 +76,16 @@ class Node(BaseModel):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
-    def add_child(self, child: "Node"):
+    '''
+    def add_child(self, child: "Spec"):
         self.children.append(child)
-
+    '''
 
 class Argument(BaseModel):
     default: Optional[Any] = None
 
 
-class FunctionBaseNode(Node):
-    pass
-    '''
+class FunctionBaseSpec(Spec):
     arguments: Optional[Dict[str, Argument]] = {}
     return_type: Optional[str] = None
     omit_ret: Optional[bool] = False
@@ -102,82 +97,73 @@ class FunctionBaseNode(Node):
             k: Argument(**v) if isinstance(v, dict) else v
             for k, v in self.arguments.items()
         }
-    '''
 
 
-class FunctionNode(FunctionBaseNode):
+class FunctionSpec(FunctionBaseSpec):
     kind: Literal["function"]
 
 
-class MethodNode(FunctionBaseNode):
+class MethodSpec(FunctionBaseSpec):
     kind: Literal["method"]
 
 
-class CtorNode(FunctionBaseNode):
+class CtorSpec(FunctionBaseSpec):
     kind: Literal["ctor"]
 
 
-class FieldNode(Node):
+class FieldSpec(Spec):
     kind: Literal["field"]
 
 
-class StructBaseNode(Node):
-    constructible: bool = True
-    has_constructor: bool = False
-    '''
+class StructBaseSpec(Spec):
     constructible: bool = True
     has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
     wrapper: str = None
     holder: Optional[str] = None
-    '''
 
 
-class StructNode(StructBaseNode):
+class StructSpec(StructBaseSpec):
     kind: Literal["struct"]
 
 
-class ClassNode(StructBaseNode):
+class ClassSpec(StructBaseSpec):
     kind: Literal["class"]
 
-class ClassSpecializationNode(ClassNode):
+class ClassSpecializationSpec(ClassSpec):
     kind: Literal["class_specialization"]
+    args: List[str] = []
+
+#class ClassTemplateSpecializationSpec(BaseModel):
+class ClassTemplateSpecializationSpec(ClassSpec):
+    kind: Literal["class_template_specialization"]
+    #name: str
+    args: List[str]
+    
+class ClassTemplateSpec(StructBaseSpec):
+    kind: Literal["class_template"]
+    specializations: List[ClassTemplateSpecializationSpec] = []
     #args: List[str] = []
 
-class ClassTemplateSpecialization(BaseModel):
-    name: str
-    #args: List[str]
-    
-class ClassTemplateNode(StructBaseNode):
-    kind: Literal["class_template"]
-    #specializations: List[ClassTemplateSpecialization] = []
 
-
-class EnumNode(Node):
+class EnumSpec(Spec):
     kind: Literal["enum"]
 
-'''
-class TypedefNode(Node):
-    kind: Literal["typedef"]
-    gen_init: bool = False
-    gen_kw_init: bool = False
-'''
 
-NodeUnion = Union[
-    StructNode,
-    ClassNode,
-    ClassTemplateNode,
-    FieldNode,
-    FunctionNode,
-    MethodNode,
-    CtorNode,
-    EnumNode,
-    #TypedefNode,
+SpecUnion = Union[
+    StructSpec,
+    ClassSpec,
+    ClassTemplateSpec,
+    FieldSpec,
+    FunctionSpec,
+    MethodSpec,
+    CtorSpec,
+    EnumSpec,
 ]
 
-def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
-    # logger.debug(f"validate_node_dict: {v}")
+def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
+    # logger.debug(f"validate_binding_dict: {v}")
     data = {}
     for key, value in v.items():
         if "/" in key:
@@ -197,4 +183,36 @@ def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
     return data
 
 
-NodeDict = Annotated[dict[str, NodeUnion], BeforeValidator(validate_node_dict)]
+SpecDict = Annotated[dict[str, SpecUnion], BeforeValidator(validate_spec_dict)]
+
+def create_spec(
+    key: str,
+    **kwargs: Any
+) -> SpecUnion:
+    kind, name, signature = None, None, None
+    parts = key.split("/")
+    if len(parts) == 2:
+        kind, name = parts
+    elif len(parts) == 3:
+        kind, name, signature = parts
+    else:
+        logger.error(f"Invalid spec key: {key}")
+        raise ValueError(f"Invalid spec key: {key}")
+
+    spec_cls = {
+        "function": FunctionSpec,
+        "method": MethodSpec,
+        "ctor": CtorSpec,
+        "field": FieldSpec,
+        "struct": StructSpec,
+        "class": ClassSpec,
+        "class_template": ClassTemplateSpec,
+        "class_specialization": ClassSpecializationSpec,
+        "enum": EnumSpec
+    #}.get(kind, Spec)
+    }.get(kind)
+    if spec_cls is None:
+        logger.error(f"Unknown spec kind: {kind}")
+        raise ValueError(f"Unknown spec kind: {kind}")
+    
+    return spec_cls(kind=kind, name=name, signature=signature, **kwargs)

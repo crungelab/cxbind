@@ -10,15 +10,14 @@
 namespace py = pybind11;
 
 void register_unit_1_py_auto(py::module &_multiunit, Registry &registry) {
-    PYCLASS(_multiunit, Unit1, Unit1)
-
+    py::class_<Unit1> Unit1(_multiunit, "Unit1");
+    registry.on(_multiunit, "Unit1", Unit1);
+        Unit1
         .def(py::init<>())
-
         .def("add", &Unit1::add
             , py::arg("i")
             , py::arg("j")
             , py::return_value_policy::automatic_reference)
-
         .def("sub", &Unit1::sub
             , py::arg("i")
             , py::arg("j")

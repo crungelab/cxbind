@@ -14,14 +14,7 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
 
         self.end_chain()
 
-        #self.out(f"PYCLASS_BEGIN({self.module}, {node.name}, {node.pyname} {extra})")
-        #self.out(f"PYCLASS({self.module}, {node.name}, {node.pyname} {extra})")
-        '''
-        _name(_module, #_name); \
-        registry.on(_module, #_name, _name); \
-        _name \
-        '''
-        extra = f",{node.holder}<{node.name}>" if node.holder else ""
+        extra = f",{node.spec.holder}<{node.name}>" if node.spec.holder else ""
 
         self.out(f'py::class_<{node.name}{extra}> {node.pyname}({self.module}, "{node.pyname}");')
         self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
@@ -29,11 +22,9 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
         with self.enter(node):
             self.visit_children(cursor)
 
-            if node.gen_init:
+            if node.spec.gen_init:
                 self.gen_init()
-            elif node.gen_kw_init:
+            elif node.spec.gen_kw_init:
                 self.gen_kw_init()
 
         self.end_chain()
-        #self.out(f"PYCLASS_END({self.module}, {node.name}, {node.pyname})")
-        #self.out()

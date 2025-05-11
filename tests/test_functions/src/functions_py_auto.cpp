@@ -15,7 +15,6 @@ void register_functions_py_auto(py::module &_core, Registry &registry) {
         , py::arg("x")
         , py::arg("y")
         , py::return_value_policy::automatic_reference)
-
     .def("sub", &test_functions::sub
         , py::arg("x")
         , py::arg("y")

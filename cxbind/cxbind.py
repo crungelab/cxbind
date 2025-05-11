@@ -31,7 +31,6 @@ class CxBind:
         #logger.add("cxbind.log", level=log_level, colorize=False, backtrace=True, diagnose=True)
 
     def load_project(self) -> Project:
-        #prj_dir = Path(os.getcwd(), '.cxbind')
         path = next(self.prj_dir.glob('*.prj.yaml'), None)
         if path is not None:
             project = ProjectFactory().load(path)

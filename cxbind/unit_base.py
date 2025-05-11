@@ -2,7 +2,7 @@ from typing import List, Dict, Optional
 
 from pydantic import BaseModel, Field
 
-from .node import NodeUnion, NodeDict
+from .spec import SpecDict
 
 class UnitBase(BaseModel):
     name: Optional[str] = None
@@ -10,5 +10,5 @@ class UnitBase(BaseModel):
     flags: Optional[List[str]] = None
     prefixes: Optional[List[str]] = []
     defaults: Optional[dict] = {}
-    nodes: Optional[NodeDict] = {}
+    specs: Optional[SpecDict] = {}
     excludes: Optional[List[str]] = []

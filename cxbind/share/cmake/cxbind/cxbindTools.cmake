@@ -8,7 +8,7 @@ function(cxbind_module target_name)
         OUTPUT_STRIP_TRAILING_WHITESPACE
       )
       
-    message(STATUS "Python site packages directory: ${PYTHON_SITE_PACKAGES}")
+    #message(STATUS "Python site packages directory: ${PYTHON_SITE_PACKAGES}")
     
     target_include_directories(${target_name} PRIVATE "${PYTHON_SITE_PACKAGES}/cxbind/include")
 

@@ -10,18 +10,13 @@
 namespace py = pybind11;
 
 void register_arguments_py_auto(py::module &_core, Registry &registry) {
-    PYCLASS(_core, Arguments, Arguments)
-
+    py::class_<Arguments> Arguments(_core, "Arguments");
+    registry.on(_core, "Arguments", Arguments);
+        Arguments
         .def(py::init<>())
-
         .def("add", &Arguments::add
-            , py::arg("i")
-            , py::arg("j")
-            , py::return_value_policy::automatic_reference)
-
-        .def("ignore_me", &Arguments::ignore_me
-            , py::arg("i")
-            , py::arg("j")
+            , py::arg("i") = 0
+            , py::arg("j") = 0
             , py::return_value_policy::automatic_reference)
     ;
 

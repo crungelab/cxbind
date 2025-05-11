@@ -48,9 +48,9 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         with self.enter(node):
             self.visit_children(cursor)
 
-            if node.gen_init:
+            if node.spec.gen_init:
                 self.gen_init()
-            elif node.gen_kw_init:
+            elif node.spec.gen_kw_init:
                 self.gen_kw_init()
 
         self.end_chain()
