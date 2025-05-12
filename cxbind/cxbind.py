@@ -34,14 +34,12 @@ class CxBind:
 
     def install_plugins(self):
         plugin_eps = entry_points(group="cxbind.plugins")
-        print("plugin_eps", plugin_eps)
-
+        logger.debug(f"plugin_eps: {plugin_eps}")
 
         for ep in plugin_eps:
-            print("ep", ep)
-
+            logger.debug(f"ep: {ep}")
             plugin: Plugin = ep.load()()
-            print("plugin", plugin)
+            logger.debug(f"plugin: {plugin}")
             plugin.install(self)
 
     def register_program(self, name: str, cls):

@@ -6,18 +6,7 @@ flags: [
     '-I./src'
 ]
 
-units:
-  dawn_hpp:
-    source: 'dawn.json'
-    target: 'src/pywgpu.h'
-    program: dawn_hpp
-
-  dawn_cpp:
-    source: 'dawn.json'
-    target: 'src/pywgpu.cpp'
-    program: dawn_cpp
-
-  dawn_py:
-    source: 'dawn.json'
-    target: 'src/wgpu_py.cpp'
-    program: dawn_py
+unit_files:
+  - path: dawn_hpp.unit.yaml
+  - path: dawn_cpp.unit.yaml
+  - path: dawn_py.unit.yaml

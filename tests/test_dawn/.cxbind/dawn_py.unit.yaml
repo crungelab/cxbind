@@ -1,0 +1,3 @@
+source: 'dawn.json'
+target: 'src/wgpu_py.cpp'
+program: dawn_py
