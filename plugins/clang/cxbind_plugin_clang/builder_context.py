@@ -1,20 +1,20 @@
 from typing import TYPE_CHECKING, Type, Dict, List, Any, Callable
 
 if TYPE_CHECKING:
-    from cxbind.node_builder import NodeBuilder
-
+    from .node_builder import NodeBuilder
 
 import re
 from contextlib import contextmanager
-from . import UserSet
 
 from clang import cindex
 from loguru import logger
 
+from cxbind import UserSet
+from cxbind.spec import Spec
+from cxbind.unit import Unit
+from cxbind.code_stream import CodeStream
+
 from .node import Node, StructBaseNode
-from .spec import Spec
-from .unit import Unit
-from .code_stream import CodeStream
 
 
 #TODO: Use pydantic settings

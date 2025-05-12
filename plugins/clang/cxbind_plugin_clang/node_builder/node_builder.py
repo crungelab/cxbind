@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING, TypeVar, Generic, Dict, List
 from clang import cindex
 from loguru import logger
 
+from cxbind.spec import Spec, create_spec
+
 from ..node import Node
-from ..spec import Spec, create_spec
 
 from ..builder import Builder
 from ..builder_context import BuilderContext

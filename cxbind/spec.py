@@ -3,7 +3,6 @@ from typing import List, Dict, Optional, Any, Literal, Union
 
 from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 
-from clang import cindex
 from loguru import logger
 
 
@@ -13,12 +12,9 @@ class Spec(BaseModel):
     signature: Optional[str] = None
     first_name: Optional[str] = None
     pyname: Optional[str] = None
-    #children: List["Spec"] = []
     exclude: Optional[bool] = False
     overload: Optional[bool] = False
     readonly: Optional[bool] = False
-
-    #cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -27,48 +23,6 @@ class Spec(BaseModel):
         if self.signature:
             return f"{self.kind}/{self.name}/{self.signature}"
         return f"{self.kind}/{self.name}"
-    
-    @classmethod
-    def spell(cls, cursor: cindex.Cursor) -> str:
-        if cursor is None:
-            return ""
-        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
-            return ""
-        else:
-            res = cls.spell(cursor.semantic_parent)
-            if res != "":
-                return res + "::" + cursor.spelling
-        return cursor.spelling
-
-    @classmethod
-    def make_key(cls, cursor: cindex.Cursor, overload: bool = False) -> str:
-        kind = None
-        if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
-            kind = "translation_unit"
-        elif cursor.kind == cindex.CursorKind.CLASS_DECL:
-            kind = "class"
-        elif cursor.kind == cindex.CursorKind.STRUCT_DECL:
-            kind = "struct"
-        elif cursor.kind == cindex.CursorKind.ENUM_DECL:
-            kind = "enum"
-        elif cursor.kind == cindex.CursorKind.FIELD_DECL:
-            kind = "field"
-        elif cursor.kind == cindex.CursorKind.FUNCTION_DECL:
-            kind = "function"
-        elif cursor.kind == cindex.CursorKind.CXX_METHOD:
-            kind = "method"
-        elif cursor.kind == cindex.CursorKind.CONSTRUCTOR:
-            kind = "ctor"
-        elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
-            kind = "typedef"
-
-        name = cls.spell(cursor)
-        if overload:
-            key = f"{kind}/{name}/{cursor.type.spelling}"
-        else:
-            key = f"{kind}/{name}"
-
-        return key
 
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
@@ -76,10 +30,6 @@ class Spec(BaseModel):
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
-    '''
-    def add_child(self, child: "Spec"):
-        self.children.append(child)
-    '''
 
 class Argument(BaseModel):
     default: Optional[Any] = None

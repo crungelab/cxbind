@@ -8,7 +8,7 @@ import jinja2
 
 from clang import cindex
 
-from .unit import Unit
+from cxbind.unit import Unit
 from .builder import Builder
 from .builder_context import BuilderContext
 
@@ -26,6 +26,8 @@ class Generator(Builder):
         searchpath = [config_searchpath, default_searchpath]
         loader = jinja2.FileSystemLoader(searchpath=searchpath)
         self.jinja_env = jinja2.Environment(loader=loader)
+
+        self.import_actions()
 
 
     @classmethod

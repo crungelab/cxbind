@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "cxbind-plugin-clang"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "kfields", email = "kurtisfields@gmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+    "clang ==17.0.6",
+]
+
+
+[project.urls]
+Documentation = "https://github.com/kfields/cxbind-plugin-clang#readme"
+Issues = "https://github.com/kfields/cxbind-plugin-clang/issues"
+Source = "https://github.com/kfields/cxbind-plugin-clang"
+
+[project.entry-points."cxbind.plugins"]
+plugin = "cxbind_plugin_clang:ClangPlugin"
+
+[tool.hatch.version]
+path = "cxbind_plugin_clang/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:cxbind_plugin_clang tests}"
+
+[tool.coverage.run]
+source_pkgs = ["cxbind_plugin_clang", "tests"]
+branch = true
+parallel = true
+omit = [
+  "cxbind_plugin_clang/__about__.py",
+]
+
+[tool.coverage.paths]
+cxbind_plugin_clang = ["cxbind_plugin_clang", "*/cxbind-plugin-clang/cxbind_plugin_clang"]
+tests = ["tests", "*/cxbind-plugin-clang/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]

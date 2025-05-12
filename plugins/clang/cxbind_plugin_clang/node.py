@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from .spec import Spec
+from cxbind.spec import Spec
 
 class Node(BaseModel):
     kind: str

@@ -1,9 +1,10 @@
 from clang import cindex
 from loguru import logger
 
+from cxbind.spec import Spec, create_spec
+
 from .node_builder import NodeBuilder, T_Node
 from ..node import FunctionNode
-from ..spec import Spec, create_spec
 from .. import cu
 
 class FunctionBaseBuilder(NodeBuilder[T_Node]):
