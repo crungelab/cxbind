@@ -15,12 +15,12 @@ from loguru import logger
 from .project import Project
 from .unit import Unit
 from .factory.project_factory import ProjectFactory
-from .factory.generator_factory import GeneratorFactory
-from .generator_protocol import GeneratorProtocol
+from .factory.program_factory import ProgramFactory
+from .program_base import ProgramBase
 
 class CxBind:
     def __init__(self):
-        self.generator_factories: dict[str, GeneratorFactory] = {}
+        self.program_factories: dict[str, ProgramFactory] = {}
         self.prj_dir = Path(os.getcwd(), '.cxbind')
 
         log_level = "DEBUG"
@@ -44,13 +44,13 @@ class CxBind:
             print("plugin", plugin)
             plugin.install(self)
 
-    def register_generator(self, name: str, cls):
+    def register_program(self, name: str, cls):
         """
-        Register a generator class with a name.
+        Register a program class with a name.
         """
-        if name in self.generator_factories:
+        if name in self.program_factories:
             logger.warning(f"Generator {name} already registered. Overwriting.")
-        self.generator_factories[name] = GeneratorFactory(cls)
+        self.program_factories[name] = ProgramFactory(cls)
 
     def load_project(self) -> Project:
         path = next(self.prj_dir.glob('*.prj.yaml'), None)
@@ -65,17 +65,17 @@ class CxBind:
 
         return project
 
-    def create_generator(self, unit: Unit) -> GeneratorProtocol:
+    def create_program(self, unit: Unit) -> ProgramBase:
         """
         Create a generator instance for the given unit.
         This method is responsible for loading the generator class dynamically.
         """
-        generator_name = unit.generator
-        if generator_name is None:
-            generator_name = "clang"
+        program_name = unit.program
+        if program_name is None:
+            program_name = "clang"
 
-        generator = self.generator_factories[generator_name].produce(unit)
-        return generator
+        program = self.program_factories[program_name].produce(unit)
+        return program
     '''
     def create_generator(self, unit: Unit):
         global dot_cxbind
@@ -95,8 +95,8 @@ class CxBind:
         logger.debug(f"gen: {name}")
         project = self.load_project()
         unit = project.get_unit(name)
-        generator = self.create_generator(unit)
-        generator.generate()
+        program = self.create_program(unit)
+        program.run()
 
     def gen_all(self):
         path = Path(os.getcwd(), '.cxbind')
@@ -107,6 +107,6 @@ class CxBind:
         project = self.load_project()
 
         for unit in project.units.values():
-            generator = self.create_generator(unit)
-            logger.debug(f"Generating {unit.name} with {generator.__class__.__name__}")
-            generator.generate()
+            program = self.create_program(unit)
+            logger.debug(f"Generating {unit.name} with {program.__class__.__name__}")
+            program.run()

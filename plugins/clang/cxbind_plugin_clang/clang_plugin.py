@@ -5,7 +5,7 @@ from clang import cindex
 from cxbind import CxBind
 from cxbind.plugin import Plugin
 
-from .generator import Generator
+from .program import Program
 
 class ClangPlugin(Plugin):
     def __init__(self):
@@ -21,4 +21,4 @@ class ClangPlugin(Plugin):
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
         logger.debug("Installing Clang Plugin")
-        app.register_generator("clang", Generator)
+        app.register_program("clang", Program)

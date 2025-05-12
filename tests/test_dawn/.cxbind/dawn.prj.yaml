@@ -1,0 +1,23 @@
+module: _dawn
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  dawn_hpp:
+    source: 'dawn.json'
+    target: 'src/pywgpu.h'
+    program: dawn_hpp
+
+  dawn_cpp:
+    source: 'dawn.json'
+    target: 'src/pywgpu.cpp'
+    program: dawn_cpp
+
+  dawn_py:
+    source: 'dawn.json'
+    target: 'src/wgpu_py.cpp'
+    program: dawn_py

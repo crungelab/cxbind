@@ -1,0 +1,38 @@
+#ifndef WGPU_H
+#define WGPU_H
+
+#include <cassert>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <memory>
+#include <functional>
+#include <optional>
+
+#include "webgpu/webgpu.h"
+//#include "webgpu/webgpu_cpp_chained_struct.h"
+#include <crunge/wgpu/pywgpu_chained_struct.h>
+//#include "webgpu/webgpu_enum_class_bitmasks.h"  // IWYU pragma: export
+#include <crunge/wgpu/pywgpu_enum_class_bitmasks.h>
+
+namespace pywgpu {
+
+namespace detail {
+
+constexpr size_t ConstexprMax(size_t a, size_t b) {
+    return a > b ? a : b;
+}
+
+template <typename T>
+static T& AsNonConstReference(const T& value) {
+    return const_cast<T&>(value);
+}
+
+}  // namespace detail
+
+{{ hpp_code }}
+
+} //namespace pywgpu
+
+#endif // WGPU_H

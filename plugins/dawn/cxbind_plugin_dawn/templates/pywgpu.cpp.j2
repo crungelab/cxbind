@@ -1,0 +1,18 @@
+//#include <dawn/webgpu_cpp.h>
+//#include "wgpu.h"
+
+#include <crunge/wgpu/pywgpu.h>
+
+namespace pywgpu {
+{{ cpp_code }}
+
+    StringView::operator std::string_view() const {
+        const bool isNull = this->data == nullptr;
+        const bool useStrlen = this->length == SIZE_MAX;
+        //DAWN_ASSERT(!(isNull && useStrlen));
+        return std::string_view(this->data, isNull      ? 0
+                                            : useStrlen ? std::strlen(this->data)
+                                                        : this->length);
+    }
+
+} //namespace pywgpu

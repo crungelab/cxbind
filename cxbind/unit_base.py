@@ -12,4 +12,4 @@ class UnitBase(BaseModel):
     defaults: Optional[dict] = {}
     specs: Optional[SpecDict] = {}
     excludes: Optional[List[str]] = []
-    generator: Optional[str] = None
+    program: Optional[str] = None

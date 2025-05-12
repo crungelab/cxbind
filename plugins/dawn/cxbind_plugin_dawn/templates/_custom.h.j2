@@ -1,0 +1,172 @@
+using Callback = WGPUCallback;
+using DawnLoadCacheDataFunction = WGPUDawnLoadCacheDataFunction;
+using DawnStoreCacheDataFunction = WGPUDawnStoreCacheDataFunction;
+using Proc = WGPUProc;
+
+// Special class for booleans in order to allow implicit conversions.
+class Bool {
+  public:
+    constexpr Bool() = default;
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
+    constexpr Bool(bool value) : mValue(static_cast<WGPUBool>(value)) {}
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
+    Bool(WGPUBool value): mValue(value) {}
+
+    constexpr operator bool() const { return static_cast<bool>(mValue); }
+
+  private:
+    friend struct std::hash<Bool>;
+    // Default to false.
+    WGPUBool mValue = static_cast<WGPUBool>(false);
+};
+
+
+// Special class for optional booleans in order to allow conversions.
+class OptionalBool {
+  public:
+    constexpr OptionalBool() = default;
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
+    constexpr OptionalBool(bool value) : mValue(static_cast<WGPUOptionalBool>(value)) {}
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
+    constexpr OptionalBool(std::optional<bool> value) :
+        mValue(value ? static_cast<WGPUOptionalBool>(*value) : WGPUOptionalBool_Undefined) {}
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
+    constexpr OptionalBool(WGPUOptionalBool value): mValue(value) {}
+
+    // Define the values that are equivalent to the enums.
+    static const OptionalBool False;
+    static const OptionalBool True;
+    static const OptionalBool Undefined;
+
+    // Assignment operators.
+    OptionalBool& operator=(const bool& value) {
+        mValue = static_cast<WGPUOptionalBool>(value);
+        return *this;
+    }
+    OptionalBool& operator=(const std::optional<bool>& value) {
+        mValue = value ? static_cast<WGPUOptionalBool>(*value) : WGPUOptionalBool_Undefined;
+        return *this;
+    }
+    OptionalBool& operator=(const WGPUOptionalBool& value) {
+        mValue = value;
+        return *this;
+    }
+
+    // Conversion functions.
+    operator WGPUOptionalBool() const { return mValue; }
+    operator std::optional<bool>() const {
+        if (mValue == WGPUOptionalBool_Undefined) {
+            return std::nullopt;
+        }
+        return static_cast<bool>(mValue);
+    }
+
+    // Comparison functions.
+    friend bool operator==(const OptionalBool& lhs, const OptionalBool& rhs) {
+        return lhs.mValue == rhs.mValue;
+    }
+    friend bool operator!=(const OptionalBool& lhs, const OptionalBool& rhs) {
+        return lhs.mValue != rhs.mValue;
+    }
+
+  private:
+    friend struct std::hash<OptionalBool>;
+    // Default to undefined.
+    WGPUOptionalBool mValue = WGPUOptionalBool_Undefined;
+};
+inline const OptionalBool OptionalBool::False = OptionalBool(WGPUOptionalBool_False);
+inline const OptionalBool OptionalBool::True = OptionalBool(WGPUOptionalBool_True);
+inline const OptionalBool OptionalBool::Undefined = OptionalBool(WGPUOptionalBool_Undefined);
+
+
+// Helper class to wrap Status which allows implicit conversion to bool.
+// Used while callers switch to checking the Status enum instead of booleans.
+// TODO(crbug.com/42241199): Remove when all callers check the enum.
+struct ConvertibleStatus {
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
+    constexpr ConvertibleStatus(Status status) : status(status) {}
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit conversion
+    constexpr operator bool() const {
+        return status == Status::Success;
+    }
+    // NOLINTNEXTLINE(runtime/explicit) allow implicit conversion
+    constexpr operator Status() const {
+        return status;
+    }
+    Status status;
+};
+
+template<typename Derived, typename CType>
+class ObjectBase {
+  public:
+    ObjectBase() = default;
+    ObjectBase(CType handle): mHandle(handle) {
+        if (mHandle) Derived::WGPUAddRef(mHandle);
+    }
+    ~ObjectBase() {
+        if (mHandle) Derived::WGPURelease(mHandle);
+    }
+
+    ObjectBase(ObjectBase const& other)
+        : ObjectBase(other.Get()) {
+    }
+    Derived& operator=(ObjectBase const& other) {
+        if (&other != this) {
+            if (mHandle) Derived::WGPURelease(mHandle);
+            mHandle = other.mHandle;
+            if (mHandle) Derived::WGPUAddRef(mHandle);
+        }
+
+        return static_cast<Derived&>(*this);
+    }
+
+    ObjectBase(ObjectBase&& other) {
+        mHandle = other.mHandle;
+        other.mHandle = 0;
+    }
+    Derived& operator=(ObjectBase&& other) {
+        if (&other != this) {
+            if (mHandle) Derived::WGPURelease(mHandle);
+            mHandle = other.mHandle;
+            other.mHandle = 0;
+        }
+
+        return static_cast<Derived&>(*this);
+    }
+
+    ObjectBase(std::nullptr_t) {}
+    Derived& operator=(std::nullptr_t) {
+        if (mHandle != nullptr) {
+            Derived::WGPURelease(mHandle);
+            mHandle = nullptr;
+        }
+        return static_cast<Derived&>(*this);
+    }
+
+    bool operator==(std::nullptr_t) const {
+        return mHandle == nullptr;
+    }
+    bool operator!=(std::nullptr_t) const {
+        return mHandle != nullptr;
+    }
+
+    explicit operator bool() const {
+        return mHandle != nullptr;
+    }
+    CType Get() const {
+        return mHandle;
+    }
+    CType MoveToCHandle() {
+        CType result = mHandle;
+        mHandle = 0;
+        return result;
+    }
+    static Derived Acquire(CType handle) {
+        Derived result;
+        result.mHandle = handle;
+        return result;
+    }
+
+  protected:
+    CType mHandle = nullptr;
+};
