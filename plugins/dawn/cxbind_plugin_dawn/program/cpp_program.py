@@ -1,6 +1,6 @@
 from cxbind.unit import Unit
 
-from ..backend.cpp_backend import CppBackend
+from ..backend.cpp.cpp_backend import CppBackend
 from ..node import Root
 
 from .program import Program

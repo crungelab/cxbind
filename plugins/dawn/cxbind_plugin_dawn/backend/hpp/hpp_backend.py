@@ -11,9 +11,10 @@ import jinja2
 import os
 
 
-from ..render.hpp.hpp_generator import HppGenerator
+from .. import Backend
 
-from .backend import Backend
+from .hpp_generator import HppGenerator
+
 
 class HppBackend(Backend):
     def __init__(self, program: "Program") -> None:
@@ -27,11 +28,10 @@ class HppBackend(Backend):
         output = header_template.render(hpp_code=hpp_code)
         # logger.debug(output)
         # Write the C++ code to a file
-        #path = Path("include/dawn/webgpu_cpp.h")
-        #path = Path("include/crunge/wgpu/pywgpu.h")
+        # path = Path("include/dawn/webgpu_cpp.h")
+        # path = Path("include/crunge/wgpu/pywgpu.h")
         path = Path(self.program.unit.target)
         with open(path, "w") as f:
             f.write(output)
 
         logger.debug(f"C++ header generated in {path}")
-

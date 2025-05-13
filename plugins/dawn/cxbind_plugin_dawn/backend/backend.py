@@ -25,10 +25,6 @@ from ..node import (
     CallbackFunctionType,
 )
 
-from ..render.hpp.hpp_generator import HppGenerator
-from ..render.cpp.cpp_generator import CppGenerator
-from ..render.py.py_generator import PyGenerator
-
 
 class Backend(Processor):
     def __init__(self, program: "Program") -> None:
@@ -49,12 +45,8 @@ class Backend(Processor):
 
         config_searchpath = CWD_PATH / ".cxbind" / "templates"
         default_searchpath = BASE_PATH / "templates"
-        '''
-        default_searchpath = Path(
-            os.path.dirname(os.path.abspath(__file__)), "templates"
-        )
-        '''
         searchpath = [config_searchpath, default_searchpath]
+
         loader = jinja2.FileSystemLoader(searchpath=searchpath)
         self.jinja_env = jinja2.Environment(loader=loader)
 
@@ -63,41 +55,7 @@ class Backend(Processor):
         self.render()
 
     def render(self):
-        hpp_code = HppGenerator(self).generate()
-        cpp_code = CppGenerator(self).generate()
-        py_code = PyGenerator(self).generate()
-
-        # Render the header template
-        header_template = self.jinja_env.get_template("pywgpu.h.j2")
-        output = header_template.render(hpp_code=hpp_code)
-        # logger.debug(output)
-        # Write the C++ code to a file
-        #path = Path("include/dawn/webgpu_cpp.h")
-        path = Path("include/crunge/wgpu/pywgpu.h")
-        with open(path, "w") as f:
-            f.write(output)
-
-        # Render the source template
-        #source_template = self.jinja_env.get_template("wgpu.cpp.j2")
-        source_template = self.jinja_env.get_template("pywgpu.cpp.j2")
-        output = source_template.render(cpp_code=cpp_code)
-        # logger.debug(output)
-        # Write the C++ code to a file
-        path = Path("src/pywgpu.cpp")
-        with open(path, "w") as f:
-            f.write(output)
-
-        # Render the Python bindings
-        # Render the source template
-        source_template = self.jinja_env.get_template("wgpu_py.cpp.j2")
-        output = source_template.render(py_code=py_code)
-        # logger.debug(output)
-        # Write the C++ code to a file
-        path = Path("src/wgpu_py.cpp")
-        with open(path, "w") as f:
-            f.write(output)
-
-        logger.debug(f"C++ bindings generated in {path}")
+        pass
 
     def process(self):
         for key, entry in self.program.root:

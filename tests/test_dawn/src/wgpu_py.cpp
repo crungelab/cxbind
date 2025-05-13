@@ -1,6 +1,3 @@
-//#include <dawn/webgpu_cpp.h>
-//#include "wgpu.h"
-
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/operators.h>
@@ -15,8 +12,7 @@ namespace py = pybind11;
 
 using namespace pywgpu;
 
-void init_wgpu(py::module &m, Registry &registry) {
-
+void init_wgpu_py_auto(py::module &m, Registry &registry) {
 py::enum_<RequestAdapterStatus>(m, "RequestAdapterStatus", py::arithmetic())
     .value("SUCCESS", RequestAdapterStatus::Success)    
     .value("CALLBACK_CANCELLED", RequestAdapterStatus::CallbackCancelled)    

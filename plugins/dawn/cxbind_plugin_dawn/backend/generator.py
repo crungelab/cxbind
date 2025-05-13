@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 
 from loguru import logger
 
-from cxbind_plugin_dawn.render.render_context import RenderContext
+from cxbind_plugin_dawn.backend.render_context import RenderContext
 
 from ..node import Node
 from .renderer import Renderer
