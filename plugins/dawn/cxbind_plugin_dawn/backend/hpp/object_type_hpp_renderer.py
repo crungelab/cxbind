@@ -11,7 +11,7 @@ public:
 """)
         self.out.indent()
         for method in self.node.methods:
-            if self.exclude_method(method):
+            if self.exclude_method(self.node, method):
                 continue
             method_name = method.name.CamelCase()
             return_type = None

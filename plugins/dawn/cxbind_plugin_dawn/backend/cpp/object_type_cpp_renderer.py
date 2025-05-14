@@ -7,7 +7,7 @@ class ObjectTypeCppRenderer(ObjectTypeRenderer):
         class_name = self.node.name.CamelCase()
         self.out << "\n" << f"// {class_name} implementation" << "\n\n"
         for method in self.node.methods:
-            if self.exclude_method(method):
+            if self.exclude_method(self.node, method):
                 continue
 
             method_name = method.name.CamelCase()

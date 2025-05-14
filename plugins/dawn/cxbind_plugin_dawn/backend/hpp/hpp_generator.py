@@ -18,7 +18,7 @@ def topological_sort(G):
 
 class HppGenerator(Generator):
     def __init__(self, backend: "Backend") -> None:
-        context = HppRenderContext(backend.program.root, backend.jinja_env)
+        context = HppRenderContext(backend.program.unit, backend.program.root, backend.jinja_env)
         super().__init__(context, backend)
 
     def render(self):

@@ -1,10 +1,16 @@
 import jinja2
 
+from cxbind.unit import Unit
+
 from .render_stream import RenderStream
 from ..node import Root, Catalog
 
 class RenderContext:
-    def __init__(self, root: Root, jinja_env: jinja2.Environment) -> None:
+    def __init__(self, unit: Unit, root: Root, jinja_env: jinja2.Environment) -> None:
+        self.unit = unit
+        self.excludes = unit.excludes.copy()
+        self.excluded = set(self.excludes)
+        
         self.root = root
         self.catalog = Catalog()
         for key, value in self.root.root.items():

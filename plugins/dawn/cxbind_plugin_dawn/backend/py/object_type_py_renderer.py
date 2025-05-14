@@ -1,12 +1,12 @@
 from ...node import Method
-from ..object_type_renderer import ObjectTypeRenderer
+from ..object_type_renderer import ObjectTypeRenderer, ObjectType
 
 class ObjectTypePyRenderer(ObjectTypeRenderer):
-    def exclude_method(self, method: Method):
+    def exclude_method(self, object_type: ObjectType, method: Method):
         if method.name.get() == "wait any":
             return True
 
-        return super().exclude_method(method)
+        return super().exclude_method(object_type, method)
 
     def render(self):
         class_name = self.node.name.CamelCase()
@@ -14,7 +14,7 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
         self.out << f"PYCLASS_BEGIN(m, pywgpu::{class_name}, {class_name}) {class_name}" << "\n"
         self.out.indent()
         for method in self.node.methods:
-            if self.exclude_method(method):
+            if self.exclude_method(self.node, method):
                 continue
 
             method_name = method.name.snake_case()
