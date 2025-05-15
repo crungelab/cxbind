@@ -98,7 +98,12 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             """)
         '''
 
+        members_by_name = {member.name.get(): member for member in node.members}
+        excluded_names = {member.length for member in node.members if member.length}
+
         for member in node.members:
+            if member.name.get() in excluded_names:
+                continue
             if self.exclude_member(member):
                 continue
 
@@ -125,18 +130,25 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             stripped_cppType = cppType.replace("const ", "").replace(" *", "")
 
             if member.length:
+                length_member = members_by_name.get(member.length)
+                if length_member is not None:
+                    length_member_cpp_name = length_member.name.camelCase()
+
                 stripped_cppType = cppType.replace("const ", "").replace(" *", "")
                 #print(f"stripped_cppType: {stripped_cppType}")
                 if stripped_cppType == "char":
                     self.out << f'auto value = kwargs["{member_name}"].cast<std::string>();' << "\n"
                     self.out << f'obj.{member_cpp_name} = strdup(value.c_str());' << "\n"
+                    if length_member is not None:
+                        self.out << f'obj.{length_member_cpp_name} = value.size();' << "\n"
                 else:
                     self.out << f'auto _value = kwargs["{member_name}"].cast<std::vector<{stripped_cppType}>>();' << "\n"
                     self.out << f'auto count = _value.size();' << "\n"
                     self.out << f'auto value = new {stripped_cppType}[count];' << "\n"
-                    #self.out << f'obj.{member_cpp_name} = new {stripped_cppType}[count];' << "\n"
                     self.out << f'std::copy(_value.begin(), _value.end(), value);' << "\n"
                     self.out << f'obj.{member_cpp_name} = value;' << "\n"
+                    if length_member is not None:
+                        self.out << f'obj.{length_member_cpp_name} = count;' << "\n"
             else:
                 self.out << f'auto value = kwargs["{member_name}"].cast<{cppType}>();' << "\n"
                 self.out << f'obj.{member_cpp_name} = value;' << "\n"

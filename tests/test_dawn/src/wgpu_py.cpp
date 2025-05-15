@@ -1766,11 +1766,6 @@ PYCLASS_BEGIN(m, pywgpu::DeviceDescriptor, DeviceDescriptor) DeviceDescriptor
             auto value = kwargs["label"].cast<pywgpu::StringView>();            
             obj.label = value;            
         }        
-        if (kwargs.contains("required_feature_count"))        
-        {        
-            auto value = kwargs["required_feature_count"].cast<size_t>();            
-            obj.requiredFeatureCount = value;            
-        }        
         if (kwargs.contains("required_features"))        
         {        
             auto _value = kwargs["required_features"].cast<std::vector<pywgpu::FeatureName>>();            
@@ -1778,6 +1773,7 @@ PYCLASS_BEGIN(m, pywgpu::DeviceDescriptor, DeviceDescriptor) DeviceDescriptor
             auto value = new pywgpu::FeatureName[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.requiredFeatures = value;            
+            obj.requiredFeatureCount = count;            
         }        
         if (kwargs.contains("required_limits"))        
         {        
@@ -1814,16 +1810,6 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnTogglesDescriptor, ChainedStruct, DawnTogglesDes
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
             obj.nextInChain = value;            
-        }        
-        if (kwargs.contains("enabled_toggle_count"))        
-        {        
-            auto value = kwargs["enabled_toggle_count"].cast<size_t>();            
-            obj.enabledToggleCount = value;            
-        }        
-        if (kwargs.contains("disabled_toggle_count"))        
-        {        
-            auto value = kwargs["disabled_toggle_count"].cast<size_t>();            
-            obj.disabledToggleCount = value;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -1865,11 +1851,6 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnWGSLBlocklist, ChainedStruct, DawnWGSLBlocklist)
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
             obj.nextInChain = value;            
-        }        
-        if (kwargs.contains("blocklisted_feature_count"))        
-        {        
-            auto value = kwargs["blocklisted_feature_count"].cast<size_t>();            
-            obj.blocklistedFeatureCount = value;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -1949,11 +1930,6 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupDescriptor, BindGroupDescriptor) BindGroupDesc
             auto value = kwargs["layout"].cast<pywgpu::BindGroupLayout>();            
             obj.layout = value;            
         }        
-        if (kwargs.contains("entry_count"))        
-        {        
-            auto value = kwargs["entry_count"].cast<size_t>();            
-            obj.entryCount = value;            
-        }        
         if (kwargs.contains("entries"))        
         {        
             auto _value = kwargs["entries"].cast<std::vector<pywgpu::BindGroupEntry>>();            
@@ -1961,6 +1937,7 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupDescriptor, BindGroupDescriptor) BindGroupDesc
             auto value = new pywgpu::BindGroupEntry[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.entries = value;            
+            obj.entryCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -2132,11 +2109,6 @@ PYCLASS_BEGIN(m, pywgpu::SurfaceConfiguration, SurfaceConfiguration) SurfaceConf
             auto value = kwargs["height"].cast<uint32_t>();            
             obj.height = value;            
         }        
-        if (kwargs.contains("view_format_count"))        
-        {        
-            auto value = kwargs["view_format_count"].cast<size_t>();            
-            obj.viewFormatCount = value;            
-        }        
         if (kwargs.contains("view_formats"))        
         {        
             auto _value = kwargs["view_formats"].cast<std::vector<pywgpu::TextureFormat>>();            
@@ -2144,6 +2116,7 @@ PYCLASS_BEGIN(m, pywgpu::SurfaceConfiguration, SurfaceConfiguration) SurfaceConf
             auto value = new pywgpu::TextureFormat[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.viewFormats = value;            
+            obj.viewFormatCount = count;            
         }        
         if (kwargs.contains("alpha_mode"))        
         {        
@@ -2293,11 +2266,6 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupLayoutDescriptor, BindGroupLayoutDescriptor) B
             auto value = kwargs["label"].cast<pywgpu::StringView>();            
             obj.label = value;            
         }        
-        if (kwargs.contains("entry_count"))        
-        {        
-            auto value = kwargs["entry_count"].cast<size_t>();            
-            obj.entryCount = value;            
-        }        
         if (kwargs.contains("entries"))        
         {        
             auto _value = kwargs["entries"].cast<std::vector<pywgpu::BindGroupLayoutEntry>>();            
@@ -2305,6 +2273,7 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupLayoutDescriptor, BindGroupLayoutDescriptor) B
             auto value = new pywgpu::BindGroupLayoutEntry[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.entries = value;            
+            obj.entryCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -2510,11 +2479,6 @@ PYCLASS_BEGIN(m, pywgpu::CompilationInfo, CompilationInfo) CompilationInfo
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
             obj.nextInChain = value;            
         }        
-        if (kwargs.contains("message_count"))        
-        {        
-            auto value = kwargs["message_count"].cast<size_t>();            
-            obj.messageCount = value;            
-        }        
         if (kwargs.contains("messages"))        
         {        
             auto _value = kwargs["messages"].cast<std::vector<pywgpu::CompilationMessage>>();            
@@ -2522,6 +2486,7 @@ PYCLASS_BEGIN(m, pywgpu::CompilationInfo, CompilationInfo) CompilationInfo
             auto value = new pywgpu::CompilationMessage[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.messages = value;            
+            obj.messageCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -2817,11 +2782,6 @@ PYCLASS_BEGIN(m, pywgpu::SupportedFeatures, SupportedFeatures) SupportedFeatures
     .def_readwrite("features", &pywgpu::SupportedFeatures::features)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SupportedFeatures obj{};        
-        if (kwargs.contains("feature_count"))        
-        {        
-            auto value = kwargs["feature_count"].cast<size_t>();            
-            obj.featureCount = value;            
-        }        
         if (kwargs.contains("features"))        
         {        
             auto _value = kwargs["features"].cast<std::vector<pywgpu::FeatureName>>();            
@@ -2829,6 +2789,7 @@ PYCLASS_BEGIN(m, pywgpu::SupportedFeatures, SupportedFeatures) SupportedFeatures
             auto value = new pywgpu::FeatureName[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.features = value;            
+            obj.featureCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -2840,11 +2801,6 @@ PYCLASS_BEGIN(m, pywgpu::SupportedWGSLLanguageFeatures, SupportedWGSLLanguageFea
     .def_readwrite("features", &pywgpu::SupportedWGSLLanguageFeatures::features)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SupportedWGSLLanguageFeatures obj{};        
-        if (kwargs.contains("feature_count"))        
-        {        
-            auto value = kwargs["feature_count"].cast<size_t>();            
-            obj.featureCount = value;            
-        }        
         if (kwargs.contains("features"))        
         {        
             auto _value = kwargs["features"].cast<std::vector<pywgpu::WGSLLanguageFeatureName>>();            
@@ -2852,6 +2808,7 @@ PYCLASS_BEGIN(m, pywgpu::SupportedWGSLLanguageFeatures, SupportedWGSLLanguageFea
             auto value = new pywgpu::WGSLLanguageFeatureName[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.features = value;            
+            obj.featureCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -3087,11 +3044,6 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryBeginAccessDescriptor, SharedBufferMe
             auto value = kwargs["initialized"].cast<pywgpu::Bool>();            
             obj.initialized = value;            
         }        
-        if (kwargs.contains("fence_count"))        
-        {        
-            auto value = kwargs["fence_count"].cast<size_t>();            
-            obj.fenceCount = value;            
-        }        
         if (kwargs.contains("fences"))        
         {        
             auto _value = kwargs["fences"].cast<std::vector<pywgpu::SharedFence>>();            
@@ -3099,6 +3051,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryBeginAccessDescriptor, SharedBufferMe
             auto value = new pywgpu::SharedFence[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.fences = value;            
+            obj.fenceCount = count;            
         }        
         if (kwargs.contains("signaled_values"))        
         {        
@@ -3107,6 +3060,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryBeginAccessDescriptor, SharedBufferMe
             auto value = new uint64_t[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.signaledValues = value;            
+            obj.fenceCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -3223,11 +3177,6 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryDmaBufDescriptor, ChainedStruct, 
             auto value = kwargs["drm_modifier"].cast<uint64_t>();            
             obj.drmModifier = value;            
         }        
-        if (kwargs.contains("plane_count"))        
-        {        
-            auto value = kwargs["plane_count"].cast<size_t>();            
-            obj.planeCount = value;            
-        }        
         if (kwargs.contains("planes"))        
         {        
             auto _value = kwargs["planes"].cast<std::vector<pywgpu::SharedTextureMemoryDmaBufPlane>>();            
@@ -3235,6 +3184,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryDmaBufDescriptor, ChainedStruct, 
             auto value = new pywgpu::SharedTextureMemoryDmaBufPlane[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.planes = value;            
+            obj.planeCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -3407,11 +3357,6 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryBeginAccessDescriptor, SharedTexture
             auto value = kwargs["initialized"].cast<pywgpu::Bool>();            
             obj.initialized = value;            
         }        
-        if (kwargs.contains("fence_count"))        
-        {        
-            auto value = kwargs["fence_count"].cast<size_t>();            
-            obj.fenceCount = value;            
-        }        
         if (kwargs.contains("fences"))        
         {        
             auto _value = kwargs["fences"].cast<std::vector<pywgpu::SharedFence>>();            
@@ -3419,6 +3364,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryBeginAccessDescriptor, SharedTexture
             auto value = new pywgpu::SharedFence[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.fences = value;            
+            obj.fenceCount = count;            
         }        
         if (kwargs.contains("signaled_values"))        
         {        
@@ -3427,6 +3373,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryBeginAccessDescriptor, SharedTexture
             auto value = new uint64_t[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.signaledValues = value;            
+            obj.fenceCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -4038,11 +3985,6 @@ PYCLASS_BEGIN(m, pywgpu::VertexBufferLayout, VertexBufferLayout) VertexBufferLay
             auto value = kwargs["array_stride"].cast<uint64_t>();            
             obj.arrayStride = value;            
         }        
-        if (kwargs.contains("attribute_count"))        
-        {        
-            auto value = kwargs["attribute_count"].cast<size_t>();            
-            obj.attributeCount = value;            
-        }        
         if (kwargs.contains("attributes"))        
         {        
             auto _value = kwargs["attributes"].cast<std::vector<pywgpu::VertexAttribute>>();            
@@ -4050,6 +3992,7 @@ PYCLASS_BEGIN(m, pywgpu::VertexBufferLayout, VertexBufferLayout) VertexBufferLay
             auto value = new pywgpu::VertexAttribute[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.attributes = value;            
+            obj.attributeCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -4152,11 +4095,6 @@ PYCLASS_BEGIN(m, pywgpu::PipelineLayoutDescriptor, PipelineLayoutDescriptor) Pip
             auto value = kwargs["label"].cast<pywgpu::StringView>();            
             obj.label = value;            
         }        
-        if (kwargs.contains("bind_group_layout_count"))        
-        {        
-            auto value = kwargs["bind_group_layout_count"].cast<size_t>();            
-            obj.bindGroupLayoutCount = value;            
-        }        
         if (kwargs.contains("bind_group_layouts"))        
         {        
             auto _value = kwargs["bind_group_layouts"].cast<std::vector<pywgpu::BindGroupLayout>>();            
@@ -4164,6 +4102,7 @@ PYCLASS_BEGIN(m, pywgpu::PipelineLayoutDescriptor, PipelineLayoutDescriptor) Pip
             auto value = new pywgpu::BindGroupLayout[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.bindGroupLayouts = value;            
+            obj.bindGroupLayoutCount = count;            
         }        
         if (kwargs.contains("immediate_data_range_byte_size"))        
         {        
@@ -4192,11 +4131,6 @@ PYSUBCLASS_BEGIN(m, pywgpu::PipelineLayoutPixelLocalStorage, ChainedStruct, Pipe
             auto value = kwargs["total_pixel_local_storage_size"].cast<uint64_t>();            
             obj.totalPixelLocalStorageSize = value;            
         }        
-        if (kwargs.contains("storage_attachment_count"))        
-        {        
-            auto value = kwargs["storage_attachment_count"].cast<size_t>();            
-            obj.storageAttachmentCount = value;            
-        }        
         if (kwargs.contains("storage_attachments"))        
         {        
             auto _value = kwargs["storage_attachments"].cast<std::vector<pywgpu::PipelineLayoutStorageAttachment>>();            
@@ -4204,6 +4138,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::PipelineLayoutPixelLocalStorage, ChainedStruct, Pipe
             auto value = new pywgpu::PipelineLayoutStorageAttachment[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.storageAttachments = value;            
+            obj.storageAttachmentCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -4259,11 +4194,6 @@ PYCLASS_BEGIN(m, pywgpu::ComputeState, ComputeState) ComputeState
             auto value = kwargs["entry_point"].cast<pywgpu::StringView>();            
             obj.entryPoint = value;            
         }        
-        if (kwargs.contains("constant_count"))        
-        {        
-            auto value = kwargs["constant_count"].cast<size_t>();            
-            obj.constantCount = value;            
-        }        
         if (kwargs.contains("constants"))        
         {        
             auto _value = kwargs["constants"].cast<std::vector<pywgpu::ConstantEntry>>();            
@@ -4271,6 +4201,7 @@ PYCLASS_BEGIN(m, pywgpu::ComputeState, ComputeState) ComputeState
             auto value = new pywgpu::ConstantEntry[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.constants = value;            
+            obj.constantCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -4370,11 +4301,6 @@ PYCLASS_BEGIN(m, pywgpu::RenderBundleEncoderDescriptor, RenderBundleEncoderDescr
             auto value = kwargs["label"].cast<pywgpu::StringView>();            
             obj.label = value;            
         }        
-        if (kwargs.contains("color_format_count"))        
-        {        
-            auto value = kwargs["color_format_count"].cast<size_t>();            
-            obj.colorFormatCount = value;            
-        }        
         if (kwargs.contains("color_formats"))        
         {        
             auto _value = kwargs["color_formats"].cast<std::vector<pywgpu::TextureFormat>>();            
@@ -4382,6 +4308,7 @@ PYCLASS_BEGIN(m, pywgpu::RenderBundleEncoderDescriptor, RenderBundleEncoderDescr
             auto value = new pywgpu::TextureFormat[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.colorFormats = value;            
+            obj.colorFormatCount = count;            
         }        
         if (kwargs.contains("depth_stencil_format"))        
         {        
@@ -4566,11 +4493,6 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassDescriptor, RenderPassDescriptor) RenderPassD
             auto value = kwargs["label"].cast<pywgpu::StringView>();            
             obj.label = value;            
         }        
-        if (kwargs.contains("color_attachment_count"))        
-        {        
-            auto value = kwargs["color_attachment_count"].cast<size_t>();            
-            obj.colorAttachmentCount = value;            
-        }        
         if (kwargs.contains("color_attachments"))        
         {        
             auto _value = kwargs["color_attachments"].cast<std::vector<pywgpu::RenderPassColorAttachment>>();            
@@ -4578,6 +4500,7 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassDescriptor, RenderPassDescriptor) RenderPassD
             auto value = new pywgpu::RenderPassColorAttachment[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.colorAttachments = value;            
+            obj.colorAttachmentCount = count;            
         }        
         if (kwargs.contains("depth_stencil_attachment"))        
         {        
@@ -4674,11 +4597,6 @@ PYSUBCLASS_BEGIN(m, pywgpu::RenderPassPixelLocalStorage, ChainedStruct, RenderPa
             auto value = kwargs["total_pixel_local_storage_size"].cast<uint64_t>();            
             obj.totalPixelLocalStorageSize = value;            
         }        
-        if (kwargs.contains("storage_attachment_count"))        
-        {        
-            auto value = kwargs["storage_attachment_count"].cast<size_t>();            
-            obj.storageAttachmentCount = value;            
-        }        
         if (kwargs.contains("storage_attachments"))        
         {        
             auto _value = kwargs["storage_attachments"].cast<std::vector<pywgpu::RenderPassStorageAttachment>>();            
@@ -4686,6 +4604,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::RenderPassPixelLocalStorage, ChainedStruct, RenderPa
             auto value = new pywgpu::RenderPassStorageAttachment[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.storageAttachments = value;            
+            obj.storageAttachmentCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -4761,11 +4680,6 @@ PYCLASS_BEGIN(m, pywgpu::VertexState, VertexState) VertexState
             auto value = kwargs["entry_point"].cast<pywgpu::StringView>();            
             obj.entryPoint = value;            
         }        
-        if (kwargs.contains("constant_count"))        
-        {        
-            auto value = kwargs["constant_count"].cast<size_t>();            
-            obj.constantCount = value;            
-        }        
         if (kwargs.contains("constants"))        
         {        
             auto _value = kwargs["constants"].cast<std::vector<pywgpu::ConstantEntry>>();            
@@ -4773,11 +4687,7 @@ PYCLASS_BEGIN(m, pywgpu::VertexState, VertexState) VertexState
             auto value = new pywgpu::ConstantEntry[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.constants = value;            
-        }        
-        if (kwargs.contains("buffer_count"))        
-        {        
-            auto value = kwargs["buffer_count"].cast<size_t>();            
-            obj.bufferCount = value;            
+            obj.constantCount = count;            
         }        
         if (kwargs.contains("buffers"))        
         {        
@@ -4786,6 +4696,7 @@ PYCLASS_BEGIN(m, pywgpu::VertexState, VertexState) VertexState
             auto value = new pywgpu::VertexBufferLayout[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.buffers = value;            
+            obj.bufferCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -4967,11 +4878,6 @@ PYCLASS_BEGIN(m, pywgpu::FragmentState, FragmentState) FragmentState
             auto value = kwargs["entry_point"].cast<pywgpu::StringView>();            
             obj.entryPoint = value;            
         }        
-        if (kwargs.contains("constant_count"))        
-        {        
-            auto value = kwargs["constant_count"].cast<size_t>();            
-            obj.constantCount = value;            
-        }        
         if (kwargs.contains("constants"))        
         {        
             auto _value = kwargs["constants"].cast<std::vector<pywgpu::ConstantEntry>>();            
@@ -4979,11 +4885,7 @@ PYCLASS_BEGIN(m, pywgpu::FragmentState, FragmentState) FragmentState
             auto value = new pywgpu::ConstantEntry[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.constants = value;            
-        }        
-        if (kwargs.contains("target_count"))        
-        {        
-            auto value = kwargs["target_count"].cast<size_t>();            
-            obj.targetCount = value;            
+            obj.constantCount = count;            
         }        
         if (kwargs.contains("targets"))        
         {        
@@ -4992,6 +4894,7 @@ PYCLASS_BEGIN(m, pywgpu::FragmentState, FragmentState) FragmentState
             auto value = new pywgpu::ColorTargetState[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.targets = value;            
+            obj.targetCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -5237,11 +5140,6 @@ PYSUBCLASS_BEGIN(m, pywgpu::ShaderSourceSPIRV, ChainedStruct, ShaderSourceSPIRV)
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
             obj.nextInChain = value;            
         }        
-        if (kwargs.contains("code_size"))        
-        {        
-            auto value = kwargs["code_size"].cast<uint32_t>();            
-            obj.codeSize = value;            
-        }        
         if (kwargs.contains("code"))        
         {        
             auto _value = kwargs["code"].cast<std::vector<uint32_t>>();            
@@ -5249,6 +5147,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::ShaderSourceSPIRV, ChainedStruct, ShaderSourceSPIRV)
             auto value = new uint32_t[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.code = value;            
+            obj.codeSize = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
@@ -5670,11 +5569,6 @@ PYCLASS_BEGIN(m, pywgpu::TextureDescriptor, TextureDescriptor) TextureDescriptor
             auto value = kwargs["sample_count"].cast<uint32_t>();            
             obj.sampleCount = value;            
         }        
-        if (kwargs.contains("view_format_count"))        
-        {        
-            auto value = kwargs["view_format_count"].cast<size_t>();            
-            obj.viewFormatCount = value;            
-        }        
         if (kwargs.contains("view_formats"))        
         {        
             auto _value = kwargs["view_formats"].cast<std::vector<pywgpu::TextureFormat>>();            
@@ -5682,6 +5576,7 @@ PYCLASS_BEGIN(m, pywgpu::TextureDescriptor, TextureDescriptor) TextureDescriptor
             auto value = new pywgpu::TextureFormat[count];            
             std::copy(_value.begin(), _value.end(), value);            
             obj.viewFormats = value;            
+            obj.viewFormatCount = count;            
         }        
         return obj;        
     }), py::return_value_policy::automatic_reference)    
