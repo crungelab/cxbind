@@ -251,7 +251,7 @@ class Root(RootModel):
             value.name = Name.intern(key, native=native)
 
         self.root["instance capabilities"].extensible = "in"
-        self.root["surface texture"].extensible = "in"
+        #self.root["surface texture"].extensible = "in"
         self.root["adapter info"].extensible = "in"
 
         self.root["chained struct"] = StructureType(

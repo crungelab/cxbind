@@ -22,6 +22,45 @@ AdapterInfo::operator const WGPUAdapterInfo&() const noexcept {
     return *reinterpret_cast<const WGPUAdapterInfo*>(this);
 }
 
+AdapterInfo::~AdapterInfo() {
+    FreeMembers();
+}
+void AdapterInfo::FreeMembers() {
+    // Free members here
+}
+
+AdapterInfo::AdapterInfo(AdapterInfo&& rhs) :
+    nextInChain(rhs.nextInChain),    
+    vendor(rhs.vendor),    
+    architecture(rhs.architecture),    
+    device(rhs.device),    
+    description(rhs.description),    
+    backendType(rhs.backendType),    
+    adapterType(rhs.adapterType),    
+    vendorID(rhs.vendorID),    
+    deviceID(rhs.deviceID),    
+    subgroupMinSize(rhs.subgroupMinSize),    
+    subgroupMaxSize(rhs.subgroupMaxSize)    
+{}
+AdapterInfo& AdapterInfo::operator=(AdapterInfo&& rhs) {
+if (&rhs == this) {
+    return *this;
+}
+FreeMembers();
+
+    ::pywgpu::detail::AsNonConstReference(this->nextInChain) = std::move(rhs.nextInChain);    
+    ::pywgpu::detail::AsNonConstReference(this->vendor) = std::move(rhs.vendor);    
+    ::pywgpu::detail::AsNonConstReference(this->architecture) = std::move(rhs.architecture);    
+    ::pywgpu::detail::AsNonConstReference(this->device) = std::move(rhs.device);    
+    ::pywgpu::detail::AsNonConstReference(this->description) = std::move(rhs.description);    
+    ::pywgpu::detail::AsNonConstReference(this->backendType) = std::move(rhs.backendType);    
+    ::pywgpu::detail::AsNonConstReference(this->adapterType) = std::move(rhs.adapterType);    
+    ::pywgpu::detail::AsNonConstReference(this->vendorID) = std::move(rhs.vendorID);    
+    ::pywgpu::detail::AsNonConstReference(this->deviceID) = std::move(rhs.deviceID);    
+    ::pywgpu::detail::AsNonConstReference(this->subgroupMinSize) = std::move(rhs.subgroupMinSize);    
+    ::pywgpu::detail::AsNonConstReference(this->subgroupMaxSize) = std::move(rhs.subgroupMaxSize);    
+    return *this;    
+}
 // DeviceDescriptor implementation
 
 DeviceDescriptor::operator const WGPUDeviceDescriptor&() const noexcept {
@@ -1507,6 +1546,29 @@ InstanceCapabilities::operator const WGPUInstanceCapabilities&() const noexcept 
     return *reinterpret_cast<const WGPUInstanceCapabilities*>(this);
 }
 
+InstanceCapabilities::~InstanceCapabilities() {
+    FreeMembers();
+}
+void InstanceCapabilities::FreeMembers() {
+    // Free members here
+}
+
+InstanceCapabilities::InstanceCapabilities(InstanceCapabilities&& rhs) :
+    nextInChain(rhs.nextInChain),    
+    timedWaitAnyEnable(rhs.timedWaitAnyEnable),    
+    timedWaitAnyMaxCount(rhs.timedWaitAnyMaxCount)    
+{}
+InstanceCapabilities& InstanceCapabilities::operator=(InstanceCapabilities&& rhs) {
+if (&rhs == this) {
+    return *this;
+}
+FreeMembers();
+
+    ::pywgpu::detail::AsNonConstReference(this->nextInChain) = std::move(rhs.nextInChain);    
+    ::pywgpu::detail::AsNonConstReference(this->timedWaitAnyEnable) = std::move(rhs.timedWaitAnyEnable);    
+    ::pywgpu::detail::AsNonConstReference(this->timedWaitAnyMaxCount) = std::move(rhs.timedWaitAnyMaxCount);    
+    return *this;    
+}
 // InstanceDescriptor implementation
 
 InstanceDescriptor::operator const WGPUInstanceDescriptor&() const noexcept {
@@ -2089,6 +2151,29 @@ SurfaceTexture::operator const WGPUSurfaceTexture&() const noexcept {
     return *reinterpret_cast<const WGPUSurfaceTexture*>(this);
 }
 
+SurfaceTexture::~SurfaceTexture() {
+    FreeMembers();
+}
+void SurfaceTexture::FreeMembers() {
+    // Free members here
+}
+
+SurfaceTexture::SurfaceTexture(SurfaceTexture&& rhs) :
+    nextInChain(rhs.nextInChain),    
+    texture(rhs.texture),    
+    status(rhs.status)    
+{}
+SurfaceTexture& SurfaceTexture::operator=(SurfaceTexture&& rhs) {
+if (&rhs == this) {
+    return *this;
+}
+FreeMembers();
+
+    ::pywgpu::detail::AsNonConstReference(this->nextInChain) = std::move(rhs.nextInChain);    
+    ::pywgpu::detail::AsNonConstReference(this->texture) = std::move(rhs.texture);    
+    ::pywgpu::detail::AsNonConstReference(this->status) = std::move(rhs.status);    
+    return *this;    
+}
 // TextureDescriptor implementation
 
 TextureDescriptor::operator const WGPUTextureDescriptor&() const noexcept {

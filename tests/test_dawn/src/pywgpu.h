@@ -1584,10 +1584,18 @@ public:
 };
 
 struct InstanceCapabilities {
+InstanceCapabilities() = default;
+    ~InstanceCapabilities();
+    InstanceCapabilities(const InstanceCapabilities&) = delete;
+    void FreeMembers();
+    InstanceCapabilities& operator=(const InstanceCapabilities&) = delete;
+    InstanceCapabilities(InstanceCapabilities&&);
+    InstanceCapabilities& operator=(InstanceCapabilities&&);
+    
     operator const WGPUInstanceCapabilities&() const noexcept;
-    ChainedStructOut * nextInChain = nullptr;
-    Bool timedWaitAnyEnable = false;
-    size_t timedWaitAnyMaxCount = 0;
+    ChainedStructOut * const nextInChain = nullptr;
+    Bool const timedWaitAnyEnable = false;
+    size_t const timedWaitAnyMaxCount = 0;
 };
 
 struct Future {
@@ -2012,10 +2020,18 @@ struct TextureDescriptor {
 };
 
 struct SurfaceTexture {
+SurfaceTexture() = default;
+    ~SurfaceTexture();
+    SurfaceTexture(const SurfaceTexture&) = delete;
+    void FreeMembers();
+    SurfaceTexture& operator=(const SurfaceTexture&) = delete;
+    SurfaceTexture(SurfaceTexture&&);
+    SurfaceTexture& operator=(SurfaceTexture&&);
+    
     operator const WGPUSurfaceTexture&() const noexcept;
-    ChainedStructOut * nextInChain = nullptr;
-    Texture texture;
-    SurfaceGetCurrentTextureStatus status;
+    ChainedStructOut * const nextInChain = nullptr;
+    Texture const texture = {};
+    SurfaceGetCurrentTextureStatus const status = {};
 };
 
 // Can be chained in SurfaceDescriptor
@@ -3198,18 +3214,26 @@ struct DeviceDescriptor {
 };
 
 struct AdapterInfo {
+AdapterInfo() = default;
+    ~AdapterInfo();
+    AdapterInfo(const AdapterInfo&) = delete;
+    void FreeMembers();
+    AdapterInfo& operator=(const AdapterInfo&) = delete;
+    AdapterInfo(AdapterInfo&&);
+    AdapterInfo& operator=(AdapterInfo&&);
+    
     operator const WGPUAdapterInfo&() const noexcept;
-    ChainedStructOut * nextInChain = nullptr;
-    StringView vendor = {};
-    StringView architecture = {};
-    StringView device = {};
-    StringView description = {};
-    BackendType backendType;
-    AdapterType adapterType;
-    uint32_t vendorID;
-    uint32_t deviceID;
-    uint32_t subgroupMinSize;
-    uint32_t subgroupMaxSize;
+    ChainedStructOut * const nextInChain = nullptr;
+    StringView const vendor = {};
+    StringView const architecture = {};
+    StringView const device = {};
+    StringView const description = {};
+    BackendType const backendType = {};
+    AdapterType const adapterType = {};
+    uint32_t const vendorID = {};
+    uint32_t const deviceID = {};
+    uint32_t const subgroupMinSize = {};
+    uint32_t const subgroupMaxSize = {};
 };
 
 struct RequestAdapterOptions {

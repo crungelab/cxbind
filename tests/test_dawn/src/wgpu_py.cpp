@@ -1617,6 +1617,24 @@ PYCLASS_BEGIN(m, pywgpu::INTERNAL_HAVE_EMDAWNWEBGPU_HEADER, INTERNAL_HAVE_EMDAWN
     .def_readwrite("unused", &pywgpu::INTERNAL_HAVE_EMDAWNWEBGPU_HEADER::unused)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::INTERNAL_HAVE_EMDAWNWEBGPU_HEADER obj{};        
+        static const std::set<std::string> allowed = {"unused"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("unused"))        
         {        
             auto value = kwargs["unused"].cast<pywgpu::Bool>();            
@@ -1636,6 +1654,24 @@ PYCLASS_BEGIN(m, pywgpu::RequestAdapterOptions, RequestAdapterOptions) RequestAd
     .def_readwrite("compatible_surface", &pywgpu::RequestAdapterOptions::compatibleSurface)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RequestAdapterOptions obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "feature_level", "power_preference", "force_fallback_adapter", "backend_type", "compatible_surface"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1672,76 +1708,18 @@ PYCLASS_BEGIN(m, pywgpu::RequestAdapterOptions, RequestAdapterOptions) RequestAd
 PYCLASS_END(m, pywgpu::RequestAdapterOptions, RequestAdapterOptions)
 
 PYCLASS_BEGIN(m, pywgpu::AdapterInfo, AdapterInfo) AdapterInfo
-    .def_readwrite("next_in_chain", &pywgpu::AdapterInfo::nextInChain)    
-    .def_readwrite("vendor", &pywgpu::AdapterInfo::vendor)    
-    .def_readwrite("architecture", &pywgpu::AdapterInfo::architecture)    
-    .def_readwrite("device", &pywgpu::AdapterInfo::device)    
-    .def_readwrite("description", &pywgpu::AdapterInfo::description)    
-    .def_readwrite("backend_type", &pywgpu::AdapterInfo::backendType)    
-    .def_readwrite("adapter_type", &pywgpu::AdapterInfo::adapterType)    
-    .def_readwrite("vendor_id", &pywgpu::AdapterInfo::vendorID)    
-    .def_readwrite("device_id", &pywgpu::AdapterInfo::deviceID)    
-    .def_readwrite("subgroup_min_size", &pywgpu::AdapterInfo::subgroupMinSize)    
-    .def_readwrite("subgroup_max_size", &pywgpu::AdapterInfo::subgroupMaxSize)    
-    .def(py::init([](const py::kwargs& kwargs) {    
-        pywgpu::AdapterInfo obj{};        
-        if (kwargs.contains("next_in_chain"))        
-        {        
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStructOut *>();            
-            obj.nextInChain = value;            
-        }        
-        if (kwargs.contains("vendor"))        
-        {        
-            auto value = kwargs["vendor"].cast<pywgpu::StringView>();            
-            obj.vendor = value;            
-        }        
-        if (kwargs.contains("architecture"))        
-        {        
-            auto value = kwargs["architecture"].cast<pywgpu::StringView>();            
-            obj.architecture = value;            
-        }        
-        if (kwargs.contains("device"))        
-        {        
-            auto value = kwargs["device"].cast<pywgpu::StringView>();            
-            obj.device = value;            
-        }        
-        if (kwargs.contains("description"))        
-        {        
-            auto value = kwargs["description"].cast<pywgpu::StringView>();            
-            obj.description = value;            
-        }        
-        if (kwargs.contains("backend_type"))        
-        {        
-            auto value = kwargs["backend_type"].cast<pywgpu::BackendType>();            
-            obj.backendType = value;            
-        }        
-        if (kwargs.contains("adapter_type"))        
-        {        
-            auto value = kwargs["adapter_type"].cast<pywgpu::AdapterType>();            
-            obj.adapterType = value;            
-        }        
-        if (kwargs.contains("vendor_id"))        
-        {        
-            auto value = kwargs["vendor_id"].cast<uint32_t>();            
-            obj.vendorID = value;            
-        }        
-        if (kwargs.contains("device_id"))        
-        {        
-            auto value = kwargs["device_id"].cast<uint32_t>();            
-            obj.deviceID = value;            
-        }        
-        if (kwargs.contains("subgroup_min_size"))        
-        {        
-            auto value = kwargs["subgroup_min_size"].cast<uint32_t>();            
-            obj.subgroupMinSize = value;            
-        }        
-        if (kwargs.contains("subgroup_max_size"))        
-        {        
-            auto value = kwargs["subgroup_max_size"].cast<uint32_t>();            
-            obj.subgroupMaxSize = value;            
-        }        
-        return obj;        
-    }), py::return_value_policy::automatic_reference)    
+    .def_readonly("next_in_chain", &pywgpu::AdapterInfo::nextInChain)    
+    .def_readonly("vendor", &pywgpu::AdapterInfo::vendor)    
+    .def_readonly("architecture", &pywgpu::AdapterInfo::architecture)    
+    .def_readonly("device", &pywgpu::AdapterInfo::device)    
+    .def_readonly("description", &pywgpu::AdapterInfo::description)    
+    .def_readonly("backend_type", &pywgpu::AdapterInfo::backendType)    
+    .def_readonly("adapter_type", &pywgpu::AdapterInfo::adapterType)    
+    .def_readonly("vendor_id", &pywgpu::AdapterInfo::vendorID)    
+    .def_readonly("device_id", &pywgpu::AdapterInfo::deviceID)    
+    .def_readonly("subgroup_min_size", &pywgpu::AdapterInfo::subgroupMinSize)    
+    .def_readonly("subgroup_max_size", &pywgpu::AdapterInfo::subgroupMaxSize)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::AdapterInfo, AdapterInfo)
 
@@ -1756,6 +1734,24 @@ PYCLASS_BEGIN(m, pywgpu::DeviceDescriptor, DeviceDescriptor) DeviceDescriptor
     .def_readwrite("uncaptured_error_callback_info", &pywgpu::DeviceDescriptor::uncapturedErrorCallbackInfo)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DeviceDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "required_features", "required_limits", "default_queue", "device_lost_callback_info", "uncaptured_error_callback_info"};        
+        static const std::set<std::string> required = {"device_lost_callback_info", "uncaptured_error_callback_info"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1806,6 +1802,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnTogglesDescriptor, ChainedStruct, DawnTogglesDes
     .def_readwrite("disabled_toggle_count", &pywgpu::DawnTogglesDescriptor::disabledToggleCount)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnTogglesDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "enabled_toggles", "disabled_toggles"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1822,6 +1836,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnCacheDeviceDescriptor, ChainedStruct, DawnCacheD
     .def_readwrite("function_userdata", &pywgpu::DawnCacheDeviceDescriptor::functionUserdata)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnCacheDeviceDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "isolation_key", "load_data_function", "store_data_function", "function_userdata"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1847,6 +1879,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnWGSLBlocklist, ChainedStruct, DawnWGSLBlocklist)
     .def_readwrite("blocklisted_feature_count", &pywgpu::DawnWGSLBlocklist::blocklistedFeatureCount)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnWGSLBlocklist obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "blocklisted_features"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1867,6 +1917,24 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupEntry, BindGroupEntry) BindGroupEntry
     .def_readwrite("texture_view", &pywgpu::BindGroupEntry::textureView)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BindGroupEntry obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "binding", "buffer", "offset", "size", "sampler", "texture_view"};        
+        static const std::set<std::string> required = {"binding"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1915,6 +1983,24 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupDescriptor, BindGroupDescriptor) BindGroupDesc
     .def_readwrite("entries", &pywgpu::BindGroupDescriptor::entries)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BindGroupDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "layout", "entries"};        
+        static const std::set<std::string> required = {"layout", "entries"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1951,6 +2037,24 @@ PYCLASS_BEGIN(m, pywgpu::BufferBindingLayout, BufferBindingLayout) BufferBinding
     .def_readwrite("min_binding_size", &pywgpu::BufferBindingLayout::minBindingSize)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BufferBindingLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "type", "has_dynamic_offset", "min_binding_size"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -1981,6 +2085,24 @@ PYCLASS_BEGIN(m, pywgpu::SamplerBindingLayout, SamplerBindingLayout) SamplerBind
     .def_readwrite("type", &pywgpu::SamplerBindingLayout::type)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SamplerBindingLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "type"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2002,6 +2124,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::StaticSamplerBindingLayout, ChainedStruct, StaticSam
     .def_readwrite("sampled_texture_binding", &pywgpu::StaticSamplerBindingLayout::sampledTextureBinding)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::StaticSamplerBindingLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "sampler", "sampled_texture_binding"};        
+        static const std::set<std::string> required = {"sampler"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2029,6 +2169,24 @@ PYCLASS_BEGIN(m, pywgpu::TextureBindingLayout, TextureBindingLayout) TextureBind
     .def_readwrite("multisampled", &pywgpu::TextureBindingLayout::multisampled)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TextureBindingLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "sample_type", "view_dimension", "multisampled"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2063,6 +2221,7 @@ PYCLASS_BEGIN(m, pywgpu::SurfaceCapabilities, SurfaceCapabilities) SurfaceCapabi
     .def_readonly("present_modes", &pywgpu::SurfaceCapabilities::presentModes)    
     .def_readonly("alpha_mode_count", &pywgpu::SurfaceCapabilities::alphaModeCount)    
     .def_readonly("alpha_modes", &pywgpu::SurfaceCapabilities::alphaModes)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SurfaceCapabilities, SurfaceCapabilities)
 
@@ -2079,6 +2238,24 @@ PYCLASS_BEGIN(m, pywgpu::SurfaceConfiguration, SurfaceConfiguration) SurfaceConf
     .def_readwrite("present_mode", &pywgpu::SurfaceConfiguration::presentMode)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceConfiguration obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "device", "format", "usage", "width", "height", "view_formats", "alpha_mode", "present_mode"};        
+        static const std::set<std::string> required = {"device", "width", "height"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2138,6 +2315,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::ExternalTextureBindingEntry, ChainedStruct, External
     .def_readwrite("external_texture", &pywgpu::ExternalTextureBindingEntry::externalTexture)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ExternalTextureBindingEntry obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "external_texture"};        
+        static const std::set<std::string> required = {"external_texture"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2157,6 +2352,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::ExternalTextureBindingLayout, ChainedStruct, Externa
     .def_readwrite("next_in_chain", &pywgpu::ExternalTextureBindingLayout::nextInChain)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ExternalTextureBindingLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2174,6 +2387,24 @@ PYCLASS_BEGIN(m, pywgpu::StorageTextureBindingLayout, StorageTextureBindingLayou
     .def_readwrite("view_dimension", &pywgpu::StorageTextureBindingLayout::viewDimension)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::StorageTextureBindingLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "access", "format", "view_dimension"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2209,6 +2440,24 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupLayoutEntry, BindGroupLayoutEntry) BindGroupLa
     .def_readwrite("storage_texture", &pywgpu::BindGroupLayoutEntry::storageTexture)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BindGroupLayoutEntry obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "binding", "visibility", "buffer", "sampler", "texture", "storage_texture"};        
+        static const std::set<std::string> required = {"binding", "visibility"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2256,6 +2505,24 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupLayoutDescriptor, BindGroupLayoutDescriptor) B
     .def_readwrite("entries", &pywgpu::BindGroupLayoutDescriptor::entries)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BindGroupLayoutDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "entries"};        
+        static const std::set<std::string> required = {"entries"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2286,6 +2553,24 @@ PYCLASS_BEGIN(m, pywgpu::BlendComponent, BlendComponent) BlendComponent
     .def_readwrite("dst_factor", &pywgpu::BlendComponent::dstFactor)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BlendComponent obj{};        
+        static const std::set<std::string> allowed = {"operation", "src_factor", "dst_factor"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("operation"))        
         {        
             auto value = kwargs["operation"].cast<pywgpu::BlendOperation>();            
@@ -2314,6 +2599,24 @@ PYCLASS_BEGIN(m, pywgpu::BufferDescriptor, BufferDescriptor) BufferDescriptor
     .def_readwrite("mapped_at_creation", &pywgpu::BufferDescriptor::mappedAtCreation)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BufferDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "usage", "size", "mapped_at_creation"};        
+        static const std::set<std::string> required = {"usage", "size"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2350,6 +2653,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::BufferHostMappedPointer, ChainedStruct, BufferHostMa
     .def_readwrite("userdata", &pywgpu::BufferHostMappedPointer::userdata)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BufferHostMappedPointer obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "pointer", "dispose_callback", "userdata"};        
+        static const std::set<std::string> required = {"pointer", "dispose_callback", "userdata"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2377,6 +2698,24 @@ PYCLASS_BEGIN(m, pywgpu::Color, Color) Color
     .def_readwrite("a", &pywgpu::Color::a)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::Color obj{};        
+        static const std::set<std::string> allowed = {"r", "g", "b", "a"};        
+        static const std::set<std::string> required = {"r", "g", "b", "a"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("r"))        
         {        
             auto value = kwargs["r"].cast<double>();            
@@ -2408,6 +2747,24 @@ PYCLASS_BEGIN(m, pywgpu::ConstantEntry, ConstantEntry) ConstantEntry
     .def_readwrite("value", &pywgpu::ConstantEntry::value)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ConstantEntry obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "key", "value"};        
+        static const std::set<std::string> required = {"value"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2433,6 +2790,24 @@ PYCLASS_BEGIN(m, pywgpu::CommandBufferDescriptor, CommandBufferDescriptor) Comma
     .def_readwrite("label", &pywgpu::CommandBufferDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::CommandBufferDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2453,6 +2828,24 @@ PYCLASS_BEGIN(m, pywgpu::CommandEncoderDescriptor, CommandEncoderDescriptor) Com
     .def_readwrite("label", &pywgpu::CommandEncoderDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::CommandEncoderDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2474,6 +2867,24 @@ PYCLASS_BEGIN(m, pywgpu::CompilationInfo, CompilationInfo) CompilationInfo
     .def_readwrite("messages", &pywgpu::CompilationInfo::messages)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::CompilationInfo obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "messages"};        
+        static const std::set<std::string> required = {"messages"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2503,6 +2914,24 @@ PYCLASS_BEGIN(m, pywgpu::CompilationMessage, CompilationMessage) CompilationMess
     .def_readwrite("length", &pywgpu::CompilationMessage::length)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::CompilationMessage obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "message", "type", "line_num", "line_pos", "offset", "length"};        
+        static const std::set<std::string> required = {"line_num", "line_pos", "offset", "length"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2550,6 +2979,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnCompilationMessageUtf16, ChainedStruct, DawnComp
     .def_readwrite("length", &pywgpu::DawnCompilationMessageUtf16::length)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnCompilationMessageUtf16 obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "line_pos", "offset", "length"};        
+        static const std::set<std::string> required = {"line_pos", "offset", "length"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2581,6 +3028,24 @@ PYCLASS_BEGIN(m, pywgpu::ComputePassDescriptor, ComputePassDescriptor) ComputePa
     .def_readwrite("timestamp_writes", &pywgpu::ComputePassDescriptor::timestampWrites)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ComputePassDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "timestamp_writes"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2608,6 +3073,24 @@ PYCLASS_BEGIN(m, pywgpu::ComputePipelineDescriptor, ComputePipelineDescriptor) C
     .def_readwrite("compute", &pywgpu::ComputePipelineDescriptor::compute)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ComputePipelineDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "layout", "compute"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2645,6 +3128,24 @@ PYCLASS_BEGIN(m, pywgpu::CopyTextureForBrowserOptions, CopyTextureForBrowserOpti
     .def_readwrite("internal_usage", &pywgpu::CopyTextureForBrowserOptions::internalUsage)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::CopyTextureForBrowserOptions obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "flip_y", "needs_color_space_conversion", "src_alpha_mode", "src_transfer_function_parameters", "conversion_matrix", "dst_transfer_function_parameters", "dst_alpha_mode", "internal_usage"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2708,6 +3209,24 @@ PYCLASS_BEGIN(m, pywgpu::AHardwareBufferProperties, AHardwareBufferProperties) A
     .def_readwrite("y_cb_cr_info", &pywgpu::AHardwareBufferProperties::yCbCrInfo)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::AHardwareBufferProperties obj{};        
+        static const std::set<std::string> allowed = {"y_cb_cr_info"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("y_cb_cr_info"))        
         {        
             auto value = kwargs["y_cb_cr_info"].cast<pywgpu::YCbCrVkDescriptor>();            
@@ -2755,6 +3274,7 @@ PYCLASS_BEGIN(m, pywgpu::Limits, Limits) Limits
     .def_readonly("max_storage_textures_in_vertex_stage", &pywgpu::Limits::maxStorageTexturesInVertexStage)    
     .def_readonly("max_storage_buffers_in_fragment_stage", &pywgpu::Limits::maxStorageBuffersInFragmentStage)    
     .def_readonly("max_storage_textures_in_fragment_stage", &pywgpu::Limits::maxStorageTexturesInFragmentStage)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::Limits, Limits)
 
@@ -2762,18 +3282,21 @@ PYSUBCLASS_BEGIN(m, pywgpu::AdapterPropertiesSubgroups, ChainedStructOut, Adapte
     .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesSubgroups::nextInChain)    
     .def_readonly("subgroup_min_size", &pywgpu::AdapterPropertiesSubgroups::subgroupMinSize)    
     .def_readonly("subgroup_max_size", &pywgpu::AdapterPropertiesSubgroups::subgroupMaxSize)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::AdapterPropertiesSubgroups, AdapterPropertiesSubgroups)
 
 PYSUBCLASS_BEGIN(m, pywgpu::DawnExperimentalImmediateDataLimits, ChainedStructOut, DawnExperimentalImmediateDataLimits) DawnExperimentalImmediateDataLimits
     .def_readonly("next_in_chain", &pywgpu::DawnExperimentalImmediateDataLimits::nextInChain)    
     .def_readonly("max_immediate_data_range_byte_size", &pywgpu::DawnExperimentalImmediateDataLimits::maxImmediateDataRangeByteSize)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::DawnExperimentalImmediateDataLimits, DawnExperimentalImmediateDataLimits)
 
 PYSUBCLASS_BEGIN(m, pywgpu::DawnTexelCopyBufferRowAlignmentLimits, ChainedStructOut, DawnTexelCopyBufferRowAlignmentLimits) DawnTexelCopyBufferRowAlignmentLimits
     .def_readonly("next_in_chain", &pywgpu::DawnTexelCopyBufferRowAlignmentLimits::nextInChain)    
     .def_readonly("min_texel_copy_buffer_row_alignment", &pywgpu::DawnTexelCopyBufferRowAlignmentLimits::minTexelCopyBufferRowAlignment)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::DawnTexelCopyBufferRowAlignmentLimits, DawnTexelCopyBufferRowAlignmentLimits)
 
@@ -2782,6 +3305,24 @@ PYCLASS_BEGIN(m, pywgpu::SupportedFeatures, SupportedFeatures) SupportedFeatures
     .def_readwrite("features", &pywgpu::SupportedFeatures::features)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SupportedFeatures obj{};        
+        static const std::set<std::string> allowed = {"features"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("features"))        
         {        
             auto _value = kwargs["features"].cast<std::vector<pywgpu::FeatureName>>();            
@@ -2801,6 +3342,24 @@ PYCLASS_BEGIN(m, pywgpu::SupportedWGSLLanguageFeatures, SupportedWGSLLanguageFea
     .def_readwrite("features", &pywgpu::SupportedWGSLLanguageFeatures::features)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SupportedWGSLLanguageFeatures obj{};        
+        static const std::set<std::string> allowed = {"features"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("features"))        
         {        
             auto _value = kwargs["features"].cast<std::vector<pywgpu::WGSLLanguageFeatureName>>();            
@@ -2820,6 +3379,24 @@ PYCLASS_BEGIN(m, pywgpu::Extent2D, Extent2D) Extent2D
     .def_readwrite("height", &pywgpu::Extent2D::height)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::Extent2D obj{};        
+        static const std::set<std::string> allowed = {"width", "height"};        
+        static const std::set<std::string> required = {"width", "height"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("width"))        
         {        
             auto value = kwargs["width"].cast<uint32_t>();            
@@ -2841,6 +3418,24 @@ PYCLASS_BEGIN(m, pywgpu::Extent3D, Extent3D) Extent3D
     .def_readwrite("depth_or_array_layers", &pywgpu::Extent3D::depthOrArrayLayers)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::Extent3D obj{};        
+        static const std::set<std::string> allowed = {"width", "height", "depth_or_array_layers"};        
+        static const std::set<std::string> required = {"width"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("width"))        
         {        
             auto value = kwargs["width"].cast<uint32_t>();            
@@ -2878,6 +3473,24 @@ PYCLASS_BEGIN(m, pywgpu::ExternalTextureDescriptor, ExternalTextureDescriptor) E
     .def_readwrite("rotation", &pywgpu::ExternalTextureDescriptor::rotation)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ExternalTextureDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "plane_0", "plane_1", "crop_origin", "crop_size", "apparent_size", "do_yuv_to_rgb_conversion_only", "yuv_to_rgb_conversion_matrix", "src_transfer_function_parameters", "dst_transfer_function_parameters", "gamut_conversion_matrix", "mirrored", "rotation"};        
+        static const std::set<std::string> required = {"plane_0", "src_transfer_function_parameters", "dst_transfer_function_parameters", "gamut_conversion_matrix"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2969,6 +3582,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryProperties, SharedBufferMemoryPropert
     .def_readonly("next_in_chain", &pywgpu::SharedBufferMemoryProperties::nextInChain)    
     .def_readonly("usage", &pywgpu::SharedBufferMemoryProperties::usage)    
     .def_readonly("size", &pywgpu::SharedBufferMemoryProperties::size)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedBufferMemoryProperties, SharedBufferMemoryProperties)
 
@@ -2977,6 +3591,24 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryDescriptor, SharedBufferMemoryDescrip
     .def_readwrite("label", &pywgpu::SharedBufferMemoryDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedBufferMemoryDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -2997,12 +3629,14 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryProperties, SharedTextureMemoryPrope
     .def_readonly("usage", &pywgpu::SharedTextureMemoryProperties::usage)    
     .def_readonly("size", &pywgpu::SharedTextureMemoryProperties::size)    
     .def_readonly("format", &pywgpu::SharedTextureMemoryProperties::format)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedTextureMemoryProperties, SharedTextureMemoryProperties)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryAHardwareBufferProperties, ChainedStructOut, SharedTextureMemoryAHardwareBufferProperties) SharedTextureMemoryAHardwareBufferProperties
     .def_readonly("next_in_chain", &pywgpu::SharedTextureMemoryAHardwareBufferProperties::nextInChain)    
     .def_readonly("y_cb_cr_info", &pywgpu::SharedTextureMemoryAHardwareBufferProperties::yCbCrInfo)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedTextureMemoryAHardwareBufferProperties, SharedTextureMemoryAHardwareBufferProperties)
 
@@ -3011,6 +3645,24 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryDescriptor, SharedTextureMemoryDescr
     .def_readwrite("label", &pywgpu::SharedTextureMemoryDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3034,6 +3686,24 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryBeginAccessDescriptor, SharedBufferMe
     .def_readwrite("signaled_values", &pywgpu::SharedBufferMemoryBeginAccessDescriptor::signaledValues)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedBufferMemoryBeginAccessDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "initialized", "fences", "signaled_values"};        
+        static const std::set<std::string> required = {"initialized"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3073,6 +3743,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedBufferMemoryEndAccessState, SharedBufferMemoryEnd
     .def_readonly("fence_count", &pywgpu::SharedBufferMemoryEndAccessState::fenceCount)    
     .def_readonly("fences", &pywgpu::SharedBufferMemoryEndAccessState::fences)    
     .def_readonly("signaled_values", &pywgpu::SharedBufferMemoryEndAccessState::signaledValues)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedBufferMemoryEndAccessState, SharedBufferMemoryEndAccessState)
 
@@ -3081,6 +3752,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor, 
     .def_readwrite("dedicated_allocation", &pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor::dedicatedAllocation)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "dedicated_allocation"};        
+        static const std::set<std::string> required = {"dedicated_allocation"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3102,6 +3791,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryAHardwareBufferDescriptor, Chaine
     .def_readwrite("use_external_format", &pywgpu::SharedTextureMemoryAHardwareBufferDescriptor::useExternalFormat)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryAHardwareBufferDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "handle", "use_external_format"};        
+        static const std::set<std::string> required = {"handle", "use_external_format"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3128,6 +3835,24 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryDmaBufPlane, SharedTextureMemoryDmaB
     .def_readwrite("stride", &pywgpu::SharedTextureMemoryDmaBufPlane::stride)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryDmaBufPlane obj{};        
+        static const std::set<std::string> allowed = {"fd", "offset", "stride"};        
+        static const std::set<std::string> required = {"fd", "offset", "stride"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("fd"))        
         {        
             auto value = kwargs["fd"].cast<int>();            
@@ -3157,6 +3882,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryDmaBufDescriptor, ChainedStruct, 
     .def_readwrite("planes", &pywgpu::SharedTextureMemoryDmaBufDescriptor::planes)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryDmaBufDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "size", "drm_format", "drm_modifier", "planes"};        
+        static const std::set<std::string> required = {"drm_format", "drm_modifier", "planes"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3200,6 +3943,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryOpaqueFDDescriptor, ChainedStruct
     .def_readwrite("dedicated_allocation", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::dedicatedAllocation)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryOpaqueFDDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "vk_image_create_info", "memory_fd", "memory_type_index", "allocation_size", "dedicated_allocation"};        
+        static const std::set<std::string> required = {"vk_image_create_info", "memory_fd", "memory_type_index", "allocation_size", "dedicated_allocation"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3241,6 +4002,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryZirconHandleDescriptor, ChainedSt
     .def_readwrite("allocation_size", &pywgpu::SharedTextureMemoryZirconHandleDescriptor::allocationSize)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryZirconHandleDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "memory_fd", "allocation_size"};        
+        static const std::set<std::string> required = {"memory_fd", "allocation_size"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3267,6 +4046,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor, Chain
     .def_readwrite("use_keyed_mutex", &pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor::useKeyedMutex)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "handle", "use_keyed_mutex"};        
+        static const std::set<std::string> required = {"handle", "use_keyed_mutex"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3293,6 +4090,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryIOSurfaceDescriptor, ChainedStruc
     .def_readwrite("allow_storage_binding", &pywgpu::SharedTextureMemoryIOSurfaceDescriptor::allowStorageBinding)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryIOSurfaceDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "io_surface", "allow_storage_binding"};        
+        static const std::set<std::string> required = {"io_surface"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3318,6 +4133,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryEGLImageDescriptor, ChainedStruct
     .def_readwrite("image", &pywgpu::SharedTextureMemoryEGLImageDescriptor::image)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryEGLImageDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "image"};        
+        static const std::set<std::string> required = {"image"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3342,6 +4175,24 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryBeginAccessDescriptor, SharedTexture
     .def_readwrite("signaled_values", &pywgpu::SharedTextureMemoryBeginAccessDescriptor::signaledValues)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryBeginAccessDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "concurrent_read", "initialized", "fences", "signaled_values"};        
+        static const std::set<std::string> required = {"concurrent_read", "initialized", "fences", "signaled_values"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3386,6 +4237,7 @@ PYCLASS_BEGIN(m, pywgpu::SharedTextureMemoryEndAccessState, SharedTextureMemoryE
     .def_readonly("fence_count", &pywgpu::SharedTextureMemoryEndAccessState::fenceCount)    
     .def_readonly("fences", &pywgpu::SharedTextureMemoryEndAccessState::fences)    
     .def_readonly("signaled_values", &pywgpu::SharedTextureMemoryEndAccessState::signaledValues)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedTextureMemoryEndAccessState, SharedTextureMemoryEndAccessState)
 
@@ -3395,6 +4247,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryVkImageLayoutBeginState, ChainedS
     .def_readwrite("new_layout", &pywgpu::SharedTextureMemoryVkImageLayoutBeginState::newLayout)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryVkImageLayoutBeginState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "old_layout", "new_layout"};        
+        static const std::set<std::string> required = {"old_layout", "new_layout"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3419,6 +4289,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryVkImageLayoutEndState, ChainedStr
     .def_readonly("next_in_chain", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::nextInChain)    
     .def_readonly("old_layout", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::oldLayout)    
     .def_readonly("new_layout", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::newLayout)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedTextureMemoryVkImageLayoutEndState, SharedTextureMemoryVkImageLayoutEndState)
 
@@ -3427,6 +4298,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryD3DSwapchainBeginState, ChainedSt
     .def_readwrite("is_swapchain", &pywgpu::SharedTextureMemoryD3DSwapchainBeginState::isSwapchain)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryD3DSwapchainBeginState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "is_swapchain"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3447,6 +4336,24 @@ PYCLASS_BEGIN(m, pywgpu::SharedFenceDescriptor, SharedFenceDescriptor) SharedFen
     .def_readwrite("label", &pywgpu::SharedFenceDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3467,6 +4374,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor, ChainedStr
     .def_readwrite("handle", &pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor::handle)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "handle"};        
+        static const std::set<std::string> required = {"handle"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3487,6 +4412,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceSyncFDDescriptor, ChainedStruct, SharedFe
     .def_readwrite("handle", &pywgpu::SharedFenceSyncFDDescriptor::handle)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceSyncFDDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "handle"};        
+        static const std::set<std::string> required = {"handle"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3507,6 +4450,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor, Chaine
     .def_readwrite("handle", &pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor::handle)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "handle"};        
+        static const std::set<std::string> required = {"handle"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3527,6 +4488,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceDXGISharedHandleDescriptor, ChainedStruct
     .def_readwrite("handle", &pywgpu::SharedFenceDXGISharedHandleDescriptor::handle)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceDXGISharedHandleDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "handle"};        
+        static const std::set<std::string> required = {"handle"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3547,6 +4526,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceMTLSharedEventDescriptor, ChainedStruct, 
     .def_readwrite("shared_event", &pywgpu::SharedFenceMTLSharedEventDescriptor::sharedEvent)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceMTLSharedEventDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "shared_event"};        
+        static const std::set<std::string> required = {"shared_event"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3567,6 +4564,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceEGLSyncDescriptor, ChainedStruct, SharedF
     .def_readwrite("sync", &pywgpu::SharedFenceEGLSyncDescriptor::sync)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedFenceEGLSyncDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "sync"};        
+        static const std::set<std::string> required = {"sync"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3589,6 +4604,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnFakeBufferOOMForTesting, ChainedStruct, DawnFake
     .def_readwrite("fake_oom_at_device", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtDevice)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnFakeBufferOOMForTesting obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "fake_oom_at_wire_client_map", "fake_oom_at_native_map", "fake_oom_at_device"};        
+        static const std::set<std::string> required = {"fake_oom_at_wire_client_map", "fake_oom_at_native_map", "fake_oom_at_device"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3617,47 +4650,55 @@ PYCLASS_END(m, pywgpu::DawnFakeBufferOOMForTesting, DawnFakeBufferOOMForTesting)
 PYCLASS_BEGIN(m, pywgpu::SharedFenceExportInfo, SharedFenceExportInfo) SharedFenceExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceExportInfo::nextInChain)    
     .def_readonly("type", &pywgpu::SharedFenceExportInfo::type)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceExportInfo, SharedFenceExportInfo)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceVkSemaphoreOpaqueFDExportInfo, ChainedStructOut, SharedFenceVkSemaphoreOpaqueFDExportInfo) SharedFenceVkSemaphoreOpaqueFDExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceVkSemaphoreOpaqueFDExportInfo::nextInChain)    
     .def_readonly("handle", &pywgpu::SharedFenceVkSemaphoreOpaqueFDExportInfo::handle)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceVkSemaphoreOpaqueFDExportInfo, SharedFenceVkSemaphoreOpaqueFDExportInfo)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceSyncFDExportInfo, ChainedStructOut, SharedFenceSyncFDExportInfo) SharedFenceSyncFDExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceSyncFDExportInfo::nextInChain)    
     .def_readonly("handle", &pywgpu::SharedFenceSyncFDExportInfo::handle)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceSyncFDExportInfo, SharedFenceSyncFDExportInfo)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceVkSemaphoreZirconHandleExportInfo, ChainedStructOut, SharedFenceVkSemaphoreZirconHandleExportInfo) SharedFenceVkSemaphoreZirconHandleExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceVkSemaphoreZirconHandleExportInfo::nextInChain)    
     .def_readonly("handle", &pywgpu::SharedFenceVkSemaphoreZirconHandleExportInfo::handle)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceVkSemaphoreZirconHandleExportInfo, SharedFenceVkSemaphoreZirconHandleExportInfo)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceDXGISharedHandleExportInfo, ChainedStructOut, SharedFenceDXGISharedHandleExportInfo) SharedFenceDXGISharedHandleExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceDXGISharedHandleExportInfo::nextInChain)    
     .def_readonly("handle", &pywgpu::SharedFenceDXGISharedHandleExportInfo::handle)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceDXGISharedHandleExportInfo, SharedFenceDXGISharedHandleExportInfo)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceMTLSharedEventExportInfo, ChainedStructOut, SharedFenceMTLSharedEventExportInfo) SharedFenceMTLSharedEventExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceMTLSharedEventExportInfo::nextInChain)    
     .def_readonly("shared_event", &pywgpu::SharedFenceMTLSharedEventExportInfo::sharedEvent)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceMTLSharedEventExportInfo, SharedFenceMTLSharedEventExportInfo)
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedFenceEGLSyncExportInfo, ChainedStructOut, SharedFenceEGLSyncExportInfo) SharedFenceEGLSyncExportInfo
     .def_readonly("next_in_chain", &pywgpu::SharedFenceEGLSyncExportInfo::nextInChain)    
     .def_readonly("sync", &pywgpu::SharedFenceEGLSyncExportInfo::sync)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SharedFenceEGLSyncExportInfo, SharedFenceEGLSyncExportInfo)
 
 PYCLASS_BEGIN(m, pywgpu::DawnFormatCapabilities, DawnFormatCapabilities) DawnFormatCapabilities
     .def_readonly("next_in_chain", &pywgpu::DawnFormatCapabilities::nextInChain)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::DawnFormatCapabilities, DawnFormatCapabilities)
 
@@ -3665,6 +4706,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnDrmFormatCapabilities, ChainedStructOut, DawnDrm
     .def_readonly("next_in_chain", &pywgpu::DawnDrmFormatCapabilities::nextInChain)    
     .def_readonly("properties_count", &pywgpu::DawnDrmFormatCapabilities::propertiesCount)    
     .def_readonly("properties", &pywgpu::DawnDrmFormatCapabilities::properties)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::DawnDrmFormatCapabilities, DawnDrmFormatCapabilities)
 
@@ -3673,6 +4715,24 @@ PYCLASS_BEGIN(m, pywgpu::DawnDrmFormatProperties, DawnDrmFormatProperties) DawnD
     .def_readwrite("modifier_plane_count", &pywgpu::DawnDrmFormatProperties::modifierPlaneCount)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnDrmFormatProperties obj{};        
+        static const std::set<std::string> allowed = {"modifier", "modifier_plane_count"};        
+        static const std::set<std::string> required = {"modifier", "modifier_plane_count"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("modifier"))        
         {        
             auto value = kwargs["modifier"].cast<uint64_t>();            
@@ -3693,6 +4753,24 @@ PYCLASS_BEGIN(m, pywgpu::TexelCopyBufferInfo, TexelCopyBufferInfo) TexelCopyBuff
     .def_readwrite("buffer", &pywgpu::TexelCopyBufferInfo::buffer)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TexelCopyBufferInfo obj{};        
+        static const std::set<std::string> allowed = {"layout", "buffer"};        
+        static const std::set<std::string> required = {"buffer"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("layout"))        
         {        
             auto value = kwargs["layout"].cast<pywgpu::TexelCopyBufferLayout>();            
@@ -3714,6 +4792,24 @@ PYCLASS_BEGIN(m, pywgpu::TexelCopyBufferLayout, TexelCopyBufferLayout) TexelCopy
     .def_readwrite("rows_per_image", &pywgpu::TexelCopyBufferLayout::rowsPerImage)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TexelCopyBufferLayout obj{};        
+        static const std::set<std::string> allowed = {"offset", "bytes_per_row", "rows_per_image"};        
+        static const std::set<std::string> required = {"offset"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("offset"))        
         {        
             auto value = kwargs["offset"].cast<uint64_t>();            
@@ -3741,6 +4837,24 @@ PYCLASS_BEGIN(m, pywgpu::TexelCopyTextureInfo, TexelCopyTextureInfo) TexelCopyTe
     .def_readwrite("aspect", &pywgpu::TexelCopyTextureInfo::aspect)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TexelCopyTextureInfo obj{};        
+        static const std::set<std::string> allowed = {"texture", "mip_level", "origin", "aspect"};        
+        static const std::set<std::string> required = {"texture"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("texture"))        
         {        
             auto value = kwargs["texture"].cast<pywgpu::Texture>();            
@@ -3773,6 +4887,24 @@ PYCLASS_BEGIN(m, pywgpu::ImageCopyExternalTexture, ImageCopyExternalTexture) Ima
     .def_readwrite("natural_size", &pywgpu::ImageCopyExternalTexture::naturalSize)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ImageCopyExternalTexture obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "external_texture", "origin", "natural_size"};        
+        static const std::set<std::string> required = {"external_texture"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3802,6 +4934,24 @@ PYCLASS_BEGIN(m, pywgpu::Future, Future) Future
     .def_readwrite("id", &pywgpu::Future::id)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::Future obj{};        
+        static const std::set<std::string> allowed = {"id"};        
+        static const std::set<std::string> required = {"id"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("id"))        
         {        
             auto value = kwargs["id"].cast<uint64_t>();            
@@ -3817,6 +4967,24 @@ PYCLASS_BEGIN(m, pywgpu::FutureWaitInfo, FutureWaitInfo) FutureWaitInfo
     .def_readwrite("completed", &pywgpu::FutureWaitInfo::completed)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::FutureWaitInfo obj{};        
+        static const std::set<std::string> allowed = {"future", "completed"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("future"))        
         {        
             auto value = kwargs["future"].cast<pywgpu::Future>();            
@@ -3833,28 +5001,10 @@ PYCLASS_BEGIN(m, pywgpu::FutureWaitInfo, FutureWaitInfo) FutureWaitInfo
 PYCLASS_END(m, pywgpu::FutureWaitInfo, FutureWaitInfo)
 
 PYCLASS_BEGIN(m, pywgpu::InstanceCapabilities, InstanceCapabilities) InstanceCapabilities
-    .def_readwrite("next_in_chain", &pywgpu::InstanceCapabilities::nextInChain)    
-    .def_readwrite("timed_wait_any_enable", &pywgpu::InstanceCapabilities::timedWaitAnyEnable)    
-    .def_readwrite("timed_wait_any_max_count", &pywgpu::InstanceCapabilities::timedWaitAnyMaxCount)    
-    .def(py::init([](const py::kwargs& kwargs) {    
-        pywgpu::InstanceCapabilities obj{};        
-        if (kwargs.contains("next_in_chain"))        
-        {        
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStructOut *>();            
-            obj.nextInChain = value;            
-        }        
-        if (kwargs.contains("timed_wait_any_enable"))        
-        {        
-            auto value = kwargs["timed_wait_any_enable"].cast<pywgpu::Bool>();            
-            obj.timedWaitAnyEnable = value;            
-        }        
-        if (kwargs.contains("timed_wait_any_max_count"))        
-        {        
-            auto value = kwargs["timed_wait_any_max_count"].cast<size_t>();            
-            obj.timedWaitAnyMaxCount = value;            
-        }        
-        return obj;        
-    }), py::return_value_policy::automatic_reference)    
+    .def_readonly("next_in_chain", &pywgpu::InstanceCapabilities::nextInChain)    
+    .def_readonly("timed_wait_any_enable", &pywgpu::InstanceCapabilities::timedWaitAnyEnable)    
+    .def_readonly("timed_wait_any_max_count", &pywgpu::InstanceCapabilities::timedWaitAnyMaxCount)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::InstanceCapabilities, InstanceCapabilities)
 
@@ -3863,6 +5013,24 @@ PYCLASS_BEGIN(m, pywgpu::InstanceDescriptor, InstanceDescriptor) InstanceDescrip
     .def_readwrite("capabilities", &pywgpu::InstanceDescriptor::capabilities)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::InstanceDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "capabilities"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3885,6 +5053,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnWireWGSLControl, ChainedStruct, DawnWireWGSLCont
     .def_readwrite("enable_testing", &pywgpu::DawnWireWGSLControl::enableTesting)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnWireWGSLControl obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "enable_experimental", "enable_unsafe", "enable_testing"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3915,6 +5101,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnInjectedInvalidSType, ChainedStruct, DawnInjecte
     .def_readwrite("invalid_s_type", &pywgpu::DawnInjectedInvalidSType::invalidSType)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnInjectedInvalidSType obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "invalid_s_type"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3937,6 +5141,24 @@ PYCLASS_BEGIN(m, pywgpu::VertexAttribute, VertexAttribute) VertexAttribute
     .def_readwrite("shader_location", &pywgpu::VertexAttribute::shaderLocation)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::VertexAttribute obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "format", "offset", "shader_location"};        
+        static const std::set<std::string> required = {"offset", "shader_location"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -3970,6 +5192,24 @@ PYCLASS_BEGIN(m, pywgpu::VertexBufferLayout, VertexBufferLayout) VertexBufferLay
     .def_readwrite("attributes", &pywgpu::VertexBufferLayout::attributes)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::VertexBufferLayout obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "step_mode", "array_stride", "attributes"};        
+        static const std::set<std::string> required = {"array_stride", "attributes"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4005,6 +5245,24 @@ PYCLASS_BEGIN(m, pywgpu::Origin3D, Origin3D) Origin3D
     .def_readwrite("z", &pywgpu::Origin3D::z)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::Origin3D obj{};        
+        static const std::set<std::string> allowed = {"x", "y", "z"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("x"))        
         {        
             auto value = kwargs["x"].cast<uint32_t>();            
@@ -4030,6 +5288,24 @@ PYCLASS_BEGIN(m, pywgpu::Origin2D, Origin2D) Origin2D
     .def_readwrite("y", &pywgpu::Origin2D::y)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::Origin2D obj{};        
+        static const std::set<std::string> allowed = {"x", "y"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("x"))        
         {        
             auto value = kwargs["x"].cast<uint32_t>();            
@@ -4052,6 +5328,24 @@ PYCLASS_BEGIN(m, pywgpu::PassTimestampWrites, PassTimestampWrites) PassTimestamp
     .def_readwrite("end_of_pass_write_index", &pywgpu::PassTimestampWrites::endOfPassWriteIndex)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PassTimestampWrites obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "query_set", "beginning_of_pass_write_index", "end_of_pass_write_index"};        
+        static const std::set<std::string> required = {"query_set"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4085,6 +5379,24 @@ PYCLASS_BEGIN(m, pywgpu::PipelineLayoutDescriptor, PipelineLayoutDescriptor) Pip
     .def_readwrite("immediate_data_range_byte_size", &pywgpu::PipelineLayoutDescriptor::immediateDataRangeByteSize)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PipelineLayoutDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "bind_group_layouts", "immediate_data_range_byte_size"};        
+        static const std::set<std::string> required = {"immediate_data_range_byte_size"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4121,6 +5433,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::PipelineLayoutPixelLocalStorage, ChainedStruct, Pipe
     .def_readwrite("storage_attachments", &pywgpu::PipelineLayoutPixelLocalStorage::storageAttachments)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PipelineLayoutPixelLocalStorage obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "total_pixel_local_storage_size", "storage_attachments"};        
+        static const std::set<std::string> required = {"total_pixel_local_storage_size"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4151,6 +5481,24 @@ PYCLASS_BEGIN(m, pywgpu::PipelineLayoutStorageAttachment, PipelineLayoutStorageA
     .def_readwrite("format", &pywgpu::PipelineLayoutStorageAttachment::format)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PipelineLayoutStorageAttachment obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "offset", "format"};        
+        static const std::set<std::string> required = {"offset"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4179,6 +5527,24 @@ PYCLASS_BEGIN(m, pywgpu::ComputeState, ComputeState) ComputeState
     .def_readwrite("constants", &pywgpu::ComputeState::constants)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ComputeState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "module", "entry_point", "constants"};        
+        static const std::set<std::string> required = {"module"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4215,6 +5581,24 @@ PYCLASS_BEGIN(m, pywgpu::QuerySetDescriptor, QuerySetDescriptor) QuerySetDescrip
     .def_readwrite("count", &pywgpu::QuerySetDescriptor::count)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::QuerySetDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "type", "count"};        
+        static const std::set<std::string> required = {"count"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4245,6 +5629,24 @@ PYCLASS_BEGIN(m, pywgpu::QueueDescriptor, QueueDescriptor) QueueDescriptor
     .def_readwrite("label", &pywgpu::QueueDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::QueueDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4265,6 +5667,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderBundleDescriptor, RenderBundleDescriptor) RenderB
     .def_readwrite("label", &pywgpu::RenderBundleDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderBundleDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4291,6 +5711,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderBundleEncoderDescriptor, RenderBundleEncoderDescr
     .def_readwrite("stencil_read_only", &pywgpu::RenderBundleEncoderDescriptor::stencilReadOnly)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderBundleEncoderDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "color_formats", "depth_stencil_format", "sample_count", "depth_read_only", "stencil_read_only"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4345,6 +5783,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassColorAttachment, RenderPassColorAttachment) R
     .def_readwrite("clear_value", &pywgpu::RenderPassColorAttachment::clearValue)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassColorAttachment obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "view", "depth_slice", "resolve_target", "load_op", "store_op", "clear_value"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4390,6 +5846,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled, 
     .def_readwrite("implicit_sample_count", &pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled::implicitSampleCount)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "implicit_sample_count"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4418,6 +5892,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassDepthStencilAttachment, RenderPassDepthStenci
     .def_readwrite("stencil_read_only", &pywgpu::RenderPassDepthStencilAttachment::stencilReadOnly)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassDepthStencilAttachment obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "view", "depth_load_op", "depth_store_op", "depth_clear_value", "depth_read_only", "stencil_load_op", "stencil_store_op", "stencil_clear_value", "stencil_read_only"};        
+        static const std::set<std::string> required = {"view"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4483,6 +5975,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassDescriptor, RenderPassDescriptor) RenderPassD
     .def_readwrite("timestamp_writes", &pywgpu::RenderPassDescriptor::timestampWrites)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "color_attachments", "depth_stencil_attachment", "occlusion_query_set", "timestamp_writes"};        
+        static const std::set<std::string> required = {"color_attachments"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4527,6 +6037,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::RenderPassMaxDrawCount, ChainedStruct, RenderPassMax
     .def_readwrite("max_draw_count", &pywgpu::RenderPassMaxDrawCount::maxDrawCount)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassMaxDrawCount obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "max_draw_count"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4550,6 +6078,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::RenderPassDescriptorExpandResolveRect, ChainedStruct
     .def_readwrite("height", &pywgpu::RenderPassDescriptorExpandResolveRect::height)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassDescriptorExpandResolveRect obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "x", "y", "width", "height"};        
+        static const std::set<std::string> required = {"x", "y", "width", "height"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4587,6 +6133,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::RenderPassPixelLocalStorage, ChainedStruct, RenderPa
     .def_readwrite("storage_attachments", &pywgpu::RenderPassPixelLocalStorage::storageAttachments)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassPixelLocalStorage obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "total_pixel_local_storage_size", "storage_attachments"};        
+        static const std::set<std::string> required = {"total_pixel_local_storage_size"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4620,6 +6184,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassStorageAttachment, RenderPassStorageAttachmen
     .def_readwrite("clear_value", &pywgpu::RenderPassStorageAttachment::clearValue)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassStorageAttachment obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "offset", "storage", "load_op", "store_op", "clear_value"};        
+        static const std::set<std::string> required = {"offset", "storage"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4665,6 +6247,24 @@ PYCLASS_BEGIN(m, pywgpu::VertexState, VertexState) VertexState
     .def_readwrite("buffers", &pywgpu::VertexState::buffers)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::VertexState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "module", "entry_point", "constants", "buffers"};        
+        static const std::set<std::string> required = {"module"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4712,6 +6312,24 @@ PYCLASS_BEGIN(m, pywgpu::PrimitiveState, PrimitiveState) PrimitiveState
     .def_readwrite("unclipped_depth", &pywgpu::PrimitiveState::unclippedDepth)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PrimitiveState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "topology", "strip_index_format", "front_face", "cull_mode", "unclipped_depth"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4761,6 +6379,24 @@ PYCLASS_BEGIN(m, pywgpu::DepthStencilState, DepthStencilState) DepthStencilState
     .def_readwrite("depth_bias_clamp", &pywgpu::DepthStencilState::depthBiasClamp)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DepthStencilState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "format", "depth_write_enabled", "depth_compare", "stencil_front", "stencil_back", "stencil_read_mask", "stencil_write_mask", "depth_bias", "depth_bias_slope_scale", "depth_bias_clamp"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4828,6 +6464,24 @@ PYCLASS_BEGIN(m, pywgpu::MultisampleState, MultisampleState) MultisampleState
     .def_readwrite("alpha_to_coverage_enabled", &pywgpu::MultisampleState::alphaToCoverageEnabled)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::MultisampleState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "count", "mask", "alpha_to_coverage_enabled"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4863,6 +6517,24 @@ PYCLASS_BEGIN(m, pywgpu::FragmentState, FragmentState) FragmentState
     .def_readwrite("targets", &pywgpu::FragmentState::targets)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::FragmentState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "module", "entry_point", "constants", "targets"};        
+        static const std::set<std::string> required = {"module", "targets"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4908,6 +6580,24 @@ PYCLASS_BEGIN(m, pywgpu::ColorTargetState, ColorTargetState) ColorTargetState
     .def_readwrite("write_mask", &pywgpu::ColorTargetState::writeMask)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ColorTargetState obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "format", "blend", "write_mask"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4938,6 +6628,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::ColorTargetStateExpandResolveTextureDawn, ChainedStr
     .def_readwrite("enabled", &pywgpu::ColorTargetStateExpandResolveTextureDawn::enabled)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ColorTargetStateExpandResolveTextureDawn obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "enabled"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -4958,6 +6666,24 @@ PYCLASS_BEGIN(m, pywgpu::BlendState, BlendState) BlendState
     .def_readwrite("alpha", &pywgpu::BlendState::alpha)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BlendState obj{};        
+        static const std::set<std::string> allowed = {"color", "alpha"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("color"))        
         {        
             auto value = kwargs["color"].cast<pywgpu::BlendComponent>();            
@@ -4984,6 +6710,24 @@ PYCLASS_BEGIN(m, pywgpu::RenderPipelineDescriptor, RenderPipelineDescriptor) Ren
     .def_readwrite("fragment", &pywgpu::RenderPipelineDescriptor::fragment)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPipelineDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "layout", "vertex", "primitive", "depth_stencil", "multisample", "fragment"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5044,6 +6788,24 @@ PYCLASS_BEGIN(m, pywgpu::SamplerDescriptor, SamplerDescriptor) SamplerDescriptor
     .def_readwrite("max_anisotropy", &pywgpu::SamplerDescriptor::maxAnisotropy)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SamplerDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "address_mode_u", "address_mode_v", "address_mode_w", "mag_filter", "min_filter", "mipmap_filter", "lod_min_clamp", "lod_max_clamp", "compare", "max_anisotropy"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5114,6 +6876,24 @@ PYCLASS_BEGIN(m, pywgpu::ShaderModuleDescriptor, ShaderModuleDescriptor) ShaderM
     .def_readwrite("label", &pywgpu::ShaderModuleDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ShaderModuleDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5135,6 +6915,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::ShaderSourceSPIRV, ChainedStruct, ShaderSourceSPIRV)
     .def_readwrite("code", &pywgpu::ShaderSourceSPIRV::code)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ShaderSourceSPIRV obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "code"};        
+        static const std::set<std::string> required = {"code"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5159,6 +6957,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::ShaderSourceWGSL, ChainedStruct, ShaderSourceWGSL) S
     .def_readwrite("code", &pywgpu::ShaderSourceWGSL::code)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ShaderSourceWGSL obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "code"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5179,6 +6995,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnShaderModuleSPIRVOptionsDescriptor, ChainedStruc
     .def_readwrite("allow_non_uniform_derivatives", &pywgpu::DawnShaderModuleSPIRVOptionsDescriptor::allowNonUniformDerivatives)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnShaderModuleSPIRVOptionsDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "allow_non_uniform_derivatives"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5199,6 +7033,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::ShaderModuleCompilationOptions, ChainedStruct, Shade
     .def_readwrite("strict_math", &pywgpu::ShaderModuleCompilationOptions::strictMath)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::ShaderModuleCompilationOptions obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "strict_math"};        
+        static const std::set<std::string> required = {"strict_math"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5221,6 +7073,24 @@ PYCLASS_BEGIN(m, pywgpu::StencilFaceState, StencilFaceState) StencilFaceState
     .def_readwrite("pass_op", &pywgpu::StencilFaceState::passOp)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::StencilFaceState obj{};        
+        static const std::set<std::string> allowed = {"compare", "fail_op", "depth_fail_op", "pass_op"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("compare"))        
         {        
             auto value = kwargs["compare"].cast<pywgpu::CompareFunction>();            
@@ -5251,6 +7121,24 @@ PYCLASS_BEGIN(m, pywgpu::SurfaceDescriptor, SurfaceDescriptor) SurfaceDescriptor
     .def_readwrite("label", &pywgpu::SurfaceDescriptor::label)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5271,6 +7159,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceSourceAndroidNativeWindow, ChainedStruct, Sur
     .def_readwrite("window", &pywgpu::SurfaceSourceAndroidNativeWindow::window)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceSourceAndroidNativeWindow obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "window"};        
+        static const std::set<std::string> required = {"window"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5291,6 +7197,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector, ChainedSt
     .def_readwrite("selector", &pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector::selector)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "selector"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5311,6 +7235,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceSourceMetalLayer, ChainedStruct, SurfaceSourc
     .def_readwrite("layer", &pywgpu::SurfaceSourceMetalLayer::layer)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceSourceMetalLayer obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "layer"};        
+        static const std::set<std::string> required = {"layer"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5332,6 +7274,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceSourceWindowsHWND, ChainedStruct, SurfaceSour
     .def_readwrite("hwnd", &pywgpu::SurfaceSourceWindowsHWND::hwnd)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceSourceWindowsHWND obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "hinstance", "hwnd"};        
+        static const std::set<std::string> required = {"hinstance", "hwnd"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5358,6 +7318,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceSourceXCBWindow, ChainedStruct, SurfaceSource
     .def_readwrite("window", &pywgpu::SurfaceSourceXCBWindow::window)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceSourceXCBWindow obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "connection", "window"};        
+        static const std::set<std::string> required = {"connection", "window"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5384,6 +7362,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceSourceXlibWindow, ChainedStruct, SurfaceSourc
     .def_readwrite("window", &pywgpu::SurfaceSourceXlibWindow::window)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceSourceXlibWindow obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "display", "window"};        
+        static const std::set<std::string> required = {"display", "window"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5410,6 +7406,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceSourceWaylandSurface, ChainedStruct, SurfaceS
     .def_readwrite("surface", &pywgpu::SurfaceSourceWaylandSurface::surface)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceSourceWaylandSurface obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "display", "surface"};        
+        static const std::set<std::string> required = {"display", "surface"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5435,6 +7449,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceDescriptorFromWindowsCoreWindow, ChainedStruc
     .def_readwrite("core_window", &pywgpu::SurfaceDescriptorFromWindowsCoreWindow::coreWindow)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceDescriptorFromWindowsCoreWindow obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "core_window"};        
+        static const std::set<std::string> required = {"core_window"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5455,6 +7487,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel, Chain
     .def_readwrite("swap_chain_panel", &pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel::swapChainPanel)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "swap_chain_panel"};        
+        static const std::set<std::string> required = {"swap_chain_panel"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5475,6 +7525,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel, Cha
     .def_readwrite("swap_chain_panel", &pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel::swapChainPanel)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "swap_chain_panel"};        
+        static const std::set<std::string> required = {"swap_chain_panel"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5491,28 +7559,10 @@ PYSUBCLASS_BEGIN(m, pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel, Cha
 PYCLASS_END(m, pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel, SurfaceDescriptorFromWindowsWinUISwapChainPanel)
 
 PYCLASS_BEGIN(m, pywgpu::SurfaceTexture, SurfaceTexture) SurfaceTexture
-    .def_readwrite("next_in_chain", &pywgpu::SurfaceTexture::nextInChain)    
-    .def_readwrite("texture", &pywgpu::SurfaceTexture::texture)    
-    .def_readwrite("status", &pywgpu::SurfaceTexture::status)    
-    .def(py::init([](const py::kwargs& kwargs) {    
-        pywgpu::SurfaceTexture obj{};        
-        if (kwargs.contains("next_in_chain"))        
-        {        
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStructOut *>();            
-            obj.nextInChain = value;            
-        }        
-        if (kwargs.contains("texture"))        
-        {        
-            auto value = kwargs["texture"].cast<pywgpu::Texture>();            
-            obj.texture = value;            
-        }        
-        if (kwargs.contains("status"))        
-        {        
-            auto value = kwargs["status"].cast<pywgpu::SurfaceGetCurrentTextureStatus>();            
-            obj.status = value;            
-        }        
-        return obj;        
-    }), py::return_value_policy::automatic_reference)    
+    .def_readonly("next_in_chain", &pywgpu::SurfaceTexture::nextInChain)    
+    .def_readonly("texture", &pywgpu::SurfaceTexture::texture)    
+    .def_readonly("status", &pywgpu::SurfaceTexture::status)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::SurfaceTexture, SurfaceTexture)
 
@@ -5529,6 +7579,24 @@ PYCLASS_BEGIN(m, pywgpu::TextureDescriptor, TextureDescriptor) TextureDescriptor
     .def_readwrite("view_formats", &pywgpu::TextureDescriptor::viewFormats)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TextureDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "usage", "dimension", "size", "format", "mip_level_count", "sample_count", "view_formats"};        
+        static const std::set<std::string> required = {"usage"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5588,6 +7656,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::TextureBindingViewDimensionDescriptor, ChainedStruct
     .def_readwrite("texture_binding_view_dimension", &pywgpu::TextureBindingViewDimensionDescriptor::textureBindingViewDimension)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TextureBindingViewDimensionDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "texture_binding_view_dimension"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5616,6 +7702,24 @@ PYCLASS_BEGIN(m, pywgpu::TextureViewDescriptor, TextureViewDescriptor) TextureVi
     .def_readwrite("usage", &pywgpu::TextureViewDescriptor::usage)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TextureViewDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "label", "format", "dimension", "base_mip_level", "mip_level_count", "base_array_layer", "array_layer_count", "aspect", "usage"};        
+        static const std::set<std::string> required = {"usage"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5687,6 +7791,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::YCbCrVkDescriptor, ChainedStruct, YCbCrVkDescriptor)
     .def_readwrite("external_format", &pywgpu::YCbCrVkDescriptor::externalFormat)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::YCbCrVkDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "vk_format", "vk_y_cb_cr_model", "vk_y_cb_cr_range", "vk_component_swizzle_red", "vk_component_swizzle_green", "vk_component_swizzle_blue", "vk_component_swizzle_alpha", "vk_x_chroma_offset", "vk_y_chroma_offset", "vk_chroma_filter", "force_explicit_reconstruction", "external_format"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5762,6 +7884,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnTextureInternalUsageDescriptor, ChainedStruct, D
     .def_readwrite("internal_usage", &pywgpu::DawnTextureInternalUsageDescriptor::internalUsage)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnTextureInternalUsageDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "internal_usage"};        
+        static const std::set<std::string> required = {"internal_usage"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5782,6 +7922,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnEncoderInternalUsageDescriptor, ChainedStruct, D
     .def_readwrite("use_internal_usages", &pywgpu::DawnEncoderInternalUsageDescriptor::useInternalUsages)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnEncoderInternalUsageDescriptor obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "use_internal_usages"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5800,6 +7958,7 @@ PYCLASS_END(m, pywgpu::DawnEncoderInternalUsageDescriptor, DawnEncoderInternalUs
 PYSUBCLASS_BEGIN(m, pywgpu::DawnAdapterPropertiesPowerPreference, ChainedStructOut, DawnAdapterPropertiesPowerPreference) DawnAdapterPropertiesPowerPreference
     .def_readonly("next_in_chain", &pywgpu::DawnAdapterPropertiesPowerPreference::nextInChain)    
     .def_readonly("power_preference", &pywgpu::DawnAdapterPropertiesPowerPreference::powerPreference)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::DawnAdapterPropertiesPowerPreference, DawnAdapterPropertiesPowerPreference)
 
@@ -5808,6 +7967,24 @@ PYCLASS_BEGIN(m, pywgpu::MemoryHeapInfo, MemoryHeapInfo) MemoryHeapInfo
     .def_readwrite("size", &pywgpu::MemoryHeapInfo::size)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::MemoryHeapInfo obj{};        
+        static const std::set<std::string> allowed = {"properties", "size"};        
+        static const std::set<std::string> required = {"properties", "size"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("properties"))        
         {        
             auto value = kwargs["properties"].cast<pywgpu::HeapProperty>();            
@@ -5827,18 +8004,21 @@ PYSUBCLASS_BEGIN(m, pywgpu::AdapterPropertiesMemoryHeaps, ChainedStructOut, Adap
     .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesMemoryHeaps::nextInChain)    
     .def_readonly("heap_count", &pywgpu::AdapterPropertiesMemoryHeaps::heapCount)    
     .def_readonly("heap_info", &pywgpu::AdapterPropertiesMemoryHeaps::heapInfo)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::AdapterPropertiesMemoryHeaps, AdapterPropertiesMemoryHeaps)
 
 PYSUBCLASS_BEGIN(m, pywgpu::AdapterPropertiesD3D, ChainedStructOut, AdapterPropertiesD3D) AdapterPropertiesD3D
     .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesD3D::nextInChain)    
     .def_readonly("shader_model", &pywgpu::AdapterPropertiesD3D::shaderModel)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::AdapterPropertiesD3D, AdapterPropertiesD3D)
 
 PYSUBCLASS_BEGIN(m, pywgpu::AdapterPropertiesVk, ChainedStructOut, AdapterPropertiesVk) AdapterPropertiesVk
     .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesVk::nextInChain)    
     .def_readonly("driver_version", &pywgpu::AdapterPropertiesVk::driverVersion)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::AdapterPropertiesVk, AdapterPropertiesVk)
 
@@ -5847,6 +8027,24 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnBufferDescriptorErrorInfoFromWireClient, Chained
     .def_readwrite("out_of_memory", &pywgpu::DawnBufferDescriptorErrorInfoFromWireClient::outOfMemory)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnBufferDescriptorErrorInfoFromWireClient obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "out_of_memory"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("next_in_chain"))        
         {        
             auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();            
@@ -5870,6 +8068,24 @@ PYCLASS_BEGIN(m, pywgpu::SubgroupMatrixConfig, SubgroupMatrixConfig) SubgroupMat
     .def_readwrite("k", &pywgpu::SubgroupMatrixConfig::K)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SubgroupMatrixConfig obj{};        
+        static const std::set<std::string> allowed = {"component_type", "result_component_type", "m", "n", "k"};        
+        static const std::set<std::string> required = {"m", "n", "k"};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
         if (kwargs.contains("component_type"))        
         {        
             auto value = kwargs["component_type"].cast<pywgpu::SubgroupMatrixComponentType>();            
@@ -5904,6 +8120,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::AdapterPropertiesSubgroupMatrixConfigs, ChainedStruc
     .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesSubgroupMatrixConfigs::nextInChain)    
     .def_readonly("config_count", &pywgpu::AdapterPropertiesSubgroupMatrixConfigs::configCount)    
     .def_readonly("configs", &pywgpu::AdapterPropertiesSubgroupMatrixConfigs::configs)    
+    .def(py::init<>())    
 ;
 PYCLASS_END(m, pywgpu::AdapterPropertiesSubgroupMatrixConfigs, AdapterPropertiesSubgroupMatrixConfigs)
 

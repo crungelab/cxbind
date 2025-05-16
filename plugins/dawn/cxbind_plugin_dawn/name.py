@@ -2,8 +2,8 @@ name_table = {}
 
 class Name:
     def __init__(self, name, native=False):
-        self.native = native
         self.name = name
+        self.native = native
         if native:
             self.chunks = [name]
         else:
@@ -72,3 +72,12 @@ class Name:
 
     def __repr__(self):
         return f"Name({self.name!r})"
+    
+
+    def __eq__(self, other):
+        if isinstance(other, Name):
+            return self.name == other.name
+        return NotImplemented
+
+    def __hash__(self):
+        return hash(self.name)
