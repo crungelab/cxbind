@@ -1,7 +1,7 @@
 from loguru import logger
 
 from ...name import Name
-from ...node import FunctionPointerType, StructureType, EnumType
+from ...node import FunctionPointerType, StructureType, EnumType, BitmaskType
 from ..structure_type_renderer import StructureTypeRenderer
 
 
@@ -163,12 +163,12 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         for member in members:
             if member.optional:
                 continue
-            if member.default_value:
+            if member.default_value is not None:
                 continue
             # ???
             member_type = self.lookup(member.type)
 
-            if isinstance(member_type, EnumType):
+            if isinstance(member_type, EnumType) or isinstance(member_type, BitmaskType):
                 # logger.debug(f"Skipping enum member {member.name}")
                 continue
 
