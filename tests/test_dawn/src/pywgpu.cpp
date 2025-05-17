@@ -1546,29 +1546,6 @@ InstanceCapabilities::operator const WGPUInstanceCapabilities&() const noexcept 
     return *reinterpret_cast<const WGPUInstanceCapabilities*>(this);
 }
 
-InstanceCapabilities::~InstanceCapabilities() {
-    FreeMembers();
-}
-void InstanceCapabilities::FreeMembers() {
-    // Free members here
-}
-
-InstanceCapabilities::InstanceCapabilities(InstanceCapabilities&& rhs) :
-    nextInChain(rhs.nextInChain),    
-    timedWaitAnyEnable(rhs.timedWaitAnyEnable),    
-    timedWaitAnyMaxCount(rhs.timedWaitAnyMaxCount)    
-{}
-InstanceCapabilities& InstanceCapabilities::operator=(InstanceCapabilities&& rhs) {
-if (&rhs == this) {
-    return *this;
-}
-FreeMembers();
-
-    ::pywgpu::detail::AsNonConstReference(this->nextInChain) = std::move(rhs.nextInChain);    
-    ::pywgpu::detail::AsNonConstReference(this->timedWaitAnyEnable) = std::move(rhs.timedWaitAnyEnable);    
-    ::pywgpu::detail::AsNonConstReference(this->timedWaitAnyMaxCount) = std::move(rhs.timedWaitAnyMaxCount);    
-    return *this;    
-}
 // InstanceDescriptor implementation
 
 InstanceDescriptor::operator const WGPUInstanceDescriptor&() const noexcept {

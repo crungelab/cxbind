@@ -26,17 +26,11 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             )
         self.out.indent()
 
-        """
-        if node.extensible:
-            self.out << f'.def_readwrite("next_in_chain", &pywgpu::{class_name}::nextInChain)' << "\n"
-        """
-
         for member in node.members:
             if self.exclude_member(member):
                 continue
 
-            # member_name = member.name.snake_case()
-            member_name = member.name.snake_case().lower()
+            member_name = member.name.snake_case()
             member_cpp_name = member.name.camelCase()
             member_type = self.lookup(member.type)
             member_annotation = member.annotation
@@ -194,7 +188,7 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             required_names.append(member.name)
 
         def cpp_string_list(names):
-            return "{" + ", ".join(f'"{name.snake_case().lower()}"' for name in names) + "}"
+            return "{" + ", ".join(f'"{name.snake_case()}"' for name in names) + "}"
         
         self.out << f'static const std::set<std::string> allowed = {cpp_string_list(allowed_names)};' << "\n"
         self.out << f'static const std::set<std::string> required = {cpp_string_list(required_names)};' << "\n"
@@ -222,18 +216,10 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             if self.exclude_member(member):
                 continue
 
-            member_name = member.name.snake_case().lower()
+            member_name = member.name.snake_case()
             member_cpp_name = member.name.camelCase()
             member_type = self.lookup(member.type)
             member_annotation = member.annotation
-
-            '''
-            member_length_member = members_by_name.get(
-                Name.intern(member.length)
-            ) if member.length else None
-            if member_length_member is not None:
-                member_length_member_cpp_name = member_length_member.name.camelCase()
-            '''
 
             if member_annotation == "const*const*":
                 logger.debug(f"Skipping const*const* member {member_name}")

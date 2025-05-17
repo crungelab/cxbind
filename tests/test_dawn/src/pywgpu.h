@@ -1584,18 +1584,10 @@ public:
 };
 
 struct InstanceCapabilities {
-InstanceCapabilities() = default;
-    ~InstanceCapabilities();
-    InstanceCapabilities(const InstanceCapabilities&) = delete;
-    void FreeMembers();
-    InstanceCapabilities& operator=(const InstanceCapabilities&) = delete;
-    InstanceCapabilities(InstanceCapabilities&&);
-    InstanceCapabilities& operator=(InstanceCapabilities&&);
-    
     operator const WGPUInstanceCapabilities&() const noexcept;
-    ChainedStructOut * const nextInChain = nullptr;
-    Bool const timedWaitAnyEnable = false;
-    size_t const timedWaitAnyMaxCount = 0;
+    ChainedStructOut * nextInChain = nullptr;
+    Bool timedWaitAnyEnable = false;
+    size_t timedWaitAnyMaxCount = 0;
 };
 
 struct Future {

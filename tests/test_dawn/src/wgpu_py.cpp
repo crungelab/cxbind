@@ -1715,8 +1715,8 @@ PYCLASS_BEGIN(m, pywgpu::AdapterInfo, AdapterInfo) AdapterInfo
     .def_readonly("description", &pywgpu::AdapterInfo::description)    
     .def_readonly("backend_type", &pywgpu::AdapterInfo::backendType)    
     .def_readonly("adapter_type", &pywgpu::AdapterInfo::adapterType)    
-    .def_readonly("vendor_id", &pywgpu::AdapterInfo::vendorID)    
-    .def_readonly("device_id", &pywgpu::AdapterInfo::deviceID)    
+    .def_readonly("vendor_ID", &pywgpu::AdapterInfo::vendorID)    
+    .def_readonly("device_ID", &pywgpu::AdapterInfo::deviceID)    
     .def_readonly("subgroup_min_size", &pywgpu::AdapterInfo::subgroupMinSize)    
     .def_readonly("subgroup_max_size", &pywgpu::AdapterInfo::subgroupMaxSize)    
     .def(py::init<>())    
@@ -2441,7 +2441,7 @@ PYCLASS_BEGIN(m, pywgpu::BindGroupLayoutEntry, BindGroupLayoutEntry) BindGroupLa
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BindGroupLayoutEntry obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "binding", "visibility", "buffer", "sampler", "texture", "storage_texture"};        
-        static const std::set<std::string> required = {"binding", "visibility"};        
+        static const std::set<std::string> required = {"binding"};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -2600,7 +2600,7 @@ PYCLASS_BEGIN(m, pywgpu::BufferDescriptor, BufferDescriptor) BufferDescriptor
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::BufferDescriptor obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "label", "usage", "size", "mapped_at_creation"};        
-        static const std::set<std::string> required = {"usage", "size"};        
+        static const std::set<std::string> required = {"size"};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -3239,9 +3239,9 @@ PYCLASS_END(m, pywgpu::AHardwareBufferProperties, AHardwareBufferProperties)
 
 PYCLASS_BEGIN(m, pywgpu::Limits, Limits) Limits
     .def_readonly("next_in_chain", &pywgpu::Limits::nextInChain)    
-    .def_readonly("max_texture_dimension_1d", &pywgpu::Limits::maxTextureDimension1D)    
-    .def_readonly("max_texture_dimension_2d", &pywgpu::Limits::maxTextureDimension2D)    
-    .def_readonly("max_texture_dimension_3d", &pywgpu::Limits::maxTextureDimension3D)    
+    .def_readonly("max_texture_dimension_1D", &pywgpu::Limits::maxTextureDimension1D)    
+    .def_readonly("max_texture_dimension_2D", &pywgpu::Limits::maxTextureDimension2D)    
+    .def_readonly("max_texture_dimension_3D", &pywgpu::Limits::maxTextureDimension3D)    
     .def_readonly("max_texture_array_layers", &pywgpu::Limits::maxTextureArrayLayers)    
     .def_readonly("max_bind_groups", &pywgpu::Limits::maxBindGroups)    
     .def_readonly("max_bind_groups_plus_vertex_buffers", &pywgpu::Limits::maxBindGroupsPlusVertexBuffers)    
@@ -3937,7 +3937,7 @@ PYCLASS_END(m, pywgpu::SharedTextureMemoryDmaBufDescriptor, SharedTextureMemoryD
 PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryOpaqueFDDescriptor, ChainedStruct, SharedTextureMemoryOpaqueFDDescriptor) SharedTextureMemoryOpaqueFDDescriptor
     .def_readwrite("next_in_chain", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::nextInChain)    
     .def_readwrite("vk_image_create_info", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::vkImageCreateInfo)    
-    .def_readwrite("memory_fd", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::memoryFD)    
+    .def_readwrite("memory_FD", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::memoryFD)    
     .def_readwrite("memory_type_index", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::memoryTypeIndex)    
     .def_readwrite("allocation_size", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::allocationSize)    
     .def_readwrite("dedicated_allocation", &pywgpu::SharedTextureMemoryOpaqueFDDescriptor::dedicatedAllocation)    
@@ -3998,7 +3998,7 @@ PYCLASS_END(m, pywgpu::SharedTextureMemoryOpaqueFDDescriptor, SharedTextureMemor
 
 PYSUBCLASS_BEGIN(m, pywgpu::SharedTextureMemoryZirconHandleDescriptor, ChainedStruct, SharedTextureMemoryZirconHandleDescriptor) SharedTextureMemoryZirconHandleDescriptor
     .def_readwrite("next_in_chain", &pywgpu::SharedTextureMemoryZirconHandleDescriptor::nextInChain)    
-    .def_readwrite("memory_fd", &pywgpu::SharedTextureMemoryZirconHandleDescriptor::memoryFD)    
+    .def_readwrite("memory_FD", &pywgpu::SharedTextureMemoryZirconHandleDescriptor::memoryFD)    
     .def_readwrite("allocation_size", &pywgpu::SharedTextureMemoryZirconHandleDescriptor::allocationSize)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SharedTextureMemoryZirconHandleDescriptor obj{};        
@@ -4599,9 +4599,9 @@ PYCLASS_END(m, pywgpu::SharedFenceEGLSyncDescriptor, SharedFenceEGLSyncDescripto
 
 PYSUBCLASS_BEGIN(m, pywgpu::DawnFakeBufferOOMForTesting, ChainedStruct, DawnFakeBufferOOMForTesting) DawnFakeBufferOOMForTesting
     .def_readwrite("next_in_chain", &pywgpu::DawnFakeBufferOOMForTesting::nextInChain)    
-    .def_readwrite("fake_oom_at_wire_client_map", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtWireClientMap)    
-    .def_readwrite("fake_oom_at_native_map", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtNativeMap)    
-    .def_readwrite("fake_oom_at_device", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtDevice)    
+    .def_readwrite("fake_OOM_at_wire_client_map", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtWireClientMap)    
+    .def_readwrite("fake_OOM_at_native_map", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtNativeMap)    
+    .def_readwrite("fake_OOM_at_device", &pywgpu::DawnFakeBufferOOMForTesting::fakeOOMAtDevice)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnFakeBufferOOMForTesting obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "fake_oom_at_wire_client_map", "fake_oom_at_native_map", "fake_oom_at_device"};        
@@ -4793,7 +4793,7 @@ PYCLASS_BEGIN(m, pywgpu::TexelCopyBufferLayout, TexelCopyBufferLayout) TexelCopy
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TexelCopyBufferLayout obj{};        
         static const std::set<std::string> allowed = {"offset", "bytes_per_row", "rows_per_image"};        
-        static const std::set<std::string> required = {"offset"};        
+        static const std::set<std::string> required = {};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -5001,10 +5001,46 @@ PYCLASS_BEGIN(m, pywgpu::FutureWaitInfo, FutureWaitInfo) FutureWaitInfo
 PYCLASS_END(m, pywgpu::FutureWaitInfo, FutureWaitInfo)
 
 PYCLASS_BEGIN(m, pywgpu::InstanceCapabilities, InstanceCapabilities) InstanceCapabilities
-    .def_readonly("next_in_chain", &pywgpu::InstanceCapabilities::nextInChain)    
-    .def_readonly("timed_wait_any_enable", &pywgpu::InstanceCapabilities::timedWaitAnyEnable)    
-    .def_readonly("timed_wait_any_max_count", &pywgpu::InstanceCapabilities::timedWaitAnyMaxCount)    
-    .def(py::init<>())    
+    .def_readwrite("next_in_chain", &pywgpu::InstanceCapabilities::nextInChain)    
+    .def_readwrite("timed_wait_any_enable", &pywgpu::InstanceCapabilities::timedWaitAnyEnable)    
+    .def_readwrite("timed_wait_any_max_count", &pywgpu::InstanceCapabilities::timedWaitAnyMaxCount)    
+    .def(py::init([](const py::kwargs& kwargs) {    
+        pywgpu::InstanceCapabilities obj{};        
+        static const std::set<std::string> allowed = {"next_in_chain", "timed_wait_any_enable", "timed_wait_any_max_count"};        
+        static const std::set<std::string> required = {};        
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("next_in_chain"))        
+        {        
+            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStructOut *>();            
+            obj.nextInChain = value;            
+        }        
+        if (kwargs.contains("timed_wait_any_enable"))        
+        {        
+            auto value = kwargs["timed_wait_any_enable"].cast<pywgpu::Bool>();            
+            obj.timedWaitAnyEnable = value;            
+        }        
+        if (kwargs.contains("timed_wait_any_max_count"))        
+        {        
+            auto value = kwargs["timed_wait_any_max_count"].cast<size_t>();            
+            obj.timedWaitAnyMaxCount = value;            
+        }        
+        return obj;        
+    }), py::return_value_policy::automatic_reference)    
 ;
 PYCLASS_END(m, pywgpu::InstanceCapabilities, InstanceCapabilities)
 
@@ -5380,7 +5416,7 @@ PYCLASS_BEGIN(m, pywgpu::PipelineLayoutDescriptor, PipelineLayoutDescriptor) Pip
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PipelineLayoutDescriptor obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "label", "bind_group_layouts", "immediate_data_range_byte_size"};        
-        static const std::set<std::string> required = {"immediate_data_range_byte_size"};        
+        static const std::set<std::string> required = {};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -5482,7 +5518,7 @@ PYCLASS_BEGIN(m, pywgpu::PipelineLayoutStorageAttachment, PipelineLayoutStorageA
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::PipelineLayoutStorageAttachment obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "offset", "format"};        
-        static const std::set<std::string> required = {"offset"};        
+        static const std::set<std::string> required = {};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -6185,7 +6221,7 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassStorageAttachment, RenderPassStorageAttachmen
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::RenderPassStorageAttachment obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "offset", "storage", "load_op", "store_op", "clear_value"};        
-        static const std::set<std::string> required = {"offset", "storage"};        
+        static const std::set<std::string> required = {"storage"};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -7580,7 +7616,7 @@ PYCLASS_BEGIN(m, pywgpu::TextureDescriptor, TextureDescriptor) TextureDescriptor
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TextureDescriptor obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "label", "usage", "dimension", "size", "format", "mip_level_count", "sample_count", "view_formats"};        
-        static const std::set<std::string> required = {"usage"};        
+        static const std::set<std::string> required = {};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -7703,7 +7739,7 @@ PYCLASS_BEGIN(m, pywgpu::TextureViewDescriptor, TextureViewDescriptor) TextureVi
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::TextureViewDescriptor obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "label", "format", "dimension", "base_mip_level", "mip_level_count", "base_array_layer", "array_layer_count", "aspect", "usage"};        
-        static const std::set<std::string> required = {"usage"};        
+        static const std::set<std::string> required = {};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -7885,7 +7921,7 @@ PYSUBCLASS_BEGIN(m, pywgpu::DawnTextureInternalUsageDescriptor, ChainedStruct, D
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::DawnTextureInternalUsageDescriptor obj{};        
         static const std::set<std::string> allowed = {"next_in_chain", "internal_usage"};        
-        static const std::set<std::string> required = {"internal_usage"};        
+        static const std::set<std::string> required = {};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -7968,7 +8004,7 @@ PYCLASS_BEGIN(m, pywgpu::MemoryHeapInfo, MemoryHeapInfo) MemoryHeapInfo
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::MemoryHeapInfo obj{};        
         static const std::set<std::string> allowed = {"properties", "size"};        
-        static const std::set<std::string> required = {"properties", "size"};        
+        static const std::set<std::string> required = {"size"};        
         
         // Check for unknown keys
         for (auto& item : kwargs) {
@@ -8063,9 +8099,9 @@ PYCLASS_END(m, pywgpu::DawnBufferDescriptorErrorInfoFromWireClient, DawnBufferDe
 PYCLASS_BEGIN(m, pywgpu::SubgroupMatrixConfig, SubgroupMatrixConfig) SubgroupMatrixConfig
     .def_readwrite("component_type", &pywgpu::SubgroupMatrixConfig::componentType)    
     .def_readwrite("result_component_type", &pywgpu::SubgroupMatrixConfig::resultComponentType)    
-    .def_readwrite("m", &pywgpu::SubgroupMatrixConfig::M)    
-    .def_readwrite("n", &pywgpu::SubgroupMatrixConfig::N)    
-    .def_readwrite("k", &pywgpu::SubgroupMatrixConfig::K)    
+    .def_readwrite("M", &pywgpu::SubgroupMatrixConfig::M)    
+    .def_readwrite("N", &pywgpu::SubgroupMatrixConfig::N)    
+    .def_readwrite("K", &pywgpu::SubgroupMatrixConfig::K)    
     .def(py::init([](const py::kwargs& kwargs) {    
         pywgpu::SubgroupMatrixConfig obj{};        
         static const std::set<std::string> allowed = {"component_type", "result_component_type", "m", "n", "k"};        
