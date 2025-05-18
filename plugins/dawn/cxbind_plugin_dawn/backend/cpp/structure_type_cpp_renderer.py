@@ -31,23 +31,14 @@ class StructureTypeCppRenderer(StructureTypeRenderer):
             : ChainedStruct{Out} {{ nullptr, SType::{struct_name} }} {{}}
             """)
             
-            '''
-            self.out(f"""\
-            struct {struct_name}::Init {{
-                ChainedStruct{Out} * {const} nextInChain;""")
-            '''
             self.out(f"struct {struct_name}::Init {{")
 
             self.out.indent()
             for member in node.members:
-                '''
-                if self.exclude_member(member):
-                    continue
-                '''
                 member_declaration = self.as_annotated_cppMember(member, node.has_free_members_function)  + self.render_cpp_default_value(member, True, node.has_free_members_function)
                 self.out(f"{member_declaration};")
             self.out.dedent()
-            self.out("};")
+            self.out("};\n")
 
             self.out(f"""\
             {struct_name}::{struct_name}({struct_name}::Init&& init)
@@ -58,7 +49,7 @@ class StructureTypeCppRenderer(StructureTypeRenderer):
                     continue
 
                 self.out(f",{self.as_varName(member.name)}(std::move(init.{self.as_varName(member.name)}))")
-            self.out(" {}")
+            self.out(" {}\n")
             self.out.dedent()
 
                      
@@ -70,6 +61,7 @@ class StructureTypeCppRenderer(StructureTypeRenderer):
             {struct_name}::~{struct_name}() {{
                 FreeMembers();
             }}
+
             void {struct_name}::FreeMembers() {{
                 // Free members here
             }}
@@ -83,26 +75,16 @@ class StructureTypeCppRenderer(StructureTypeRenderer):
 
                 comma = "" if i == len(node.members) - 1  else ","
                 member_name = member.name.camelCase()
-                self.out << f"{member_name}(rhs.{member_name}){comma}" << "\n"
+                self.out / f"{member_name}(rhs.{member_name}){comma}" << "\n"
             self.out.dedent()
-            self.out << "{}" << "\n"
-
-            '''
-            self.out << f"{struct_name}::{struct_name}({struct_name}&& rhs) {{" << "\n"
-            self.out.indent()
-            for member in node.members:
-                member_name = member.name.camelCase()
-                self.out << f"{member_name}(rhs.{member_name});" << "\n"
-            self.out.dedent()
-            self.out << "}" << "\n"
-            '''
+            self.out << "{}" << "\n\n"
 
             self.out(f"""\
             {struct_name}& {struct_name}::operator=({struct_name}&& rhs) {{
-            if (&rhs == this) {{
-                return *this;
-            }}
-            FreeMembers();
+                if (&rhs == this) {{
+                    return *this;
+                }}
+                FreeMembers();
             """)
             
             self.out.indent()
@@ -111,12 +93,9 @@ class StructureTypeCppRenderer(StructureTypeRenderer):
                     continue
 
                 member_name = member.name.camelCase()
-                #this->{{member.name.camelCase()}} = std::move(rhs.{{member.name.camelCase()}});
-                #self.out << f"{member_name} = rhs.{member_name};" << "\n"
-                #self.out << f"this->{member_name} = std::move(rhs.{member_name});" << "\n"
-                self.out << f"::pywgpu::detail::AsNonConstReference(this->{member_name}) = std::move(rhs.{member_name});" << "\n"
+                self.out / f"::pywgpu::detail::AsNonConstReference(this->{member_name}) = std::move(rhs.{member_name});" << "\n"
 
-
-            self.out << "return *this;" << "\n"
+            self.out << "\n"
+            self.out / "return *this;" << "\n"
             self.out.dedent()
             self.out << "}" << "\n"

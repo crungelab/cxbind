@@ -63,22 +63,22 @@ class FunctionDeclarationCppRenderer(FunctionDeclarationRenderer):
         self.out.indent()
 
         if return_type_name == 'void':
-            self.out << f"wgpu{fn_name}({call_arg_str});" << "\n"
+            self.out / f"wgpu{fn_name}({call_arg_str});" << "\n"
 
         else:
-            self.out << f"auto result = wgpu{fn_name}({call_arg_str});" << "\n"
+            self.out / f"auto result = wgpu{fn_name}({call_arg_str});" << "\n"
             if isinstance(return_type, ObjectType):
-                self.out << f"return {return_type_name}::Acquire(result);" << "\n"
+                self.out / f"return {return_type_name}::Acquire(result);" << "\n"
             elif isinstance(return_type, EnumType) or isinstance(return_type, BitmaskType):
-                self.out << f"return static_cast<{return_type_name}>(result);" << "\n"
+                self.out / f"return static_cast<{return_type_name}>(result);" << "\n"
             else:
                 #self.out << f"return result;" << "\n"
                 exit()
                 if return_type_name == "Future":
-                    self.out << f"return {return_type_name}{{result.id}});" << "\n"
+                    self.out / f"return {return_type_name}{{result.id}});" << "\n"
                 else:
-                    self.out << f"return result;" << "\n"
+                    self.out / f"return result;" << "\n"
 
         self.out.dedent()
 
-        self.out << "}" << "\n"
+        self.out << "}" << "\n\n"

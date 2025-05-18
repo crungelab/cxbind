@@ -24,6 +24,18 @@ class RenderStream:
 
     def __lshift__(self, text: str):
         if len(text):
+            self.write(text)
+        return self
+
+    '''
+    def __rshift__(self, text: str):
+        if len(text):
+            self.write_indented(text)
+        return self
+    '''
+
+    def __truediv__(self, text: str):
+        if len(text):
             self.write_indented(text)
         return self
 

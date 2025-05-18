@@ -62,15 +62,15 @@ class FunctionDeclarationPyRenderer(FunctionDeclarationRenderer):
         fn_expr = f"&pywgpu::{fn_cpp_name}"
 
         if py_arg_list:
-            self.out << f"""
+            self.out(f"""\
             m.def("{fn_name}", {fn_expr}
                 , {', '.join(py_arg_list)}
-                , py::return_value_policy::automatic_reference)
-            """
+                , py::return_value_policy::automatic_reference)\
+            """)
         else:
-            self.out << f"""
+            self.out(f"""\
             m.def("{fn_name}", {fn_expr}
-                , py::return_value_policy::automatic_reference)
-            """
+                , py::return_value_policy::automatic_reference)\
+            """)
 
-        self.out << "    ;\n"
+        self.out << ";\n\n"

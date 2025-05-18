@@ -5,7 +5,7 @@ from ..object_type_renderer import ObjectTypeRenderer
 class ObjectTypeCppRenderer(ObjectTypeRenderer):
     def render(self):
         class_name = self.node.name.CamelCase()
-        self.out << "\n" << f"// {class_name} implementation" << "\n\n"
+        self.out << f"// {class_name} implementation" << "\n\n"
         for method in self.node.methods:
             if self.exclude_method(self.node, method):
                 continue
@@ -72,35 +72,37 @@ class ObjectTypeCppRenderer(ObjectTypeRenderer):
             self.out.indent()
 
             if return_type_name == 'void':
-                self.out << f"wgpu{class_name}{method_name}({call_arg_str});" << "\n"
+                self.out / f"wgpu{class_name}{method_name}({call_arg_str});" << "\n"
 
             else:
-                self.out << f"auto result = wgpu{class_name}{method_name}({call_arg_str});" << "\n"
+                self.out / f"auto result = wgpu{class_name}{method_name}({call_arg_str});" << "\n"
                 if isinstance(return_type, ObjectType):
-                    self.out << f"return {return_type_name}::Acquire(result);" << "\n"
+                    self.out / f"return {return_type_name}::Acquire(result);" << "\n"
                 elif isinstance(return_type, EnumType) or isinstance(return_type, BitmaskType):
-                    self.out << f"return static_cast<{return_type_name}>(result);" << "\n"
+                    self.out / f"return static_cast<{return_type_name}>(result);" << "\n"
                 else:
                     #self.out << f"return result;" << "\n"
                     if return_type_name == "Future":
-                        self.out << f"return {return_type_name}{{result.id}};" << "\n"
+                        self.out / f"return {return_type_name}{{result.id}};" << "\n"
                     else:
-                        self.out << f"return result;" << "\n"
+                        self.out / f"return result;" << "\n"
 
 
             self.out.dedent()
 
-            self.out << "}" << "\n"
+            self.out << "}" << "\n\n"
 
-        self.out << f"""
+        self.out << f"""\
 void {class_name}::WGPUAddRef(WGPU{class_name} handle) {{
     if (handle != nullptr) {{
         wgpu{class_name}AddRef(handle);
     }}
 }}
+
 void {class_name}::WGPURelease(WGPU{class_name} handle) {{
     if (handle != nullptr) {{
         wgpu{class_name}Release(handle);
     }}
 }}
+
 """

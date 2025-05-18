@@ -31,7 +31,9 @@ class StructureTypeHppRenderer(StructureTypeRenderer):
         else:
             self.out << f"struct {struct_name} {{" << "\n"
             if node.has_free_members_function:
-                self.out(f"{self.as_cppType(node.name)}() = default;")
+                self.out.indent()
+                self.out / f"{self.as_cppType(node.name)}() = default;" << "\n"
+                self.out.dedent()
 
         self.out.indent()
 

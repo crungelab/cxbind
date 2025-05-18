@@ -3,11 +3,11 @@ from loguru import logger
 from ...name import Name
 from ...node import Method, RecordMember
 
+from ..render_stream import RenderStream
 from ..object_type_renderer import ObjectTypeRenderer, ObjectType
 
-def get_arg_type_string(arg, context):
+def get_arg_type_string(arg):
     arg_type = ""
-    #arg_type_name = context.root[arg.type].name
     arg_type_name = arg.type.name
     if arg_type_name.native:
         arg_type = arg_type_name.get()
@@ -20,10 +20,10 @@ class ArgWrapper:
     def __init__(self, arg: RecordMember):
         self.arg = arg
 
-    def make_snippet(self, context):
+    def render(self, out: RenderStream):
         pass
 
-    def make_wrapper_type(self, context):
+    def make_wrapper_type(self):
         pass
 
 class BufferArgWrapper(ArgWrapper):
@@ -31,44 +31,43 @@ class BufferArgWrapper(ArgWrapper):
         super().__init__(arg)
         self.length_member = length_member
 
-    def make_wrapper_type(self, context):
+    def make_wrapper_type(self):
         return "py::buffer"
     
-    def make_snippet(self, context):
+    def render(self, out: RenderStream):
         value = ""
         arg_name = self.arg.name.camelCase()
-        arg_type = get_arg_type_string(self.arg, context)
+        arg_type = get_arg_type_string(self.arg)
         if self.arg.length is not None and isinstance(self.arg.length, str):
             info_name = f"{self.arg.name.camelCase()}Info"
-            value = f"""
+            value = f"""\
             py::buffer_info {info_name} = {arg_name}.request();
             {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
             auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
             """
-        return value
+        #return value
+        out(value)
 
 class VectorArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):
         super().__init__(arg)
         self.length_member = length_member
 
-    def make_wrapper_type(self, context):
-        arg_type = get_arg_type_string(self.arg, context)
-        #cppType = f"{arg_type} {self.arg.annotation}"
-        #stripped_cppType = cppType.replace("const ", "").replace(" *", "")
-        #return f"std::vector<{stripped_cppType}>"
+    def make_wrapper_type(self):
+        arg_type = get_arg_type_string(self.arg)
         return f"std::vector<{arg_type}>"
 
-    def make_snippet(self, context):
+    def render(self, out: RenderStream):
         value = ""
         arg_name = self.arg.name.camelCase()
-        arg_type = get_arg_type_string(self.arg, context)
+        arg_type = get_arg_type_string(self.arg)
         if self.arg.length is not None and isinstance(self.arg.length, str):
-            value = f"""
+            value = f"""\
             {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){arg_name}.data();
             auto {self.length_member.name.camelCase()} = {arg_name}.size();
             """
-        return value
+        #return value
+        out(value)
 
 
 class ObjectTypePyRenderer(ObjectTypeRenderer):
@@ -112,7 +111,7 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
             arg_list = []
             arg_type_list = []
             py_arg_list = []
-            substition_list = []
+            snippet_list = []
             arg_wrappers = {}
 
 
@@ -127,10 +126,11 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                         arg_wrapper = VectorArgWrapper(arg, length_member)
                     arg_wrappers[arg.name] = arg_wrapper
 
-                    substition_list.append(arg_wrapper.make_snippet(self.context))
+                    #snippet_list.append(arg_wrapper.make_snippet())
+                    snippet_list.append(arg_wrapper)
 
             for arg in args:
-                arg_type = get_arg_type_string(arg, self.context)
+                arg_type = get_arg_type_string(arg)
                 arg_annotation = arg.annotation
 
                 py_arg_name = arg.name.snake_case()
@@ -140,25 +140,13 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                 py_arg_list.append(f'py::arg("{py_arg_name}"){default_value}')
 
                 if arg.name in arg_wrappers:
-                    arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type(self.context)} {arg.name.camelCase()}")
+                    arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
                 elif arg_annotation:
                     arg_list.append(f'{arg_type} {arg_annotation} {arg_name}')
                     arg_type_list.append(f'{arg_type} {arg_annotation}')
                 else:
                     arg_list.append(f'{arg_type} {arg_name}')
                     arg_type_list.append(f'{arg_type}')
-
-                '''
-                if arg.length is not None and isinstance(arg.length, str):
-                    length_member = args_by_name[Name.intern(arg.length)]
-                    #arg_wrappers[arg.name] = ArgWrapper(arg, "py::buffer")
-                    arg_wrapper = BufferArgWrapper(arg, length_member)
-                    arg_wrappers[arg.name] = arg_wrapper
-
-                    #substition_list.append(f'auto {length_member.name.camelCase()} = {arg_name}->size()')
-                    substition_list.append(arg_wrapper.snippet())
-                '''
-
 
             arg_name_list = []
             for arg in method.args:
@@ -167,15 +155,16 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                 else:
                     arg_name_list.append(f"{arg.name.camelCase()}")
 
-            substition_snippet = ";\n".join(substition_list)
+            #substition_snippet = ";\n".join(snippet_list)
 
             lambda_arg_list = []
             for arg in args:
                 if arg.name in arg_wrappers:
-                    lambda_arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type(self.context)} {arg.name.camelCase()}")
+                    lambda_arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
                 else:
                     lambda_arg_list.append(f"{arg.name.camelCase()}")
 
+            '''
             if use_lambda:
                 method_expr = f"""[](pywgpu::{class_name}& self, {', '.join(arg_list)}) {{
                         {substition_snippet}
@@ -183,19 +172,45 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                     }}"""
             else:
                 method_expr = f"&pywgpu::{class_name}::{method_cpp_name}"
-
+            '''
             
+            self.out / f'.def("{method_name}",'
+            self.out.indent()
+            '''
+            self.out(f"""\
+            .def("{method_name}", {method_expr}
+            """)
+            '''
+
+            if use_lambda:
+                self.out << f"[](pywgpu::{class_name}& self, {', '.join(arg_list)}) {{" << "\n"
+                for snippet in snippet_list:
+                    snippet.render(self.out)
+                #self.out / f"return self.{method_cpp_name}({', '.join(arg_name_list)});}}" << "\n"
+                self.out / f"return self.{method_cpp_name}({', '.join(arg_name_list)});" << "\n"
+                self.out / "}" << "\n"
+
+            else:
+                self.out << f"&pywgpu::{class_name}::{method_cpp_name}" << "\n"
+
             if py_arg_list:
                 self.out(f"""\
-                .def("{method_name}", {method_expr}
-                    , {', '.join(py_arg_list)}
-                    , py::return_value_policy::automatic_reference)
+                , {', '.join(py_arg_list)}
+                , py::return_value_policy::automatic_reference)
                 """)
             else:
                 self.out(f"""\
-                .def("{method_name}", {method_expr}
-                    , py::return_value_policy::automatic_reference)
+                , py::return_value_policy::automatic_reference)
                 """)
+
+            '''
+            self.out(f"""\
+            .def("{method_name}", {method_expr}
+                , {', '.join(py_arg_list)}
+                , py::return_value_policy::automatic_reference)
+            """)
+            '''
+            self.out.dedent()
 
         self.out << "    ;\n"
         self.out.dedent()
