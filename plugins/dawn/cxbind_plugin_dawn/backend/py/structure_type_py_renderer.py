@@ -101,35 +101,12 @@ class StructureTypePyRenderer(StructureTypeRenderer):
 
     def render_kw_init(self):
         node = self.node
-        """
-        if node.output:
-            return
-        """
-        if (
-            node.extensible
-            and node.extensible == "out"
-            or node.chained
-            and node.chained == "out"
-        ):
-            return
 
         class_name = node.name.CamelCase()
 
         self.out << f".def(py::init([](const py::kwargs& kwargs) {{" << "\n"
         self.out.indent()
-        # self.out << f'pywgpu::{class_name} obj = {{}};' << "\n"
         self.out << f"pywgpu::{class_name} obj{{}};" << "\n"
-        # self.out << f'pywgpu::{class_name} obj;' << "\n"
-
-        '''
-        if node.extensible:
-            self.out(f"""\
-            if (kwargs.contains("next_in_chain"))
-            {{
-                obj.nextInChain = kwargs["next_in_chain"].cast<const pywgpu::ChainedStruct*>();
-            }}
-            """)
-        '''
 
         members_by_name = {member.name: member for member in node.members}
         excluded_names = {

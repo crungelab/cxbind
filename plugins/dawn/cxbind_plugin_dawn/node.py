@@ -11,6 +11,7 @@ class Node(BaseModel):
 
 
 class RecordMember(Node):
+    model_config = ConfigDict(populate_by_name=True)
     name: Name
     type: str
     annotation: Optional[str] = None
@@ -23,7 +24,8 @@ class RecordMember(Node):
 class Method(Node):
     name: Name
     returns: Optional[str] = None
-    args: Optional[List[RecordMember]] = None
+    #args: Optional[List[RecordMember]] = None
+    args: Optional[List[RecordMember]] = []
     no_autolock: Optional[bool] = Field(alias="no autolock", default=None)
 
 

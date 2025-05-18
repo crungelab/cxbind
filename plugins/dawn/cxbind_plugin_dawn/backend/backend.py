@@ -100,7 +100,7 @@ class Backend(Processor):
         self.bitmask_types.append(bitmask)
 
     def process_structure_type(self, structure: StructureType):
-        # logger.debug(f"Backend: Processing structure type '{structure.name.CamelCase()}'")
+        logger.debug(f"Backend: Processing structure type '{structure.name.CamelCase()}'")
         self.structure_types.append(structure)
 
     def process_function_pointer_type(self, function_pointer: FunctionPointerType):
