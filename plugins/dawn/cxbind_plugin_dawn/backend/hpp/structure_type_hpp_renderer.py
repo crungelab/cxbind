@@ -94,7 +94,6 @@ class StructureTypeHppRenderer(StructureTypeRenderer):
 
             if node.chained and i == 1:
                 self.out(f"static constexpr size_t kFirstMemberAlignment = detail::ConstexprMax(alignof(ChainedStruct{Out}), alignof({self.decorate_member('', self.as_cppType(member_type.name), member)}));")
-                #self.out(f"static constexpr size_t kFirstMemberAlignment = detail::ConstexprMax(alignof(ChainedStruct{Out}), alignof({self.decorate_type(member_type, member)}));")
                 self.out(f"alignas(kFirstMemberAlignment) {member_declaration};")
             else:
                 self.out(f"{member_declaration};")

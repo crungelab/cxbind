@@ -15,15 +15,17 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         if node.chained:
             (
                 self.out
-                << f"PYSUBCLASS_BEGIN(m, pywgpu::{class_name}, ChainedStruct{Out}, {class_name}) {class_name}"
+                << f'py::class_<{class_name}, ChainedStruct{Out}> _{class_name}(m, "{class_name}");'
                 << "\n"
             )
         else:
             (
                 self.out
-                << f"PYCLASS_BEGIN(m, pywgpu::{class_name}, {class_name}) {class_name}"
+                << f'py::class_<{class_name}> _{class_name}(m, "{class_name}");'
                 << "\n"
             )
+        self.out / f'registry.on(m, "{class_name}", _{class_name});' << "\n\n"
+        self.out / f'_{class_name}' << "\n"
         self.out.indent()
 
         for member in node.members:
@@ -94,7 +96,8 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         self.out / ";\n"
 
         self.out.dedent()
-        self.out << f"PYCLASS_END(m, pywgpu::{class_name}, {class_name})" << "\n\n"
+        #self.out << f"PYCLASS_END(m, pywgpu::{class_name}, {class_name})" << "\n\n"
+        self.out << "\n"
 
     def render_init(self):
         self.out / f".def(py::init<>())" << "\n"

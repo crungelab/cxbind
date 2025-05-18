@@ -74,7 +74,10 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
     def render(self):
         class_name = self.node.name.CamelCase()
 
-        self.out << f"PYCLASS_BEGIN(m, pywgpu::{class_name}, {class_name}) {class_name}" << "\n"
+        self.out << f'py::class_<{class_name}> _{class_name}(m, "{class_name}");' << "\n"
+        self.out / f'registry.on(m, "{class_name}", _{class_name});' << "\n\n"
+        self.out / f'_{class_name}' << "\n"
+
         self.out.indent()
         for method in self.node.methods:
             if self.exclude_method(self.node, method):
@@ -183,4 +186,4 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
 
         self.out << "    ;\n"
         self.out.dedent()
-        self.out << f"PYCLASS_END(m, pywgpu::{class_name}, {class_name})" << "\n\n"
+        self.out << "\n"
