@@ -32,7 +32,7 @@ class StructureTypePyRenderer(StructureTypeRenderer):
 
             member_name = member.name.snake_case()
             member_cpp_name = member.name.camelCase()
-            member_type = self.lookup(member.type)
+            member_type = member.type
             member_annotation = member.annotation
 
             if member_annotation == "const*const*":
@@ -136,8 +136,9 @@ class StructureTypePyRenderer(StructureTypeRenderer):
                 continue
             if member.default_value is not None:
                 continue
+
             # ???
-            member_type = self.lookup(member.type)
+            member_type = member.type
 
             if isinstance(member_type, EnumType) or isinstance(member_type, BitmaskType):
                 # logger.debug(f"Skipping enum member {member.name}")
@@ -195,7 +196,7 @@ class StructureTypePyRenderer(StructureTypeRenderer):
 
             member_name = member.name.snake_case()
             member_cpp_name = member.name.camelCase()
-            member_type = self.lookup(member.type)
+            member_type = member.type
             member_annotation = member.annotation
 
             if member_annotation == "const*const*":

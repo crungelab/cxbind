@@ -71,7 +71,7 @@ class StructureTypeHppRenderer(StructureTypeRenderer):
         for i, member in enumerate(node.members):
             if self.exclude_member(member):
                 continue
-            member_type = self.lookup(member.type)
+            member_type = member.type
             forced_default_value = None
             if node.name.get() == "bind group layout entry":
                 if member.name.canonical_case() == "buffer":

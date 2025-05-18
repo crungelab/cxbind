@@ -23,7 +23,8 @@ class FunctionDeclarationCppRenderer(FunctionDeclarationRenderer):
         call_arg_list = []
 
         for arg in args:
-            arg_type = self.context.root[arg.type]
+            #arg_type = self.context.root[arg.type]
+            arg_type = arg.type
             if arg_type.name.native:
                 arg_type_name = arg_type.name.get()
             else:

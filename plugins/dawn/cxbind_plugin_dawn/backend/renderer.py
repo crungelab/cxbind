@@ -26,7 +26,6 @@ class Renderer(Generic[T_Node]):
     def render(self):
         raise NotImplementedError
 
-    #def lookup(self, name: str) -> Node:
     def lookup(self, name: str) -> Entry:
         return self.context.root[name]
 
@@ -134,17 +133,17 @@ class Renderer(Generic[T_Node]):
         return Renderer.as_cType(self.context.c_prefix, typ.name)
 
     def as_annotated_cType(self, arg: RecordMember, make_const=False) -> str:
-        return Renderer.annotated(self.as_cTypeEnumSpecialCase(self.lookup(arg.type).name), arg, make_const)
+        return Renderer.annotated(self.as_cTypeEnumSpecialCase(arg.type.name), arg, make_const)
 
     def as_annotated_cppType(self, arg: RecordMember, make_const=False) -> str:
-        return Renderer.annotated_type(self.lookup(arg.type), arg, make_const)
+        return Renderer.annotated_type(arg.type, arg, make_const)
 
     def as_annotated_cppMember(self, arg: RecordMember, make_const=False) -> str:
-        return Renderer.annotated_member(self.as_cppType(self.lookup(arg.type).name), arg, make_const)
+        return Renderer.annotated_member(self.as_cppType(arg.type.name), arg, make_const)
 
 
     def render_cpp_default_value(self, member: RecordMember, is_struct: bool, force_default=False, forced_default_value=None) -> str:
-        member_type = self.lookup(member.type)
+        member_type = member.type
         if forced_default_value is not None:
             return f" = {forced_default_value}"
         elif member.no_default is not None and member.no_default:

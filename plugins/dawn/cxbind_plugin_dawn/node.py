@@ -5,21 +5,43 @@ from .name import Name
 
 
 class Node(BaseModel):
+    parent: Optional["Node"] = None
     tags: Optional[List[str]] = None
     _comment: Optional[str] = None
     model_config = ConfigDict(arbitrary_types_allowed = True)
 
 
-class RecordMember(Node):
-    model_config = ConfigDict(populate_by_name=True)
+class TypedNode(Node):
+    type_ref: str = Field(alias="type", default=None)
+    _type: Optional["Entry"] = None
+
+    @property
+    def type(self):
+        return self._type
+    @type.setter
+    def type(self, value: "Entry"):
+        self._type = value
+
+#class RecordMember(Node):
+class RecordMember(TypedNode):
+    #model_config = ConfigDict(populate_by_name=True)
     name: Name
-    type: str
+    #type: str
+    #type_ref: str = Field(alias="type", default=None)
+    #_type: Optional["Entry"] = None
     annotation: Optional[str] = None
     optional: Optional[bool] = False
     no_default: Optional[bool] = False
     default_value: Union[str, int] = Field(alias="default", default=None)
     length: Optional[Union[str, int]] = None
-
+    '''
+    @property
+    def type(self):
+        return self._type
+    @type.setter
+    def type(self, value: "Entry"):
+        self._type = value
+    '''
 
 class Method(Node):
     name: Name
@@ -38,7 +60,8 @@ class BitmaskValue(Node):
     name: Name
     value: int
 
-class Entry(Node):
+class Entry(TypedNode):
+#class Entry(Node):
     category: str
     name: Optional[Name] = None
     
@@ -48,7 +71,7 @@ class Entry(Node):
 
 class TypeDefinition(Entry):
     category: Literal["typedef"]
-    type: Optional[str]
+    #type: Optional[str]
 
 
 class EnumType(Entry):
@@ -172,7 +195,7 @@ class CallbackFunctionType(Entry):
 
 class ConstantDefinition(Entry):
     category: Literal["constant"]
-    type: str
+    #type: str
     value: str
     cpp_value: Optional[str] = None
 

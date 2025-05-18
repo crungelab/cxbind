@@ -36,7 +36,7 @@ class FunctionDeclarationPyRenderer(FunctionDeclarationRenderer):
 
         for arg in args:
             #arg_type_name = self.context.root[arg.type].name
-            arg_type_name = self.lookup(arg.type).name
+            arg_type_name = arg.type.name
             if arg_type_name.native:
                 arg_type = arg_type_name.get()
             else:

@@ -7,7 +7,8 @@ from ..object_type_renderer import ObjectTypeRenderer, ObjectType
 
 def get_arg_type_string(arg, context):
     arg_type = ""
-    arg_type_name = context.root[arg.type].name
+    #arg_type_name = context.root[arg.type].name
+    arg_type_name = arg.type.name
     if arg_type_name.native:
         arg_type = arg_type_name.get()
     else:
@@ -117,9 +118,8 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
 
             for arg in args:
                 if arg.length is not None and isinstance(arg.length, str):
-                    arg_type = self.lookup(arg.type)
+                    arg_type = arg.type
                     length_member = args_by_name[Name.intern(arg.length)]
-                    #arg_wrappers[arg.name] = ArgWrapper(arg, "py::buffer")
                     arg_wrapper = None
                     if arg_type.name.native:
                         arg_wrapper = BufferArgWrapper(arg, length_member)
@@ -127,18 +127,9 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                         arg_wrapper = VectorArgWrapper(arg, length_member)
                     arg_wrappers[arg.name] = arg_wrapper
 
-                    #substition_list.append(f'auto {length_member.name.camelCase()} = {arg_name}->size()')
                     substition_list.append(arg_wrapper.make_snippet(self.context))
 
             for arg in args:
-                '''
-                arg_type_name = self.context.root[arg.type].name
-                if arg_type_name.native:
-                    arg_type = arg_type_name.get()
-                else:
-                    #arg_type = arg_type_name.camelCase()
-                    arg_type = "pywgpu::" + arg_type_name.CamelCase()
-                '''
                 arg_type = get_arg_type_string(arg, self.context)
                 arg_annotation = arg.annotation
 

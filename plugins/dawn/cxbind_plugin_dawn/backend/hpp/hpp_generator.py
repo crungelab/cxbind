@@ -58,7 +58,7 @@ class HppGenerator(Generator):
 
     def render_constant_definitions(self):
         for constant in self.backend.constant_definitions:
-            constant_type = self.lookup(constant.type)
+            constant_type = constant.type
             type = self.as_cppType(constant_type.name)
             if constant.cpp_value:
                 self.out << f"static constexpr {type} k{constant.name.CamelCase()} = {constant.cpp_value};" << "\n"
@@ -91,7 +91,8 @@ class HppGenerator(Generator):
         for decl in declarations:
             if isinstance(decl, StructureType):
                 for member in decl.members:
-                    member_type = self.context.root[member.type]
+                    #member_type = self.context.root[member.type]
+                    member_type = member.type
                     if member_type in G.nodes:
                         G.add_edge(decl, member_type)
         return G

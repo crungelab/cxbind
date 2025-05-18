@@ -89,6 +89,10 @@ class Backend(Processor):
 
     def process_object_type(self, obj: ObjectType):
         # logger.debug(f"Backend: Processing object type '{obj.name.CamelCase()}'")
+        for method in obj.methods:
+            for arg in method.args:
+                arg.type = self.program.lookup(arg.type_ref)
+
         self.object_types.append(obj)
 
     def process_enum_type(self, enum: EnumType):
@@ -100,7 +104,9 @@ class Backend(Processor):
         self.bitmask_types.append(bitmask)
 
     def process_structure_type(self, structure: StructureType):
-        logger.debug(f"Backend: Processing structure type '{structure.name.CamelCase()}'")
+        # logger.debug(f"Backend: Processing structure type '{structure.name.CamelCase()}'")
+        for member in structure.members:
+            member.type = self.program.lookup(member.type_ref)
         self.structure_types.append(structure)
 
     def process_function_pointer_type(self, function_pointer: FunctionPointerType):
@@ -111,10 +117,13 @@ class Backend(Processor):
 
     def process_constant_definition(self, constant: ConstantDefinition):
         # logger.debug(f"Backend: Processing constant definition '{constant.name.CamelCase()}'")
+        constant.type = self.program.lookup(constant.type_ref)
         self.constant_definitions.append(constant)
 
     def process_function_declaration(self, fn_decl: FunctionDeclaration):
         # logger.debug(f"Backend: Processing function declaration '{fn_decl.name.CamelCase()}'")
+        for arg in fn_decl.args:
+            arg.type = self.program.lookup(arg.type_ref)
         self.function_declarations.append(fn_decl)
 
     def process_callback_info_type(self, callback_info: CallbackInfoType):
