@@ -155,38 +155,14 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                 else:
                     arg_name_list.append(f"{arg.name.camelCase()}")
 
-            #substition_snippet = ";\n".join(snippet_list)
-
-            lambda_arg_list = []
-            for arg in args:
-                if arg.name in arg_wrappers:
-                    lambda_arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
-                else:
-                    lambda_arg_list.append(f"{arg.name.camelCase()}")
-
-            '''
-            if use_lambda:
-                method_expr = f"""[](pywgpu::{class_name}& self, {', '.join(arg_list)}) {{
-                        {substition_snippet}
-                        return self.{method_cpp_name}({', '.join(arg_name_list)});
-                    }}"""
-            else:
-                method_expr = f"&pywgpu::{class_name}::{method_cpp_name}"
-            '''
             
             self.out / f'.def("{method_name}",'
             self.out.indent()
-            '''
-            self.out(f"""\
-            .def("{method_name}", {method_expr}
-            """)
-            '''
 
             if use_lambda:
                 self.out << f"[](pywgpu::{class_name}& self, {', '.join(arg_list)}) {{" << "\n"
                 for snippet in snippet_list:
                     snippet.render(self.out)
-                #self.out / f"return self.{method_cpp_name}({', '.join(arg_name_list)});}}" << "\n"
                 self.out / f"return self.{method_cpp_name}({', '.join(arg_name_list)});" << "\n"
                 self.out / "}" << "\n"
 
@@ -203,13 +179,6 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                 , py::return_value_policy::automatic_reference)
                 """)
 
-            '''
-            self.out(f"""\
-            .def("{method_name}", {method_expr}
-                , {', '.join(py_arg_list)}
-                , py::return_value_policy::automatic_reference)
-            """)
-            '''
             self.out.dedent()
 
         self.out << "    ;\n"
