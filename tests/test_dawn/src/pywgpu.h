@@ -1289,7 +1289,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<ShaderModule, WGPUShaderModule>;
     static void WGPUAddRef(WGPUShaderModule handle);
-    static void WGPURelease(WGPUShaderModule handle);
+    static void WGPURelease(WGPUShaderModule handle);        
 };
 
 struct StencilFaceState {
@@ -1325,7 +1325,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<TextureView, WGPUTextureView>;
     static void WGPUAddRef(WGPUTextureView handle);
-    static void WGPURelease(WGPUTextureView handle);
+    static void WGPURelease(WGPUTextureView handle);        
 };
 
 class QuerySet : public ObjectBase<QuerySet, WGPUQuerySet> {
@@ -1339,7 +1339,7 @@ public:
     void Destroy() const;
     friend ObjectBase<QuerySet, WGPUQuerySet>;
     static void WGPUAddRef(WGPUQuerySet handle);
-    static void WGPURelease(WGPUQuerySet handle);
+    static void WGPURelease(WGPUQuerySet handle);        
 };
 
 struct StorageTextureBindingLayout {
@@ -1380,7 +1380,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<Sampler, WGPUSampler>;
     static void WGPUAddRef(WGPUSampler handle);
-    static void WGPURelease(WGPUSampler handle);
+    static void WGPURelease(WGPUSampler handle);        
 };
 
 class Buffer : public ObjectBase<Buffer, WGPUBuffer> {
@@ -1401,7 +1401,7 @@ public:
     void Destroy() const;
     friend ObjectBase<Buffer, WGPUBuffer>;
     static void WGPUAddRef(WGPUBuffer handle);
-    static void WGPURelease(WGPUBuffer handle);
+    static void WGPURelease(WGPUBuffer handle);        
 };
 
 struct SubgroupMatrixConfig {
@@ -1445,7 +1445,7 @@ public:
     void Destroy() const;
     friend ObjectBase<Texture, WGPUTexture>;
     static void WGPUAddRef(WGPUTexture handle);
-    static void WGPURelease(WGPUTexture handle);
+    static void WGPURelease(WGPUTexture handle);        
 };
 
 struct FragmentState {
@@ -1511,7 +1511,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<PipelineLayout, WGPUPipelineLayout>;
     static void WGPUAddRef(WGPUPipelineLayout handle);
-    static void WGPURelease(WGPUPipelineLayout handle);
+    static void WGPURelease(WGPUPipelineLayout handle);        
 };
 
 struct RenderPassStorageAttachment {
@@ -1572,7 +1572,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<BindGroupLayout, WGPUBindGroupLayout>;
     static void WGPUAddRef(WGPUBindGroupLayout handle);
-    static void WGPURelease(WGPUBindGroupLayout handle);
+    static void WGPURelease(WGPUBindGroupLayout handle);        
 };
 
 struct InstanceCapabilities {
@@ -1611,7 +1611,7 @@ public:
     void Refresh() const;
     friend ObjectBase<ExternalTexture, WGPUExternalTexture>;
     static void WGPUAddRef(WGPUExternalTexture handle);
-    static void WGPURelease(WGPUExternalTexture handle);
+    static void WGPURelease(WGPUExternalTexture handle);        
 };
 
 struct TexelCopyBufferLayout {
@@ -1635,7 +1635,7 @@ public:
     void ExportInfo(SharedFenceExportInfo * info) const;
     friend ObjectBase<SharedFence, WGPUSharedFence>;
     static void WGPUAddRef(WGPUSharedFence handle);
-    static void WGPURelease(WGPUSharedFence handle);
+    static void WGPURelease(WGPUSharedFence handle);        
 };
 
 struct SharedTextureMemoryDmaBufPlane {
@@ -1751,7 +1751,7 @@ public:
     void ValidateTextureDescriptor(TextureDescriptor const* descriptor) const;
     friend ObjectBase<Device, WGPUDevice>;
     static void WGPUAddRef(WGPUDevice handle);
-    static void WGPURelease(WGPUDevice handle);
+    static void WGPURelease(WGPUDevice handle);        
 };
 
 struct BindGroupEntry {
@@ -1832,7 +1832,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<Surface, WGPUSurface>;
     static void WGPUAddRef(WGPUSurface handle);
-    static void WGPURelease(WGPUSurface handle);
+    static void WGPURelease(WGPUSurface handle);        
 };
 
 // Can be chained in AdapterInfo
@@ -3240,7 +3240,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<RenderPipeline, WGPURenderPipeline>;
     static void WGPUAddRef(WGPURenderPipeline handle);
-    static void WGPURelease(WGPURenderPipeline handle);
+    static void WGPURelease(WGPURenderPipeline handle);        
 };
 
 class RenderPassEncoder : public ObjectBase<RenderPassEncoder, WGPURenderPassEncoder> {
@@ -3275,7 +3275,7 @@ public:
     void SetImmediateData(uint32_t offset, void const* data, size_t size) const;
     friend ObjectBase<RenderPassEncoder, WGPURenderPassEncoder>;
     static void WGPUAddRef(WGPURenderPassEncoder handle);
-    static void WGPURelease(WGPURenderPassEncoder handle);
+    static void WGPURelease(WGPURenderPassEncoder handle);        
 };
 
 class RenderBundleEncoder : public ObjectBase<RenderBundleEncoder, WGPURenderBundleEncoder> {
@@ -3299,7 +3299,7 @@ public:
     void SetImmediateData(uint32_t offset, void const* data, size_t size) const;
     friend ObjectBase<RenderBundleEncoder, WGPURenderBundleEncoder>;
     static void WGPUAddRef(WGPURenderBundleEncoder handle);
-    static void WGPURelease(WGPURenderBundleEncoder handle);
+    static void WGPURelease(WGPURenderBundleEncoder handle);        
 };
 
 class RenderBundle : public ObjectBase<RenderBundle, WGPURenderBundle> {
@@ -3310,7 +3310,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<RenderBundle, WGPURenderBundle>;
     static void WGPUAddRef(WGPURenderBundle handle);
-    static void WGPURelease(WGPURenderBundle handle);
+    static void WGPURelease(WGPURenderBundle handle);        
 };
 
 class Queue : public ObjectBase<Queue, WGPUQueue> {
@@ -3327,7 +3327,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<Queue, WGPUQueue>;
     static void WGPUAddRef(WGPUQueue handle);
-    static void WGPURelease(WGPUQueue handle);
+    static void WGPURelease(WGPUQueue handle);        
 };
 
 class Instance : public ObjectBase<Instance, WGPUInstance> {
@@ -3343,7 +3343,7 @@ public:
     Status GetWGSLLanguageFeatures(SupportedWGSLLanguageFeatures * features) const;
     friend ObjectBase<Instance, WGPUInstance>;
     static void WGPUAddRef(WGPUInstance handle);
-    static void WGPURelease(WGPUInstance handle);
+    static void WGPURelease(WGPUInstance handle);        
 };
 
 class SharedTextureMemory : public ObjectBase<SharedTextureMemory, WGPUSharedTextureMemory> {
@@ -3359,7 +3359,7 @@ public:
     bool IsDeviceLost() const;
     friend ObjectBase<SharedTextureMemory, WGPUSharedTextureMemory>;
     static void WGPUAddRef(WGPUSharedTextureMemory handle);
-    static void WGPURelease(WGPUSharedTextureMemory handle);
+    static void WGPURelease(WGPUSharedTextureMemory handle);        
 };
 
 class SharedBufferMemory : public ObjectBase<SharedBufferMemory, WGPUSharedBufferMemory> {
@@ -3375,7 +3375,7 @@ public:
     bool IsDeviceLost() const;
     friend ObjectBase<SharedBufferMemory, WGPUSharedBufferMemory>;
     static void WGPUAddRef(WGPUSharedBufferMemory handle);
-    static void WGPURelease(WGPUSharedBufferMemory handle);
+    static void WGPURelease(WGPUSharedBufferMemory handle);        
 };
 
 class ComputePipeline : public ObjectBase<ComputePipeline, WGPUComputePipeline> {
@@ -3387,7 +3387,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<ComputePipeline, WGPUComputePipeline>;
     static void WGPUAddRef(WGPUComputePipeline handle);
-    static void WGPURelease(WGPUComputePipeline handle);
+    static void WGPURelease(WGPUComputePipeline handle);        
 };
 
 class ComputePassEncoder : public ObjectBase<ComputePassEncoder, WGPUComputePassEncoder> {
@@ -3408,7 +3408,7 @@ public:
     void SetImmediateData(uint32_t offset, void const* data, size_t size) const;
     friend ObjectBase<ComputePassEncoder, WGPUComputePassEncoder>;
     static void WGPUAddRef(WGPUComputePassEncoder handle);
-    static void WGPURelease(WGPUComputePassEncoder handle);
+    static void WGPURelease(WGPUComputePassEncoder handle);        
 };
 
 class CommandEncoder : public ObjectBase<CommandEncoder, WGPUCommandEncoder> {
@@ -3434,7 +3434,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<CommandEncoder, WGPUCommandEncoder>;
     static void WGPUAddRef(WGPUCommandEncoder handle);
-    static void WGPURelease(WGPUCommandEncoder handle);
+    static void WGPURelease(WGPUCommandEncoder handle);        
 };
 
 class CommandBuffer : public ObjectBase<CommandBuffer, WGPUCommandBuffer> {
@@ -3445,7 +3445,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<CommandBuffer, WGPUCommandBuffer>;
     static void WGPUAddRef(WGPUCommandBuffer handle);
-    static void WGPURelease(WGPUCommandBuffer handle);
+    static void WGPURelease(WGPUCommandBuffer handle);        
 };
 
 class BindGroup : public ObjectBase<BindGroup, WGPUBindGroup> {
@@ -3456,7 +3456,7 @@ public:
     void SetLabel(StringView label) const;
     friend ObjectBase<BindGroup, WGPUBindGroup>;
     static void WGPUAddRef(WGPUBindGroup handle);
-    static void WGPURelease(WGPUBindGroup handle);
+    static void WGPURelease(WGPUBindGroup handle);        
 };
 
 class Adapter : public ObjectBase<Adapter, WGPUAdapter> {
@@ -3474,7 +3474,7 @@ public:
     Status GetFormatCapabilities(TextureFormat format, DawnFormatCapabilities * capabilities) const;
     friend ObjectBase<Adapter, WGPUAdapter>;
     static void WGPUAddRef(WGPUAdapter handle);
-    static void WGPURelease(WGPUAdapter handle);
+    static void WGPURelease(WGPUAdapter handle);        
 };
 
 Instance CreateInstance(InstanceDescriptor const* descriptor);

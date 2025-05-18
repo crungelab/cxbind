@@ -15,7 +15,6 @@ class FunctionDeclarationPyRenderer(FunctionDeclarationRenderer):
         arg_type_list = []
         py_arg_list = []
 
-        args_by_name = {arg.name: arg for arg in fn.args}
         excluded_names = {
             Name.intern(arg.length)
             for arg in fn.args
@@ -35,7 +34,6 @@ class FunctionDeclarationPyRenderer(FunctionDeclarationRenderer):
         ]
 
         for arg in args:
-            #arg_type_name = self.context.root[arg.type].name
             arg_type_name = arg.type.name
             if arg_type_name.native:
                 arg_type = arg_type_name.get()

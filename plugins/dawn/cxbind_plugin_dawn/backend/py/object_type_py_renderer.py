@@ -6,7 +6,7 @@ from ...node import Method, RecordMember
 from ..render_stream import RenderStream
 from ..object_type_renderer import ObjectTypeRenderer, ObjectType
 
-def get_arg_type_string(arg):
+def get_arg_type_string(arg) -> str:
     arg_type = ""
     arg_type_name = arg.type.name
     if arg_type_name.native:
@@ -35,17 +35,14 @@ class BufferArgWrapper(ArgWrapper):
         return "py::buffer"
     
     def render(self, out: RenderStream):
-        value = ""
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
-        if self.arg.length is not None and isinstance(self.arg.length, str):
-            info_name = f"{self.arg.name.camelCase()}Info"
-            value = f"""\
-            py::buffer_info {info_name} = {arg_name}.request();
-            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
-            auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
-            """
-        #return value
+        info_name = f"{self.arg.name.camelCase()}Info"
+        value = f"""\
+        py::buffer_info {info_name} = {arg_name}.request();
+        {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
+        auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
+        """
         out(value)
 
 class VectorArgWrapper(ArgWrapper):
@@ -58,15 +55,12 @@ class VectorArgWrapper(ArgWrapper):
         return f"std::vector<{arg_type}>"
 
     def render(self, out: RenderStream):
-        value = ""
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
-        if self.arg.length is not None and isinstance(self.arg.length, str):
-            value = f"""\
-            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){arg_name}.data();
-            auto {self.length_member.name.camelCase()} = {arg_name}.size();
-            """
-        #return value
+        value = f"""\
+        {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){arg_name}.data();
+        auto {self.length_member.name.camelCase()} = {arg_name}.size();
+        """
         out(value)
 
 
@@ -147,6 +141,12 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                 else:
                     arg_list.append(f'{arg_type} {arg_name}')
                     arg_type_list.append(f'{arg_type}')
+
+                #TODO: This should work but it doesn't
+                '''
+                else:
+                    arg_list.append(self.as_annotated_cppMember(arg))
+                '''
 
             arg_name_list = []
             for arg in method.args:

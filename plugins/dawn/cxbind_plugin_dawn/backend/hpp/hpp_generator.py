@@ -91,7 +91,6 @@ class HppGenerator(Generator):
         for decl in declarations:
             if isinstance(decl, StructureType):
                 for member in decl.members:
-                    #member_type = self.context.root[member.type]
                     member_type = member.type
                     if member_type in G.nodes:
                         G.add_edge(decl, member_type)

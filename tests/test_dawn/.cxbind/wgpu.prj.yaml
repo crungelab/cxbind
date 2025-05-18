@@ -1,0 +1,12 @@
+module: _wgpu
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+unit_files:
+  - path: wgpu_hpp.unit.yaml
+  - path: wgpu_cpp.unit.yaml
+  - path: wgpu_py.unit.yaml

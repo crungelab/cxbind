@@ -963,7 +963,7 @@ PYCLASS_BEGIN(m, pywgpu::CommandEncoder, CommandEncoder) CommandEncoder
         , py::arg("query_set"), py::arg("first_query"), py::arg("query_count"), py::arg("destination"), py::arg("destination_offset")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_buffer",[](pywgpu::CommandEncoder& self, pywgpu::Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    .def("write_buffer",[](pywgpu::CommandEncoder& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
         py::buffer_info dataInfo = data.request();
         uint8_t const* _data = (uint8_t const*)dataInfo.ptr;
         auto size = dataInfo.size * dataInfo.itemsize;
@@ -1000,7 +1000,7 @@ PYCLASS_BEGIN(m, pywgpu::ComputePassEncoder, ComputePassEncoder) ComputePassEnco
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, py::buffer dynamicOffsets) {
+    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, BindGroup group, py::buffer dynamicOffsets) {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.request();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
@@ -1349,7 +1349,7 @@ PYCLASS_BEGIN(m, pywgpu::Queue, Queue) Queue
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_buffer",[](pywgpu::Queue& self, pywgpu::Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    .def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = dataInfo.size * dataInfo.itemsize;
@@ -1359,7 +1359,7 @@ PYCLASS_BEGIN(m, pywgpu::Queue, Queue) Queue
         , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_texture",[](pywgpu::Queue& self, pywgpu::TexelCopyTextureInfo const* destination, py::buffer data, pywgpu::TexelCopyBufferLayout const* dataLayout, pywgpu::Extent3D const* writeSize) {
+    .def("write_texture",[](pywgpu::Queue& self, TexelCopyTextureInfo const * destination, py::buffer data, TexelCopyBufferLayout const * dataLayout, Extent3D const * writeSize) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto dataSize = dataInfo.size * dataInfo.itemsize;
@@ -1397,7 +1397,7 @@ PYCLASS_BEGIN(m, pywgpu::RenderBundleEncoder, RenderBundleEncoder) RenderBundleE
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, py::buffer dynamicOffsets) {
+    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, BindGroup group, py::buffer dynamicOffsets) {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.request();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
@@ -1468,7 +1468,7 @@ PYCLASS_BEGIN(m, pywgpu::RenderPassEncoder, RenderPassEncoder) RenderPassEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, py::buffer dynamicOffsets) {
+    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, BindGroup group, py::buffer dynamicOffsets) {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.request();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;

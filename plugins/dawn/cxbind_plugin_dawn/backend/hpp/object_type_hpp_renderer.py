@@ -29,7 +29,6 @@ class ObjectTypeHppRenderer(ObjectTypeRenderer):
             arg_list = []
             arg_type_list = []
             for arg in args:
-                #arg_type_name = self.context.root[arg.type].name
                 arg_type_name = arg.type.name
                 if arg_type_name.native:
                     arg_type = arg_type_name.get()
@@ -52,8 +51,9 @@ class ObjectTypeHppRenderer(ObjectTypeRenderer):
             self.out / f"{return_type} {method_name}({arg_str if arg_list else ''}) const;" << "\n"
 
         self.out(f"""\
-friend ObjectBase<{class_name}, WGPU{class_name}>;
-static void WGPUAddRef(WGPU{class_name} handle);
-static void WGPURelease(WGPU{class_name} handle);""")
+        friend ObjectBase<{class_name}, WGPU{class_name}>;
+        static void WGPUAddRef(WGPU{class_name} handle);
+        static void WGPURelease(WGPU{class_name} handle);\
+        """)
         self.out.dedent()
         self.out << "};" << "\n\n"
