@@ -7,47 +7,34 @@ class FunctionDeclarationCppRenderer(FunctionDeclarationRenderer):
     def render(self):
         fn = self.node
         fn_name = fn.name.CamelCase()
-        if fn.returns:
-            return_type = self.context.root[fn.returns]
-        else:
-            return_type = self.context.root['void']
 
-        if return_type.name.native:
-            return_type_name = return_type.name.get()
-        else:
-            return_type_name = return_type.name.CamelCase()
+        return_type = fn.return_type
+        return_type_name = self.as_cppType(return_type.name)
 
-        args = fn.args or []
-
+        args = fn.args
         arg_list = []
         call_arg_list = []
 
         for arg in args:
             arg_type = arg.type
-            if arg_type.name.native:
-                arg_type_name = arg_type.name.get()
-            else:
-                arg_type_name = arg_type.name.CamelCase()
-
-            arg_annotation = arg.annotation
-            arg_annotation_str = " " + arg.annotation + " " if arg_annotation else " "
-
             arg_name = arg.name.camelCase()
 
-            arg_list.append(f'{arg_type_name}{arg_annotation_str}{arg_name}')
+            arg_list.append(self.as_annotated_cppMember(arg))
+
+            annotated_type = self.as_annotated_cType(arg)
 
             if isinstance(arg_type, EnumType) or isinstance(arg_type, BitmaskType):
                 if arg.annotation:
-                    call_arg_list.append(f"reinterpret_cast<WGPU{arg_type_name}{arg_annotation_str}>({arg_name})")
+                    call_arg_list.append(f"reinterpret_cast<{annotated_type}>({arg_name})")
                 else:
-                    call_arg_list.append(f"static_cast<WGPU{arg_type_name}{arg_annotation_str}>({arg_name})")
+                    call_arg_list.append(f"static_cast<{annotated_type}>({arg_name})")
             elif isinstance(arg_type, CallbackInfoType):
-                call_arg_list.append(f"*reinterpret_cast<WGPU{arg_type_name}{arg_annotation_str}>({arg_name})")
+                call_arg_list.append(f"*reinterpret_cast<{annotated_type}>({arg_name})")
             elif isinstance(arg_type, StructureType):
-                call_arg_list.append(f"reinterpret_cast<WGPU{arg_type_name}{arg_annotation_str}>({arg_name})")
+                call_arg_list.append(f"reinterpret_cast<{annotated_type}>({arg_name})")
             elif isinstance(arg_type, ObjectType):
                 if arg.annotation:
-                    call_arg_list.append(f"reinterpret_cast<WGPU{arg_type_name}{arg_annotation_str}>({arg_name})")
+                    call_arg_list.append(f"reinterpret_cast<{annotated_type}>({arg_name})")
                 else:
                     call_arg_list.append(f"{arg_name}.Get()")
             else:
@@ -71,6 +58,7 @@ class FunctionDeclarationCppRenderer(FunctionDeclarationRenderer):
             elif isinstance(return_type, EnumType) or isinstance(return_type, BitmaskType):
                 self.out / f"return static_cast<{return_type_name}>(result);" << "\n"
             else:
+                #TODO: Looks like dead code but might be used in the future
                 #self.out << f"return result;" << "\n"
                 exit()
                 if return_type_name == "Future":

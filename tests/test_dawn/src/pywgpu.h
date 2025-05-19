@@ -967,7 +967,6 @@ struct IsWGPUBitmask<pywgpu::BufferUsage> {
     static constexpr bool enable = true;
 };
 
-
 enum class ColorWriteMask : uint64_t {
     None = WGPUColorWriteMask_None,
     Red = WGPUColorWriteMask_Red,
@@ -982,7 +981,6 @@ struct IsWGPUBitmask<pywgpu::ColorWriteMask> {
     static constexpr bool enable = true;
 };
 
-
 enum class MapMode : uint64_t {
     None = WGPUMapMode_None,
     Read = WGPUMapMode_Read,
@@ -993,7 +991,6 @@ template<>
 struct IsWGPUBitmask<pywgpu::MapMode> {
     static constexpr bool enable = true;
 };
-
 
 enum class ShaderStage : uint64_t {
     None = WGPUShaderStage_None,
@@ -1006,7 +1003,6 @@ template<>
 struct IsWGPUBitmask<pywgpu::ShaderStage> {
     static constexpr bool enable = true;
 };
-
 
 enum class TextureUsage : uint64_t {
     None = WGPUTextureUsage_None,
@@ -1024,7 +1020,6 @@ struct IsWGPUBitmask<pywgpu::TextureUsage> {
     static constexpr bool enable = true;
 };
 
-
 enum class HeapProperty : uint64_t {
     None = WGPUHeapProperty_None,
     DeviceLocal = WGPUHeapProperty_DeviceLocal,
@@ -1038,7 +1033,6 @@ template<>
 struct IsWGPUBitmask<pywgpu::HeapProperty> {
     static constexpr bool enable = true;
 };
-
 
 using Callback = WGPUCallback;
 using DawnLoadCacheDataFunction = WGPUDawnLoadCacheDataFunction;
@@ -1391,7 +1385,7 @@ public:
     Future MapAsync(MapMode mode, size_t offset, size_t size, BufferMapCallbackInfo callbackInfo) const;
     void * GetMappedRange(size_t offset, size_t size) const;
     void const * GetConstMappedRange(size_t offset, size_t size) const;
-    Status WriteMappedRange(size_t offset, void const* data, size_t size) const;
+    Status WriteMappedRange(size_t offset, void const * data, size_t size) const;
     Status ReadMappedRange(size_t offset, void * data, size_t size) const;
     void SetLabel(StringView label) const;
     BufferUsage GetUsage() const;
@@ -1431,8 +1425,8 @@ public:
     using ObjectBase::ObjectBase;
     using ObjectBase::operator=;
 
-    TextureView CreateView(TextureViewDescriptor const* descriptor) const;
-    TextureView CreateErrorView(TextureViewDescriptor const* descriptor) const;
+    TextureView CreateView(TextureViewDescriptor const * descriptor) const;
+    TextureView CreateErrorView(TextureViewDescriptor const * descriptor) const;
     void SetLabel(StringView label) const;
     uint32_t GetWidth() const;
     uint32_t GetHeight() const;
@@ -1710,33 +1704,33 @@ public:
     using ObjectBase::ObjectBase;
     using ObjectBase::operator=;
 
-    BindGroup CreateBindGroup(BindGroupDescriptor const* descriptor) const;
-    BindGroupLayout CreateBindGroupLayout(BindGroupLayoutDescriptor const* descriptor) const;
-    Buffer CreateBuffer(BufferDescriptor const* descriptor) const;
-    Buffer CreateErrorBuffer(BufferDescriptor const* descriptor) const;
-    CommandEncoder CreateCommandEncoder(CommandEncoderDescriptor const* descriptor) const;
-    ComputePipeline CreateComputePipeline(ComputePipelineDescriptor const* descriptor) const;
-    Future CreateComputePipelineAsync(ComputePipelineDescriptor const* descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) const;
-    ExternalTexture CreateExternalTexture(ExternalTextureDescriptor const* externalTextureDescriptor) const;
+    BindGroup CreateBindGroup(BindGroupDescriptor const * descriptor) const;
+    BindGroupLayout CreateBindGroupLayout(BindGroupLayoutDescriptor const * descriptor) const;
+    Buffer CreateBuffer(BufferDescriptor const * descriptor) const;
+    Buffer CreateErrorBuffer(BufferDescriptor const * descriptor) const;
+    CommandEncoder CreateCommandEncoder(CommandEncoderDescriptor const * descriptor) const;
+    ComputePipeline CreateComputePipeline(ComputePipelineDescriptor const * descriptor) const;
+    Future CreateComputePipelineAsync(ComputePipelineDescriptor const * descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) const;
+    ExternalTexture CreateExternalTexture(ExternalTextureDescriptor const * externalTextureDescriptor) const;
     ExternalTexture CreateErrorExternalTexture() const;
-    PipelineLayout CreatePipelineLayout(PipelineLayoutDescriptor const* descriptor) const;
-    QuerySet CreateQuerySet(QuerySetDescriptor const* descriptor) const;
-    Future CreateRenderPipelineAsync(RenderPipelineDescriptor const* descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) const;
-    RenderBundleEncoder CreateRenderBundleEncoder(RenderBundleEncoderDescriptor const* descriptor) const;
-    RenderPipeline CreateRenderPipeline(RenderPipelineDescriptor const* descriptor) const;
-    Sampler CreateSampler(SamplerDescriptor const* descriptor) const;
-    ShaderModule CreateShaderModule(ShaderModuleDescriptor const* descriptor) const;
-    ShaderModule CreateErrorShaderModule(ShaderModuleDescriptor const* descriptor, StringView errorMessage) const;
-    Texture CreateTexture(TextureDescriptor const* descriptor) const;
-    SharedBufferMemory ImportSharedBufferMemory(SharedBufferMemoryDescriptor const* descriptor) const;
-    SharedTextureMemory ImportSharedTextureMemory(SharedTextureMemoryDescriptor const* descriptor) const;
-    SharedFence ImportSharedFence(SharedFenceDescriptor const* descriptor) const;
-    Texture CreateErrorTexture(TextureDescriptor const* descriptor) const;
+    PipelineLayout CreatePipelineLayout(PipelineLayoutDescriptor const * descriptor) const;
+    QuerySet CreateQuerySet(QuerySetDescriptor const * descriptor) const;
+    Future CreateRenderPipelineAsync(RenderPipelineDescriptor const * descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) const;
+    RenderBundleEncoder CreateRenderBundleEncoder(RenderBundleEncoderDescriptor const * descriptor) const;
+    RenderPipeline CreateRenderPipeline(RenderPipelineDescriptor const * descriptor) const;
+    Sampler CreateSampler(SamplerDescriptor const * descriptor) const;
+    ShaderModule CreateShaderModule(ShaderModuleDescriptor const * descriptor) const;
+    ShaderModule CreateErrorShaderModule(ShaderModuleDescriptor const * descriptor, StringView errorMessage) const;
+    Texture CreateTexture(TextureDescriptor const * descriptor) const;
+    SharedBufferMemory ImportSharedBufferMemory(SharedBufferMemoryDescriptor const * descriptor) const;
+    SharedTextureMemory ImportSharedTextureMemory(SharedTextureMemoryDescriptor const * descriptor) const;
+    SharedFence ImportSharedFence(SharedFenceDescriptor const * descriptor) const;
+    Texture CreateErrorTexture(TextureDescriptor const * descriptor) const;
     void Destroy() const;
     Status GetAHardwareBufferProperties(void * handle, AHardwareBufferProperties * properties) const;
     Status GetLimits(Limits * limits) const;
     Future GetLostFuture() const;
-    bool HasFeature(FeatureName feature) const;
+    Bool HasFeature(FeatureName feature) const;
     void GetFeatures(SupportedFeatures * features) const;
     Status GetAdapterInfo(AdapterInfo * adapterInfo) const;
     Adapter GetAdapter() const;
@@ -1748,7 +1742,7 @@ public:
     void PushErrorScope(ErrorFilter filter) const;
     Future PopErrorScope(PopErrorScopeCallbackInfo callbackInfo) const;
     void SetLabel(StringView label) const;
-    void ValidateTextureDescriptor(TextureDescriptor const* descriptor) const;
+    void ValidateTextureDescriptor(TextureDescriptor const * descriptor) const;
     friend ObjectBase<Device, WGPUDevice>;
     static void WGPUAddRef(WGPUDevice handle);
     static void WGPURelease(WGPUDevice handle);        
@@ -1824,7 +1818,7 @@ public:
     using ObjectBase::ObjectBase;
     using ObjectBase::operator=;
 
-    void Configure(SurfaceConfiguration const* config) const;
+    void Configure(SurfaceConfiguration const * config) const;
     Status GetCapabilities(Adapter adapter, SurfaceCapabilities * capabilities) const;
     void GetCurrentTexture(SurfaceTexture * surfaceTexture) const;
     void Present() const;
@@ -3249,19 +3243,19 @@ public:
     using ObjectBase::operator=;
 
     void SetPipeline(RenderPipeline pipeline) const;
-    void SetBindGroup(uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const* dynamicOffsets) const;
+    void SetBindGroup(uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const;
     void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const;
     void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) const;
     void DrawIndirect(Buffer indirectBuffer, uint64_t indirectOffset) const;
     void DrawIndexedIndirect(Buffer indirectBuffer, uint64_t indirectOffset) const;
     void MultiDrawIndirect(Buffer indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer drawCountBuffer, uint64_t drawCountBufferOffset) const;
     void MultiDrawIndexedIndirect(Buffer indirectBuffer, uint64_t indirectOffset, uint32_t maxDrawCount, Buffer drawCountBuffer, uint64_t drawCountBufferOffset) const;
-    void ExecuteBundles(size_t bundleCount, RenderBundle const* bundles) const;
+    void ExecuteBundles(size_t bundleCount, RenderBundle const * bundles) const;
     void InsertDebugMarker(StringView markerLabel) const;
     void PopDebugGroup() const;
     void PushDebugGroup(StringView groupLabel) const;
     void SetStencilReference(uint32_t reference) const;
-    void SetBlendConstant(Color const* color) const;
+    void SetBlendConstant(Color const * color) const;
     void SetViewport(float x, float y, float width, float height, float minDepth, float maxDepth) const;
     void SetScissorRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const;
     void SetVertexBuffer(uint32_t slot, Buffer buffer, uint64_t offset, uint64_t size) const;
@@ -3272,7 +3266,7 @@ public:
     void PixelLocalStorageBarrier() const;
     void End() const;
     void SetLabel(StringView label) const;
-    void SetImmediateData(uint32_t offset, void const* data, size_t size) const;
+    void SetImmediateData(uint32_t offset, void const * data, size_t size) const;
     friend ObjectBase<RenderPassEncoder, WGPURenderPassEncoder>;
     static void WGPUAddRef(WGPURenderPassEncoder handle);
     static void WGPURelease(WGPURenderPassEncoder handle);        
@@ -3284,7 +3278,7 @@ public:
     using ObjectBase::operator=;
 
     void SetPipeline(RenderPipeline pipeline) const;
-    void SetBindGroup(uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const* dynamicOffsets) const;
+    void SetBindGroup(uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const;
     void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const;
     void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) const;
     void DrawIndirect(Buffer indirectBuffer, uint64_t indirectOffset) const;
@@ -3294,9 +3288,9 @@ public:
     void PushDebugGroup(StringView groupLabel) const;
     void SetVertexBuffer(uint32_t slot, Buffer buffer, uint64_t offset, uint64_t size) const;
     void SetIndexBuffer(Buffer buffer, IndexFormat format, uint64_t offset, uint64_t size) const;
-    RenderBundle Finish(RenderBundleDescriptor const* descriptor) const;
+    RenderBundle Finish(RenderBundleDescriptor const * descriptor) const;
     void SetLabel(StringView label) const;
-    void SetImmediateData(uint32_t offset, void const* data, size_t size) const;
+    void SetImmediateData(uint32_t offset, void const * data, size_t size) const;
     friend ObjectBase<RenderBundleEncoder, WGPURenderBundleEncoder>;
     static void WGPUAddRef(WGPURenderBundleEncoder handle);
     static void WGPURelease(WGPURenderBundleEncoder handle);        
@@ -3318,12 +3312,12 @@ public:
     using ObjectBase::ObjectBase;
     using ObjectBase::operator=;
 
-    void Submit(size_t commandCount, CommandBuffer const* commands) const;
+    void Submit(size_t commandCount, CommandBuffer const * commands) const;
     Future OnSubmittedWorkDone(QueueWorkDoneCallbackInfo callbackInfo) const;
-    void WriteBuffer(Buffer buffer, uint64_t bufferOffset, void const* data, size_t size) const;
-    void WriteTexture(TexelCopyTextureInfo const* destination, void const* data, size_t dataSize, TexelCopyBufferLayout const* dataLayout, Extent3D const* writeSize) const;
-    void CopyTextureForBrowser(TexelCopyTextureInfo const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize, CopyTextureForBrowserOptions const* options) const;
-    void CopyExternalTextureForBrowser(ImageCopyExternalTexture const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize, CopyTextureForBrowserOptions const* options) const;
+    void WriteBuffer(Buffer buffer, uint64_t bufferOffset, void const * data, size_t size) const;
+    void WriteTexture(TexelCopyTextureInfo const * destination, void const * data, size_t dataSize, TexelCopyBufferLayout const * dataLayout, Extent3D const * writeSize) const;
+    void CopyTextureForBrowser(TexelCopyTextureInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const;
+    void CopyExternalTextureForBrowser(ImageCopyExternalTexture const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const;
     void SetLabel(StringView label) const;
     friend ObjectBase<Queue, WGPUQueue>;
     static void WGPUAddRef(WGPUQueue handle);
@@ -3335,11 +3329,11 @@ public:
     using ObjectBase::ObjectBase;
     using ObjectBase::operator=;
 
-    Surface CreateSurface(SurfaceDescriptor const* descriptor) const;
+    Surface CreateSurface(SurfaceDescriptor const * descriptor) const;
     void ProcessEvents() const;
     WaitStatus WaitAny(size_t futureCount, FutureWaitInfo * futures, uint64_t timeoutNS) const;
-    Future RequestAdapter(RequestAdapterOptions const* options, RequestAdapterCallbackInfo callbackInfo) const;
-    bool HasWGSLLanguageFeature(WGSLLanguageFeatureName feature) const;
+    Future RequestAdapter(RequestAdapterOptions const * options, RequestAdapterCallbackInfo callbackInfo) const;
+    Bool HasWGSLLanguageFeature(WGSLLanguageFeatureName feature) const;
     Status GetWGSLLanguageFeatures(SupportedWGSLLanguageFeatures * features) const;
     friend ObjectBase<Instance, WGPUInstance>;
     static void WGPUAddRef(WGPUInstance handle);
@@ -3353,10 +3347,10 @@ public:
 
     void SetLabel(StringView label) const;
     Status GetProperties(SharedTextureMemoryProperties * properties) const;
-    Texture CreateTexture(TextureDescriptor const* descriptor) const;
-    Status BeginAccess(Texture texture, SharedTextureMemoryBeginAccessDescriptor const* descriptor) const;
+    Texture CreateTexture(TextureDescriptor const * descriptor) const;
+    Status BeginAccess(Texture texture, SharedTextureMemoryBeginAccessDescriptor const * descriptor) const;
     Status EndAccess(Texture texture, SharedTextureMemoryEndAccessState * descriptor) const;
-    bool IsDeviceLost() const;
+    Bool IsDeviceLost() const;
     friend ObjectBase<SharedTextureMemory, WGPUSharedTextureMemory>;
     static void WGPUAddRef(WGPUSharedTextureMemory handle);
     static void WGPURelease(WGPUSharedTextureMemory handle);        
@@ -3369,10 +3363,10 @@ public:
 
     void SetLabel(StringView label) const;
     Status GetProperties(SharedBufferMemoryProperties * properties) const;
-    Buffer CreateBuffer(BufferDescriptor const* descriptor) const;
-    Status BeginAccess(Buffer buffer, SharedBufferMemoryBeginAccessDescriptor const* descriptor) const;
+    Buffer CreateBuffer(BufferDescriptor const * descriptor) const;
+    Status BeginAccess(Buffer buffer, SharedBufferMemoryBeginAccessDescriptor const * descriptor) const;
     Status EndAccess(Buffer buffer, SharedBufferMemoryEndAccessState * descriptor) const;
-    bool IsDeviceLost() const;
+    Bool IsDeviceLost() const;
     friend ObjectBase<SharedBufferMemory, WGPUSharedBufferMemory>;
     static void WGPUAddRef(WGPUSharedBufferMemory handle);
     static void WGPURelease(WGPUSharedBufferMemory handle);        
@@ -3399,13 +3393,13 @@ public:
     void PopDebugGroup() const;
     void PushDebugGroup(StringView groupLabel) const;
     void SetPipeline(ComputePipeline pipeline) const;
-    void SetBindGroup(uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const* dynamicOffsets) const;
+    void SetBindGroup(uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const;
     void WriteTimestamp(QuerySet querySet, uint32_t queryIndex) const;
     void DispatchWorkgroups(uint32_t workgroupCountX, uint32_t workgroupCountY, uint32_t workgroupCountZ) const;
     void DispatchWorkgroupsIndirect(Buffer indirectBuffer, uint64_t indirectOffset) const;
     void End() const;
     void SetLabel(StringView label) const;
-    void SetImmediateData(uint32_t offset, void const* data, size_t size) const;
+    void SetImmediateData(uint32_t offset, void const * data, size_t size) const;
     friend ObjectBase<ComputePassEncoder, WGPUComputePassEncoder>;
     static void WGPUAddRef(WGPUComputePassEncoder handle);
     static void WGPURelease(WGPUComputePassEncoder handle);        
@@ -3416,20 +3410,20 @@ public:
     using ObjectBase::ObjectBase;
     using ObjectBase::operator=;
 
-    CommandBuffer Finish(CommandBufferDescriptor const* descriptor) const;
-    ComputePassEncoder BeginComputePass(ComputePassDescriptor const* descriptor) const;
-    RenderPassEncoder BeginRenderPass(RenderPassDescriptor const* descriptor) const;
+    CommandBuffer Finish(CommandBufferDescriptor const * descriptor) const;
+    ComputePassEncoder BeginComputePass(ComputePassDescriptor const * descriptor) const;
+    RenderPassEncoder BeginRenderPass(RenderPassDescriptor const * descriptor) const;
     void CopyBufferToBuffer(Buffer source, uint64_t sourceOffset, Buffer destination, uint64_t destinationOffset, uint64_t size) const;
-    void CopyBufferToTexture(TexelCopyBufferInfo const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize) const;
-    void CopyTextureToBuffer(TexelCopyTextureInfo const* source, TexelCopyBufferInfo const* destination, Extent3D const* copySize) const;
-    void CopyTextureToTexture(TexelCopyTextureInfo const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize) const;
+    void CopyBufferToTexture(TexelCopyBufferInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize) const;
+    void CopyTextureToBuffer(TexelCopyTextureInfo const * source, TexelCopyBufferInfo const * destination, Extent3D const * copySize) const;
+    void CopyTextureToTexture(TexelCopyTextureInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize) const;
     void ClearBuffer(Buffer buffer, uint64_t offset, uint64_t size) const;
     void InjectValidationError(StringView message) const;
     void InsertDebugMarker(StringView markerLabel) const;
     void PopDebugGroup() const;
     void PushDebugGroup(StringView groupLabel) const;
     void ResolveQuerySet(QuerySet querySet, uint32_t firstQuery, uint32_t queryCount, Buffer destination, uint64_t destinationOffset) const;
-    void WriteBuffer(Buffer buffer, uint64_t bufferOffset, uint8_t const* data, uint64_t size) const;
+    void WriteBuffer(Buffer buffer, uint64_t bufferOffset, uint8_t const * data, uint64_t size) const;
     void WriteTimestamp(QuerySet querySet, uint32_t queryIndex) const;
     void SetLabel(StringView label) const;
     friend ObjectBase<CommandEncoder, WGPUCommandEncoder>;
@@ -3467,17 +3461,17 @@ public:
     Instance GetInstance() const;
     Status GetLimits(Limits * limits) const;
     Status GetInfo(AdapterInfo * info) const;
-    bool HasFeature(FeatureName feature) const;
+    Bool HasFeature(FeatureName feature) const;
     void GetFeatures(SupportedFeatures * features) const;
-    Future RequestDevice(DeviceDescriptor const* options, RequestDeviceCallbackInfo callbackInfo) const;
-    Device CreateDevice(DeviceDescriptor const* descriptor) const;
+    Future RequestDevice(DeviceDescriptor const * options, RequestDeviceCallbackInfo callbackInfo) const;
+    Device CreateDevice(DeviceDescriptor const * descriptor) const;
     Status GetFormatCapabilities(TextureFormat format, DawnFormatCapabilities * capabilities) const;
     friend ObjectBase<Adapter, WGPUAdapter>;
     static void WGPUAddRef(WGPUAdapter handle);
     static void WGPURelease(WGPUAdapter handle);        
 };
 
-Instance CreateInstance(InstanceDescriptor const* descriptor);
+Instance CreateInstance(InstanceDescriptor const * descriptor);
 Status GetInstanceCapabilities(InstanceCapabilities * capabilities);
 
 

@@ -65,11 +65,11 @@ class StructureTypeHppRenderer(StructureTypeRenderer):
                 elif member.name.canonical_case() == "storage texture":
                     forced_default_value = "{ nullptr, StorageTextureAccess::BindingNotUsed, TextureFormat::Undefined, TextureViewDimension::e2D }"
 
-            cppType = self.as_annotated_cppMember(member, node.has_free_members_function)
+            annotated_member = self.as_annotated_cppMember(member, node.has_free_members_function)
             #logger.debug(f"cppType: {cppType}")
             default_value = self.render_cpp_default_value(member, True, node.has_free_members_function, forced_default_value)
             #logger.debug(f"default_value: {default_value}")
-            member_declaration = f"{cppType}{default_value}"
+            member_declaration = f"{annotated_member}{default_value}"
 
             if node.chained and i == 1:
                 self.out(f"static constexpr size_t kFirstMemberAlignment = detail::ConstexprMax(alignof(ChainedStruct{Out}), alignof({self.decorate_member('', self.as_cppType(member_type.name), member)}));")

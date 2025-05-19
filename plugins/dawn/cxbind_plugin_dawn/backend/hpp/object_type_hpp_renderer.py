@@ -15,40 +15,18 @@ class ObjectTypeHppRenderer(ObjectTypeRenderer):
             if self.exclude_method(self.node, method):
                 continue
             method_name = method.name.CamelCase()
-            return_type = None
-            if method.return_type:
-                return_name = method.return_type.name
-                if return_name.native:
-                    return_type = return_name.get()
-                else:
-                    return_type = return_name.CamelCase()
-            else:
-                return_type = 'void'
-            args = method.args or []
+
+            return_type = method.return_type
+            return_type_name = self.as_cppType(return_type.name)
 
             arg_list = []
-            arg_type_list = []
-            for arg in args:
-                arg_type_name = arg.type.name
-                if arg_type_name.native:
-                    arg_type = arg_type_name.get()
-                else:
-                    arg_type = arg_type_name.CamelCase()
 
-                arg_annotation = arg.annotation
-
-                arg_name = arg.name.camelCase()
-                
-                if arg_annotation:
-                    arg_list.append(f'{arg_type} {arg_annotation} {arg_name}')
-                    arg_type_list.append(f'{arg_type} {arg_annotation}')
-                else:
-                    arg_list.append(f'{arg_type} {arg_name}')
-                    arg_type_list.append(f'{arg_type}')
+            for arg in method.args:
+                arg_list.append(self.as_annotated_cppMember(arg))
 
             arg_str = ', '.join(arg_list)
 
-            self.out / f"{return_type} {method_name}({arg_str if arg_list else ''}) const;" << "\n"
+            self.out / f"{return_type_name} {method_name}({arg_str if arg_list else ''}) const;" << "\n"
 
         self.out(f"""\
         friend ObjectBase<{class_name}, WGPU{class_name}>;

@@ -18,9 +18,8 @@ class BitmaskTypeHppRenderer(BitmaskTypeRenderer):
         self.out << "};\n"
 
         self.out(f"""
-template<>
-struct IsWGPUBitmask<pywgpu::{enum_name}> {{
-    static constexpr bool enable = true;
-}};
-
-""")
+        template<>
+        struct IsWGPUBitmask<pywgpu::{enum_name}> {{
+            static constexpr bool enable = true;
+        }};
+        """)

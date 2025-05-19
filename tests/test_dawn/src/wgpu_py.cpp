@@ -1768,7 +1768,7 @@ _INTERNAL_HAVE_EMDAWNWEBGPU_HEADER
         
         if (kwargs.contains("unused"))
         {
-            auto value = kwargs["unused"].cast<pywgpu::Bool>();
+            auto value = kwargs["unused"].cast<Bool>();
             obj.unused = value;
         }
         return obj;
@@ -1807,32 +1807,32 @@ _RequestAdapterOptions
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("feature_level"))
         {
-            auto value = kwargs["feature_level"].cast<pywgpu::FeatureLevel>();
+            auto value = kwargs["feature_level"].cast<FeatureLevel>();
             obj.featureLevel = value;
         }
         if (kwargs.contains("power_preference"))
         {
-            auto value = kwargs["power_preference"].cast<pywgpu::PowerPreference>();
+            auto value = kwargs["power_preference"].cast<PowerPreference>();
             obj.powerPreference = value;
         }
         if (kwargs.contains("force_fallback_adapter"))
         {
-            auto value = kwargs["force_fallback_adapter"].cast<pywgpu::Bool>();
+            auto value = kwargs["force_fallback_adapter"].cast<Bool>();
             obj.forceFallbackAdapter = value;
         }
         if (kwargs.contains("backend_type"))
         {
-            auto value = kwargs["backend_type"].cast<pywgpu::BackendType>();
+            auto value = kwargs["backend_type"].cast<BackendType>();
             obj.backendType = value;
         }
         if (kwargs.contains("compatible_surface"))
         {
-            auto value = kwargs["compatible_surface"].cast<pywgpu::Surface>();
+            auto value = kwargs["compatible_surface"].cast<Surface>();
             obj.compatibleSurface = value;
         }
         return obj;
@@ -1891,41 +1891,41 @@ _DeviceDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("required_features"))
         {
-            auto _value = kwargs["required_features"].cast<std::vector<pywgpu::FeatureName>>();
+            auto _value = kwargs["required_features"].cast<std::vector<FeatureName>>();
             auto count = _value.size();
-            auto value = new pywgpu::FeatureName[count];
+            auto value = new FeatureName[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.requiredFeatures = value;
             obj.requiredFeatureCount = count;
         }
         if (kwargs.contains("required_limits"))
         {
-            auto value = kwargs["required_limits"].cast<pywgpu::Limits const *>();
+            auto value = kwargs["required_limits"].cast<Limits const *>();
             obj.requiredLimits = value;
         }
         if (kwargs.contains("default_queue"))
         {
-            auto value = kwargs["default_queue"].cast<pywgpu::QueueDescriptor>();
+            auto value = kwargs["default_queue"].cast<QueueDescriptor>();
             obj.defaultQueue = value;
         }
         if (kwargs.contains("device_lost_callback_info"))
         {
-            auto value = kwargs["device_lost_callback_info"].cast<pywgpu::DeviceLostCallbackInfo>();
+            auto value = kwargs["device_lost_callback_info"].cast<DeviceLostCallbackInfo>();
             obj.deviceLostCallbackInfo = value;
         }
         if (kwargs.contains("uncaptured_error_callback_info"))
         {
-            auto value = kwargs["uncaptured_error_callback_info"].cast<pywgpu::UncapturedErrorCallbackInfo>();
+            auto value = kwargs["uncaptured_error_callback_info"].cast<UncapturedErrorCallbackInfo>();
             obj.uncapturedErrorCallbackInfo = value;
         }
         return obj;
@@ -1961,7 +1961,7 @@ _DawnTogglesDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         return obj;
@@ -1997,12 +1997,12 @@ _DawnCacheDeviceDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("isolation_key"))
         {
-            auto value = kwargs["isolation_key"].cast<pywgpu::StringView>();
+            auto value = kwargs["isolation_key"].cast<StringView>();
             obj.isolationKey = value;
         }
         if (kwargs.contains("function_userdata"))
@@ -2042,7 +2042,7 @@ _DawnWGSLBlocklist
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         return obj;
@@ -2082,7 +2082,7 @@ _BindGroupEntry
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("binding"))
@@ -2092,7 +2092,7 @@ _BindGroupEntry
         }
         if (kwargs.contains("buffer"))
         {
-            auto value = kwargs["buffer"].cast<pywgpu::Buffer>();
+            auto value = kwargs["buffer"].cast<Buffer>();
             obj.buffer = value;
         }
         if (kwargs.contains("offset"))
@@ -2107,12 +2107,12 @@ _BindGroupEntry
         }
         if (kwargs.contains("sampler"))
         {
-            auto value = kwargs["sampler"].cast<pywgpu::Sampler>();
+            auto value = kwargs["sampler"].cast<Sampler>();
             obj.sampler = value;
         }
         if (kwargs.contains("texture_view"))
         {
-            auto value = kwargs["texture_view"].cast<pywgpu::TextureView>();
+            auto value = kwargs["texture_view"].cast<TextureView>();
             obj.textureView = value;
         }
         return obj;
@@ -2150,24 +2150,24 @@ _BindGroupDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("layout"))
         {
-            auto value = kwargs["layout"].cast<pywgpu::BindGroupLayout>();
+            auto value = kwargs["layout"].cast<BindGroupLayout>();
             obj.layout = value;
         }
         if (kwargs.contains("entries"))
         {
-            auto _value = kwargs["entries"].cast<std::vector<pywgpu::BindGroupEntry>>();
+            auto _value = kwargs["entries"].cast<std::vector<BindGroupEntry>>();
             auto count = _value.size();
-            auto value = new pywgpu::BindGroupEntry[count];
+            auto value = new BindGroupEntry[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.entries = value;
             obj.entryCount = count;
@@ -2206,17 +2206,17 @@ _BufferBindingLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("type"))
         {
-            auto value = kwargs["type"].cast<pywgpu::BufferBindingType>();
+            auto value = kwargs["type"].cast<BufferBindingType>();
             obj.type = value;
         }
         if (kwargs.contains("has_dynamic_offset"))
         {
-            auto value = kwargs["has_dynamic_offset"].cast<pywgpu::Bool>();
+            auto value = kwargs["has_dynamic_offset"].cast<Bool>();
             obj.hasDynamicOffset = value;
         }
         if (kwargs.contains("min_binding_size"))
@@ -2256,12 +2256,12 @@ _SamplerBindingLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("type"))
         {
-            auto value = kwargs["type"].cast<pywgpu::SamplerBindingType>();
+            auto value = kwargs["type"].cast<SamplerBindingType>();
             obj.type = value;
         }
         return obj;
@@ -2297,12 +2297,12 @@ _StaticSamplerBindingLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("sampler"))
         {
-            auto value = kwargs["sampler"].cast<pywgpu::Sampler>();
+            auto value = kwargs["sampler"].cast<Sampler>();
             obj.sampler = value;
         }
         if (kwargs.contains("sampled_texture_binding"))
@@ -2344,22 +2344,22 @@ _TextureBindingLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("sample_type"))
         {
-            auto value = kwargs["sample_type"].cast<pywgpu::TextureSampleType>();
+            auto value = kwargs["sample_type"].cast<TextureSampleType>();
             obj.sampleType = value;
         }
         if (kwargs.contains("view_dimension"))
         {
-            auto value = kwargs["view_dimension"].cast<pywgpu::TextureViewDimension>();
+            auto value = kwargs["view_dimension"].cast<TextureViewDimension>();
             obj.viewDimension = value;
         }
         if (kwargs.contains("multisampled"))
         {
-            auto value = kwargs["multisampled"].cast<pywgpu::Bool>();
+            auto value = kwargs["multisampled"].cast<Bool>();
             obj.multisampled = value;
         }
         return obj;
@@ -2417,22 +2417,22 @@ _SurfaceConfiguration
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("device"))
         {
-            auto value = kwargs["device"].cast<pywgpu::Device>();
+            auto value = kwargs["device"].cast<Device>();
             obj.device = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         if (kwargs.contains("usage"))
         {
-            auto value = kwargs["usage"].cast<pywgpu::TextureUsage>();
+            auto value = kwargs["usage"].cast<TextureUsage>();
             obj.usage = value;
         }
         if (kwargs.contains("width"))
@@ -2447,21 +2447,21 @@ _SurfaceConfiguration
         }
         if (kwargs.contains("view_formats"))
         {
-            auto _value = kwargs["view_formats"].cast<std::vector<pywgpu::TextureFormat>>();
+            auto _value = kwargs["view_formats"].cast<std::vector<TextureFormat>>();
             auto count = _value.size();
-            auto value = new pywgpu::TextureFormat[count];
+            auto value = new TextureFormat[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.viewFormats = value;
             obj.viewFormatCount = count;
         }
         if (kwargs.contains("alpha_mode"))
         {
-            auto value = kwargs["alpha_mode"].cast<pywgpu::CompositeAlphaMode>();
+            auto value = kwargs["alpha_mode"].cast<CompositeAlphaMode>();
             obj.alphaMode = value;
         }
         if (kwargs.contains("present_mode"))
         {
-            auto value = kwargs["present_mode"].cast<pywgpu::PresentMode>();
+            auto value = kwargs["present_mode"].cast<PresentMode>();
             obj.presentMode = value;
         }
         return obj;
@@ -2496,12 +2496,12 @@ _ExternalTextureBindingEntry
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("external_texture"))
         {
-            auto value = kwargs["external_texture"].cast<pywgpu::ExternalTexture>();
+            auto value = kwargs["external_texture"].cast<ExternalTexture>();
             obj.externalTexture = value;
         }
         return obj;
@@ -2535,7 +2535,7 @@ _ExternalTextureBindingLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         return obj;
@@ -2572,22 +2572,22 @@ _StorageTextureBindingLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("access"))
         {
-            auto value = kwargs["access"].cast<pywgpu::StorageTextureAccess>();
+            auto value = kwargs["access"].cast<StorageTextureAccess>();
             obj.access = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         if (kwargs.contains("view_dimension"))
         {
-            auto value = kwargs["view_dimension"].cast<pywgpu::TextureViewDimension>();
+            auto value = kwargs["view_dimension"].cast<TextureViewDimension>();
             obj.viewDimension = value;
         }
         return obj;
@@ -2627,7 +2627,7 @@ _BindGroupLayoutEntry
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("binding"))
@@ -2637,27 +2637,27 @@ _BindGroupLayoutEntry
         }
         if (kwargs.contains("visibility"))
         {
-            auto value = kwargs["visibility"].cast<pywgpu::ShaderStage>();
+            auto value = kwargs["visibility"].cast<ShaderStage>();
             obj.visibility = value;
         }
         if (kwargs.contains("buffer"))
         {
-            auto value = kwargs["buffer"].cast<pywgpu::BufferBindingLayout>();
+            auto value = kwargs["buffer"].cast<BufferBindingLayout>();
             obj.buffer = value;
         }
         if (kwargs.contains("sampler"))
         {
-            auto value = kwargs["sampler"].cast<pywgpu::SamplerBindingLayout>();
+            auto value = kwargs["sampler"].cast<SamplerBindingLayout>();
             obj.sampler = value;
         }
         if (kwargs.contains("texture"))
         {
-            auto value = kwargs["texture"].cast<pywgpu::TextureBindingLayout>();
+            auto value = kwargs["texture"].cast<TextureBindingLayout>();
             obj.texture = value;
         }
         if (kwargs.contains("storage_texture"))
         {
-            auto value = kwargs["storage_texture"].cast<pywgpu::StorageTextureBindingLayout>();
+            auto value = kwargs["storage_texture"].cast<StorageTextureBindingLayout>();
             obj.storageTexture = value;
         }
         return obj;
@@ -2694,19 +2694,19 @@ _BindGroupLayoutDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("entries"))
         {
-            auto _value = kwargs["entries"].cast<std::vector<pywgpu::BindGroupLayoutEntry>>();
+            auto _value = kwargs["entries"].cast<std::vector<BindGroupLayoutEntry>>();
             auto count = _value.size();
-            auto value = new pywgpu::BindGroupLayoutEntry[count];
+            auto value = new BindGroupLayoutEntry[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.entries = value;
             obj.entryCount = count;
@@ -2744,17 +2744,17 @@ _BlendComponent
         
         if (kwargs.contains("operation"))
         {
-            auto value = kwargs["operation"].cast<pywgpu::BlendOperation>();
+            auto value = kwargs["operation"].cast<BlendOperation>();
             obj.operation = value;
         }
         if (kwargs.contains("src_factor"))
         {
-            auto value = kwargs["src_factor"].cast<pywgpu::BlendFactor>();
+            auto value = kwargs["src_factor"].cast<BlendFactor>();
             obj.srcFactor = value;
         }
         if (kwargs.contains("dst_factor"))
         {
-            auto value = kwargs["dst_factor"].cast<pywgpu::BlendFactor>();
+            auto value = kwargs["dst_factor"].cast<BlendFactor>();
             obj.dstFactor = value;
         }
         return obj;
@@ -2792,17 +2792,17 @@ _BufferDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("usage"))
         {
-            auto value = kwargs["usage"].cast<pywgpu::BufferUsage>();
+            auto value = kwargs["usage"].cast<BufferUsage>();
             obj.usage = value;
         }
         if (kwargs.contains("size"))
@@ -2812,7 +2812,7 @@ _BufferDescriptor
         }
         if (kwargs.contains("mapped_at_creation"))
         {
-            auto value = kwargs["mapped_at_creation"].cast<pywgpu::Bool>();
+            auto value = kwargs["mapped_at_creation"].cast<Bool>();
             obj.mappedAtCreation = value;
         }
         return obj;
@@ -2848,7 +2848,7 @@ _BufferHostMappedPointer
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("pointer"))
@@ -2946,12 +2946,12 @@ _ConstantEntry
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("key"))
         {
-            auto value = kwargs["key"].cast<pywgpu::StringView>();
+            auto value = kwargs["key"].cast<StringView>();
             obj.key = value;
         }
         if (kwargs.contains("value"))
@@ -2991,12 +2991,12 @@ _CommandBufferDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -3031,12 +3031,12 @@ _CommandEncoderDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -3072,14 +3072,14 @@ _CompilationInfo
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("messages"))
         {
-            auto _value = kwargs["messages"].cast<std::vector<pywgpu::CompilationMessage>>();
+            auto _value = kwargs["messages"].cast<std::vector<CompilationMessage>>();
             auto count = _value.size();
-            auto value = new pywgpu::CompilationMessage[count];
+            auto value = new CompilationMessage[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.messages = value;
             obj.messageCount = count;
@@ -3121,17 +3121,17 @@ _CompilationMessage
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("message"))
         {
-            auto value = kwargs["message"].cast<pywgpu::StringView>();
+            auto value = kwargs["message"].cast<StringView>();
             obj.message = value;
         }
         if (kwargs.contains("type"))
         {
-            auto value = kwargs["type"].cast<pywgpu::CompilationMessageType>();
+            auto value = kwargs["type"].cast<CompilationMessageType>();
             obj.type = value;
         }
         if (kwargs.contains("line_num"))
@@ -3188,7 +3188,7 @@ _DawnCompilationMessageUtf16
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("line_pos"))
@@ -3239,17 +3239,17 @@ _ComputePassDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("timestamp_writes"))
         {
-            auto value = kwargs["timestamp_writes"].cast<pywgpu::PassTimestampWrites const *>();
+            auto value = kwargs["timestamp_writes"].cast<PassTimestampWrites const *>();
             obj.timestampWrites = value;
         }
         return obj;
@@ -3286,22 +3286,22 @@ _ComputePipelineDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("layout"))
         {
-            auto value = kwargs["layout"].cast<pywgpu::PipelineLayout>();
+            auto value = kwargs["layout"].cast<PipelineLayout>();
             obj.layout = value;
         }
         if (kwargs.contains("compute"))
         {
-            auto value = kwargs["compute"].cast<pywgpu::ComputeState>();
+            auto value = kwargs["compute"].cast<ComputeState>();
             obj.compute = value;
         }
         return obj;
@@ -3343,22 +3343,22 @@ _CopyTextureForBrowserOptions
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("flip_y"))
         {
-            auto value = kwargs["flip_y"].cast<pywgpu::Bool>();
+            auto value = kwargs["flip_y"].cast<Bool>();
             obj.flipY = value;
         }
         if (kwargs.contains("needs_color_space_conversion"))
         {
-            auto value = kwargs["needs_color_space_conversion"].cast<pywgpu::Bool>();
+            auto value = kwargs["needs_color_space_conversion"].cast<Bool>();
             obj.needsColorSpaceConversion = value;
         }
         if (kwargs.contains("src_alpha_mode"))
         {
-            auto value = kwargs["src_alpha_mode"].cast<pywgpu::AlphaMode>();
+            auto value = kwargs["src_alpha_mode"].cast<AlphaMode>();
             obj.srcAlphaMode = value;
         }
         if (kwargs.contains("src_transfer_function_parameters"))
@@ -3387,12 +3387,12 @@ _CopyTextureForBrowserOptions
         }
         if (kwargs.contains("dst_alpha_mode"))
         {
-            auto value = kwargs["dst_alpha_mode"].cast<pywgpu::AlphaMode>();
+            auto value = kwargs["dst_alpha_mode"].cast<AlphaMode>();
             obj.dstAlphaMode = value;
         }
         if (kwargs.contains("internal_usage"))
         {
-            auto value = kwargs["internal_usage"].cast<pywgpu::Bool>();
+            auto value = kwargs["internal_usage"].cast<Bool>();
             obj.internalUsage = value;
         }
         return obj;
@@ -3426,7 +3426,7 @@ _AHardwareBufferProperties
         
         if (kwargs.contains("y_cb_cr_info"))
         {
-            auto value = kwargs["y_cb_cr_info"].cast<pywgpu::YCbCrVkDescriptor>();
+            auto value = kwargs["y_cb_cr_info"].cast<YCbCrVkDescriptor>();
             obj.yCbCrInfo = value;
         }
         return obj;
@@ -3532,9 +3532,9 @@ _SupportedFeatures
         
         if (kwargs.contains("features"))
         {
-            auto _value = kwargs["features"].cast<std::vector<pywgpu::FeatureName>>();
+            auto _value = kwargs["features"].cast<std::vector<FeatureName>>();
             auto count = _value.size();
-            auto value = new pywgpu::FeatureName[count];
+            auto value = new FeatureName[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.features = value;
             obj.featureCount = count;
@@ -3571,9 +3571,9 @@ _SupportedWGSLLanguageFeatures
         
         if (kwargs.contains("features"))
         {
-            auto _value = kwargs["features"].cast<std::vector<pywgpu::WGSLLanguageFeatureName>>();
+            auto _value = kwargs["features"].cast<std::vector<WGSLLanguageFeatureName>>();
             auto count = _value.size();
-            auto value = new pywgpu::WGSLLanguageFeatureName[count];
+            auto value = new WGSLLanguageFeatureName[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.features = value;
             obj.featureCount = count;
@@ -3708,42 +3708,42 @@ _ExternalTextureDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("plane_0"))
         {
-            auto value = kwargs["plane_0"].cast<pywgpu::TextureView>();
+            auto value = kwargs["plane_0"].cast<TextureView>();
             obj.plane0 = value;
         }
         if (kwargs.contains("plane_1"))
         {
-            auto value = kwargs["plane_1"].cast<pywgpu::TextureView>();
+            auto value = kwargs["plane_1"].cast<TextureView>();
             obj.plane1 = value;
         }
         if (kwargs.contains("crop_origin"))
         {
-            auto value = kwargs["crop_origin"].cast<pywgpu::Origin2D>();
+            auto value = kwargs["crop_origin"].cast<Origin2D>();
             obj.cropOrigin = value;
         }
         if (kwargs.contains("crop_size"))
         {
-            auto value = kwargs["crop_size"].cast<pywgpu::Extent2D>();
+            auto value = kwargs["crop_size"].cast<Extent2D>();
             obj.cropSize = value;
         }
         if (kwargs.contains("apparent_size"))
         {
-            auto value = kwargs["apparent_size"].cast<pywgpu::Extent2D>();
+            auto value = kwargs["apparent_size"].cast<Extent2D>();
             obj.apparentSize = value;
         }
         if (kwargs.contains("do_yuv_to_rgb_conversion_only"))
         {
-            auto value = kwargs["do_yuv_to_rgb_conversion_only"].cast<pywgpu::Bool>();
+            auto value = kwargs["do_yuv_to_rgb_conversion_only"].cast<Bool>();
             obj.doYuvToRgbConversionOnly = value;
         }
         if (kwargs.contains("yuv_to_rgb_conversion_matrix"))
@@ -3780,12 +3780,12 @@ _ExternalTextureDescriptor
         }
         if (kwargs.contains("mirrored"))
         {
-            auto value = kwargs["mirrored"].cast<pywgpu::Bool>();
+            auto value = kwargs["mirrored"].cast<Bool>();
             obj.mirrored = value;
         }
         if (kwargs.contains("rotation"))
         {
-            auto value = kwargs["rotation"].cast<pywgpu::ExternalTextureRotation>();
+            auto value = kwargs["rotation"].cast<ExternalTextureRotation>();
             obj.rotation = value;
         }
         return obj;
@@ -3830,12 +3830,12 @@ _SharedBufferMemoryDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -3890,12 +3890,12 @@ _SharedTextureMemoryDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -3933,19 +3933,19 @@ _SharedBufferMemoryBeginAccessDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("initialized"))
         {
-            auto value = kwargs["initialized"].cast<pywgpu::Bool>();
+            auto value = kwargs["initialized"].cast<Bool>();
             obj.initialized = value;
         }
         if (kwargs.contains("fences"))
         {
-            auto _value = kwargs["fences"].cast<std::vector<pywgpu::SharedFence>>();
+            auto _value = kwargs["fences"].cast<std::vector<SharedFence>>();
             auto count = _value.size();
-            auto value = new pywgpu::SharedFence[count];
+            auto value = new SharedFence[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.fences = value;
             obj.fenceCount = count;
@@ -4003,12 +4003,12 @@ _SharedTextureMemoryVkDedicatedAllocationDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("dedicated_allocation"))
         {
-            auto value = kwargs["dedicated_allocation"].cast<pywgpu::Bool>();
+            auto value = kwargs["dedicated_allocation"].cast<Bool>();
             obj.dedicatedAllocation = value;
         }
         return obj;
@@ -4044,7 +4044,7 @@ _SharedTextureMemoryAHardwareBufferDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("handle"))
@@ -4054,7 +4054,7 @@ _SharedTextureMemoryAHardwareBufferDescriptor
         }
         if (kwargs.contains("use_external_format"))
         {
-            auto value = kwargs["use_external_format"].cast<pywgpu::Bool>();
+            auto value = kwargs["use_external_format"].cast<Bool>();
             obj.useExternalFormat = value;
         }
         return obj;
@@ -4139,12 +4139,12 @@ _SharedTextureMemoryDmaBufDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("size"))
         {
-            auto value = kwargs["size"].cast<pywgpu::Extent3D>();
+            auto value = kwargs["size"].cast<Extent3D>();
             obj.size = value;
         }
         if (kwargs.contains("drm_format"))
@@ -4159,9 +4159,9 @@ _SharedTextureMemoryDmaBufDescriptor
         }
         if (kwargs.contains("planes"))
         {
-            auto _value = kwargs["planes"].cast<std::vector<pywgpu::SharedTextureMemoryDmaBufPlane>>();
+            auto _value = kwargs["planes"].cast<std::vector<SharedTextureMemoryDmaBufPlane>>();
             auto count = _value.size();
-            auto value = new pywgpu::SharedTextureMemoryDmaBufPlane[count];
+            auto value = new SharedTextureMemoryDmaBufPlane[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.planes = value;
             obj.planeCount = count;
@@ -4202,7 +4202,7 @@ _SharedTextureMemoryOpaqueFDDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("vk_image_create_info"))
@@ -4227,7 +4227,7 @@ _SharedTextureMemoryOpaqueFDDescriptor
         }
         if (kwargs.contains("dedicated_allocation"))
         {
-            auto value = kwargs["dedicated_allocation"].cast<pywgpu::Bool>();
+            auto value = kwargs["dedicated_allocation"].cast<Bool>();
             obj.dedicatedAllocation = value;
         }
         return obj;
@@ -4263,7 +4263,7 @@ _SharedTextureMemoryZirconHandleDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("memory_FD"))
@@ -4309,7 +4309,7 @@ _SharedTextureMemoryDXGISharedHandleDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("handle"))
@@ -4319,7 +4319,7 @@ _SharedTextureMemoryDXGISharedHandleDescriptor
         }
         if (kwargs.contains("use_keyed_mutex"))
         {
-            auto value = kwargs["use_keyed_mutex"].cast<pywgpu::Bool>();
+            auto value = kwargs["use_keyed_mutex"].cast<Bool>();
             obj.useKeyedMutex = value;
         }
         return obj;
@@ -4355,7 +4355,7 @@ _SharedTextureMemoryIOSurfaceDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("io_surface"))
@@ -4365,7 +4365,7 @@ _SharedTextureMemoryIOSurfaceDescriptor
         }
         if (kwargs.contains("allow_storage_binding"))
         {
-            auto value = kwargs["allow_storage_binding"].cast<pywgpu::Bool>();
+            auto value = kwargs["allow_storage_binding"].cast<Bool>();
             obj.allowStorageBinding = value;
         }
         return obj;
@@ -4400,7 +4400,7 @@ _SharedTextureMemoryEGLImageDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("image"))
@@ -4444,24 +4444,24 @@ _SharedTextureMemoryBeginAccessDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("concurrent_read"))
         {
-            auto value = kwargs["concurrent_read"].cast<pywgpu::Bool>();
+            auto value = kwargs["concurrent_read"].cast<Bool>();
             obj.concurrentRead = value;
         }
         if (kwargs.contains("initialized"))
         {
-            auto value = kwargs["initialized"].cast<pywgpu::Bool>();
+            auto value = kwargs["initialized"].cast<Bool>();
             obj.initialized = value;
         }
         if (kwargs.contains("fences"))
         {
-            auto _value = kwargs["fences"].cast<std::vector<pywgpu::SharedFence>>();
+            auto _value = kwargs["fences"].cast<std::vector<SharedFence>>();
             auto count = _value.size();
-            auto value = new pywgpu::SharedFence[count];
+            auto value = new SharedFence[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.fences = value;
             obj.fenceCount = count;
@@ -4520,7 +4520,7 @@ _SharedTextureMemoryVkImageLayoutBeginState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("old_layout"))
@@ -4575,12 +4575,12 @@ _SharedTextureMemoryD3DSwapchainBeginState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("is_swapchain"))
         {
-            auto value = kwargs["is_swapchain"].cast<pywgpu::Bool>();
+            auto value = kwargs["is_swapchain"].cast<Bool>();
             obj.isSwapchain = value;
         }
         return obj;
@@ -4615,12 +4615,12 @@ _SharedFenceDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -4655,7 +4655,7 @@ _SharedFenceVkSemaphoreOpaqueFDDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("handle"))
@@ -4695,7 +4695,7 @@ _SharedFenceSyncFDDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("handle"))
@@ -4735,7 +4735,7 @@ _SharedFenceVkSemaphoreZirconHandleDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("handle"))
@@ -4775,7 +4775,7 @@ _SharedFenceDXGISharedHandleDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("handle"))
@@ -4815,7 +4815,7 @@ _SharedFenceMTLSharedEventDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("shared_event"))
@@ -4855,7 +4855,7 @@ _SharedFenceEGLSyncDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("sync"))
@@ -4897,22 +4897,22 @@ _DawnFakeBufferOOMForTesting
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("fake_OOM_at_wire_client_map"))
         {
-            auto value = kwargs["fake_OOM_at_wire_client_map"].cast<pywgpu::Bool>();
+            auto value = kwargs["fake_OOM_at_wire_client_map"].cast<Bool>();
             obj.fakeOOMAtWireClientMap = value;
         }
         if (kwargs.contains("fake_OOM_at_native_map"))
         {
-            auto value = kwargs["fake_OOM_at_native_map"].cast<pywgpu::Bool>();
+            auto value = kwargs["fake_OOM_at_native_map"].cast<Bool>();
             obj.fakeOOMAtNativeMap = value;
         }
         if (kwargs.contains("fake_OOM_at_device"))
         {
-            auto value = kwargs["fake_OOM_at_device"].cast<pywgpu::Bool>();
+            auto value = kwargs["fake_OOM_at_device"].cast<Bool>();
             obj.fakeOOMAtDevice = value;
         }
         return obj;
@@ -5068,12 +5068,12 @@ _TexelCopyBufferInfo
         
         if (kwargs.contains("layout"))
         {
-            auto value = kwargs["layout"].cast<pywgpu::TexelCopyBufferLayout>();
+            auto value = kwargs["layout"].cast<TexelCopyBufferLayout>();
             obj.layout = value;
         }
         if (kwargs.contains("buffer"))
         {
-            auto value = kwargs["buffer"].cast<pywgpu::Buffer>();
+            auto value = kwargs["buffer"].cast<Buffer>();
             obj.buffer = value;
         }
         return obj;
@@ -5156,7 +5156,7 @@ _TexelCopyTextureInfo
         
         if (kwargs.contains("texture"))
         {
-            auto value = kwargs["texture"].cast<pywgpu::Texture>();
+            auto value = kwargs["texture"].cast<Texture>();
             obj.texture = value;
         }
         if (kwargs.contains("mip_level"))
@@ -5166,12 +5166,12 @@ _TexelCopyTextureInfo
         }
         if (kwargs.contains("origin"))
         {
-            auto value = kwargs["origin"].cast<pywgpu::Origin3D>();
+            auto value = kwargs["origin"].cast<Origin3D>();
             obj.origin = value;
         }
         if (kwargs.contains("aspect"))
         {
-            auto value = kwargs["aspect"].cast<pywgpu::TextureAspect>();
+            auto value = kwargs["aspect"].cast<TextureAspect>();
             obj.aspect = value;
         }
         return obj;
@@ -5208,22 +5208,22 @@ _ImageCopyExternalTexture
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("external_texture"))
         {
-            auto value = kwargs["external_texture"].cast<pywgpu::ExternalTexture>();
+            auto value = kwargs["external_texture"].cast<ExternalTexture>();
             obj.externalTexture = value;
         }
         if (kwargs.contains("origin"))
         {
-            auto value = kwargs["origin"].cast<pywgpu::Origin3D>();
+            auto value = kwargs["origin"].cast<Origin3D>();
             obj.origin = value;
         }
         if (kwargs.contains("natural_size"))
         {
-            auto value = kwargs["natural_size"].cast<pywgpu::Extent2D>();
+            auto value = kwargs["natural_size"].cast<Extent2D>();
             obj.naturalSize = value;
         }
         return obj;
@@ -5292,12 +5292,12 @@ _FutureWaitInfo
         
         if (kwargs.contains("future"))
         {
-            auto value = kwargs["future"].cast<pywgpu::Future>();
+            auto value = kwargs["future"].cast<Future>();
             obj.future = value;
         }
         if (kwargs.contains("completed"))
         {
-            auto value = kwargs["completed"].cast<pywgpu::Bool>();
+            auto value = kwargs["completed"].cast<Bool>();
             obj.completed = value;
         }
         return obj;
@@ -5333,12 +5333,12 @@ _InstanceCapabilities
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStructOut *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStructOut *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("timed_wait_any_enable"))
         {
-            auto value = kwargs["timed_wait_any_enable"].cast<pywgpu::Bool>();
+            auto value = kwargs["timed_wait_any_enable"].cast<Bool>();
             obj.timedWaitAnyEnable = value;
         }
         if (kwargs.contains("timed_wait_any_max_count"))
@@ -5378,12 +5378,12 @@ _InstanceDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("capabilities"))
         {
-            auto value = kwargs["capabilities"].cast<pywgpu::InstanceCapabilities>();
+            auto value = kwargs["capabilities"].cast<InstanceCapabilities>();
             obj.capabilities = value;
         }
         return obj;
@@ -5420,22 +5420,22 @@ _DawnWireWGSLControl
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("enable_experimental"))
         {
-            auto value = kwargs["enable_experimental"].cast<pywgpu::Bool>();
+            auto value = kwargs["enable_experimental"].cast<Bool>();
             obj.enableExperimental = value;
         }
         if (kwargs.contains("enable_unsafe"))
         {
-            auto value = kwargs["enable_unsafe"].cast<pywgpu::Bool>();
+            auto value = kwargs["enable_unsafe"].cast<Bool>();
             obj.enableUnsafe = value;
         }
         if (kwargs.contains("enable_testing"))
         {
-            auto value = kwargs["enable_testing"].cast<pywgpu::Bool>();
+            auto value = kwargs["enable_testing"].cast<Bool>();
             obj.enableTesting = value;
         }
         return obj;
@@ -5470,12 +5470,12 @@ _DawnInjectedInvalidSType
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("invalid_s_type"))
         {
-            auto value = kwargs["invalid_s_type"].cast<pywgpu::SType>();
+            auto value = kwargs["invalid_s_type"].cast<SType>();
             obj.invalidSType = value;
         }
         return obj;
@@ -5512,12 +5512,12 @@ _VertexAttribute
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::VertexFormat>();
+            auto value = kwargs["format"].cast<VertexFormat>();
             obj.format = value;
         }
         if (kwargs.contains("offset"))
@@ -5565,12 +5565,12 @@ _VertexBufferLayout
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("step_mode"))
         {
-            auto value = kwargs["step_mode"].cast<pywgpu::VertexStepMode>();
+            auto value = kwargs["step_mode"].cast<VertexStepMode>();
             obj.stepMode = value;
         }
         if (kwargs.contains("array_stride"))
@@ -5580,9 +5580,9 @@ _VertexBufferLayout
         }
         if (kwargs.contains("attributes"))
         {
-            auto _value = kwargs["attributes"].cast<std::vector<pywgpu::VertexAttribute>>();
+            auto _value = kwargs["attributes"].cast<std::vector<VertexAttribute>>();
             auto count = _value.size();
-            auto value = new pywgpu::VertexAttribute[count];
+            auto value = new VertexAttribute[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.attributes = value;
             obj.attributeCount = count;
@@ -5707,12 +5707,12 @@ _PassTimestampWrites
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("query_set"))
         {
-            auto value = kwargs["query_set"].cast<pywgpu::QuerySet>();
+            auto value = kwargs["query_set"].cast<QuerySet>();
             obj.querySet = value;
         }
         if (kwargs.contains("beginning_of_pass_write_index"))
@@ -5760,19 +5760,19 @@ _PipelineLayoutDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("bind_group_layouts"))
         {
-            auto _value = kwargs["bind_group_layouts"].cast<std::vector<pywgpu::BindGroupLayout>>();
+            auto _value = kwargs["bind_group_layouts"].cast<std::vector<BindGroupLayout>>();
             auto count = _value.size();
-            auto value = new pywgpu::BindGroupLayout[count];
+            auto value = new BindGroupLayout[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.bindGroupLayouts = value;
             obj.bindGroupLayoutCount = count;
@@ -5816,7 +5816,7 @@ _PipelineLayoutPixelLocalStorage
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("total_pixel_local_storage_size"))
@@ -5826,9 +5826,9 @@ _PipelineLayoutPixelLocalStorage
         }
         if (kwargs.contains("storage_attachments"))
         {
-            auto _value = kwargs["storage_attachments"].cast<std::vector<pywgpu::PipelineLayoutStorageAttachment>>();
+            auto _value = kwargs["storage_attachments"].cast<std::vector<PipelineLayoutStorageAttachment>>();
             auto count = _value.size();
-            auto value = new pywgpu::PipelineLayoutStorageAttachment[count];
+            auto value = new PipelineLayoutStorageAttachment[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.storageAttachments = value;
             obj.storageAttachmentCount = count;
@@ -5866,7 +5866,7 @@ _PipelineLayoutStorageAttachment
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("offset"))
@@ -5876,7 +5876,7 @@ _PipelineLayoutStorageAttachment
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         return obj;
@@ -5914,24 +5914,24 @@ _ComputeState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("module"))
         {
-            auto value = kwargs["module"].cast<pywgpu::ShaderModule>();
+            auto value = kwargs["module"].cast<ShaderModule>();
             obj.module = value;
         }
         if (kwargs.contains("entry_point"))
         {
-            auto value = kwargs["entry_point"].cast<pywgpu::StringView>();
+            auto value = kwargs["entry_point"].cast<StringView>();
             obj.entryPoint = value;
         }
         if (kwargs.contains("constants"))
         {
-            auto _value = kwargs["constants"].cast<std::vector<pywgpu::ConstantEntry>>();
+            auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
             auto count = _value.size();
-            auto value = new pywgpu::ConstantEntry[count];
+            auto value = new ConstantEntry[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.constants = value;
             obj.constantCount = count;
@@ -5970,17 +5970,17 @@ _QuerySetDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("type"))
         {
-            auto value = kwargs["type"].cast<pywgpu::QueryType>();
+            auto value = kwargs["type"].cast<QueryType>();
             obj.type = value;
         }
         if (kwargs.contains("count"))
@@ -6020,12 +6020,12 @@ _QueueDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -6060,12 +6060,12 @@ _RenderBundleDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -6106,26 +6106,26 @@ _RenderBundleEncoderDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("color_formats"))
         {
-            auto _value = kwargs["color_formats"].cast<std::vector<pywgpu::TextureFormat>>();
+            auto _value = kwargs["color_formats"].cast<std::vector<TextureFormat>>();
             auto count = _value.size();
-            auto value = new pywgpu::TextureFormat[count];
+            auto value = new TextureFormat[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.colorFormats = value;
             obj.colorFormatCount = count;
         }
         if (kwargs.contains("depth_stencil_format"))
         {
-            auto value = kwargs["depth_stencil_format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["depth_stencil_format"].cast<TextureFormat>();
             obj.depthStencilFormat = value;
         }
         if (kwargs.contains("sample_count"))
@@ -6135,12 +6135,12 @@ _RenderBundleEncoderDescriptor
         }
         if (kwargs.contains("depth_read_only"))
         {
-            auto value = kwargs["depth_read_only"].cast<pywgpu::Bool>();
+            auto value = kwargs["depth_read_only"].cast<Bool>();
             obj.depthReadOnly = value;
         }
         if (kwargs.contains("stencil_read_only"))
         {
-            auto value = kwargs["stencil_read_only"].cast<pywgpu::Bool>();
+            auto value = kwargs["stencil_read_only"].cast<Bool>();
             obj.stencilReadOnly = value;
         }
         return obj;
@@ -6180,12 +6180,12 @@ _RenderPassColorAttachment
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("view"))
         {
-            auto value = kwargs["view"].cast<pywgpu::TextureView>();
+            auto value = kwargs["view"].cast<TextureView>();
             obj.view = value;
         }
         if (kwargs.contains("depth_slice"))
@@ -6195,22 +6195,22 @@ _RenderPassColorAttachment
         }
         if (kwargs.contains("resolve_target"))
         {
-            auto value = kwargs["resolve_target"].cast<pywgpu::TextureView>();
+            auto value = kwargs["resolve_target"].cast<TextureView>();
             obj.resolveTarget = value;
         }
         if (kwargs.contains("load_op"))
         {
-            auto value = kwargs["load_op"].cast<pywgpu::LoadOp>();
+            auto value = kwargs["load_op"].cast<LoadOp>();
             obj.loadOp = value;
         }
         if (kwargs.contains("store_op"))
         {
-            auto value = kwargs["store_op"].cast<pywgpu::StoreOp>();
+            auto value = kwargs["store_op"].cast<StoreOp>();
             obj.storeOp = value;
         }
         if (kwargs.contains("clear_value"))
         {
-            auto value = kwargs["clear_value"].cast<pywgpu::Color>();
+            auto value = kwargs["clear_value"].cast<Color>();
             obj.clearValue = value;
         }
         return obj;
@@ -6245,7 +6245,7 @@ _DawnRenderPassColorAttachmentRenderToSingleSampled
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("implicit_sample_count"))
@@ -6293,22 +6293,22 @@ _RenderPassDepthStencilAttachment
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("view"))
         {
-            auto value = kwargs["view"].cast<pywgpu::TextureView>();
+            auto value = kwargs["view"].cast<TextureView>();
             obj.view = value;
         }
         if (kwargs.contains("depth_load_op"))
         {
-            auto value = kwargs["depth_load_op"].cast<pywgpu::LoadOp>();
+            auto value = kwargs["depth_load_op"].cast<LoadOp>();
             obj.depthLoadOp = value;
         }
         if (kwargs.contains("depth_store_op"))
         {
-            auto value = kwargs["depth_store_op"].cast<pywgpu::StoreOp>();
+            auto value = kwargs["depth_store_op"].cast<StoreOp>();
             obj.depthStoreOp = value;
         }
         if (kwargs.contains("depth_clear_value"))
@@ -6318,17 +6318,17 @@ _RenderPassDepthStencilAttachment
         }
         if (kwargs.contains("depth_read_only"))
         {
-            auto value = kwargs["depth_read_only"].cast<pywgpu::Bool>();
+            auto value = kwargs["depth_read_only"].cast<Bool>();
             obj.depthReadOnly = value;
         }
         if (kwargs.contains("stencil_load_op"))
         {
-            auto value = kwargs["stencil_load_op"].cast<pywgpu::LoadOp>();
+            auto value = kwargs["stencil_load_op"].cast<LoadOp>();
             obj.stencilLoadOp = value;
         }
         if (kwargs.contains("stencil_store_op"))
         {
-            auto value = kwargs["stencil_store_op"].cast<pywgpu::StoreOp>();
+            auto value = kwargs["stencil_store_op"].cast<StoreOp>();
             obj.stencilStoreOp = value;
         }
         if (kwargs.contains("stencil_clear_value"))
@@ -6338,7 +6338,7 @@ _RenderPassDepthStencilAttachment
         }
         if (kwargs.contains("stencil_read_only"))
         {
-            auto value = kwargs["stencil_read_only"].cast<pywgpu::Bool>();
+            auto value = kwargs["stencil_read_only"].cast<Bool>();
             obj.stencilReadOnly = value;
         }
         return obj;
@@ -6378,36 +6378,36 @@ _RenderPassDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("color_attachments"))
         {
-            auto _value = kwargs["color_attachments"].cast<std::vector<pywgpu::RenderPassColorAttachment>>();
+            auto _value = kwargs["color_attachments"].cast<std::vector<RenderPassColorAttachment>>();
             auto count = _value.size();
-            auto value = new pywgpu::RenderPassColorAttachment[count];
+            auto value = new RenderPassColorAttachment[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.colorAttachments = value;
             obj.colorAttachmentCount = count;
         }
         if (kwargs.contains("depth_stencil_attachment"))
         {
-            auto value = kwargs["depth_stencil_attachment"].cast<pywgpu::RenderPassDepthStencilAttachment const *>();
+            auto value = kwargs["depth_stencil_attachment"].cast<RenderPassDepthStencilAttachment const *>();
             obj.depthStencilAttachment = value;
         }
         if (kwargs.contains("occlusion_query_set"))
         {
-            auto value = kwargs["occlusion_query_set"].cast<pywgpu::QuerySet>();
+            auto value = kwargs["occlusion_query_set"].cast<QuerySet>();
             obj.occlusionQuerySet = value;
         }
         if (kwargs.contains("timestamp_writes"))
         {
-            auto value = kwargs["timestamp_writes"].cast<pywgpu::PassTimestampWrites const *>();
+            auto value = kwargs["timestamp_writes"].cast<PassTimestampWrites const *>();
             obj.timestampWrites = value;
         }
         return obj;
@@ -6442,7 +6442,7 @@ _RenderPassMaxDrawCount
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("max_draw_count"))
@@ -6485,7 +6485,7 @@ _RenderPassDescriptorExpandResolveRect
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("x"))
@@ -6542,7 +6542,7 @@ _RenderPassPixelLocalStorage
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("total_pixel_local_storage_size"))
@@ -6552,9 +6552,9 @@ _RenderPassPixelLocalStorage
         }
         if (kwargs.contains("storage_attachments"))
         {
-            auto _value = kwargs["storage_attachments"].cast<std::vector<pywgpu::RenderPassStorageAttachment>>();
+            auto _value = kwargs["storage_attachments"].cast<std::vector<RenderPassStorageAttachment>>();
             auto count = _value.size();
-            auto value = new pywgpu::RenderPassStorageAttachment[count];
+            auto value = new RenderPassStorageAttachment[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.storageAttachments = value;
             obj.storageAttachmentCount = count;
@@ -6595,7 +6595,7 @@ _RenderPassStorageAttachment
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("offset"))
@@ -6605,22 +6605,22 @@ _RenderPassStorageAttachment
         }
         if (kwargs.contains("storage"))
         {
-            auto value = kwargs["storage"].cast<pywgpu::TextureView>();
+            auto value = kwargs["storage"].cast<TextureView>();
             obj.storage = value;
         }
         if (kwargs.contains("load_op"))
         {
-            auto value = kwargs["load_op"].cast<pywgpu::LoadOp>();
+            auto value = kwargs["load_op"].cast<LoadOp>();
             obj.loadOp = value;
         }
         if (kwargs.contains("store_op"))
         {
-            auto value = kwargs["store_op"].cast<pywgpu::StoreOp>();
+            auto value = kwargs["store_op"].cast<StoreOp>();
             obj.storeOp = value;
         }
         if (kwargs.contains("clear_value"))
         {
-            auto value = kwargs["clear_value"].cast<pywgpu::Color>();
+            auto value = kwargs["clear_value"].cast<Color>();
             obj.clearValue = value;
         }
         return obj;
@@ -6660,33 +6660,33 @@ _VertexState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("module"))
         {
-            auto value = kwargs["module"].cast<pywgpu::ShaderModule>();
+            auto value = kwargs["module"].cast<ShaderModule>();
             obj.module = value;
         }
         if (kwargs.contains("entry_point"))
         {
-            auto value = kwargs["entry_point"].cast<pywgpu::StringView>();
+            auto value = kwargs["entry_point"].cast<StringView>();
             obj.entryPoint = value;
         }
         if (kwargs.contains("constants"))
         {
-            auto _value = kwargs["constants"].cast<std::vector<pywgpu::ConstantEntry>>();
+            auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
             auto count = _value.size();
-            auto value = new pywgpu::ConstantEntry[count];
+            auto value = new ConstantEntry[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.constants = value;
             obj.constantCount = count;
         }
         if (kwargs.contains("buffers"))
         {
-            auto _value = kwargs["buffers"].cast<std::vector<pywgpu::VertexBufferLayout>>();
+            auto _value = kwargs["buffers"].cast<std::vector<VertexBufferLayout>>();
             auto count = _value.size();
-            auto value = new pywgpu::VertexBufferLayout[count];
+            auto value = new VertexBufferLayout[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.buffers = value;
             obj.bufferCount = count;
@@ -6727,32 +6727,32 @@ _PrimitiveState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("topology"))
         {
-            auto value = kwargs["topology"].cast<pywgpu::PrimitiveTopology>();
+            auto value = kwargs["topology"].cast<PrimitiveTopology>();
             obj.topology = value;
         }
         if (kwargs.contains("strip_index_format"))
         {
-            auto value = kwargs["strip_index_format"].cast<pywgpu::IndexFormat>();
+            auto value = kwargs["strip_index_format"].cast<IndexFormat>();
             obj.stripIndexFormat = value;
         }
         if (kwargs.contains("front_face"))
         {
-            auto value = kwargs["front_face"].cast<pywgpu::FrontFace>();
+            auto value = kwargs["front_face"].cast<FrontFace>();
             obj.frontFace = value;
         }
         if (kwargs.contains("cull_mode"))
         {
-            auto value = kwargs["cull_mode"].cast<pywgpu::CullMode>();
+            auto value = kwargs["cull_mode"].cast<CullMode>();
             obj.cullMode = value;
         }
         if (kwargs.contains("unclipped_depth"))
         {
-            auto value = kwargs["unclipped_depth"].cast<pywgpu::Bool>();
+            auto value = kwargs["unclipped_depth"].cast<Bool>();
             obj.unclippedDepth = value;
         }
         return obj;
@@ -6796,32 +6796,32 @@ _DepthStencilState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         if (kwargs.contains("depth_write_enabled"))
         {
-            auto value = kwargs["depth_write_enabled"].cast<pywgpu::OptionalBool>();
+            auto value = kwargs["depth_write_enabled"].cast<OptionalBool>();
             obj.depthWriteEnabled = value;
         }
         if (kwargs.contains("depth_compare"))
         {
-            auto value = kwargs["depth_compare"].cast<pywgpu::CompareFunction>();
+            auto value = kwargs["depth_compare"].cast<CompareFunction>();
             obj.depthCompare = value;
         }
         if (kwargs.contains("stencil_front"))
         {
-            auto value = kwargs["stencil_front"].cast<pywgpu::StencilFaceState>();
+            auto value = kwargs["stencil_front"].cast<StencilFaceState>();
             obj.stencilFront = value;
         }
         if (kwargs.contains("stencil_back"))
         {
-            auto value = kwargs["stencil_back"].cast<pywgpu::StencilFaceState>();
+            auto value = kwargs["stencil_back"].cast<StencilFaceState>();
             obj.stencilBack = value;
         }
         if (kwargs.contains("stencil_read_mask"))
@@ -6883,7 +6883,7 @@ _MultisampleState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("count"))
@@ -6898,7 +6898,7 @@ _MultisampleState
         }
         if (kwargs.contains("alpha_to_coverage_enabled"))
         {
-            auto value = kwargs["alpha_to_coverage_enabled"].cast<pywgpu::Bool>();
+            auto value = kwargs["alpha_to_coverage_enabled"].cast<Bool>();
             obj.alphaToCoverageEnabled = value;
         }
         return obj;
@@ -6938,33 +6938,33 @@ _FragmentState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("module"))
         {
-            auto value = kwargs["module"].cast<pywgpu::ShaderModule>();
+            auto value = kwargs["module"].cast<ShaderModule>();
             obj.module = value;
         }
         if (kwargs.contains("entry_point"))
         {
-            auto value = kwargs["entry_point"].cast<pywgpu::StringView>();
+            auto value = kwargs["entry_point"].cast<StringView>();
             obj.entryPoint = value;
         }
         if (kwargs.contains("constants"))
         {
-            auto _value = kwargs["constants"].cast<std::vector<pywgpu::ConstantEntry>>();
+            auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
             auto count = _value.size();
-            auto value = new pywgpu::ConstantEntry[count];
+            auto value = new ConstantEntry[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.constants = value;
             obj.constantCount = count;
         }
         if (kwargs.contains("targets"))
         {
-            auto _value = kwargs["targets"].cast<std::vector<pywgpu::ColorTargetState>>();
+            auto _value = kwargs["targets"].cast<std::vector<ColorTargetState>>();
             auto count = _value.size();
-            auto value = new pywgpu::ColorTargetState[count];
+            auto value = new ColorTargetState[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.targets = value;
             obj.targetCount = count;
@@ -7003,22 +7003,22 @@ _ColorTargetState
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         if (kwargs.contains("blend"))
         {
-            auto value = kwargs["blend"].cast<pywgpu::BlendState const *>();
+            auto value = kwargs["blend"].cast<BlendState const *>();
             obj.blend = value;
         }
         if (kwargs.contains("write_mask"))
         {
-            auto value = kwargs["write_mask"].cast<pywgpu::ColorWriteMask>();
+            auto value = kwargs["write_mask"].cast<ColorWriteMask>();
             obj.writeMask = value;
         }
         return obj;
@@ -7053,12 +7053,12 @@ _ColorTargetStateExpandResolveTextureDawn
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("enabled"))
         {
-            auto value = kwargs["enabled"].cast<pywgpu::Bool>();
+            auto value = kwargs["enabled"].cast<Bool>();
             obj.enabled = value;
         }
         return obj;
@@ -7093,12 +7093,12 @@ _BlendState
         
         if (kwargs.contains("color"))
         {
-            auto value = kwargs["color"].cast<pywgpu::BlendComponent>();
+            auto value = kwargs["color"].cast<BlendComponent>();
             obj.color = value;
         }
         if (kwargs.contains("alpha"))
         {
-            auto value = kwargs["alpha"].cast<pywgpu::BlendComponent>();
+            auto value = kwargs["alpha"].cast<BlendComponent>();
             obj.alpha = value;
         }
         return obj;
@@ -7139,42 +7139,42 @@ _RenderPipelineDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("layout"))
         {
-            auto value = kwargs["layout"].cast<pywgpu::PipelineLayout>();
+            auto value = kwargs["layout"].cast<PipelineLayout>();
             obj.layout = value;
         }
         if (kwargs.contains("vertex"))
         {
-            auto value = kwargs["vertex"].cast<pywgpu::VertexState>();
+            auto value = kwargs["vertex"].cast<VertexState>();
             obj.vertex = value;
         }
         if (kwargs.contains("primitive"))
         {
-            auto value = kwargs["primitive"].cast<pywgpu::PrimitiveState>();
+            auto value = kwargs["primitive"].cast<PrimitiveState>();
             obj.primitive = value;
         }
         if (kwargs.contains("depth_stencil"))
         {
-            auto value = kwargs["depth_stencil"].cast<pywgpu::DepthStencilState const *>();
+            auto value = kwargs["depth_stencil"].cast<DepthStencilState const *>();
             obj.depthStencil = value;
         }
         if (kwargs.contains("multisample"))
         {
-            auto value = kwargs["multisample"].cast<pywgpu::MultisampleState>();
+            auto value = kwargs["multisample"].cast<MultisampleState>();
             obj.multisample = value;
         }
         if (kwargs.contains("fragment"))
         {
-            auto value = kwargs["fragment"].cast<pywgpu::FragmentState const *>();
+            auto value = kwargs["fragment"].cast<FragmentState const *>();
             obj.fragment = value;
         }
         return obj;
@@ -7219,42 +7219,42 @@ _SamplerDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("address_mode_u"))
         {
-            auto value = kwargs["address_mode_u"].cast<pywgpu::AddressMode>();
+            auto value = kwargs["address_mode_u"].cast<AddressMode>();
             obj.addressModeU = value;
         }
         if (kwargs.contains("address_mode_v"))
         {
-            auto value = kwargs["address_mode_v"].cast<pywgpu::AddressMode>();
+            auto value = kwargs["address_mode_v"].cast<AddressMode>();
             obj.addressModeV = value;
         }
         if (kwargs.contains("address_mode_w"))
         {
-            auto value = kwargs["address_mode_w"].cast<pywgpu::AddressMode>();
+            auto value = kwargs["address_mode_w"].cast<AddressMode>();
             obj.addressModeW = value;
         }
         if (kwargs.contains("mag_filter"))
         {
-            auto value = kwargs["mag_filter"].cast<pywgpu::FilterMode>();
+            auto value = kwargs["mag_filter"].cast<FilterMode>();
             obj.magFilter = value;
         }
         if (kwargs.contains("min_filter"))
         {
-            auto value = kwargs["min_filter"].cast<pywgpu::FilterMode>();
+            auto value = kwargs["min_filter"].cast<FilterMode>();
             obj.minFilter = value;
         }
         if (kwargs.contains("mipmap_filter"))
         {
-            auto value = kwargs["mipmap_filter"].cast<pywgpu::MipmapFilterMode>();
+            auto value = kwargs["mipmap_filter"].cast<MipmapFilterMode>();
             obj.mipmapFilter = value;
         }
         if (kwargs.contains("lod_min_clamp"))
@@ -7269,7 +7269,7 @@ _SamplerDescriptor
         }
         if (kwargs.contains("compare"))
         {
-            auto value = kwargs["compare"].cast<pywgpu::CompareFunction>();
+            auto value = kwargs["compare"].cast<CompareFunction>();
             obj.compare = value;
         }
         if (kwargs.contains("max_anisotropy"))
@@ -7309,12 +7309,12 @@ _ShaderModuleDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -7350,7 +7350,7 @@ _ShaderSourceSPIRV
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("code"))
@@ -7394,12 +7394,12 @@ _ShaderSourceWGSL
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("code"))
         {
-            auto value = kwargs["code"].cast<pywgpu::StringView>();
+            auto value = kwargs["code"].cast<StringView>();
             obj.code = value;
         }
         return obj;
@@ -7434,12 +7434,12 @@ _DawnShaderModuleSPIRVOptionsDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("allow_non_uniform_derivatives"))
         {
-            auto value = kwargs["allow_non_uniform_derivatives"].cast<pywgpu::Bool>();
+            auto value = kwargs["allow_non_uniform_derivatives"].cast<Bool>();
             obj.allowNonUniformDerivatives = value;
         }
         return obj;
@@ -7474,12 +7474,12 @@ _ShaderModuleCompilationOptions
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("strict_math"))
         {
-            auto value = kwargs["strict_math"].cast<pywgpu::Bool>();
+            auto value = kwargs["strict_math"].cast<Bool>();
             obj.strictMath = value;
         }
         return obj;
@@ -7516,22 +7516,22 @@ _StencilFaceState
         
         if (kwargs.contains("compare"))
         {
-            auto value = kwargs["compare"].cast<pywgpu::CompareFunction>();
+            auto value = kwargs["compare"].cast<CompareFunction>();
             obj.compare = value;
         }
         if (kwargs.contains("fail_op"))
         {
-            auto value = kwargs["fail_op"].cast<pywgpu::StencilOperation>();
+            auto value = kwargs["fail_op"].cast<StencilOperation>();
             obj.failOp = value;
         }
         if (kwargs.contains("depth_fail_op"))
         {
-            auto value = kwargs["depth_fail_op"].cast<pywgpu::StencilOperation>();
+            auto value = kwargs["depth_fail_op"].cast<StencilOperation>();
             obj.depthFailOp = value;
         }
         if (kwargs.contains("pass_op"))
         {
-            auto value = kwargs["pass_op"].cast<pywgpu::StencilOperation>();
+            auto value = kwargs["pass_op"].cast<StencilOperation>();
             obj.passOp = value;
         }
         return obj;
@@ -7566,12 +7566,12 @@ _SurfaceDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         return obj;
@@ -7606,7 +7606,7 @@ _SurfaceSourceAndroidNativeWindow
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("window"))
@@ -7646,12 +7646,12 @@ _EmscriptenSurfaceSourceCanvasHTMLSelector
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("selector"))
         {
-            auto value = kwargs["selector"].cast<pywgpu::StringView>();
+            auto value = kwargs["selector"].cast<StringView>();
             obj.selector = value;
         }
         return obj;
@@ -7686,7 +7686,7 @@ _SurfaceSourceMetalLayer
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("layer"))
@@ -7727,7 +7727,7 @@ _SurfaceSourceWindowsHWND
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("hinstance"))
@@ -7773,7 +7773,7 @@ _SurfaceSourceXCBWindow
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("connection"))
@@ -7819,7 +7819,7 @@ _SurfaceSourceXlibWindow
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("display"))
@@ -7865,7 +7865,7 @@ _SurfaceSourceWaylandSurface
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("display"))
@@ -7910,7 +7910,7 @@ _SurfaceDescriptorFromWindowsCoreWindow
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("core_window"))
@@ -7950,7 +7950,7 @@ _SurfaceDescriptorFromWindowsUWPSwapChainPanel
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("swap_chain_panel"))
@@ -7990,7 +7990,7 @@ _SurfaceDescriptorFromWindowsWinUISwapChainPanel
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("swap_chain_panel"))
@@ -8048,32 +8048,32 @@ _TextureDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("usage"))
         {
-            auto value = kwargs["usage"].cast<pywgpu::TextureUsage>();
+            auto value = kwargs["usage"].cast<TextureUsage>();
             obj.usage = value;
         }
         if (kwargs.contains("dimension"))
         {
-            auto value = kwargs["dimension"].cast<pywgpu::TextureDimension>();
+            auto value = kwargs["dimension"].cast<TextureDimension>();
             obj.dimension = value;
         }
         if (kwargs.contains("size"))
         {
-            auto value = kwargs["size"].cast<pywgpu::Extent3D>();
+            auto value = kwargs["size"].cast<Extent3D>();
             obj.size = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         if (kwargs.contains("mip_level_count"))
@@ -8088,9 +8088,9 @@ _TextureDescriptor
         }
         if (kwargs.contains("view_formats"))
         {
-            auto _value = kwargs["view_formats"].cast<std::vector<pywgpu::TextureFormat>>();
+            auto _value = kwargs["view_formats"].cast<std::vector<TextureFormat>>();
             auto count = _value.size();
-            auto value = new pywgpu::TextureFormat[count];
+            auto value = new TextureFormat[count];
             std::copy(_value.begin(), _value.end(), value);
             obj.viewFormats = value;
             obj.viewFormatCount = count;
@@ -8127,12 +8127,12 @@ _TextureBindingViewDimensionDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("texture_binding_view_dimension"))
         {
-            auto value = kwargs["texture_binding_view_dimension"].cast<pywgpu::TextureViewDimension>();
+            auto value = kwargs["texture_binding_view_dimension"].cast<TextureViewDimension>();
             obj.textureBindingViewDimension = value;
         }
         return obj;
@@ -8175,22 +8175,22 @@ _TextureViewDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("label"))
         {
-            auto value = kwargs["label"].cast<pywgpu::StringView>();
+            auto value = kwargs["label"].cast<StringView>();
             obj.label = value;
         }
         if (kwargs.contains("format"))
         {
-            auto value = kwargs["format"].cast<pywgpu::TextureFormat>();
+            auto value = kwargs["format"].cast<TextureFormat>();
             obj.format = value;
         }
         if (kwargs.contains("dimension"))
         {
-            auto value = kwargs["dimension"].cast<pywgpu::TextureViewDimension>();
+            auto value = kwargs["dimension"].cast<TextureViewDimension>();
             obj.dimension = value;
         }
         if (kwargs.contains("base_mip_level"))
@@ -8215,12 +8215,12 @@ _TextureViewDescriptor
         }
         if (kwargs.contains("aspect"))
         {
-            auto value = kwargs["aspect"].cast<pywgpu::TextureAspect>();
+            auto value = kwargs["aspect"].cast<TextureAspect>();
             obj.aspect = value;
         }
         if (kwargs.contains("usage"))
         {
-            auto value = kwargs["usage"].cast<pywgpu::TextureUsage>();
+            auto value = kwargs["usage"].cast<TextureUsage>();
             obj.usage = value;
         }
         return obj;
@@ -8266,7 +8266,7 @@ _YCbCrVkDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("vk_format"))
@@ -8316,12 +8316,12 @@ _YCbCrVkDescriptor
         }
         if (kwargs.contains("vk_chroma_filter"))
         {
-            auto value = kwargs["vk_chroma_filter"].cast<pywgpu::FilterMode>();
+            auto value = kwargs["vk_chroma_filter"].cast<FilterMode>();
             obj.vkChromaFilter = value;
         }
         if (kwargs.contains("force_explicit_reconstruction"))
         {
-            auto value = kwargs["force_explicit_reconstruction"].cast<pywgpu::Bool>();
+            auto value = kwargs["force_explicit_reconstruction"].cast<Bool>();
             obj.forceExplicitReconstruction = value;
         }
         if (kwargs.contains("external_format"))
@@ -8361,12 +8361,12 @@ _DawnTextureInternalUsageDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("internal_usage"))
         {
-            auto value = kwargs["internal_usage"].cast<pywgpu::TextureUsage>();
+            auto value = kwargs["internal_usage"].cast<TextureUsage>();
             obj.internalUsage = value;
         }
         return obj;
@@ -8401,12 +8401,12 @@ _DawnEncoderInternalUsageDescriptor
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("use_internal_usages"))
         {
-            auto value = kwargs["use_internal_usages"].cast<pywgpu::Bool>();
+            auto value = kwargs["use_internal_usages"].cast<Bool>();
             obj.useInternalUsages = value;
         }
         return obj;
@@ -8450,7 +8450,7 @@ _MemoryHeapInfo
         
         if (kwargs.contains("properties"))
         {
-            auto value = kwargs["properties"].cast<pywgpu::HeapProperty>();
+            auto value = kwargs["properties"].cast<HeapProperty>();
             obj.properties = value;
         }
         if (kwargs.contains("size"))
@@ -8518,12 +8518,12 @@ _DawnBufferDescriptorErrorInfoFromWireClient
         
         if (kwargs.contains("next_in_chain"))
         {
-            auto value = kwargs["next_in_chain"].cast<pywgpu::ChainedStruct const *>();
+            auto value = kwargs["next_in_chain"].cast<ChainedStruct const *>();
             obj.nextInChain = value;
         }
         if (kwargs.contains("out_of_memory"))
         {
-            auto value = kwargs["out_of_memory"].cast<pywgpu::Bool>();
+            auto value = kwargs["out_of_memory"].cast<Bool>();
             obj.outOfMemory = value;
         }
         return obj;
@@ -8561,12 +8561,12 @@ _SubgroupMatrixConfig
         
         if (kwargs.contains("component_type"))
         {
-            auto value = kwargs["component_type"].cast<pywgpu::SubgroupMatrixComponentType>();
+            auto value = kwargs["component_type"].cast<SubgroupMatrixComponentType>();
             obj.componentType = value;
         }
         if (kwargs.contains("result_component_type"))
         {
-            auto value = kwargs["result_component_type"].cast<pywgpu::SubgroupMatrixComponentType>();
+            auto value = kwargs["result_component_type"].cast<SubgroupMatrixComponentType>();
             obj.resultComponentType = value;
         }
         if (kwargs.contains("M"))

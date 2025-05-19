@@ -61,14 +61,6 @@ class Renderer(Generic[T_Node]):
             return name.CamelCase()
 
     @staticmethod
-    def as_cppFqType(name: Name, namespace: str = "pywgpu") -> str:
-        # Special case for 'bool' because it has a typedef for compatibility.
-        if name.native and name.get() != "bool":
-            return name.concatcase()
-        else:
-            return namespace + "::" + name.CamelCase()
-
-    @staticmethod
     def as_cppEnum(value_name: Name) -> str:
         assert not value_name.native
         if value_name.concatcase()[0].isdigit():
@@ -89,8 +81,8 @@ class Renderer(Generic[T_Node]):
         return result
 
     @staticmethod
-    def decorate_type(typ, arg: RecordMember, make_const=False):
-        type_name = Renderer.as_cppFqType(typ.name)
+    def decorate_type(type_name: str, arg: RecordMember, make_const=False):
+        #type_name = Renderer.as_cppType(typ.name)
         maybe_const = 'const ' if make_const else ''
         #if arg.annotation == 'value':
         if arg.annotation is None:
@@ -121,8 +113,14 @@ class Renderer(Generic[T_Node]):
             assert False
 
     @staticmethod
+    def annotated_type(type_name: str, arg: RecordMember, make_const=False):
+        return Renderer.decorate_type(type_name, arg, make_const)
+
+    '''
+    @staticmethod
     def annotated_type(typ: Type, arg: RecordMember, make_const=False):
         return Renderer.decorate_type(typ, arg, make_const)
+    '''
 
     @staticmethod
     def annotated_member(typ: Type, arg: RecordMember, make_const=False):
@@ -133,10 +131,15 @@ class Renderer(Generic[T_Node]):
         return Renderer.as_cType(self.context.c_prefix, typ.name)
 
     def as_annotated_cType(self, arg: RecordMember, make_const=False) -> str:
-        return Renderer.annotated(self.as_cTypeEnumSpecialCase(arg.type.name), arg, make_const)
+        #return Renderer.annotated_type(self.as_cTypeEnumSpecialCase(arg.type.name), arg, make_const)
+        #return Renderer.annotated_type(arg.type, arg, make_const)
+        type_name = Renderer.as_cType(arg.type.name)
+        return Renderer.annotated_type(type_name, arg, make_const)
 
     def as_annotated_cppType(self, arg: RecordMember, make_const=False) -> str:
-        return Renderer.annotated_type(arg.type, arg, make_const)
+        #return Renderer.annotated_type(arg.type, arg, make_const)
+        type_name = Renderer.as_cppType(arg.type.name)
+        return Renderer.annotated_type(type_name, arg, make_const)
 
     def as_annotated_cppMember(self, arg: RecordMember, make_const=False) -> str:
         return Renderer.annotated_member(self.as_cppType(arg.type.name), arg, make_const)
@@ -293,27 +296,3 @@ class Renderer(Generic[T_Node]):
 class NullRenderer(Renderer[Node]):
     def render(self):
         pass
-
-
-"""
-class RendererBase:
-    def __init__(self, context: RenderContext) -> None:
-        self.context = context
-        self.out = context.out
-
-    def render(self):
-        raise NotImplementedError
-    
-
-# Define a generic type variable
-T_Node = TypeVar("T_Node", bound=Node)
-
-class Renderer(RendererBase, Generic[T_Node]):
-    def __init__(
-        self,
-        context: RenderContext,
-        node: Node = None,
-    ) -> None:
-        super().__init__(context)
-        self.node = node
-"""

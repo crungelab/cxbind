@@ -138,10 +138,7 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
 
             for arg in args:
                 arg_type = get_arg_type_string(arg)
-                arg_annotation = arg.annotation
-
                 py_arg_name = arg.name.snake_case()
-                arg_name = arg.name.camelCase()
                 default_value = self.render_cpp_default_value(arg, False, False)
 
                 py_arg_list.append(f'py::arg("{py_arg_name}"){default_value}')

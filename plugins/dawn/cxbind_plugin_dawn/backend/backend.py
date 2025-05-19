@@ -90,7 +90,8 @@ class Backend(Processor):
     def process_object_type(self, obj: ObjectType):
         # logger.debug(f"Backend: Processing object type '{obj.name.CamelCase()}'")
         for method in obj.methods:
-            method.return_type = self.program.lookup(method.return_type_ref)
+            #method.return_type = self.program.lookup(method.return_type_ref)
+            method.return_type = self.program.lookup(method.return_type_ref) or self.program.lookup("void")
             for arg in method.args:
                 arg.type = self.program.lookup(arg.type_ref)
 
@@ -123,6 +124,8 @@ class Backend(Processor):
 
     def process_function_declaration(self, fn_decl: FunctionDeclaration):
         # logger.debug(f"Backend: Processing function declaration '{fn_decl.name.CamelCase()}'")
+        #fn_decl.return_type = self.program.lookup(fn_decl.return_type_ref)
+        fn_decl.return_type = self.program.lookup(fn_decl.return_type_ref) or self.program.lookup("void")
         for arg in fn_decl.args:
             arg.type = self.program.lookup(arg.type_ref)
         self.function_declarations.append(fn_decl)

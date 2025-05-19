@@ -15,5 +15,4 @@ class EnumTypeCppRenderer(EnumTypeRenderer):
                     value_name = f"e{value_name}"
                 self.out << f"{value_name} = WGPU{enum_name}_{suffix}," << "\n"
 
-
         self.out << "};\n\n"

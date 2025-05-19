@@ -2697,36 +2697,36 @@ Instance Adapter::GetInstance () const {
 }
 
 Status Adapter::GetLimits (Limits * limits) const {
-    auto result = wgpuAdapterGetLimits(Get(), reinterpret_cast<WGPULimits * >(limits));
+    auto result = wgpuAdapterGetLimits(Get(), reinterpret_cast<WGPULimits *>(limits));
     return static_cast<Status>(result);
 }
 
 Status Adapter::GetInfo (AdapterInfo * info) const {
-    auto result = wgpuAdapterGetInfo(Get(), reinterpret_cast<WGPUAdapterInfo * >(info));
+    auto result = wgpuAdapterGetInfo(Get(), reinterpret_cast<WGPUAdapterInfo *>(info));
     return static_cast<Status>(result);
 }
 
-bool Adapter::HasFeature (FeatureName feature) const {
+Bool Adapter::HasFeature (FeatureName feature) const {
     auto result = wgpuAdapterHasFeature(Get(), *reinterpret_cast<WGPUFeatureName const*>(&feature));
     return result;
 }
 
 void Adapter::GetFeatures (SupportedFeatures * features) const {
-    wgpuAdapterGetFeatures(Get(), reinterpret_cast<WGPUSupportedFeatures * >(features));
+    wgpuAdapterGetFeatures(Get(), reinterpret_cast<WGPUSupportedFeatures *>(features));
 }
 
-Future Adapter::RequestDevice (DeviceDescriptor const* options, RequestDeviceCallbackInfo callbackInfo) const {
-    auto result = wgpuAdapterRequestDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const* >(options), *reinterpret_cast<WGPURequestDeviceCallbackInfo const*>(&callbackInfo));
+Future Adapter::RequestDevice (DeviceDescriptor const * options, RequestDeviceCallbackInfo callbackInfo) const {
+    auto result = wgpuAdapterRequestDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const *>(options), *reinterpret_cast<WGPURequestDeviceCallbackInfo const*>(&callbackInfo));
     return Future{result.id};
 }
 
-Device Adapter::CreateDevice (DeviceDescriptor const* descriptor) const {
-    auto result = wgpuAdapterCreateDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const* >(descriptor));
+Device Adapter::CreateDevice (DeviceDescriptor const * descriptor) const {
+    auto result = wgpuAdapterCreateDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const *>(descriptor));
     return Device::Acquire(result);
 }
 
 Status Adapter::GetFormatCapabilities (TextureFormat format, DawnFormatCapabilities * capabilities) const {
-    auto result = wgpuAdapterGetFormatCapabilities(Get(), *reinterpret_cast<WGPUTextureFormat const*>(&format), reinterpret_cast<WGPUDawnFormatCapabilities * >(capabilities));
+    auto result = wgpuAdapterGetFormatCapabilities(Get(), *reinterpret_cast<WGPUTextureFormat const*>(&format), reinterpret_cast<WGPUDawnFormatCapabilities *>(capabilities));
     return static_cast<Status>(result);
 }
 
@@ -2795,7 +2795,7 @@ void const * Buffer::GetConstMappedRange (size_t offset, size_t size) const {
     return result;
 }
 
-Status Buffer::WriteMappedRange (size_t offset, void const* data, size_t size) const {
+Status Buffer::WriteMappedRange (size_t offset, void const * data, size_t size) const {
     auto result = wgpuBufferWriteMappedRange(Get(), offset, data, size);
     return static_cast<Status>(result);
 }
@@ -2864,18 +2864,18 @@ void CommandBuffer::WGPURelease(WGPUCommandBuffer handle) {
 
 // CommandEncoder implementation
 
-CommandBuffer CommandEncoder::Finish (CommandBufferDescriptor const* descriptor) const {
-    auto result = wgpuCommandEncoderFinish(Get(), reinterpret_cast<WGPUCommandBufferDescriptor const* >(descriptor));
+CommandBuffer CommandEncoder::Finish (CommandBufferDescriptor const * descriptor) const {
+    auto result = wgpuCommandEncoderFinish(Get(), reinterpret_cast<WGPUCommandBufferDescriptor const *>(descriptor));
     return CommandBuffer::Acquire(result);
 }
 
-ComputePassEncoder CommandEncoder::BeginComputePass (ComputePassDescriptor const* descriptor) const {
-    auto result = wgpuCommandEncoderBeginComputePass(Get(), reinterpret_cast<WGPUComputePassDescriptor const* >(descriptor));
+ComputePassEncoder CommandEncoder::BeginComputePass (ComputePassDescriptor const * descriptor) const {
+    auto result = wgpuCommandEncoderBeginComputePass(Get(), reinterpret_cast<WGPUComputePassDescriptor const *>(descriptor));
     return ComputePassEncoder::Acquire(result);
 }
 
-RenderPassEncoder CommandEncoder::BeginRenderPass (RenderPassDescriptor const* descriptor) const {
-    auto result = wgpuCommandEncoderBeginRenderPass(Get(), reinterpret_cast<WGPURenderPassDescriptor const* >(descriptor));
+RenderPassEncoder CommandEncoder::BeginRenderPass (RenderPassDescriptor const * descriptor) const {
+    auto result = wgpuCommandEncoderBeginRenderPass(Get(), reinterpret_cast<WGPURenderPassDescriptor const *>(descriptor));
     return RenderPassEncoder::Acquire(result);
 }
 
@@ -2883,16 +2883,16 @@ void CommandEncoder::CopyBufferToBuffer (Buffer source, uint64_t sourceOffset, B
     wgpuCommandEncoderCopyBufferToBuffer(Get(), *reinterpret_cast<WGPUBuffer const*>(&source), sourceOffset, *reinterpret_cast<WGPUBuffer const*>(&destination), destinationOffset, size);
 }
 
-void CommandEncoder::CopyBufferToTexture (TexelCopyBufferInfo const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize) const {
-    wgpuCommandEncoderCopyBufferToTexture(Get(), reinterpret_cast<WGPUTexelCopyBufferInfo const* >(source), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(destination), reinterpret_cast<WGPUExtent3D const* >(copySize));
+void CommandEncoder::CopyBufferToTexture (TexelCopyBufferInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize) const {
+    wgpuCommandEncoderCopyBufferToTexture(Get(), reinterpret_cast<WGPUTexelCopyBufferInfo const *>(source), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(destination), reinterpret_cast<WGPUExtent3D const *>(copySize));
 }
 
-void CommandEncoder::CopyTextureToBuffer (TexelCopyTextureInfo const* source, TexelCopyBufferInfo const* destination, Extent3D const* copySize) const {
-    wgpuCommandEncoderCopyTextureToBuffer(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(source), reinterpret_cast<WGPUTexelCopyBufferInfo const* >(destination), reinterpret_cast<WGPUExtent3D const* >(copySize));
+void CommandEncoder::CopyTextureToBuffer (TexelCopyTextureInfo const * source, TexelCopyBufferInfo const * destination, Extent3D const * copySize) const {
+    wgpuCommandEncoderCopyTextureToBuffer(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(source), reinterpret_cast<WGPUTexelCopyBufferInfo const *>(destination), reinterpret_cast<WGPUExtent3D const *>(copySize));
 }
 
-void CommandEncoder::CopyTextureToTexture (TexelCopyTextureInfo const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize) const {
-    wgpuCommandEncoderCopyTextureToTexture(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(source), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(destination), reinterpret_cast<WGPUExtent3D const* >(copySize));
+void CommandEncoder::CopyTextureToTexture (TexelCopyTextureInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize) const {
+    wgpuCommandEncoderCopyTextureToTexture(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(source), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(destination), reinterpret_cast<WGPUExtent3D const *>(copySize));
 }
 
 void CommandEncoder::ClearBuffer (Buffer buffer, uint64_t offset, uint64_t size) const {
@@ -2919,7 +2919,7 @@ void CommandEncoder::ResolveQuerySet (QuerySet querySet, uint32_t firstQuery, ui
     wgpuCommandEncoderResolveQuerySet(Get(), *reinterpret_cast<WGPUQuerySet const*>(&querySet), firstQuery, queryCount, *reinterpret_cast<WGPUBuffer const*>(&destination), destinationOffset);
 }
 
-void CommandEncoder::WriteBuffer (Buffer buffer, uint64_t bufferOffset, uint8_t const* data, uint64_t size) const {
+void CommandEncoder::WriteBuffer (Buffer buffer, uint64_t bufferOffset, uint8_t const * data, uint64_t size) const {
     wgpuCommandEncoderWriteBuffer(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), bufferOffset, data, size);
 }
 
@@ -2961,7 +2961,7 @@ void ComputePassEncoder::SetPipeline (ComputePipeline pipeline) const {
     wgpuComputePassEncoderSetPipeline(Get(), *reinterpret_cast<WGPUComputePipeline const*>(&pipeline));
 }
 
-void ComputePassEncoder::SetBindGroup (uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const* dynamicOffsets) const {
+void ComputePassEncoder::SetBindGroup (uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
     wgpuComputePassEncoderSetBindGroup(Get(), groupIndex, *reinterpret_cast<WGPUBindGroup const*>(&group), dynamicOffsetCount, dynamicOffsets);
 }
 
@@ -2985,7 +2985,7 @@ void ComputePassEncoder::SetLabel (StringView label) const {
     wgpuComputePassEncoderSetLabel(Get(), *reinterpret_cast<WGPUStringView const*>(&label));
 }
 
-void ComputePassEncoder::SetImmediateData (uint32_t offset, void const* data, size_t size) const {
+void ComputePassEncoder::SetImmediateData (uint32_t offset, void const * data, size_t size) const {
     wgpuComputePassEncoderSetImmediateData(Get(), offset, data, size);
 }
 
@@ -3026,43 +3026,43 @@ void ComputePipeline::WGPURelease(WGPUComputePipeline handle) {
 
 // Device implementation
 
-BindGroup Device::CreateBindGroup (BindGroupDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateBindGroup(Get(), reinterpret_cast<WGPUBindGroupDescriptor const* >(descriptor));
+BindGroup Device::CreateBindGroup (BindGroupDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateBindGroup(Get(), reinterpret_cast<WGPUBindGroupDescriptor const *>(descriptor));
     return BindGroup::Acquire(result);
 }
 
-BindGroupLayout Device::CreateBindGroupLayout (BindGroupLayoutDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateBindGroupLayout(Get(), reinterpret_cast<WGPUBindGroupLayoutDescriptor const* >(descriptor));
+BindGroupLayout Device::CreateBindGroupLayout (BindGroupLayoutDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateBindGroupLayout(Get(), reinterpret_cast<WGPUBindGroupLayoutDescriptor const *>(descriptor));
     return BindGroupLayout::Acquire(result);
 }
 
-Buffer Device::CreateBuffer (BufferDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const* >(descriptor));
+Buffer Device::CreateBuffer (BufferDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const *>(descriptor));
     return Buffer::Acquire(result);
 }
 
-Buffer Device::CreateErrorBuffer (BufferDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateErrorBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const* >(descriptor));
+Buffer Device::CreateErrorBuffer (BufferDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateErrorBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const *>(descriptor));
     return Buffer::Acquire(result);
 }
 
-CommandEncoder Device::CreateCommandEncoder (CommandEncoderDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateCommandEncoder(Get(), reinterpret_cast<WGPUCommandEncoderDescriptor const* >(descriptor));
+CommandEncoder Device::CreateCommandEncoder (CommandEncoderDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateCommandEncoder(Get(), reinterpret_cast<WGPUCommandEncoderDescriptor const *>(descriptor));
     return CommandEncoder::Acquire(result);
 }
 
-ComputePipeline Device::CreateComputePipeline (ComputePipelineDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateComputePipeline(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const* >(descriptor));
+ComputePipeline Device::CreateComputePipeline (ComputePipelineDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateComputePipeline(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const *>(descriptor));
     return ComputePipeline::Acquire(result);
 }
 
-Future Device::CreateComputePipelineAsync (ComputePipelineDescriptor const* descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) const {
-    auto result = wgpuDeviceCreateComputePipelineAsync(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const* >(descriptor), *reinterpret_cast<WGPUCreateComputePipelineAsyncCallbackInfo const*>(&callbackInfo));
+Future Device::CreateComputePipelineAsync (ComputePipelineDescriptor const * descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) const {
+    auto result = wgpuDeviceCreateComputePipelineAsync(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const *>(descriptor), *reinterpret_cast<WGPUCreateComputePipelineAsyncCallbackInfo const*>(&callbackInfo));
     return Future{result.id};
 }
 
-ExternalTexture Device::CreateExternalTexture (ExternalTextureDescriptor const* externalTextureDescriptor) const {
-    auto result = wgpuDeviceCreateExternalTexture(Get(), reinterpret_cast<WGPUExternalTextureDescriptor const* >(externalTextureDescriptor));
+ExternalTexture Device::CreateExternalTexture (ExternalTextureDescriptor const * externalTextureDescriptor) const {
+    auto result = wgpuDeviceCreateExternalTexture(Get(), reinterpret_cast<WGPUExternalTextureDescriptor const *>(externalTextureDescriptor));
     return ExternalTexture::Acquire(result);
 }
 
@@ -3071,68 +3071,68 @@ ExternalTexture Device::CreateErrorExternalTexture () const {
     return ExternalTexture::Acquire(result);
 }
 
-PipelineLayout Device::CreatePipelineLayout (PipelineLayoutDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreatePipelineLayout(Get(), reinterpret_cast<WGPUPipelineLayoutDescriptor const* >(descriptor));
+PipelineLayout Device::CreatePipelineLayout (PipelineLayoutDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreatePipelineLayout(Get(), reinterpret_cast<WGPUPipelineLayoutDescriptor const *>(descriptor));
     return PipelineLayout::Acquire(result);
 }
 
-QuerySet Device::CreateQuerySet (QuerySetDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateQuerySet(Get(), reinterpret_cast<WGPUQuerySetDescriptor const* >(descriptor));
+QuerySet Device::CreateQuerySet (QuerySetDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateQuerySet(Get(), reinterpret_cast<WGPUQuerySetDescriptor const *>(descriptor));
     return QuerySet::Acquire(result);
 }
 
-Future Device::CreateRenderPipelineAsync (RenderPipelineDescriptor const* descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) const {
-    auto result = wgpuDeviceCreateRenderPipelineAsync(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const* >(descriptor), *reinterpret_cast<WGPUCreateRenderPipelineAsyncCallbackInfo const*>(&callbackInfo));
+Future Device::CreateRenderPipelineAsync (RenderPipelineDescriptor const * descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) const {
+    auto result = wgpuDeviceCreateRenderPipelineAsync(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const *>(descriptor), *reinterpret_cast<WGPUCreateRenderPipelineAsyncCallbackInfo const*>(&callbackInfo));
     return Future{result.id};
 }
 
-RenderBundleEncoder Device::CreateRenderBundleEncoder (RenderBundleEncoderDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateRenderBundleEncoder(Get(), reinterpret_cast<WGPURenderBundleEncoderDescriptor const* >(descriptor));
+RenderBundleEncoder Device::CreateRenderBundleEncoder (RenderBundleEncoderDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateRenderBundleEncoder(Get(), reinterpret_cast<WGPURenderBundleEncoderDescriptor const *>(descriptor));
     return RenderBundleEncoder::Acquire(result);
 }
 
-RenderPipeline Device::CreateRenderPipeline (RenderPipelineDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateRenderPipeline(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const* >(descriptor));
+RenderPipeline Device::CreateRenderPipeline (RenderPipelineDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateRenderPipeline(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const *>(descriptor));
     return RenderPipeline::Acquire(result);
 }
 
-Sampler Device::CreateSampler (SamplerDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateSampler(Get(), reinterpret_cast<WGPUSamplerDescriptor const* >(descriptor));
+Sampler Device::CreateSampler (SamplerDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateSampler(Get(), reinterpret_cast<WGPUSamplerDescriptor const *>(descriptor));
     return Sampler::Acquire(result);
 }
 
-ShaderModule Device::CreateShaderModule (ShaderModuleDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const* >(descriptor));
+ShaderModule Device::CreateShaderModule (ShaderModuleDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const *>(descriptor));
     return ShaderModule::Acquire(result);
 }
 
-ShaderModule Device::CreateErrorShaderModule (ShaderModuleDescriptor const* descriptor, StringView errorMessage) const {
-    auto result = wgpuDeviceCreateErrorShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const* >(descriptor), *reinterpret_cast<WGPUStringView const*>(&errorMessage));
+ShaderModule Device::CreateErrorShaderModule (ShaderModuleDescriptor const * descriptor, StringView errorMessage) const {
+    auto result = wgpuDeviceCreateErrorShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const *>(descriptor), *reinterpret_cast<WGPUStringView const*>(&errorMessage));
     return ShaderModule::Acquire(result);
 }
 
-Texture Device::CreateTexture (TextureDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const* >(descriptor));
+Texture Device::CreateTexture (TextureDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const *>(descriptor));
     return Texture::Acquire(result);
 }
 
-SharedBufferMemory Device::ImportSharedBufferMemory (SharedBufferMemoryDescriptor const* descriptor) const {
-    auto result = wgpuDeviceImportSharedBufferMemory(Get(), reinterpret_cast<WGPUSharedBufferMemoryDescriptor const* >(descriptor));
+SharedBufferMemory Device::ImportSharedBufferMemory (SharedBufferMemoryDescriptor const * descriptor) const {
+    auto result = wgpuDeviceImportSharedBufferMemory(Get(), reinterpret_cast<WGPUSharedBufferMemoryDescriptor const *>(descriptor));
     return SharedBufferMemory::Acquire(result);
 }
 
-SharedTextureMemory Device::ImportSharedTextureMemory (SharedTextureMemoryDescriptor const* descriptor) const {
-    auto result = wgpuDeviceImportSharedTextureMemory(Get(), reinterpret_cast<WGPUSharedTextureMemoryDescriptor const* >(descriptor));
+SharedTextureMemory Device::ImportSharedTextureMemory (SharedTextureMemoryDescriptor const * descriptor) const {
+    auto result = wgpuDeviceImportSharedTextureMemory(Get(), reinterpret_cast<WGPUSharedTextureMemoryDescriptor const *>(descriptor));
     return SharedTextureMemory::Acquire(result);
 }
 
-SharedFence Device::ImportSharedFence (SharedFenceDescriptor const* descriptor) const {
-    auto result = wgpuDeviceImportSharedFence(Get(), reinterpret_cast<WGPUSharedFenceDescriptor const* >(descriptor));
+SharedFence Device::ImportSharedFence (SharedFenceDescriptor const * descriptor) const {
+    auto result = wgpuDeviceImportSharedFence(Get(), reinterpret_cast<WGPUSharedFenceDescriptor const *>(descriptor));
     return SharedFence::Acquire(result);
 }
 
-Texture Device::CreateErrorTexture (TextureDescriptor const* descriptor) const {
-    auto result = wgpuDeviceCreateErrorTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const* >(descriptor));
+Texture Device::CreateErrorTexture (TextureDescriptor const * descriptor) const {
+    auto result = wgpuDeviceCreateErrorTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const *>(descriptor));
     return Texture::Acquire(result);
 }
 
@@ -3141,12 +3141,12 @@ void Device::Destroy () const {
 }
 
 Status Device::GetAHardwareBufferProperties (void * handle, AHardwareBufferProperties * properties) const {
-    auto result = wgpuDeviceGetAHardwareBufferProperties(Get(), handle, reinterpret_cast<WGPUAHardwareBufferProperties * >(properties));
+    auto result = wgpuDeviceGetAHardwareBufferProperties(Get(), handle, reinterpret_cast<WGPUAHardwareBufferProperties *>(properties));
     return static_cast<Status>(result);
 }
 
 Status Device::GetLimits (Limits * limits) const {
-    auto result = wgpuDeviceGetLimits(Get(), reinterpret_cast<WGPULimits * >(limits));
+    auto result = wgpuDeviceGetLimits(Get(), reinterpret_cast<WGPULimits *>(limits));
     return static_cast<Status>(result);
 }
 
@@ -3155,17 +3155,17 @@ Future Device::GetLostFuture () const {
     return Future{result.id};
 }
 
-bool Device::HasFeature (FeatureName feature) const {
+Bool Device::HasFeature (FeatureName feature) const {
     auto result = wgpuDeviceHasFeature(Get(), *reinterpret_cast<WGPUFeatureName const*>(&feature));
     return result;
 }
 
 void Device::GetFeatures (SupportedFeatures * features) const {
-    wgpuDeviceGetFeatures(Get(), reinterpret_cast<WGPUSupportedFeatures * >(features));
+    wgpuDeviceGetFeatures(Get(), reinterpret_cast<WGPUSupportedFeatures *>(features));
 }
 
 Status Device::GetAdapterInfo (AdapterInfo * adapterInfo) const {
-    auto result = wgpuDeviceGetAdapterInfo(Get(), reinterpret_cast<WGPUAdapterInfo * >(adapterInfo));
+    auto result = wgpuDeviceGetAdapterInfo(Get(), reinterpret_cast<WGPUAdapterInfo *>(adapterInfo));
     return static_cast<Status>(result);
 }
 
@@ -3208,8 +3208,8 @@ void Device::SetLabel (StringView label) const {
     wgpuDeviceSetLabel(Get(), *reinterpret_cast<WGPUStringView const*>(&label));
 }
 
-void Device::ValidateTextureDescriptor (TextureDescriptor const* descriptor) const {
-    wgpuDeviceValidateTextureDescriptor(Get(), reinterpret_cast<WGPUTextureDescriptor const* >(descriptor));
+void Device::ValidateTextureDescriptor (TextureDescriptor const * descriptor) const {
+    wgpuDeviceValidateTextureDescriptor(Get(), reinterpret_cast<WGPUTextureDescriptor const *>(descriptor));
 }
 
 void Device::WGPUAddRef(WGPUDevice handle) {
@@ -3261,26 +3261,26 @@ void SharedBufferMemory::SetLabel (StringView label) const {
 }
 
 Status SharedBufferMemory::GetProperties (SharedBufferMemoryProperties * properties) const {
-    auto result = wgpuSharedBufferMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedBufferMemoryProperties * >(properties));
+    auto result = wgpuSharedBufferMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedBufferMemoryProperties *>(properties));
     return static_cast<Status>(result);
 }
 
-Buffer SharedBufferMemory::CreateBuffer (BufferDescriptor const* descriptor) const {
-    auto result = wgpuSharedBufferMemoryCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const* >(descriptor));
+Buffer SharedBufferMemory::CreateBuffer (BufferDescriptor const * descriptor) const {
+    auto result = wgpuSharedBufferMemoryCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const *>(descriptor));
     return Buffer::Acquire(result);
 }
 
-Status SharedBufferMemory::BeginAccess (Buffer buffer, SharedBufferMemoryBeginAccessDescriptor const* descriptor) const {
-    auto result = wgpuSharedBufferMemoryBeginAccess(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), reinterpret_cast<WGPUSharedBufferMemoryBeginAccessDescriptor const* >(descriptor));
+Status SharedBufferMemory::BeginAccess (Buffer buffer, SharedBufferMemoryBeginAccessDescriptor const * descriptor) const {
+    auto result = wgpuSharedBufferMemoryBeginAccess(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), reinterpret_cast<WGPUSharedBufferMemoryBeginAccessDescriptor const *>(descriptor));
     return static_cast<Status>(result);
 }
 
 Status SharedBufferMemory::EndAccess (Buffer buffer, SharedBufferMemoryEndAccessState * descriptor) const {
-    auto result = wgpuSharedBufferMemoryEndAccess(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), reinterpret_cast<WGPUSharedBufferMemoryEndAccessState * >(descriptor));
+    auto result = wgpuSharedBufferMemoryEndAccess(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), reinterpret_cast<WGPUSharedBufferMemoryEndAccessState *>(descriptor));
     return static_cast<Status>(result);
 }
 
-bool SharedBufferMemory::IsDeviceLost () const {
+Bool SharedBufferMemory::IsDeviceLost () const {
     auto result = wgpuSharedBufferMemoryIsDeviceLost(Get());
     return result;
 }
@@ -3304,26 +3304,26 @@ void SharedTextureMemory::SetLabel (StringView label) const {
 }
 
 Status SharedTextureMemory::GetProperties (SharedTextureMemoryProperties * properties) const {
-    auto result = wgpuSharedTextureMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedTextureMemoryProperties * >(properties));
+    auto result = wgpuSharedTextureMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedTextureMemoryProperties *>(properties));
     return static_cast<Status>(result);
 }
 
-Texture SharedTextureMemory::CreateTexture (TextureDescriptor const* descriptor) const {
-    auto result = wgpuSharedTextureMemoryCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const* >(descriptor));
+Texture SharedTextureMemory::CreateTexture (TextureDescriptor const * descriptor) const {
+    auto result = wgpuSharedTextureMemoryCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const *>(descriptor));
     return Texture::Acquire(result);
 }
 
-Status SharedTextureMemory::BeginAccess (Texture texture, SharedTextureMemoryBeginAccessDescriptor const* descriptor) const {
-    auto result = wgpuSharedTextureMemoryBeginAccess(Get(), *reinterpret_cast<WGPUTexture const*>(&texture), reinterpret_cast<WGPUSharedTextureMemoryBeginAccessDescriptor const* >(descriptor));
+Status SharedTextureMemory::BeginAccess (Texture texture, SharedTextureMemoryBeginAccessDescriptor const * descriptor) const {
+    auto result = wgpuSharedTextureMemoryBeginAccess(Get(), *reinterpret_cast<WGPUTexture const*>(&texture), reinterpret_cast<WGPUSharedTextureMemoryBeginAccessDescriptor const *>(descriptor));
     return static_cast<Status>(result);
 }
 
 Status SharedTextureMemory::EndAccess (Texture texture, SharedTextureMemoryEndAccessState * descriptor) const {
-    auto result = wgpuSharedTextureMemoryEndAccess(Get(), *reinterpret_cast<WGPUTexture const*>(&texture), reinterpret_cast<WGPUSharedTextureMemoryEndAccessState * >(descriptor));
+    auto result = wgpuSharedTextureMemoryEndAccess(Get(), *reinterpret_cast<WGPUTexture const*>(&texture), reinterpret_cast<WGPUSharedTextureMemoryEndAccessState *>(descriptor));
     return static_cast<Status>(result);
 }
 
-bool SharedTextureMemory::IsDeviceLost () const {
+Bool SharedTextureMemory::IsDeviceLost () const {
     auto result = wgpuSharedTextureMemoryIsDeviceLost(Get());
     return result;
 }
@@ -3343,7 +3343,7 @@ void SharedTextureMemory::WGPURelease(WGPUSharedTextureMemory handle) {
 // SharedFence implementation
 
 void SharedFence::ExportInfo (SharedFenceExportInfo * info) const {
-    wgpuSharedFenceExportInfo(Get(), reinterpret_cast<WGPUSharedFenceExportInfo * >(info));
+    wgpuSharedFenceExportInfo(Get(), reinterpret_cast<WGPUSharedFenceExportInfo *>(info));
 }
 
 void SharedFence::WGPUAddRef(WGPUSharedFence handle) {
@@ -3360,8 +3360,8 @@ void SharedFence::WGPURelease(WGPUSharedFence handle) {
 
 // Instance implementation
 
-Surface Instance::CreateSurface (SurfaceDescriptor const* descriptor) const {
-    auto result = wgpuInstanceCreateSurface(Get(), reinterpret_cast<WGPUSurfaceDescriptor const* >(descriptor));
+Surface Instance::CreateSurface (SurfaceDescriptor const * descriptor) const {
+    auto result = wgpuInstanceCreateSurface(Get(), reinterpret_cast<WGPUSurfaceDescriptor const *>(descriptor));
     return Surface::Acquire(result);
 }
 
@@ -3370,22 +3370,22 @@ void Instance::ProcessEvents () const {
 }
 
 WaitStatus Instance::WaitAny (size_t futureCount, FutureWaitInfo * futures, uint64_t timeoutNS) const {
-    auto result = wgpuInstanceWaitAny(Get(), futureCount, reinterpret_cast<WGPUFutureWaitInfo * >(futures), timeoutNS);
+    auto result = wgpuInstanceWaitAny(Get(), futureCount, reinterpret_cast<WGPUFutureWaitInfo *>(futures), timeoutNS);
     return static_cast<WaitStatus>(result);
 }
 
-Future Instance::RequestAdapter (RequestAdapterOptions const* options, RequestAdapterCallbackInfo callbackInfo) const {
-    auto result = wgpuInstanceRequestAdapter(Get(), reinterpret_cast<WGPURequestAdapterOptions const* >(options), *reinterpret_cast<WGPURequestAdapterCallbackInfo const*>(&callbackInfo));
+Future Instance::RequestAdapter (RequestAdapterOptions const * options, RequestAdapterCallbackInfo callbackInfo) const {
+    auto result = wgpuInstanceRequestAdapter(Get(), reinterpret_cast<WGPURequestAdapterOptions const *>(options), *reinterpret_cast<WGPURequestAdapterCallbackInfo const*>(&callbackInfo));
     return Future{result.id};
 }
 
-bool Instance::HasWGSLLanguageFeature (WGSLLanguageFeatureName feature) const {
+Bool Instance::HasWGSLLanguageFeature (WGSLLanguageFeatureName feature) const {
     auto result = wgpuInstanceHasWGSLLanguageFeature(Get(), *reinterpret_cast<WGPUWGSLLanguageFeatureName const*>(&feature));
     return result;
 }
 
 Status Instance::GetWGSLLanguageFeatures (SupportedWGSLLanguageFeatures * features) const {
-    auto result = wgpuInstanceGetWGSLLanguageFeatures(Get(), reinterpret_cast<WGPUSupportedWGSLLanguageFeatures * >(features));
+    auto result = wgpuInstanceGetWGSLLanguageFeatures(Get(), reinterpret_cast<WGPUSupportedWGSLLanguageFeatures *>(features));
     return static_cast<Status>(result);
 }
 
@@ -3453,8 +3453,8 @@ void QuerySet::WGPURelease(WGPUQuerySet handle) {
 
 // Queue implementation
 
-void Queue::Submit (size_t commandCount, CommandBuffer const* commands) const {
-    wgpuQueueSubmit(Get(), commandCount, reinterpret_cast<WGPUCommandBuffer const* >(commands));
+void Queue::Submit (size_t commandCount, CommandBuffer const * commands) const {
+    wgpuQueueSubmit(Get(), commandCount, reinterpret_cast<WGPUCommandBuffer const *>(commands));
 }
 
 Future Queue::OnSubmittedWorkDone (QueueWorkDoneCallbackInfo callbackInfo) const {
@@ -3462,20 +3462,20 @@ Future Queue::OnSubmittedWorkDone (QueueWorkDoneCallbackInfo callbackInfo) const
     return Future{result.id};
 }
 
-void Queue::WriteBuffer (Buffer buffer, uint64_t bufferOffset, void const* data, size_t size) const {
+void Queue::WriteBuffer (Buffer buffer, uint64_t bufferOffset, void const * data, size_t size) const {
     wgpuQueueWriteBuffer(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), bufferOffset, data, size);
 }
 
-void Queue::WriteTexture (TexelCopyTextureInfo const* destination, void const* data, size_t dataSize, TexelCopyBufferLayout const* dataLayout, Extent3D const* writeSize) const {
-    wgpuQueueWriteTexture(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(destination), data, dataSize, reinterpret_cast<WGPUTexelCopyBufferLayout const* >(dataLayout), reinterpret_cast<WGPUExtent3D const* >(writeSize));
+void Queue::WriteTexture (TexelCopyTextureInfo const * destination, void const * data, size_t dataSize, TexelCopyBufferLayout const * dataLayout, Extent3D const * writeSize) const {
+    wgpuQueueWriteTexture(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(destination), data, dataSize, reinterpret_cast<WGPUTexelCopyBufferLayout const *>(dataLayout), reinterpret_cast<WGPUExtent3D const *>(writeSize));
 }
 
-void Queue::CopyTextureForBrowser (TexelCopyTextureInfo const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize, CopyTextureForBrowserOptions const* options) const {
-    wgpuQueueCopyTextureForBrowser(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(source), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(destination), reinterpret_cast<WGPUExtent3D const* >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const* >(options));
+void Queue::CopyTextureForBrowser (TexelCopyTextureInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const {
+    wgpuQueueCopyTextureForBrowser(Get(), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(source), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(destination), reinterpret_cast<WGPUExtent3D const *>(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const *>(options));
 }
 
-void Queue::CopyExternalTextureForBrowser (ImageCopyExternalTexture const* source, TexelCopyTextureInfo const* destination, Extent3D const* copySize, CopyTextureForBrowserOptions const* options) const {
-    wgpuQueueCopyExternalTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyExternalTexture const* >(source), reinterpret_cast<WGPUTexelCopyTextureInfo const* >(destination), reinterpret_cast<WGPUExtent3D const* >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const* >(options));
+void Queue::CopyExternalTextureForBrowser (ImageCopyExternalTexture const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const {
+    wgpuQueueCopyExternalTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyExternalTexture const *>(source), reinterpret_cast<WGPUTexelCopyTextureInfo const *>(destination), reinterpret_cast<WGPUExtent3D const *>(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const *>(options));
 }
 
 void Queue::SetLabel (StringView label) const {
@@ -3518,7 +3518,7 @@ void RenderBundleEncoder::SetPipeline (RenderPipeline pipeline) const {
     wgpuRenderBundleEncoderSetPipeline(Get(), *reinterpret_cast<WGPURenderPipeline const*>(&pipeline));
 }
 
-void RenderBundleEncoder::SetBindGroup (uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const* dynamicOffsets) const {
+void RenderBundleEncoder::SetBindGroup (uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
     wgpuRenderBundleEncoderSetBindGroup(Get(), groupIndex, *reinterpret_cast<WGPUBindGroup const*>(&group), dynamicOffsetCount, dynamicOffsets);
 }
 
@@ -3558,8 +3558,8 @@ void RenderBundleEncoder::SetIndexBuffer (Buffer buffer, IndexFormat format, uin
     wgpuRenderBundleEncoderSetIndexBuffer(Get(), *reinterpret_cast<WGPUBuffer const*>(&buffer), *reinterpret_cast<WGPUIndexFormat const*>(&format), offset, size);
 }
 
-RenderBundle RenderBundleEncoder::Finish (RenderBundleDescriptor const* descriptor) const {
-    auto result = wgpuRenderBundleEncoderFinish(Get(), reinterpret_cast<WGPURenderBundleDescriptor const* >(descriptor));
+RenderBundle RenderBundleEncoder::Finish (RenderBundleDescriptor const * descriptor) const {
+    auto result = wgpuRenderBundleEncoderFinish(Get(), reinterpret_cast<WGPURenderBundleDescriptor const *>(descriptor));
     return RenderBundle::Acquire(result);
 }
 
@@ -3567,7 +3567,7 @@ void RenderBundleEncoder::SetLabel (StringView label) const {
     wgpuRenderBundleEncoderSetLabel(Get(), *reinterpret_cast<WGPUStringView const*>(&label));
 }
 
-void RenderBundleEncoder::SetImmediateData (uint32_t offset, void const* data, size_t size) const {
+void RenderBundleEncoder::SetImmediateData (uint32_t offset, void const * data, size_t size) const {
     wgpuRenderBundleEncoderSetImmediateData(Get(), offset, data, size);
 }
 
@@ -3589,7 +3589,7 @@ void RenderPassEncoder::SetPipeline (RenderPipeline pipeline) const {
     wgpuRenderPassEncoderSetPipeline(Get(), *reinterpret_cast<WGPURenderPipeline const*>(&pipeline));
 }
 
-void RenderPassEncoder::SetBindGroup (uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const* dynamicOffsets) const {
+void RenderPassEncoder::SetBindGroup (uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
     wgpuRenderPassEncoderSetBindGroup(Get(), groupIndex, *reinterpret_cast<WGPUBindGroup const*>(&group), dynamicOffsetCount, dynamicOffsets);
 }
 
@@ -3617,8 +3617,8 @@ void RenderPassEncoder::MultiDrawIndexedIndirect (Buffer indirectBuffer, uint64_
     wgpuRenderPassEncoderMultiDrawIndexedIndirect(Get(), *reinterpret_cast<WGPUBuffer const*>(&indirectBuffer), indirectOffset, maxDrawCount, *reinterpret_cast<WGPUBuffer const*>(&drawCountBuffer), drawCountBufferOffset);
 }
 
-void RenderPassEncoder::ExecuteBundles (size_t bundleCount, RenderBundle const* bundles) const {
-    wgpuRenderPassEncoderExecuteBundles(Get(), bundleCount, reinterpret_cast<WGPURenderBundle const* >(bundles));
+void RenderPassEncoder::ExecuteBundles (size_t bundleCount, RenderBundle const * bundles) const {
+    wgpuRenderPassEncoderExecuteBundles(Get(), bundleCount, reinterpret_cast<WGPURenderBundle const *>(bundles));
 }
 
 void RenderPassEncoder::InsertDebugMarker (StringView markerLabel) const {
@@ -3637,8 +3637,8 @@ void RenderPassEncoder::SetStencilReference (uint32_t reference) const {
     wgpuRenderPassEncoderSetStencilReference(Get(), reference);
 }
 
-void RenderPassEncoder::SetBlendConstant (Color const* color) const {
-    wgpuRenderPassEncoderSetBlendConstant(Get(), reinterpret_cast<WGPUColor const* >(color));
+void RenderPassEncoder::SetBlendConstant (Color const * color) const {
+    wgpuRenderPassEncoderSetBlendConstant(Get(), reinterpret_cast<WGPUColor const *>(color));
 }
 
 void RenderPassEncoder::SetViewport (float x, float y, float width, float height, float minDepth, float maxDepth) const {
@@ -3681,7 +3681,7 @@ void RenderPassEncoder::SetLabel (StringView label) const {
     wgpuRenderPassEncoderSetLabel(Get(), *reinterpret_cast<WGPUStringView const*>(&label));
 }
 
-void RenderPassEncoder::SetImmediateData (uint32_t offset, void const* data, size_t size) const {
+void RenderPassEncoder::SetImmediateData (uint32_t offset, void const * data, size_t size) const {
     wgpuRenderPassEncoderSetImmediateData(Get(), offset, data, size);
 }
 
@@ -3763,17 +3763,17 @@ void ShaderModule::WGPURelease(WGPUShaderModule handle) {
 
 // Surface implementation
 
-void Surface::Configure (SurfaceConfiguration const* config) const {
-    wgpuSurfaceConfigure(Get(), reinterpret_cast<WGPUSurfaceConfiguration const* >(config));
+void Surface::Configure (SurfaceConfiguration const * config) const {
+    wgpuSurfaceConfigure(Get(), reinterpret_cast<WGPUSurfaceConfiguration const *>(config));
 }
 
 Status Surface::GetCapabilities (Adapter adapter, SurfaceCapabilities * capabilities) const {
-    auto result = wgpuSurfaceGetCapabilities(Get(), *reinterpret_cast<WGPUAdapter const*>(&adapter), reinterpret_cast<WGPUSurfaceCapabilities * >(capabilities));
+    auto result = wgpuSurfaceGetCapabilities(Get(), *reinterpret_cast<WGPUAdapter const*>(&adapter), reinterpret_cast<WGPUSurfaceCapabilities *>(capabilities));
     return static_cast<Status>(result);
 }
 
 void Surface::GetCurrentTexture (SurfaceTexture * surfaceTexture) const {
-    wgpuSurfaceGetCurrentTexture(Get(), reinterpret_cast<WGPUSurfaceTexture * >(surfaceTexture));
+    wgpuSurfaceGetCurrentTexture(Get(), reinterpret_cast<WGPUSurfaceTexture *>(surfaceTexture));
 }
 
 void Surface::Present () const {
@@ -3802,13 +3802,13 @@ void Surface::WGPURelease(WGPUSurface handle) {
 
 // Texture implementation
 
-TextureView Texture::CreateView (TextureViewDescriptor const* descriptor) const {
-    auto result = wgpuTextureCreateView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const* >(descriptor));
+TextureView Texture::CreateView (TextureViewDescriptor const * descriptor) const {
+    auto result = wgpuTextureCreateView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const *>(descriptor));
     return TextureView::Acquire(result);
 }
 
-TextureView Texture::CreateErrorView (TextureViewDescriptor const* descriptor) const {
-    auto result = wgpuTextureCreateErrorView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const* >(descriptor));
+TextureView Texture::CreateErrorView (TextureViewDescriptor const * descriptor) const {
+    auto result = wgpuTextureCreateErrorView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const *>(descriptor));
     return TextureView::Acquire(result);
 }
 
@@ -3890,13 +3890,13 @@ void TextureView::WGPURelease(WGPUTextureView handle) {
     }
 }
 
-Instance CreateInstance (InstanceDescriptor const* descriptor) {
-    auto result = wgpuCreateInstance(reinterpret_cast<WGPUInstanceDescriptor const* >(descriptor));
+Instance CreateInstance (InstanceDescriptor const * descriptor) {
+    auto result = wgpuCreateInstance(reinterpret_cast<WGPUInstanceDescriptor const *>(descriptor));
     return Instance::Acquire(result);
 }
 
 Status GetInstanceCapabilities (InstanceCapabilities * capabilities) {
-    auto result = wgpuGetInstanceCapabilities(reinterpret_cast<WGPUInstanceCapabilities * >(capabilities));
+    auto result = wgpuGetInstanceCapabilities(reinterpret_cast<WGPUInstanceCapabilities *>(capabilities));
     return static_cast<Status>(result);
 }
 

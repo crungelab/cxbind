@@ -204,8 +204,11 @@ class ConstantDefinition(Type):
 
 class FunctionDeclaration(Type):
     category: Literal["function"]
-    returns: Optional[str] = None
-    args: Optional[List[RecordMember]] = None
+    #returns: Optional[str] = None
+    return_type_ref: Optional[str] = Field(alias="returns", default=None)
+    return_type: Optional["Type"] = None
+
+    args: Optional[List[RecordMember]] = []
 
 
 TypeUnion = Annotated[
