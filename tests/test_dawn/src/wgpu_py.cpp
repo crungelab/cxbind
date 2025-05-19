@@ -718,17 +718,17 @@ py::enum_<SubgroupMatrixComponentType>(m, "SubgroupMatrixComponentType", py::ari
 ;
 
 py::enum_<BufferUsage>(m, "BufferUsage", py::arithmetic())
-.value("NONE", BufferUsage::None)
-.value("MAP_READ", BufferUsage::MapRead)
-.value("MAP_WRITE", BufferUsage::MapWrite)
-.value("COPY_SRC", BufferUsage::CopySrc)
-.value("COPY_DST", BufferUsage::CopyDst)
-.value("INDEX", BufferUsage::Index)
-.value("VERTEX", BufferUsage::Vertex)
-.value("UNIFORM", BufferUsage::Uniform)
-.value("STORAGE", BufferUsage::Storage)
-.value("INDIRECT", BufferUsage::Indirect)
-.value("QUERY_RESOLVE", BufferUsage::QueryResolve)
+    .value("NONE", BufferUsage::None)
+    .value("MAP_READ", BufferUsage::MapRead)
+    .value("MAP_WRITE", BufferUsage::MapWrite)
+    .value("COPY_SRC", BufferUsage::CopySrc)
+    .value("COPY_DST", BufferUsage::CopyDst)
+    .value("INDEX", BufferUsage::Index)
+    .value("VERTEX", BufferUsage::Vertex)
+    .value("UNIFORM", BufferUsage::Uniform)
+    .value("STORAGE", BufferUsage::Storage)
+    .value("INDIRECT", BufferUsage::Indirect)
+    .value("QUERY_RESOLVE", BufferUsage::QueryResolve)
     
     .def("__or__", [](pywgpu::BufferUsage& a, pywgpu::BufferUsage& b) {
         return (pywgpu::BufferUsage)(a | b);
@@ -736,12 +736,12 @@ py::enum_<BufferUsage>(m, "BufferUsage", py::arithmetic())
     
 
 py::enum_<ColorWriteMask>(m, "ColorWriteMask", py::arithmetic())
-.value("NONE", ColorWriteMask::None)
-.value("RED", ColorWriteMask::Red)
-.value("GREEN", ColorWriteMask::Green)
-.value("BLUE", ColorWriteMask::Blue)
-.value("ALPHA", ColorWriteMask::Alpha)
-.value("ALL", ColorWriteMask::All)
+    .value("NONE", ColorWriteMask::None)
+    .value("RED", ColorWriteMask::Red)
+    .value("GREEN", ColorWriteMask::Green)
+    .value("BLUE", ColorWriteMask::Blue)
+    .value("ALPHA", ColorWriteMask::Alpha)
+    .value("ALL", ColorWriteMask::All)
     
     .def("__or__", [](pywgpu::ColorWriteMask& a, pywgpu::ColorWriteMask& b) {
         return (pywgpu::ColorWriteMask)(a | b);
@@ -749,9 +749,9 @@ py::enum_<ColorWriteMask>(m, "ColorWriteMask", py::arithmetic())
     
 
 py::enum_<MapMode>(m, "MapMode", py::arithmetic())
-.value("NONE", MapMode::None)
-.value("READ", MapMode::Read)
-.value("WRITE", MapMode::Write)
+    .value("NONE", MapMode::None)
+    .value("READ", MapMode::Read)
+    .value("WRITE", MapMode::Write)
     
     .def("__or__", [](pywgpu::MapMode& a, pywgpu::MapMode& b) {
         return (pywgpu::MapMode)(a | b);
@@ -759,10 +759,10 @@ py::enum_<MapMode>(m, "MapMode", py::arithmetic())
     
 
 py::enum_<ShaderStage>(m, "ShaderStage", py::arithmetic())
-.value("NONE", ShaderStage::None)
-.value("VERTEX", ShaderStage::Vertex)
-.value("FRAGMENT", ShaderStage::Fragment)
-.value("COMPUTE", ShaderStage::Compute)
+    .value("NONE", ShaderStage::None)
+    .value("VERTEX", ShaderStage::Vertex)
+    .value("FRAGMENT", ShaderStage::Fragment)
+    .value("COMPUTE", ShaderStage::Compute)
     
     .def("__or__", [](pywgpu::ShaderStage& a, pywgpu::ShaderStage& b) {
         return (pywgpu::ShaderStage)(a | b);
@@ -770,14 +770,14 @@ py::enum_<ShaderStage>(m, "ShaderStage", py::arithmetic())
     
 
 py::enum_<TextureUsage>(m, "TextureUsage", py::arithmetic())
-.value("NONE", TextureUsage::None)
-.value("COPY_SRC", TextureUsage::CopySrc)
-.value("COPY_DST", TextureUsage::CopyDst)
-.value("TEXTURE_BINDING", TextureUsage::TextureBinding)
-.value("STORAGE_BINDING", TextureUsage::StorageBinding)
-.value("RENDER_ATTACHMENT", TextureUsage::RenderAttachment)
-.value("TRANSIENT_ATTACHMENT", TextureUsage::TransientAttachment)
-.value("STORAGE_ATTACHMENT", TextureUsage::StorageAttachment)
+    .value("NONE", TextureUsage::None)
+    .value("COPY_SRC", TextureUsage::CopySrc)
+    .value("COPY_DST", TextureUsage::CopyDst)
+    .value("TEXTURE_BINDING", TextureUsage::TextureBinding)
+    .value("STORAGE_BINDING", TextureUsage::StorageBinding)
+    .value("RENDER_ATTACHMENT", TextureUsage::RenderAttachment)
+    .value("TRANSIENT_ATTACHMENT", TextureUsage::TransientAttachment)
+    .value("STORAGE_ATTACHMENT", TextureUsage::StorageAttachment)
     
     .def("__or__", [](pywgpu::TextureUsage& a, pywgpu::TextureUsage& b) {
         return (pywgpu::TextureUsage)(a | b);
@@ -785,12 +785,12 @@ py::enum_<TextureUsage>(m, "TextureUsage", py::arithmetic())
     
 
 py::enum_<HeapProperty>(m, "HeapProperty", py::arithmetic())
-.value("NONE", HeapProperty::None)
-.value("DEVICE_LOCAL", HeapProperty::DeviceLocal)
-.value("HOST_VISIBLE", HeapProperty::HostVisible)
-.value("HOST_COHERENT", HeapProperty::HostCoherent)
-.value("HOST_UNCACHED", HeapProperty::HostUncached)
-.value("HOST_CACHED", HeapProperty::HostCached)
+    .value("NONE", HeapProperty::None)
+    .value("DEVICE_LOCAL", HeapProperty::DeviceLocal)
+    .value("HOST_VISIBLE", HeapProperty::HostVisible)
+    .value("HOST_COHERENT", HeapProperty::HostCoherent)
+    .value("HOST_UNCACHED", HeapProperty::HostUncached)
+    .value("HOST_CACHED", HeapProperty::HostCached)
     
     .def("__or__", [](pywgpu::HeapProperty& a, pywgpu::HeapProperty& b) {
         return (pywgpu::HeapProperty)(a | b);
@@ -976,7 +976,7 @@ _CommandEncoder
         , py::arg("query_set"), py::arg("first_query"), py::arg("query_count"), py::arg("destination"), py::arg("destination_offset")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_buffer",[](pywgpu::CommandEncoder& self, pywgpu::Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    .def("write_buffer",[](pywgpu::CommandEncoder& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
         py::buffer_info dataInfo = data.request();
         uint8_t const* _data = (uint8_t const*)dataInfo.ptr;
         auto size = dataInfo.size * dataInfo.itemsize;
@@ -1015,8 +1015,8 @@ _ComputePassEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, py::buffer dynamicOffsets) {
-        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.request();
+    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
         
@@ -1384,7 +1384,7 @@ _Queue
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_buffer",[](pywgpu::Queue& self, pywgpu::Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    .def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = dataInfo.size * dataInfo.itemsize;
@@ -1394,7 +1394,7 @@ _Queue
         , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_texture",[](pywgpu::Queue& self, pywgpu::TexelCopyTextureInfo const* destination, py::buffer data, pywgpu::TexelCopyBufferLayout const* dataLayout, pywgpu::Extent3D const* writeSize) {
+    .def("write_texture",[](pywgpu::Queue& self, TexelCopyTextureInfo const * destination, py::buffer data, TexelCopyBufferLayout const * dataLayout, Extent3D const * writeSize) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto dataSize = dataInfo.size * dataInfo.itemsize;
@@ -1436,8 +1436,8 @@ _RenderBundleEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, py::buffer dynamicOffsets) {
-        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.request();
+    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
         
@@ -1509,8 +1509,8 @@ _RenderPassEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, py::buffer dynamicOffsets) {
-        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.request();
+    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
         

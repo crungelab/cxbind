@@ -32,8 +32,44 @@ class BufferArgWrapper(ArgWrapper):
         self.length_member = length_member
 
     def make_wrapper_type(self):
-        return "py::buffer"
+        if self.arg.optional or self.arg.default_value is not None:
+            return f"std::optional<py::buffer>"
+        else:
+            return "py::buffer"
+
+    '''
+    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
+        uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
+        auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
+        
+        return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
+        }
+        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr
+        , py::return_value_policy::automatic_reference)
+    '''
+
+    def render(self, out: RenderStream):
+        arg_name = self.arg.name.camelCase()
+        arg_type = get_arg_type_string(self.arg)
+        info_name = f"{self.arg.name.camelCase()}Info"
     
+        if self.arg.optional or self.arg.default_value is not None:
+            value = f"""\
+            py::buffer_info {info_name} = {arg_name}.has_value() ? {arg_name}.value().request() : py::buffer_info();
+            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
+            auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
+            """
+        else:
+            value = f"""\
+            py::buffer_info {info_name} = {arg_name}.request();
+            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
+            auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
+            """
+        
+        out(value)
+
+    '''
     def render(self, out: RenderStream):
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
@@ -44,7 +80,7 @@ class BufferArgWrapper(ArgWrapper):
         auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
         """
         out(value)
-
+    '''
 class VectorArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):
         super().__init__(arg)
@@ -138,13 +174,19 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
 
                 if arg.name in arg_wrappers:
                     arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
+                else:
+                    arg_list.append(self.as_annotated_cppMember(arg))
+
+                '''
+                if arg.name in arg_wrappers:
+                    arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
                 elif arg_annotation:
                     arg_list.append(f'{arg_type} {arg_annotation} {arg_name}')
                     arg_type_list.append(f'{arg_type} {arg_annotation}')
                 else:
                     arg_list.append(f'{arg_type} {arg_name}')
                     arg_type_list.append(f'{arg_type}')
-
+                '''
                 #TODO: This should work but it doesn't
                 '''
                 else:
