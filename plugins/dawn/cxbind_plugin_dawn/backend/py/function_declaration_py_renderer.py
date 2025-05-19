@@ -9,16 +9,15 @@ class FunctionDeclarationPyRenderer(FunctionDeclarationRenderer):
         fn = self.node
         fn_name = fn.name.snake_case()
         fn_cpp_name = fn.name.CamelCase()
-        #args = fn.args or []
 
         arg_list = []
         arg_type_list = []
         py_arg_list = []
 
         excluded_names = {
-            Name.intern(arg.length)
+            arg.length_member.name
             for arg in fn.args
-            if arg.length and isinstance(arg.length, str)
+            if arg.length_member is not None
         }
 
         if excluded_names:
@@ -34,28 +33,15 @@ class FunctionDeclarationPyRenderer(FunctionDeclarationRenderer):
         ]
 
         for arg in args:
-            arg_type_name = arg.type.name
-            if arg_type_name.native:
-                arg_type = arg_type_name.get()
-            else:
-                arg_type = arg_type_name.camelCase()
-
-            arg_annotation = arg.annotation
-
             py_arg_name = arg.name.snake_case()
-            arg_name = arg.name.camelCase()
             
             if arg.optional:
                 py_arg_list.append(f'py::arg("{py_arg_name}") = nullptr')
             else:
                 py_arg_list.append(f'py::arg("{py_arg_name}")')
-            
-            if arg_annotation:
-                arg_list.append(f'{arg_type} {arg_annotation} {arg_name}')
-                arg_type_list.append(f'{arg_type} {arg_annotation}')
-            else:
-                arg_list.append(f'{arg_type} {arg_name}')
-                arg_type_list.append(f'{arg_type}')
+
+            arg_list.append(self.as_annotated_cppMember(arg))
+            arg_type_list.append(self.as_annotated_cppType(arg))
 
         fn_expr = f"&pywgpu::{fn_cpp_name}"
 

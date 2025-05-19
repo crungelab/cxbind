@@ -113,10 +113,11 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         self.out / f"pywgpu::{class_name} obj{{}};" << "\n"
 
         members_by_name = {member.name: member for member in node.members}
+        
         excluded_names = {
-            Name.intern(member.length)
+            member.length_member.name
             for member in node.members
-            if member.length and isinstance(member.length, str)
+            if member.length_member is not None
         }
 
         members = [
@@ -156,16 +157,11 @@ class StructureTypePyRenderer(StructureTypeRenderer):
                 continue
             '''
 
-            length_member = members_by_name.get(
-                Name.intern(member.length)
-            ) if member.length and isinstance(member.length, str) else None
-
-            if length_member is not None:
-                if length_member.default_value is not None:
-                    logger.debug(
-                        f"Skipping member {member.name}, length: {length_member.name} with default value"
-                    )
-                    continue
+            if member.length_member is not None and member.length_member.default_value is not None:
+                logger.debug(
+                    f"Skipping member {member.name}, length: {member.length_member.name} with default value"
+                )
+                continue
 
             required_names.append(member.name)
 
@@ -221,11 +217,9 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             stripped_cppType = cppType.replace("const ", "").replace(" *", "")
 
             if member.length:
-                length_member = None
-                if isinstance(member.length, str):
-                    length_member = members_by_name.get(Name.intern(member.length))
-                    if length_member is not None:
-                        length_member_cpp_name = length_member.name.camelCase()
+                length_member = member.length_member
+                if length_member is not None:
+                    length_member_cpp_name = length_member.name.camelCase()
 
                 stripped_cppType = cppType.replace("const ", "").replace(" *", "")
                 # print(f"stripped_cppType: {stripped_cppType}")
@@ -266,7 +260,6 @@ class StructureTypePyRenderer(StructureTypeRenderer):
                 (
                     self.out
                     / f'auto value = kwargs["{member_name}"].cast<{cppType}>();'
-                    #<< f'auto value = kwargs["{member_name}"].cast<{stripped_cppType}>();'
                     << "\n"
                 )
                 self.out / f"obj.{member_cpp_name} = value;" << "\n"

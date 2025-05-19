@@ -3363,26 +3363,17 @@ _CopyTextureForBrowserOptions
         }
         if (kwargs.contains("src_transfer_function_parameters"))
         {
-            auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["src_transfer_function_parameters"].cast<float const *>();
             obj.srcTransferFunctionParameters = value;
         }
         if (kwargs.contains("conversion_matrix"))
         {
-            auto _value = kwargs["conversion_matrix"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["conversion_matrix"].cast<float const *>();
             obj.conversionMatrix = value;
         }
         if (kwargs.contains("dst_transfer_function_parameters"))
         {
-            auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["dst_transfer_function_parameters"].cast<float const *>();
             obj.dstTransferFunctionParameters = value;
         }
         if (kwargs.contains("dst_alpha_mode"))
@@ -3748,34 +3739,22 @@ _ExternalTextureDescriptor
         }
         if (kwargs.contains("yuv_to_rgb_conversion_matrix"))
         {
-            auto _value = kwargs["yuv_to_rgb_conversion_matrix"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["yuv_to_rgb_conversion_matrix"].cast<float const *>();
             obj.yuvToRgbConversionMatrix = value;
         }
         if (kwargs.contains("src_transfer_function_parameters"))
         {
-            auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["src_transfer_function_parameters"].cast<float const *>();
             obj.srcTransferFunctionParameters = value;
         }
         if (kwargs.contains("dst_transfer_function_parameters"))
         {
-            auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["dst_transfer_function_parameters"].cast<float const *>();
             obj.dstTransferFunctionParameters = value;
         }
         if (kwargs.contains("gamut_conversion_matrix"))
         {
-            auto _value = kwargs["gamut_conversion_matrix"].cast<std::vector<float>>();
-            auto count = _value.size();
-            auto value = new float[count];
-            std::copy(_value.begin(), _value.end(), value);
+            auto value = kwargs["gamut_conversion_matrix"].cast<float const *>();
             obj.gamutConversionMatrix = value;
         }
         if (kwargs.contains("mirrored"))

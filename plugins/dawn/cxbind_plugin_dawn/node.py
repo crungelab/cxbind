@@ -5,10 +5,10 @@ from .name import Name
 
 
 class Node(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed = True)
     parent: Optional["Node"] = None
     tags: Optional[List[str]] = None
     _comment: Optional[str] = None
-    model_config = ConfigDict(arbitrary_types_allowed = True)
 
 
 class TypedNode(Node):
@@ -22,33 +22,19 @@ class TypedNode(Node):
     def type(self, value: "Type"):
         self._type = value
 
-#class RecordMember(Node):
 class RecordMember(TypedNode):
-    #model_config = ConfigDict(populate_by_name=True)
     name: Name
-    #type: str
-    #type_ref: str = Field(alias="type", default=None)
-    #_type: Optional["Entry"] = None
     annotation: Optional[str] = None
     optional: Optional[bool] = False
     no_default: Optional[bool] = False
     default_value: Union[str, int] = Field(alias="default", default=None)
     length: Optional[Union[str, int]] = None
-    '''
-    @property
-    def type(self):
-        return self._type
-    @type.setter
-    def type(self, value: "Entry"):
-        self._type = value
-    '''
+    length_member: Optional["RecordMember"] = None
 
 class Method(Node):
     name: Name
-    #returns: Optional[str] = None
     return_type_ref: Optional[str] = Field(alias="returns", default=None)
     return_type: Optional["Type"] = None
-    #args: Optional[List[RecordMember]] = None
     args: Optional[List[RecordMember]] = []
     no_autolock: Optional[bool] = Field(alias="no autolock", default=None)
 

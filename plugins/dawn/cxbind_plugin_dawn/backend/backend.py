@@ -8,11 +8,9 @@ from pathlib import Path
 
 from loguru import logger
 import jinja2
-import os
 
 from ..processor import Processor
 from ..node import (
-    Root,
     ObjectType,
     EnumType,
     BitmaskType,
@@ -24,7 +22,7 @@ from ..node import (
     CallbackInfoType,
     CallbackFunctionType,
 )
-
+from ..name import Name
 
 class Backend(Processor):
     def __init__(self, program: "Program") -> None:
@@ -90,10 +88,12 @@ class Backend(Processor):
     def process_object_type(self, obj: ObjectType):
         # logger.debug(f"Backend: Processing object type '{obj.name.CamelCase()}'")
         for method in obj.methods:
-            #method.return_type = self.program.lookup(method.return_type_ref)
             method.return_type = self.program.lookup(method.return_type_ref) or self.program.lookup("void")
+            args_by_name = {arg.name: arg for arg in method.args}
             for arg in method.args:
                 arg.type = self.program.lookup(arg.type_ref)
+                if arg.length is not None and isinstance(arg.length, str):
+                    arg.length_member = args_by_name[Name.intern(arg.length)]
 
         self.object_types.append(obj)
 
@@ -107,8 +107,12 @@ class Backend(Processor):
 
     def process_structure_type(self, structure: StructureType):
         # logger.debug(f"Backend: Processing structure type '{structure.name.CamelCase()}'")
+        members_by_name = {member.name: member for member in structure.members}
         for member in structure.members:
             member.type = self.program.lookup(member.type_ref)
+            if member.length is not None and isinstance(member.length, str):
+                member.length_member = members_by_name[Name.intern(member.length)]
+
         self.structure_types.append(structure)
 
     def process_function_pointer_type(self, function_pointer: FunctionPointerType):
@@ -124,10 +128,13 @@ class Backend(Processor):
 
     def process_function_declaration(self, fn_decl: FunctionDeclaration):
         # logger.debug(f"Backend: Processing function declaration '{fn_decl.name.CamelCase()}'")
-        #fn_decl.return_type = self.program.lookup(fn_decl.return_type_ref)
         fn_decl.return_type = self.program.lookup(fn_decl.return_type_ref) or self.program.lookup("void")
+        args_by_name = {arg.name: arg for arg in fn_decl.args}
         for arg in fn_decl.args:
             arg.type = self.program.lookup(arg.type_ref)
+            if arg.length is not None and isinstance(arg.length, str):
+                arg.length_member = args_by_name[Name.intern(arg.length)]
+
         self.function_declarations.append(fn_decl)
 
     def process_callback_info_type(self, callback_info: CallbackInfoType):

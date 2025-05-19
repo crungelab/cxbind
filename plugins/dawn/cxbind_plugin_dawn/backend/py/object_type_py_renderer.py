@@ -106,11 +106,10 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
             method_cpp_name = method.name.CamelCase()
             use_lambda = False
 
-            args_by_name = {arg.name: arg for arg in method.args}
             excluded_names = {
-                Name.intern(arg.length)
+                arg.length_member.name
                 for arg in method.args
-                if arg.length and isinstance(arg.length, str)
+                if arg.length_member is not None
             }
 
             if excluded_names:
@@ -124,14 +123,13 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
             arg_wrappers = {}
 
             for arg in args:
-                if arg.length is not None and isinstance(arg.length, str):
+                if arg.length_member is not None:
                     arg_type = arg.type
-                    length_member = args_by_name[Name.intern(arg.length)]
                     arg_wrapper = None
                     if arg_type.name.native:
-                        arg_wrapper = BufferArgWrapper(arg, length_member)
+                        arg_wrapper = BufferArgWrapper(arg, arg.length_member)
                     else:
-                        arg_wrapper = VectorArgWrapper(arg, length_member)
+                        arg_wrapper = VectorArgWrapper(arg, arg.length_member)
                     arg_wrappers[arg.name] = arg_wrapper
 
                     snippet_list.append(arg_wrapper)
