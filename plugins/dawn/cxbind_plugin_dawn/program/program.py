@@ -3,7 +3,7 @@ from cxbind.unit import Unit
 
 from ..frontend import Frontend
 from ..backend import Backend
-from ..node import Root, Entry
+from ..node import Root, Type
 
 
 class Program(ProgramBase):
@@ -13,7 +13,9 @@ class Program(ProgramBase):
         self.frontend = Frontend(self)
         self.backend: Backend = None
 
-    def lookup(self, name: str) -> Entry:
+    def lookup(self, name: str) -> Type:
+        if name is None:
+            return None
         return self.root[name]
 
     def run(self):

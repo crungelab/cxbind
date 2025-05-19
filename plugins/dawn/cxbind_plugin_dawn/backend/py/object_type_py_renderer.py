@@ -6,6 +6,7 @@ from ...node import Method, RecordMember
 from ..render_stream import RenderStream
 from ..object_type_renderer import ObjectTypeRenderer, ObjectType
 
+
 def get_arg_type_string(arg) -> str:
     arg_type = ""
     arg_type_name = arg.type.name
@@ -26,6 +27,7 @@ class ArgWrapper:
     def make_wrapper_type(self):
         pass
 
+
 class BufferArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):
         super().__init__(arg)
@@ -37,23 +39,11 @@ class BufferArgWrapper(ArgWrapper):
         else:
             return "py::buffer"
 
-    '''
-    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, pywgpu::BindGroup group, std::optional<py::buffer> dynamicOffsets) {
-        py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
-        uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
-        auto dynamicOffsetCount = dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize;
-        
-        return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
-        }
-        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr
-        , py::return_value_policy::automatic_reference)
-    '''
-
     def render(self, out: RenderStream):
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
         info_name = f"{self.arg.name.camelCase()}Info"
-    
+
         if self.arg.optional or self.arg.default_value is not None:
             value = f"""\
             py::buffer_info {info_name} = {arg_name}.has_value() ? {arg_name}.value().request() : py::buffer_info();
@@ -66,21 +56,10 @@ class BufferArgWrapper(ArgWrapper):
             {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
             auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
             """
-        
+
         out(value)
 
-    '''
-    def render(self, out: RenderStream):
-        arg_name = self.arg.name.camelCase()
-        arg_type = get_arg_type_string(self.arg)
-        info_name = f"{self.arg.name.camelCase()}Info"
-        value = f"""\
-        py::buffer_info {info_name} = {arg_name}.request();
-        {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
-        auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
-        """
-        out(value)
-    '''
+
 class VectorArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):
         super().__init__(arg)
@@ -110,9 +89,13 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
     def render(self):
         class_name = self.node.name.CamelCase()
 
-        self.out << f'py::class_<{class_name}> _{class_name}(m, "{class_name}");' << "\n"
+        (
+            self.out
+            << f'py::class_<{class_name}> _{class_name}(m, "{class_name}");'
+            << "\n"
+        )
         self.out / f'registry.on(m, "{class_name}", _{class_name});' << "\n\n"
-        self.out / f'_{class_name}' << "\n"
+        self.out / f"_{class_name}" << "\n"
 
         self.out.indent()
         for method in self.node.methods:
@@ -121,8 +104,6 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
 
             method_name = method.name.snake_case()
             method_cpp_name = method.name.CamelCase()
-            return_type = method.returns
-            #args = method.args or []
             use_lambda = False
 
             args_by_name = {arg.name: arg for arg in method.args}
@@ -135,18 +116,12 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
             if excluded_names:
                 use_lambda = True
 
-            args = [
-                arg
-                for arg in method.args
-                if arg.name not in excluded_names
-            ]
+            args = [arg for arg in method.args if arg.name not in excluded_names]
 
             arg_list = []
-            arg_type_list = []
             py_arg_list = []
             snippet_list = []
             arg_wrappers = {}
-
 
             for arg in args:
                 if arg.length is not None and isinstance(arg.length, str):
@@ -159,7 +134,6 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                         arg_wrapper = VectorArgWrapper(arg, length_member)
                     arg_wrappers[arg.name] = arg_wrapper
 
-                    #snippet_list.append(arg_wrapper.make_snippet())
                     snippet_list.append(arg_wrapper)
 
             for arg in args:
@@ -173,59 +147,57 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
                 py_arg_list.append(f'py::arg("{py_arg_name}"){default_value}')
 
                 if arg.name in arg_wrappers:
-                    arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
+                    arg_list.append(
+                        f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}"
+                    )
                 else:
                     arg_list.append(self.as_annotated_cppMember(arg))
-
-                '''
-                if arg.name in arg_wrappers:
-                    arg_list.append(f"{arg_wrappers[arg.name].make_wrapper_type()} {arg.name.camelCase()}")
-                elif arg_annotation:
-                    arg_list.append(f'{arg_type} {arg_annotation} {arg_name}')
-                    arg_type_list.append(f'{arg_type} {arg_annotation}')
-                else:
-                    arg_list.append(f'{arg_type} {arg_name}')
-                    arg_type_list.append(f'{arg_type}')
-                '''
-                #TODO: This should work but it doesn't
-                '''
-                else:
-                    arg_list.append(self.as_annotated_cppMember(arg))
-                '''
 
             arg_name_list = []
+
             for arg in method.args:
                 if arg.name in arg_wrappers:
                     arg_name_list.append(f"_{arg.name.camelCase()}")
                 else:
                     arg_name_list.append(f"{arg.name.camelCase()}")
 
-            
             self.out / f'.def("{method_name}",'
             self.out.indent()
 
             if use_lambda:
-                self.out << f"[](pywgpu::{class_name}& self, {', '.join(arg_list)}) {{" << "\n"
+                (
+                    self.out
+                    << f"[](pywgpu::{class_name}& self, {', '.join(arg_list)}) {{"
+                    << "\n"
+                )
                 for snippet in snippet_list:
                     snippet.render(self.out)
-                self.out / f"return self.{method_cpp_name}({', '.join(arg_name_list)});" << "\n"
+                (
+                    self.out
+                    / f"return self.{method_cpp_name}({', '.join(arg_name_list)});"
+                    << "\n"
+                )
                 self.out / "}" << "\n"
 
             else:
                 self.out << f"&pywgpu::{class_name}::{method_cpp_name}" << "\n"
 
             if py_arg_list:
-                self.out(f"""\
+                self.out(
+                    f"""\
                 , {', '.join(py_arg_list)}
                 , py::return_value_policy::automatic_reference)
-                """)
+                """
+                )
             else:
-                self.out(f"""\
+                self.out(
+                    f"""\
                 , py::return_value_policy::automatic_reference)
-                """)
+                """
+                )
 
             self.out.dedent()
 
-        self.out << "    ;\n"
+        self.out / ";\n"
         self.out.dedent()
         self.out << "\n"

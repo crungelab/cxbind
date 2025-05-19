@@ -4,7 +4,7 @@ import re
 
 from loguru import logger
 
-from ..node import Node, RecordMember, Entry
+from ..node import Node, RecordMember, Type
 from ..name import Name
 from .render_context import RenderContext
 
@@ -26,7 +26,7 @@ class Renderer(Generic[T_Node]):
     def render(self):
         raise NotImplementedError
 
-    def lookup(self, name: str) -> Entry:
+    def lookup(self, name: str) -> Type:
         return self.context.root[name]
 
     def exclude_node(self, node: Node) -> bool:
@@ -121,15 +121,15 @@ class Renderer(Generic[T_Node]):
             assert False
 
     @staticmethod
-    def annotated_type(typ: Entry, arg: RecordMember, make_const=False):
+    def annotated_type(typ: Type, arg: RecordMember, make_const=False):
         return Renderer.decorate_type(typ, arg, make_const)
 
     @staticmethod
-    def annotated_member(typ: Entry, arg: RecordMember, make_const=False):
+    def annotated_member(typ: Type, arg: RecordMember, make_const=False):
         name = Renderer.as_varName(arg.name)
         return Renderer.decorate_member(name, typ, arg, make_const)
 
-    def as_cTypeEnumSpecialCase(self, typ: Entry) -> str:
+    def as_cTypeEnumSpecialCase(self, typ: Type) -> str:
         return Renderer.as_cType(self.context.c_prefix, typ.name)
 
     def as_annotated_cType(self, arg: RecordMember, make_const=False) -> str:

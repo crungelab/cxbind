@@ -90,6 +90,7 @@ class Backend(Processor):
     def process_object_type(self, obj: ObjectType):
         # logger.debug(f"Backend: Processing object type '{obj.name.CamelCase()}'")
         for method in obj.methods:
+            method.return_type = self.program.lookup(method.return_type_ref)
             for arg in method.args:
                 arg.type = self.program.lookup(arg.type_ref)
 

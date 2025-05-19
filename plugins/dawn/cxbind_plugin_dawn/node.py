@@ -13,13 +13,13 @@ class Node(BaseModel):
 
 class TypedNode(Node):
     type_ref: str = Field(alias="type", default=None)
-    _type: Optional["Entry"] = None
+    _type: Optional["Type"] = None
 
     @property
     def type(self):
         return self._type
     @type.setter
-    def type(self, value: "Entry"):
+    def type(self, value: "Type"):
         self._type = value
 
 #class RecordMember(Node):
@@ -45,7 +45,9 @@ class RecordMember(TypedNode):
 
 class Method(Node):
     name: Name
-    returns: Optional[str] = None
+    #returns: Optional[str] = None
+    return_type_ref: Optional[str] = Field(alias="returns", default=None)
+    return_type: Optional["Type"] = None
     #args: Optional[List[RecordMember]] = None
     args: Optional[List[RecordMember]] = []
     no_autolock: Optional[bool] = Field(alias="no autolock", default=None)
@@ -60,7 +62,7 @@ class BitmaskValue(Node):
     name: Name
     value: int
 
-class Entry(TypedNode):
+class Type(TypedNode):
 #class Entry(Node):
     category: str
     name: Optional[Name] = None
@@ -69,29 +71,29 @@ class Entry(TypedNode):
         return hash(self.name)
 
 
-class TypeDefinition(Entry):
+class TypeDefinition(Type):
     category: Literal["typedef"]
     #type: Optional[str]
 
 
-class EnumType(Entry):
+class EnumType(Type):
     category: Literal["enum"]
     values: List[EnumValue]
     emscripten_no_enum_table: Optional[bool] = False
 
 
-class BitmaskType(Entry):
+class BitmaskType(Type):
     category: Literal["bitmask"]
     values: List[BitmaskValue]
 
 
-class ObjectType(Entry):
+class ObjectType(Type):
     category: Literal["object"] = "object"
     methods: Optional[List[Method]] = []
     no_autolock: Optional[bool] = Field(alias="no autolock", default=None)
 
 
-class StructureBase(Entry):
+class StructureBase(Type):
     members: List[RecordMember]
 
 class StructureType(StructureBase):
@@ -177,30 +179,30 @@ class CallbackInfoType(StructureBase):
     category: Literal["callback info"]
 
 
-class NativeType(Entry):
+class NativeType(Type):
     category: Literal["native"]
     wasm_type: Optional[str] = Field(alias="wasm type", default=None)
 
 
-class FunctionPointerType(Entry):
+class FunctionPointerType(Type):
     category: Literal["function pointer"]
     returns: Optional[str] = None
     args: Optional[List[RecordMember]] = None
 
 
-class CallbackFunctionType(Entry):
+class CallbackFunctionType(Type):
     category: Literal["callback function"]
     args: Optional[List[RecordMember]] = None
 
 
-class ConstantDefinition(Entry):
+class ConstantDefinition(Type):
     category: Literal["constant"]
     #type: str
     value: str
     cpp_value: Optional[str] = None
 
 
-class FunctionDeclaration(Entry):
+class FunctionDeclaration(Type):
     category: Literal["function"]
     returns: Optional[str] = None
     args: Optional[List[RecordMember]] = None

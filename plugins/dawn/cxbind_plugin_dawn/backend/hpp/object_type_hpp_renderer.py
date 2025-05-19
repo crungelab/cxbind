@@ -16,8 +16,8 @@ class ObjectTypeHppRenderer(ObjectTypeRenderer):
                 continue
             method_name = method.name.CamelCase()
             return_type = None
-            if method.returns:
-                return_name = self.context.root[method.returns].name
+            if method.return_type:
+                return_name = method.return_type.name
                 if return_name.native:
                     return_type = return_name.get()
                 else:

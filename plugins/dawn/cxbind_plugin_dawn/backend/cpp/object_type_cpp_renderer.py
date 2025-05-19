@@ -12,8 +12,8 @@ class ObjectTypeCppRenderer(ObjectTypeRenderer):
 
             method_name = method.name.CamelCase()
 
-            if method.returns:
-                return_type = self.context.root[method.returns]
+            if method.return_type:
+                return_type = method.return_type
             else:
                 return_type = self.context.root['void']
 
