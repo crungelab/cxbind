@@ -820,7 +820,7 @@ _Adapter
         , py::arg("features")
         , py::return_value_policy::automatic_reference)
         
-    .def("request_device",&pywgpu::Adapter::RequestDevice
+    .def("_request_device",&pywgpu::Adapter::RequestDevice
         , py::arg("options"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -858,7 +858,7 @@ py::class_<Buffer> _Buffer(m, "Buffer");
 registry.on(m, "Buffer", _Buffer);
 
 _Buffer
-    .def("map_async",&pywgpu::Buffer::MapAsync
+    .def("_map_async",&pywgpu::Buffer::MapAsync
         , py::arg("mode"), py::arg("offset"), py::arg("size"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -1098,7 +1098,7 @@ _Device
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_compute_pipeline_async",&pywgpu::Device::CreateComputePipelineAsync
+    .def("_create_compute_pipeline_async",&pywgpu::Device::CreateComputePipelineAsync
         , py::arg("descriptor"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -1117,7 +1117,7 @@ _Device
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_render_pipeline_async",&pywgpu::Device::CreateRenderPipelineAsync
+    .def("_create_render_pipeline_async",&pywgpu::Device::CreateRenderPipelineAsync
         , py::arg("descriptor"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -1172,7 +1172,7 @@ _Device
         , py::arg("limits")
         , py::return_value_policy::automatic_reference)
         
-    .def("get_lost_future",&pywgpu::Device::GetLostFuture
+    .def("_get_lost_future",&pywgpu::Device::GetLostFuture
         , py::return_value_policy::automatic_reference)
         
     .def("has_feature",&pywgpu::Device::HasFeature
@@ -1212,7 +1212,7 @@ _Device
         , py::arg("filter")
         , py::return_value_policy::automatic_reference)
         
-    .def("pop_error_scope",&pywgpu::Device::PopErrorScope
+    .def("_pop_error_scope",&pywgpu::Device::PopErrorScope
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -1324,7 +1324,16 @@ _Instance
     .def("process_events",&pywgpu::Instance::ProcessEvents
         , py::return_value_policy::automatic_reference)
         
-    .def("request_adapter",&pywgpu::Instance::RequestAdapter
+    .def("wait_any",[](pywgpu::Instance& self, std::vector<pywgpu::FutureWaitInfo> futures, uint64_t timeoutNS) {
+        pywgpu::FutureWaitInfo * _futures = (pywgpu::FutureWaitInfo *)futures.data();
+        auto futureCount = futures.size();
+        
+        return self.WaitAny(futureCount, _futures, timeoutNS);
+        }
+        , py::arg("futures"), py::arg("timeout_NS")
+        , py::return_value_policy::automatic_reference)
+        
+    .def("_request_adapter",&pywgpu::Instance::RequestAdapter
         , py::arg("options"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -1380,7 +1389,7 @@ _Queue
         , py::arg("commands")
         , py::return_value_policy::automatic_reference)
         
-    .def("on_submitted_work_done",&pywgpu::Queue::OnSubmittedWorkDone
+    .def("_on_submitted_work_done",&pywgpu::Queue::OnSubmittedWorkDone
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -1648,7 +1657,7 @@ py::class_<ShaderModule> _ShaderModule(m, "ShaderModule");
 registry.on(m, "ShaderModule", _ShaderModule);
 
 _ShaderModule
-    .def("get_compilation_info",&pywgpu::ShaderModule::GetCompilationInfo
+    .def("_get_compilation_info",&pywgpu::ShaderModule::GetCompilationInfo
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -3363,17 +3372,26 @@ _CopyTextureForBrowserOptions
         }
         if (kwargs.contains("src_transfer_function_parameters"))
         {
-            auto value = kwargs["src_transfer_function_parameters"].cast<float const *>();
+            auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.srcTransferFunctionParameters = value;
         }
         if (kwargs.contains("conversion_matrix"))
         {
-            auto value = kwargs["conversion_matrix"].cast<float const *>();
+            auto _value = kwargs["conversion_matrix"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.conversionMatrix = value;
         }
         if (kwargs.contains("dst_transfer_function_parameters"))
         {
-            auto value = kwargs["dst_transfer_function_parameters"].cast<float const *>();
+            auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.dstTransferFunctionParameters = value;
         }
         if (kwargs.contains("dst_alpha_mode"))
@@ -3739,22 +3757,34 @@ _ExternalTextureDescriptor
         }
         if (kwargs.contains("yuv_to_rgb_conversion_matrix"))
         {
-            auto value = kwargs["yuv_to_rgb_conversion_matrix"].cast<float const *>();
+            auto _value = kwargs["yuv_to_rgb_conversion_matrix"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.yuvToRgbConversionMatrix = value;
         }
         if (kwargs.contains("src_transfer_function_parameters"))
         {
-            auto value = kwargs["src_transfer_function_parameters"].cast<float const *>();
+            auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.srcTransferFunctionParameters = value;
         }
         if (kwargs.contains("dst_transfer_function_parameters"))
         {
-            auto value = kwargs["dst_transfer_function_parameters"].cast<float const *>();
+            auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.dstTransferFunctionParameters = value;
         }
         if (kwargs.contains("gamut_conversion_matrix"))
         {
-            auto value = kwargs["gamut_conversion_matrix"].cast<float const *>();
+            auto _value = kwargs["gamut_conversion_matrix"].cast<std::vector<float>>();
+            auto count = _value.size();
+            auto value = new float[count];
+            std::copy(_value.begin(), _value.end(), value);
             obj.gamutConversionMatrix = value;
         }
         if (kwargs.contains("mirrored"))
