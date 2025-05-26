@@ -193,12 +193,15 @@ class Builder:
             return False
         if cursor.access_specifier == cindex.AccessSpecifier.PROTECTED:
             return False
-        if cursor.location.file:
-            node_path = Path(cursor.location.file.name)
-            return node_path.name in self.mapped
-        # if cu.is_template(cursor):
         if cu.is_template(cursor.type):
             return False
+        if cursor.location.file:
+            node_path = Path(cursor.location.file.name)
+            mappable = node_path.name in self.mapped
+            if not mappable:
+                #logger.debug(f"Not mappable: {node_path.name}")
+                return False
+
         return True
 
     def is_rvalue_ref(self, param: cindex.Cursor):

@@ -37,7 +37,7 @@ class Registry {
 
 #define PYEXTEND_BEGIN(_class, name) \
     registry.addCallback(#name, [](py::detail::generic_type& _type) { \
-        py::class_<_class> &name = (py::class_<_class>&)_type;
+        py::class_<_class> &_##name = (py::class_<_class>&)_type;
 
 #define PYEXTEND_SCOPED_ENUM_BEGIN(_class, name) \
     registry.addCallback(#name, [](py::detail::generic_type& _type) { \

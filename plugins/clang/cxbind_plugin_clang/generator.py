@@ -14,12 +14,14 @@ from .builder_context import BuilderContext
 
 
 class Generator(Builder):
-    def __init__(self, unit: Unit, **kwargs):
+    def __init__(self, source: str, unit: Unit, **kwargs):
         super().__init__(BuilderContext(unit, **kwargs))
 
         BASE_PATH = Path('.')
-        self.path = BASE_PATH / self.source
+        #self.path = BASE_PATH / self.source
+        self.path = BASE_PATH / source
         self.mapped.append(self.path.name)
+        logger.debug(f'mapped: {self.mapped}')
 
         config_searchpath = BASE_PATH  / '.cxbind' / 'templates'
         default_searchpath = Path(os.path.dirname(os.path.abspath(__file__)), 'templates')
@@ -55,6 +57,8 @@ class Generator(Builder):
             self.visit_children(tu.cursor)
             self.end_chain()
 
+        return self.text
+        '''
         #Jinja
         context = {
             'body': self.text
@@ -66,11 +70,14 @@ class Generator(Builder):
             template = self.jinja_env.get_template(f'{self.unit.name}.cpp')
 
         rendered = template.render(context)
+        return rendered
+
         filename = self.target
         with open(filename,'w') as fh:
             fh.write(rendered)
 
         print(f'[bold green]Generated[/bold green]: {filename}', ':thumbs_up:')
+        '''
 
     def visit_overloads(self, cursor):
         for child in cursor.get_children():

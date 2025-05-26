@@ -40,7 +40,7 @@ class BuilderContext:
         self.unit = unit
 
         self.options = { 'save': True }
-        self.prefixes = None
+        #self.prefixes = None
         #self.wrapped: Dict[Node] = {}
         self.wrapped: Dict[StructBaseNode] = {}
         self.visited: Dict[Node] = {}
@@ -48,23 +48,48 @@ class BuilderContext:
 
         self.out = CodeStream()
 
-        self.source = ""
-        self.mapped: List[str] = []  # headers we want to generate bindings for
+        '''
+        name: Optional[str] = None
+        module: Optional[str] = None
+        flags: Optional[List[str]] = None
+        prefixes: Optional[List[str]] = []
+        defaults: Optional[dict] = {}
+        specs: Optional[SpecDict] = {}
+        excludes: Optional[List[str]] = []
+        program: Optional[str] = None
+        '''
+
+        '''
+        source: Optional[str] = None
+        sources: Optional[List[str]] = []
+        target: str
+        template: Optional[str] = None
+        mapped: Optional[List[str]] = []
+        '''
+
+        self.module = unit.module
+
+        #self.source = ""
+        #self.mapped: List[str] = []  # headers we want to generate bindings for
+        self.mapped: List[str] = unit.mapped.copy()
         self.target = ""
-        self.module = ""
-        self.flags: List[str] = []
+        #self.module = ""
+        #self.flags: List[str] = []
+        self.flags: List[str] = unit.flags.copy()
         self.defaults: Dict[str, str] = {}
         #self.excludes: List[str] = []
-        self.excludes = unit.excludes.copy()
+        self.excludes: List[str] = unit.excludes.copy()
         self.overloads: List[str] = []
 
         #self.specs: Dict[str, Node] = {}
         self.specs = unit.specs.copy()
         self.node_stack: List[Node] = []
+        self.prefixes = unit.prefixes
 
+        '''
         for attr in vars(unit):
             setattr(self, attr, getattr(unit, attr))
-
+        '''
         
         for name, spec in self.specs.items():
             self.register_spec(spec)

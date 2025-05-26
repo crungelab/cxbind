@@ -10,9 +10,12 @@ from pydantic import Field
 from .unit_base import UnitBase
 
 class Unit(UnitBase):
-    source: str
+    #source: str
+    source: Optional[str] = None
+    sources: Optional[List[str]] = []
     target: str
     template: Optional[str] = None
+    mapped: Optional[List[str]] = []
 
 def validate_unit_dict(v: dict[str, Unit]) -> dict[str, Unit]:
     #logger.debug(f"validate_unit_dict: {v}")

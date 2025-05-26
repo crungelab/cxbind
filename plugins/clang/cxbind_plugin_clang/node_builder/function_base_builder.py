@@ -151,7 +151,19 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         return self.spell(cursor) in self.overloaded
     '''
     
+    def is_inlined(self, cursor: cindex.Cursor) -> bool:
+        tokens = list(cursor.get_tokens())
+        if any(tok.spelling == 'inline' for tok in tokens):
+            print(f"{cursor.spelling} is explicitly inline")
+            return True
+        return False
+
     def is_function_mappable(self, cursor: cindex.Cursor) -> bool:
+        # Inlined functions are not mappable
+        #if cursor.is_definition():
+        #if not cursor.kind.is_declaration():
+        if self.is_inlined(cursor):
+            return False
         if not self.is_cursor_mappable(cursor):
             return False
         if cursor.is_deleted_method():
