@@ -29,10 +29,11 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         out = self.out
         node = self.node
+        spec = node.spec
         cursor = self.cursor
         arguments = [a for a in cursor.get_arguments()]
         cname = "&" + self.spell(cursor)
-        pyname = self.format_field(cursor.spelling)
+        pyname = spec.pyname or self.format_field(cursor.spelling)
 
         def_call = ""
         if cursor.is_static_method():
@@ -154,7 +155,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
     def is_inlined(self, cursor: cindex.Cursor) -> bool:
         tokens = list(cursor.get_tokens())
         if any(tok.spelling == 'inline' for tok in tokens):
-            print(f"{cursor.spelling} is explicitly inline")
+            #logger.debug(f"{cursor.spelling} is explicitly inline")
             return True
         return False
 

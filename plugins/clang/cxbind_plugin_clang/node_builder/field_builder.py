@@ -19,6 +19,8 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         super().build_node()
         
         node = self.node
+        spec = node.spec
+        pyname = spec.pyname or node.pyname
         cursor = self.cursor
 
         #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
@@ -26,16 +28,16 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         self.begin_chain()
 
         if self.is_field_readonly(cursor):
-            self.out(f'.def_readonly("{node.pyname}", &{node.name})')
+            self.out(f'.def_readonly("{pyname}", &{node.name})')
         else:
             if self.is_char_ptr(cursor):
                 #logger.debug(f"{cursor.spelling}: is char*")
-                self.visit_char_ptr_field(cursor, node.pyname)
+                self.visit_char_ptr_field(cursor, pyname)
             elif self.is_function_pointer(cursor):
                 #logger.debug(f"{cursor.spelling}: is fn*")
-                self.visit_fn_ptr_field(cursor, node.pyname)
+                self.visit_fn_ptr_field(cursor, pyname)
             else:
-                self.out(f'.def_readwrite("{node.pyname}", &{node.name})')
+                self.out(f'.def_readwrite("{pyname}", &{node.name})')
         #self.out()
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
