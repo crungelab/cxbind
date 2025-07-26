@@ -266,7 +266,8 @@ class Root(RootModel):
             native = isinstance(value, NativeType)
             value.name = Name.intern(key, native=native)
 
-        self.root["instance capabilities"].extensible = "in"
+        self.root["instance capabilities"].extensible = "in" #crbug.com/374263404
+        self.root["limits"].extensible = "in" #crbug.com/374263404
 
         self.root["chained struct"] = StructureType(
             name=Name.intern("chained struct"),

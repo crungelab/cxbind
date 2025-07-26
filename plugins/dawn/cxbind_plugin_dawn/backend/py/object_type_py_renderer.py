@@ -39,6 +39,42 @@ class BufferArgWrapper(ArgWrapper):
         else:
             return "py::buffer"
 
+    #size_t padded_size = (size + 3) & ~size_t(3);
+
+    def render(self, out: RenderStream):
+        arg_name = self.arg.name.camelCase()
+        arg_type = get_arg_type_string(self.arg)
+        info_name = f"{self.arg.name.camelCase()}Info"
+
+        '''
+        size_expr = f"{info_name}.size * {info_name}.itemsize"
+
+        if self.arg.type.name.get() == "buffer":
+            size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
+        '''
+        size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
+
+        logger.debug(
+            f"BufferArgWrapper: {self.arg.name} type: {self.arg.type.name.get()} size_expr: {size_expr}"
+        )
+
+
+        if self.arg.optional or self.arg.default_value is not None:
+            value = f"""\
+            py::buffer_info {info_name} = {arg_name}.has_value() ? {arg_name}.value().request() : py::buffer_info();
+            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
+            auto {self.length_member.name.camelCase()} = {size_expr};
+            """
+        else:
+            value = f"""\
+            py::buffer_info {info_name} = {arg_name}.request();
+            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
+            auto {self.length_member.name.camelCase()} = {size_expr};
+            """
+
+        out(value)
+
+'''
     def render(self, out: RenderStream):
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
@@ -58,7 +94,7 @@ class BufferArgWrapper(ArgWrapper):
             """
 
         out(value)
-
+'''
 
 class VectorArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):

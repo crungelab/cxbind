@@ -44,11 +44,11 @@ class Renderer(Generic[T_Node]):
     @staticmethod
     def as_cType(name: Name, c_prefix: str = "WGPU") -> str:
         # Special case for 'bool' because it has a typedef for compatibility.
-        if name.native and name.get() != 'bool':
+        if name.native and name.get() != "bool":
             return name.concatcase()
-        elif name.get() == 'nullable string view':
+        elif name.get() == "nullable string view":
             # nullable string view type doesn't exist in C.
-            return c_prefix + 'StringView'
+            return c_prefix + "StringView"
         else:
             return c_prefix + name.CamelCase()
 
@@ -82,33 +82,32 @@ class Renderer(Generic[T_Node]):
 
     @staticmethod
     def decorate_type(type_name: str, arg: RecordMember, make_const=False):
-        #type_name = Renderer.as_cppType(typ.name)
-        maybe_const = 'const ' if make_const else ''
-        #if arg.annotation == 'value':
+        # type_name = Renderer.as_cppType(typ.name)
+        maybe_const = "const " if make_const else ""
+        # if arg.annotation == 'value':
         if arg.annotation is None:
             return maybe_const + type_name
-        elif arg.annotation == '*':
-            return maybe_const + type_name + ' *'
-        elif arg.annotation == 'const*':
-            return maybe_const + type_name + ' const *'
-        elif arg.annotation == 'const*const*':
-            return maybe_const + 'const ' + type_name + '* const *'
+        elif arg.annotation == "*":
+            return maybe_const + type_name + " *"
+        elif arg.annotation == "const*":
+            return maybe_const + type_name + " const *"
+        elif arg.annotation == "const*const*":
+            return maybe_const + "const " + type_name + "* const *"
         else:
             assert False
 
-
     @staticmethod
     def decorate_member(name, typ, arg: RecordMember, make_const=False):
-        maybe_const = ' const ' if make_const else ' '
-        #if arg.annotation == 'value':
+        maybe_const = " const " if make_const else " "
+        # if arg.annotation == 'value':
         if arg.annotation is None:
             return typ + maybe_const + name
-        elif arg.annotation == '*':
-            return typ + ' *' + maybe_const + name
-        elif arg.annotation == 'const*':
-            return typ + ' const *' + maybe_const + name
-        elif arg.annotation == 'const*const*':
-            return 'const ' + typ + '* const *' + maybe_const + name
+        elif arg.annotation == "*":
+            return typ + " *" + maybe_const + name
+        elif arg.annotation == "const*":
+            return typ + " const *" + maybe_const + name
+        elif arg.annotation == "const*const*":
+            return "const " + typ + "* const *" + maybe_const + name
         else:
             assert False
 
@@ -116,11 +115,11 @@ class Renderer(Generic[T_Node]):
     def annotated_type(type_name: str, arg: RecordMember, make_const=False):
         return Renderer.decorate_type(type_name, arg, make_const)
 
-    '''
+    """
     @staticmethod
     def annotated_type(typ: Type, arg: RecordMember, make_const=False):
         return Renderer.decorate_type(typ, arg, make_const)
-    '''
+    """
 
     @staticmethod
     def annotated_member(typ: Type, arg: RecordMember, make_const=False):
@@ -131,45 +130,63 @@ class Renderer(Generic[T_Node]):
         return Renderer.as_cType(self.context.c_prefix, typ.name)
 
     def as_annotated_cType(self, arg: RecordMember, make_const=False) -> str:
-        #return Renderer.annotated_type(self.as_cTypeEnumSpecialCase(arg.type.name), arg, make_const)
-        #return Renderer.annotated_type(arg.type, arg, make_const)
+        # return Renderer.annotated_type(self.as_cTypeEnumSpecialCase(arg.type.name), arg, make_const)
+        # return Renderer.annotated_type(arg.type, arg, make_const)
         type_name = Renderer.as_cType(arg.type.name)
         return Renderer.annotated_type(type_name, arg, make_const)
 
     def as_annotated_cppType(self, arg: RecordMember, make_const=False) -> str:
-        #return Renderer.annotated_type(arg.type, arg, make_const)
+        # return Renderer.annotated_type(arg.type, arg, make_const)
         type_name = Renderer.as_cppType(arg.type.name)
         return Renderer.annotated_type(type_name, arg, make_const)
 
     def as_annotated_cppMember(self, arg: RecordMember, make_const=False) -> str:
-        return Renderer.annotated_member(self.as_cppType(arg.type.name), arg, make_const)
+        return Renderer.annotated_member(
+            self.as_cppType(arg.type.name), arg, make_const
+        )
 
-
-    def render_cpp_default_value(self, member: RecordMember, is_struct: bool, force_default=False, forced_default_value=None) -> str:
+    def render_cpp_default_value(
+        self,
+        member: RecordMember,
+        is_struct: bool,
+        force_default=False,
+        forced_default_value=None,
+    ) -> str:
         member_type = member.type
         if forced_default_value is not None:
             return f" = {forced_default_value}"
         elif member.no_default is not None and member.no_default:
             pass
-        elif member.annotation in ["*", "const*"] and member.optional or member.default_value == "nullptr":
+        elif (
+            member.annotation in ["*", "const*"]
+            and member.optional
+            or member.default_value == "nullptr"
+        ):
             return " = nullptr"
         elif member_type.category == "object" and member.optional and is_struct:
             return " = nullptr"
-        elif member_type.category in ["enum", "bitmask"] and member.default_value is not None:
+        elif (
+            member_type.category in ["enum", "bitmask"]
+            and member.default_value is not None
+        ):
             return f" = {Renderer.as_cppType(member_type.name)}::{Renderer.as_cppEnum(Name(member.default_value))}"
         elif member_type.category == "native" and member.default_value is not None:
             constant = None
             if isinstance(member.default_value, str):
-                constant = self.context.catalog.categories["constant"].find_entry(Name.intern(member.default_value))
+                constant = self.context.catalog.categories["constant"].find_entry(
+                    Name.intern(member.default_value)
+                )
             if constant:
                 return f" = k{constant.name.CamelCase()}"
             else:
                 return f" = {member.default_value}"
-            
+
         elif member.default_value is not None:
             return f" = {member.default_value}"
-        #elif member_type.category == "structure" and member.annotation == "value" and is_struct:
-        elif member_type.category == "structure" and not member.annotation and is_struct:
+        # elif member_type.category == "structure" and member.annotation == "value" and is_struct:
+        elif (
+            member_type.category == "structure" and not member.annotation and is_struct
+        ):
             return " = {}"
         else:
             assert member.default_value is None
@@ -177,10 +194,9 @@ class Renderer(Generic[T_Node]):
                 return " = {}"
         return ""
 
-
     @staticmethod
     def wgpu_string_members(CppType: Node):
-        result = f'''\
+        result = f"""\
         inline constexpr {CppType}() noexcept = default;
 
         // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
@@ -244,12 +260,12 @@ class Renderer(Generic[T_Node]):
             }}
             return {{this->data, this->length}};
         }}
-        '''
+        """
         return result
 
     @staticmethod
     def wgpu_string_constructors(CppType: Node, is_nullable: bool):
-        result = f'''\
+        result = f"""\
         inline constexpr StringView() noexcept = default;
         
         // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
@@ -273,10 +289,10 @@ class Renderer(Generic[T_Node]):
             this->data = data;
             this->length = length;
         }}
-        '''
+        """
 
         if is_nullable:
-            result += f'''\
+            result += f"""\
             inline constexpr {CppType}() noexcept = default;
 
             // NOLINTNEXTLINE(runtime/explicit) allow implicit construction
@@ -289,7 +305,7 @@ class Renderer(Generic[T_Node]):
                 this->data = nullptr;
                 this->length = SIZE_MAX;
             }}
-        '''
+        """
         return result
 
 
