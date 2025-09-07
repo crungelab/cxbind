@@ -30,10 +30,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
         return self.format_type(name)
 
     def should_cancel(self):
-        '''
-        if self.context.visited.get(self.name):
-            return True
-        '''
         return False
 
     def find_spec(self):
@@ -49,7 +45,7 @@ class NodeBuilder(Builder, Generic[T_Node]):
         spec = self.find_spec()
         if spec is None:
             key = Node.make_key(self.cursor)
-            #logger.debug(f"Spec not found for {key}")
+            # logger.debug(f"Spec not found for {key}")
             spec = create_spec(key)
         self.node.spec = spec
 

@@ -17,7 +17,7 @@ from cxbind.code_stream import CodeStream
 from .node import Node, StructBaseNode
 
 
-#TODO: Use pydantic settings
+# TODO: Use pydantic settings
 class Options:
     def __init__(self, *options, **kwargs):
         for dictionary in options:
@@ -25,6 +25,7 @@ class Options:
                 setattr(self, key, dictionary[key])
         for key in kwargs:
             setattr(self, key, kwargs[key])
+
 
 class Overloaded(UserSet):
     def __init__(self, data) -> None:
@@ -39,69 +40,37 @@ class BuilderContext:
     def __init__(self, unit: Unit, **kwargs) -> None:
         self.unit = unit
 
-        self.options = { 'save': True }
-        #self.prefixes = None
-        #self.wrapped: Dict[Node] = {}
+        self.options = {"save": True}
         self.wrapped: Dict[StructBaseNode] = {}
         self.visited: Dict[Node] = {}
         self.chaining = False
 
         self.out = CodeStream()
 
-        '''
-        name: Optional[str] = None
-        module: Optional[str] = None
-        flags: Optional[List[str]] = None
-        prefixes: Optional[List[str]] = []
-        defaults: Optional[dict] = {}
-        specs: Optional[SpecDict] = {}
-        excludes: Optional[List[str]] = []
-        program: Optional[str] = None
-        '''
-
-        '''
-        source: Optional[str] = None
-        sources: Optional[List[str]] = []
-        target: str
-        template: Optional[str] = None
-        mapped: Optional[List[str]] = []
-        '''
-
         self.module = unit.module
 
-        #self.source = ""
-        #self.mapped: List[str] = []  # headers we want to generate bindings for
         self.mapped: List[str] = unit.mapped.copy()
         self.target = ""
-        #self.module = ""
-        #self.flags: List[str] = []
         self.flags: List[str] = unit.flags.copy()
         self.defaults: Dict[str, str] = {}
-        #self.excludes: List[str] = []
         self.excludes: List[str] = unit.excludes.copy()
         self.overloads: List[str] = []
 
-        #self.specs: Dict[str, Node] = {}
         self.specs = unit.specs.copy()
         self.node_stack: List[Node] = []
         self.prefixes = unit.prefixes
 
-        '''
-        for attr in vars(unit):
-            setattr(self, attr, getattr(unit, attr))
-        '''
-        
         for name, spec in self.specs.items():
             self.register_spec(spec)
 
         for key in kwargs:
-            if key == 'options':
+            if key == "options":
                 options: Dict = kwargs[key]
                 options.update(self.options)
                 self.options = options
 
             setattr(self, key, kwargs[key])
-        
+
         self.options = Options(self.options)
         self.excluded = set(self.excludes)
         self.overloaded = Overloaded(self.overloads)
@@ -131,14 +100,16 @@ class BuilderContext:
             logger.debug(f"Adding wrapped: {name}")
             self.wrapped[name] = spec
 
-
     def lookup_spec(self, key: str) -> Spec:
         spec = self.specs.get(key)
         return spec
 
-    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "NodeBuilder":
+    def create_builder(
+        self, entry_key: str, cursor: cindex.Cursor = None
+    ) -> "NodeBuilder":
         from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP
         from .node_builder import NodeBuilder
+
         kind, name = entry_key.split("/")
         builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
         builder = builder_cls(self, name, cursor)
@@ -166,14 +137,16 @@ class BuilderContext:
 
     def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
         for prefix in prefixes:
-            #if text.startswith(prefix):
-            if text.startswith(prefix) and len(text) > len(prefix) and text[len(prefix)].isupper():
-                return text[len(prefix):]
+            if (
+                text.startswith(prefix)
+                and len(text) > len(prefix)
+                and text[len(prefix)].isupper()
+            ):
+                return text[len(prefix) :]
         return text
 
     def strip_prefixes(self, text: str, prefixes: List[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
-        #return self._strip_prefixes(text, self.prefixes + prefixes)
 
     def format_field(self, name: str) -> str:
         name = self.strip_prefixes(name)

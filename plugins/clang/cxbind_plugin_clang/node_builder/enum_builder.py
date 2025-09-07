@@ -1,7 +1,6 @@
 from loguru import logger
 
 from .node_builder import NodeBuilder
-#from ..node import EnumNode, TypedefNode
 from ..node import EnumNode
 
 
@@ -13,10 +12,6 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         return self.context.format_enum(name)
 
     def should_cancel(self):
-        '''
-        if isinstance(self.top_node, TypedefNode): #TODO: for some reason it's visiting the same node twice when typedef'd
-            return True
-        '''
         if self.is_forward_declaration(self.cursor):
             return True
         return super().should_cancel()
@@ -34,7 +29,6 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         name = self.spell(cursor)
         pyname = self.format_type(cursor.spelling)
 
-        #self.out(f'py::enum_<{name}>({self.module}, "{pyname}", py::arithmetic())')
         self.out(f'py::enum_<{name}>({self.scope}, "{pyname}", py::arithmetic())')
 
         with self.out as out:

@@ -8,6 +8,7 @@ from loguru import logger
 
 from cxbind.spec import Spec
 
+
 class Node(BaseModel):
     kind: str
     name: str
@@ -15,9 +16,6 @@ class Node(BaseModel):
     first_name: Optional[str] = None
     pyname: Optional[str] = None
     children: List["Node"] = []
-    #exclude: Optional[bool] = False
-    #overload: Optional[bool] = False
-    #readonly: Optional[bool] = False
 
     cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
     spec: Optional[Spec] = Field(None, exclude=True, repr=False)
@@ -29,7 +27,7 @@ class Node(BaseModel):
         if self.signature:
             return f"{self.kind}/{self.name}/{self.signature}"
         return f"{self.kind}/{self.name}"
-    
+
     @classmethod
     def spell(cls, cursor: cindex.Cursor) -> str:
         if cursor is None:
@@ -90,19 +88,6 @@ class Argument(BaseModel):
 
 class FunctionBaseNode(Node):
     pass
-    '''
-    arguments: Optional[Dict[str, Argument]] = {}
-    return_type: Optional[str] = None
-    omit_ret: Optional[bool] = False
-    check_result: Optional[bool] = False
-
-    def model_post_init(self, __context: Any) -> None:
-        super().model_post_init(__context)
-        self.arguments = {
-            k: Argument(**v) if isinstance(v, dict) else v
-            for k, v in self.arguments.items()
-        }
-    '''
 
 
 class FunctionNode(FunctionBaseNode):
@@ -124,14 +109,6 @@ class FieldNode(Node):
 class StructBaseNode(Node):
     constructible: bool = True
     has_constructor: bool = False
-    '''
-    constructible: bool = True
-    has_constructor: bool = False
-    gen_init: bool = False
-    gen_kw_init: bool = False
-    wrapper: str = None
-    holder: Optional[str] = None
-    '''
 
 
 class StructNode(StructBaseNode):
@@ -141,28 +118,22 @@ class StructNode(StructBaseNode):
 class ClassNode(StructBaseNode):
     kind: Literal["class"]
 
+
 class ClassSpecializationNode(ClassNode):
     kind: Literal["class_specialization"]
-    #args: List[str] = []
+
 
 class ClassTemplateSpecialization(BaseModel):
     name: str
-    #args: List[str]
-    
+
+
 class ClassTemplateNode(StructBaseNode):
     kind: Literal["class_template"]
-    #specializations: List[ClassTemplateSpecialization] = []
 
 
 class EnumNode(Node):
     kind: Literal["enum"]
 
-'''
-class TypedefNode(Node):
-    kind: Literal["typedef"]
-    gen_init: bool = False
-    gen_kw_init: bool = False
-'''
 
 NodeUnion = Union[
     StructNode,
@@ -173,8 +144,8 @@ NodeUnion = Union[
     MethodNode,
     CtorNode,
     EnumNode,
-    #TypedefNode,
 ]
+
 
 def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
     # logger.debug(f"validate_node_dict: {v}")
@@ -190,7 +161,6 @@ def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
             value["name"] = name
             value["kind"] = kind
             value["signature"] = signature
-            #data[name] = value
             data[key] = value
         else:
             data[key] = value

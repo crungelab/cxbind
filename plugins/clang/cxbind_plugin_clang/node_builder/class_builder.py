@@ -14,7 +14,9 @@ class ClassBuilder(StructBaseBuilder[ClassNode]):
 
         self.end_chain()
 
-        extra = f",{node.spec.holder}<{node.name}>" if node.spec.holder else ""
+        extra = f", {', '.join(node.spec.extends)}" if node.spec.extends else ""
+
+        extra += f",{node.spec.holder}<{node.name}>" if node.spec.holder else ""
 
         self.out(f'py::class_<{node.name}{extra}> {node.pyname}({self.module}, "{node.pyname}");')
         self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')

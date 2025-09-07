@@ -2,19 +2,15 @@ import os
 from pathlib import Path
 import yaml
 
-'''
-try:
-    from yaml import CLoader as Loader, CDumper as Dumper
-except ImportError:
-    from yaml import Loader, Dumper
-'''
 
 def load_yaml(path: Path):
-  with open(path, "r") as file:
-    return yaml.load(file, Loader=YamlLoader)
+    with open(path, "r") as file:
+        return yaml.load(file, Loader=YamlLoader)
+
 
 def dump_yaml(data, stream):
     yaml.dump(data, stream, Dumper=YamlDumper, default_flow_style=None, sort_keys=False)
+
 
 class YamlLoader(yaml.FullLoader):
     def __init__(self, stream):
@@ -26,24 +22,26 @@ class YamlLoader(yaml.FullLoader):
         - !include path/to/file.yaml
         """
         filename = os.path.join(self._root, self.construct_scalar(node))
-        with open(filename, 'r') as f:
+        with open(filename, "r") as f:
             return yaml.load(f, YamlLoader)
 
     def _import(self, node):
         """
         - !import
             - path/to/file.yaml
-            - key 
+            - key
         """
         args = self.construct_sequence(node)
 
         filename = os.path.join(self._root, args[0])
-        #print(filename)
-        with open(filename, 'r') as f:
+        # print(filename)
+        with open(filename, "r") as f:
             return yaml.load(f, YamlLoader)[args[1]]
 
-YamlLoader.add_constructor('!include', YamlLoader._include)
-YamlLoader.add_constructor('!import', YamlLoader._import)
+
+YamlLoader.add_constructor("!include", YamlLoader._include)
+YamlLoader.add_constructor("!import", YamlLoader._import)
+
 
 class YamlDumper(yaml.Dumper):
     pass

@@ -5,7 +5,7 @@ from .name import Name
 
 
 class Node(BaseModel):
-    model_config = ConfigDict(arbitrary_types_allowed = True)
+    model_config = ConfigDict(arbitrary_types_allowed=True)
     parent: Optional["Node"] = None
     tags: Optional[List[str]] = None
     _comment: Optional[str] = None
@@ -18,9 +18,11 @@ class TypedNode(Node):
     @property
     def type(self):
         return self._type
+
     @type.setter
     def type(self, value: "Type"):
         self._type = value
+
 
 class RecordMember(TypedNode):
     name: Name
@@ -30,6 +32,7 @@ class RecordMember(TypedNode):
     default_value: Union[str, int] = Field(alias="default", default=None)
     length: Optional[Union[str, int]] = None
     length_member: Optional["RecordMember"] = None
+
 
 class Method(Node):
     name: Name
@@ -48,18 +51,17 @@ class BitmaskValue(Node):
     name: Name
     value: int
 
+
 class Type(TypedNode):
-#class Entry(Node):
     category: str
     name: Optional[Name] = None
-    
+
     def __hash__(self):
         return hash(self.name)
 
 
 class TypeDefinition(Type):
     category: Literal["typedef"]
-    #type: Optional[str]
 
 
 class EnumType(Type):
@@ -82,6 +84,7 @@ class ObjectType(Type):
 class StructureBase(Type):
     members: List[RecordMember]
 
+
 class StructureType(StructureBase):
     category: Literal["structure"]
     extensible: Optional[Union[str, bool]] = None
@@ -99,30 +102,25 @@ class StructureType(StructureBase):
 
         if self.chained:
             assert self.chained == "in" or self.chained == "out"
-            #assert self.chain_roots # See "dawn injected invalid s type"
+            # assert self.chain_roots # See "dawn injected invalid s type"
             self.add_next_in_chain()
 
         if self.extensible:
             assert self.extensible == "in" or self.extensible == "out"
             self.add_next_in_chain()
-        # self.extensions = []
 
     def add_next_in_chain(self):
         self.members.insert(
             0,
             RecordMember(
                 name=Name.intern("next in chain"),
-                #type="const void*",
-                #type="chained struct",
                 type="chained struct" if not self.output else "chained struct out",
-                #annotation="value",
-                #annotation="const*",
                 annotation="const*" if not self.output else "*",
                 optional=True,
             ),
         )
 
-    '''
+    """
     @property
     def output(self):
         # self.out is a temporary way to express that this is an output structure
@@ -133,12 +131,13 @@ class StructureType(StructureBase):
             return False
 
         return self.chained == "out" or self.extensible == "out" or self.out
-    '''
+    """
+
     @property
     def output(self):
         return self.chained == "out" or self.extensible == "out"
 
-    '''
+    """
     @property
     def has_free_members_function(self):
         if not self.output:
@@ -148,14 +147,14 @@ class StructureType(StructureBase):
                 or m.type.name.canonical_case() == 'string view':
                 return True
         return False
-    '''
+    """
 
     @property
     def has_free_members_function(self):
         if not self.output:
             return False
         for m in self.members:
-            #if m.annotation != "value":
+            # if m.annotation != "value":
             if m.annotation is not None:
                 return True
         return False
@@ -183,14 +182,12 @@ class CallbackFunctionType(Type):
 
 class ConstantDefinition(Type):
     category: Literal["constant"]
-    #type: str
     value: str
     cpp_value: Optional[str] = None
 
 
 class FunctionDeclaration(Type):
     category: Literal["function"]
-    #returns: Optional[str] = None
     return_type_ref: Optional[str] = Field(alias="returns", default=None)
     return_type: Optional["Type"] = None
 
@@ -211,8 +208,9 @@ TypeUnion = Annotated[
         CallbackInfoType,
         CallbackFunctionType,
     ],
-    Field(discriminator="category")
+    Field(discriminator="category"),
 ]
+
 
 class Category:
     NATIVE = "native"
@@ -234,6 +232,7 @@ class Category:
 
     def find_entry(self, name):
         return self.entries.get(name)
+
 
 class Catalog:
     def __init__(self):
@@ -266,8 +265,8 @@ class Root(RootModel):
             native = isinstance(value, NativeType)
             value.name = Name.intern(key, native=native)
 
-        self.root["instance capabilities"].extensible = "in" #crbug.com/374263404
-        self.root["limits"].extensible = "in" #crbug.com/374263404
+        self.root["instance capabilities"].extensible = "in"  # crbug.com/374263404
+        self.root["limits"].extensible = "in"  # crbug.com/374263404
 
         self.root["chained struct"] = StructureType(
             name=Name.intern("chained struct"),
@@ -275,11 +274,8 @@ class Root(RootModel):
             members=[
                 RecordMember(
                     name=Name.intern("next_in_chain"),
-                    #type="const void*",
                     type="chained struct",
-                    #annotation="value",
                     annotation="const*",
-                    #optional=True,
                 )
             ],
         )
@@ -290,11 +286,8 @@ class Root(RootModel):
             members=[
                 RecordMember(
                     name=Name.intern("next_in_chain"),
-                    #type="const void*",
                     type="chained struct out",
-                    #annotation="value",
                     annotation="const*",
-                    #optional=True,
                 )
             ],
         )

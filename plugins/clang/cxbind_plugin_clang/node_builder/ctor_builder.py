@@ -26,8 +26,12 @@ class CtorBuilder(MethodBuilder):
         self.top_node.has_constructor = True
         arguments = [a for a in self.cursor.get_arguments()]
         if len(arguments):
+            arg_types = self.arg_types(arguments)
+            if "type-parameter" in arg_types:
+                logger.warning(f"Skipping constructor with template parameters: {self.cursor.spelling} in {self.top_node.name}")
+                return
             out(
-                f".def(py::init<{self.arg_types(arguments)}>()"
+                f".def(py::init<{arg_types}>()"
             )
             self.write_pyargs(arguments, self.node)
             out(")")

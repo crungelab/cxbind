@@ -274,7 +274,6 @@ class Builder:
 
         # Handle template parameters (placeholders)
         if arg_type_kind == cindex.TypeKind.UNEXPOSED:
-        #if arg_type_kind == cindex.TypeKind.UNEXPOSED and self.top_node.__class__.__name__ == "ClassSpecializationNode":
             specialization_node = self.top_node
             logger.debug(f"specialization_node: {specialization_node}")
             logger.debug(f"specialization_node.spec: {specialization_node.spec}")

@@ -6,7 +6,7 @@ from ..node import StructNode, FieldNode
 
 class StructBuilder(StructBaseBuilder[StructNode]):
     def create_node(self):
-        self.node = StructNode(kind='struct', name=self.name, cursor=self.cursor)
+        self.node = StructNode(kind="struct", name=self.name, cursor=self.cursor)
 
     def build_node(self):
         super().build_node()
@@ -27,8 +27,8 @@ class StructBuilder(StructBaseBuilder[StructNode]):
             self.visit_children(cursor)
             return
 
-        #TODO: Don't use the base class for now.  Explicit definition in Node?
-        '''
+        # TODO: Don't use the base class for now.  Explicit definition in Node?
+        """
         base = None
         for child in cursor.get_children():
             if child.kind == cindex.CursorKind.CXX_BASE_SPECIFIER:
@@ -41,8 +41,10 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         else:
             self.out(f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");')
             self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
-        '''
-        self.out(f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");')
+        """
+        self.out(
+            f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");'
+        )
         self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
 
         with self.enter(node):
@@ -54,4 +56,3 @@ class StructBuilder(StructBaseBuilder[StructNode]):
                 self.gen_kw_init()
 
         self.end_chain()
-        #self.out()

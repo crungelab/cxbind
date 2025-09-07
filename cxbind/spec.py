@@ -80,21 +80,24 @@ class StructSpec(StructBaseSpec):
 
 class ClassSpec(StructBaseSpec):
     kind: Literal["class"]
+    extends: Optional[List[str]] = None
 
+
+"""
 class ClassSpecializationSpec(ClassSpec):
     kind: Literal["class_specialization"]
     args: List[str] = []
+"""
 
-#class ClassTemplateSpecializationSpec(BaseModel):
+
 class ClassTemplateSpecializationSpec(ClassSpec):
     kind: Literal["class_template_specialization"]
-    #name: str
     args: List[str]
-    
+
+
 class ClassTemplateSpec(StructBaseSpec):
     kind: Literal["class_template"]
     specializations: List[ClassTemplateSpecializationSpec] = []
-    #args: List[str] = []
 
 
 class EnumSpec(Spec):
@@ -112,6 +115,7 @@ SpecUnion = Union[
     EnumSpec,
 ]
 
+
 def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
     # logger.debug(f"validate_binding_dict: {v}")
     data = {}
@@ -126,7 +130,7 @@ def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
             value["name"] = name
             value["kind"] = kind
             value["signature"] = signature
-            #data[name] = value
+            # data[name] = value
             data[key] = value
         else:
             data[key] = value
@@ -135,10 +139,8 @@ def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
 
 SpecDict = Annotated[dict[str, SpecUnion], BeforeValidator(validate_spec_dict)]
 
-def create_spec(
-    key: str,
-    **kwargs: Any
-) -> SpecUnion:
+
+def create_spec(key: str, **kwargs: Any) -> SpecUnion:
     kind, name, signature = None, None, None
     parts = key.split("/")
     if len(parts) == 2:
@@ -157,12 +159,12 @@ def create_spec(
         "struct": StructSpec,
         "class": ClassSpec,
         "class_template": ClassTemplateSpec,
-        "class_specialization": ClassSpecializationSpec,
-        "enum": EnumSpec
-    #}.get(kind, Spec)
+        # "class_specialization": ClassSpecializationSpec,
+        "enum": EnumSpec,
+        # }.get(kind, Spec)
     }.get(kind)
     if spec_cls is None:
         logger.error(f"Unknown spec kind: {kind}")
         raise ValueError(f"Unknown spec kind: {kind}")
-    
+
     return spec_cls(kind=kind, name=name, signature=signature, **kwargs)
