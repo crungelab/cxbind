@@ -1,7 +1,6 @@
 from .struct_base_renderer import StructBaseRenderer
 from .class_renderer import ClassRenderer
 from .class_specialization_renderer import ClassSpecializationRenderer
-from .class_template_renderer import ClassTemplateRenderer
 from .class_specialization_renderer import ClassSpecializationRenderer
 from .method_renderer import MethodRenderer
 from .field_renderer import FieldRenderer

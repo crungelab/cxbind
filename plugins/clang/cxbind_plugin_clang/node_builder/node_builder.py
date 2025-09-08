@@ -49,8 +49,9 @@ class NodeBuilder(Builder, Generic[T_Node]):
             spec = create_spec(key)
         self.node.spec = spec
 
-        self.build_node()
-        self.top_node.add_child(self.node)
+        handled = self.build_node()
+        if not handled:
+            self.top_node.add_child(self.node)
         self.context.visited[self.name] = self.node
         return self.node
 

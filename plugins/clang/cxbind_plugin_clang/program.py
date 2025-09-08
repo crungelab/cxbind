@@ -34,20 +34,12 @@ class Program(ProgramBase):
 
         text_list = []
 
-        '''
-        for source in sources:
-            frontend = Frontend(source, self.unit)
-            nodes = frontend.build()
-            generator = Generator(source, self.unit)
-            generator.context.overloaded = frontend.context.overloaded
-            text_list.append(generator.generate(nodes))
-        '''
         for source in sources:
             frontend = Frontend(source, self.unit)
             node = frontend.build()
-            generator = Generator(source, self.unit)
+            generator = Generator(source, self.unit, node)
             generator.context.overloaded = frontend.context.overloaded
-            text_list.append(generator.generate(node))
+            text_list.append(generator.generate())
 
         text = "\n".join(text_list)
 

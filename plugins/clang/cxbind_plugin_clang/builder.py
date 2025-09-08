@@ -357,13 +357,11 @@ class Builder:
 
     def visit_field(self, cursor: cindex.Cursor):
         builder = self.create_builder(f"field/{self.spell(cursor)}", cursor=cursor)
-        node = builder.build()
-
-        #self.top_node.add_child(node)
+        return builder.build()
 
     def visit_constructor(self, cursor: cindex.Cursor):
         builder = self.create_builder(f"ctor/{self.spell(cursor)}", cursor=cursor)
-        node = builder.build()
+        return builder.build()
 
     def visit_function(self, cursor: cindex.Cursor):
         builder = self.create_builder(f"function/{self.spell(cursor)}", cursor=cursor)

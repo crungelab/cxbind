@@ -10,5 +10,5 @@ from .function_builder import FunctionBuilder
 #from .typedef_builder import TypedefBuilder
 from .ctor_builder import CtorBuilder
 from .node_builder import NodeBuilder
-from .node_builder_cls_map import NODE_BUILDER_CLS_MAP
+from .node_builder_table import NODE_BUILDER_TABLE
 from .node_builder import NodeBuilder

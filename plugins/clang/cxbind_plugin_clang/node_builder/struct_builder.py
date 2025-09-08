@@ -1,7 +1,7 @@
 from clang import cindex
 
 from . import StructBaseBuilder
-from ..node import StructNode, FieldNode
+from ..node import StructNode
 
 
 class StructBuilder(StructBaseBuilder[StructNode]):
@@ -23,7 +23,7 @@ class StructBuilder(StructBaseBuilder[StructNode]):
             is_enum_struct = first_child.kind == cindex.CursorKind.ENUM_DECL
         if is_enum_struct:
             self.visit_children(cursor)
-            return
+            return True # handled
 
         with self.enter(node):
             self.visit_children(cursor)

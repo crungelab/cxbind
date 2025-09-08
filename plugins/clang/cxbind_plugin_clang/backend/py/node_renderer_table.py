@@ -1,9 +1,3 @@
-from typing import Type, Any, Dict, List
-from clang import cindex
-from loguru import logger
-
-from ...node import Node
-
 from . import (
     FunctionRenderer,
     CtorRenderer,
@@ -11,19 +5,17 @@ from . import (
     MethodRenderer,
     StructRenderer,
     ClassRenderer,
-    ClassTemplateRenderer,
     ClassSpecializationRenderer,
     EnumRenderer,
 )
 
-NODE_RENDERER_CLS_MAP = {
+NODE_RENDERER_TABLE = {
     "function": FunctionRenderer,
     "ctor": CtorRenderer,
     "field": FieldRenderer,
     "method": MethodRenderer,
     "struct": StructRenderer,
     "class": ClassRenderer,
-    "class_template": ClassTemplateRenderer,
     "class_specialization": ClassSpecializationRenderer,
     "enum": EnumRenderer,
 }

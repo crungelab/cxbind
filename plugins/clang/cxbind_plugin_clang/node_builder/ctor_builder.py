@@ -21,5 +21,3 @@ class CtorBuilder(MethodBuilder):
             return
                 
         self.top_node.has_constructor = True
-
-        #self.top_node.add_child(self.node)

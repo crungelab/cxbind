@@ -82,9 +82,9 @@ class RenderContext:
         return self.node_stack[-1]
 
     def create_renderer(self, node: Node) -> "Renderer":
-        from .py.node_renderer_cls_map import NODE_RENDERER_CLS_MAP
+        from .py.node_renderer_table import NODE_RENDERER_TABLE
 
-        cls: Type = NODE_RENDERER_CLS_MAP.get(node.kind, None)
+        cls: Type = NODE_RENDERER_TABLE.get(node.kind, None)
         if cls is None:
             logger.warning(f"No renderer for node kind: {node.kind}")
             return None
@@ -104,7 +104,7 @@ class RenderContext:
             res = self.spell(cursor.semantic_parent)
             if res != "":
                 node = self.top_node
-                if node is not None:
+                if node is not None and node.kind != "root":
                     return node.name + "::" + cursor.spelling
 
                 return res + "::" + cursor.spelling

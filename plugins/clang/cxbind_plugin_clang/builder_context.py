@@ -104,11 +104,11 @@ class BuilderContext:
     def create_builder(
         self, entry_key: str, cursor: cindex.Cursor = None
     ) -> "NodeBuilder":
-        from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP
+        from .node_builder.node_builder_table import NODE_BUILDER_TABLE
         from .node_builder import NodeBuilder
 
         kind, name = entry_key.split("/")
-        builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
+        builder_cls: Type[NodeBuilder] = NODE_BUILDER_TABLE[kind]
         builder = builder_cls(self, name, cursor)
         return builder
 
@@ -121,7 +121,7 @@ class BuilderContext:
             res = self.spell(cursor.semantic_parent)
             if res != "":
                 node = self.top_node
-                if node is not None:
+                if node is not None and node.kind != "root":
                     return node.name + "::" + cursor.spelling
 
                 return res + "::" + cursor.spelling

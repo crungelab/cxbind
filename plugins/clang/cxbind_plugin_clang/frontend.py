@@ -42,11 +42,8 @@ class Frontend(Builder):
         )
 
         self.visit_overloads(tu.cursor)
-        '''
-        nodes = self.visit_children(tu.cursor)
-        return nodes
-        '''
         self.visit_children(tu.cursor)
+
         return self.top_node
 
     def visit_overloads(self, cursor):

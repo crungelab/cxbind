@@ -8,14 +8,15 @@ from clang import cindex
 
 from cxbind.unit import Unit
 
+from ..node import RootNode
 from .render_context import RenderContext
 from .renderer import Renderer
 from .py import NodeRenderer
 
 
-class Generator(Renderer):
-    def __init__(self, source: str, unit: Unit, **kwargs):
-        super().__init__(RenderContext(unit, **kwargs))
+class Generator(NodeRenderer):
+    def __init__(self, source: str, unit: Unit, node: RootNode, **kwargs):
+        super().__init__(RenderContext(unit, **kwargs), node)
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source
@@ -28,34 +29,9 @@ class Generator(Renderer):
         loader = jinja2.FileSystemLoader(searchpath=searchpath)
         self.jinja_env = jinja2.Environment(loader=loader)
 
-    def generate(self, root):
-        tu = cindex.TranslationUnit.from_source(
-            self.path,
-            args=self.flags,
-            options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
-        )
-
+    def generate(self):
         with self.out:
-            renderer = NodeRenderer(self.context, root)
-            renderer.render()
+            self.render()
             self.end_chain()
 
-        return self.out.text
-
-    '''
-    def generate(self, nodes):
-        tu = cindex.TranslationUnit.from_source(
-            self.path,
-            args=self.flags,
-            options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
-        )
-
-        with self.out:
-            for node in nodes:
-                logger.debug(f"Rendering Node: {node})")
-                renderer = self.context.create_renderer(node)
-                renderer.render()
-            self.end_chain()
-
-        return self.out.text
-    '''
+        return self.text
