@@ -2,18 +2,18 @@ from typing import TYPE_CHECKING, Type, Dict, List, Any, Callable
 
 from loguru import logger
 
-from cxbind.unit import Unit
 from cxbind.code_stream import CodeStream
 
 from ..node import Node
 from ..worker_context import WorkerContext
+from ..session import Session
 
 if TYPE_CHECKING:
     from .renderer import Renderer
 
 class RenderContext(WorkerContext):
-    def __init__(self, unit: Unit, **kwargs) -> None:
-        super().__init__(unit, **kwargs)
+    def __init__(self, session: Session) -> None:
+        super().__init__(session)
         self.out = CodeStream()
         self.chaining = False
 

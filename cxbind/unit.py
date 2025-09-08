@@ -10,7 +10,6 @@ from pydantic import Field
 from .unit_base import UnitBase
 
 class Unit(UnitBase):
-    #source: str
     source: Optional[str] = None
     sources: Optional[List[str]] = []
     target: str

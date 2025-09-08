@@ -45,11 +45,11 @@ class Renderer(Worker[RenderContext]):
 
     @contextmanager
     def enter(self, node) -> Generator[Any, Any, Any]:
-        self.context.push_node(node)
+        self.session.push_node(node)
         self.out.indent()
         yield node
         self.out.dedent()
-        self.context.pop_node()
+        self.session.pop_node()
 
     def render(self):
         for child in self.node.children:

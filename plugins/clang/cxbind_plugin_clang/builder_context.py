@@ -6,13 +6,13 @@ if TYPE_CHECKING:
 from clang import cindex
 from loguru import logger
 
-from cxbind.unit import Unit
-
 from .worker_context import WorkerContext
+from .session import Session
+
 
 class BuilderContext(WorkerContext):
-    def __init__(self, unit: Unit, **kwargs) -> None:
-        super().__init__(unit, **kwargs)
+    def __init__(self, session: Session) -> None:
+        super().__init__(session)
 
     def create_builder(
         self, entry_key: str, cursor: cindex.Cursor = None

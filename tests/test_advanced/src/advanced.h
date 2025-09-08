@@ -18,6 +18,8 @@ struct Advanced
     {
         return i + j;
     }
+
+    //int value = 42;
 };
 
 int sub(int x, int y) {

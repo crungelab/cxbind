@@ -18,79 +18,95 @@ class Worker(Generic[T_Context]):
     def __init__(self, context: T_Context) -> None:
         super().__init__()
         self.context = context
+        self.session = context.session
 
     @property
     def unit(self):
-        return self.context.unit
+        return self.session.unit
 
     @property
     def prefixes(self) -> list[str]:
-        return self.context.prefixes
+        return self.session.prefixes
 
     @property
     def wrapped(self) -> dict[str, StructBaseNode]:
-        return self.context.wrapped
+        return self.session.wrapped
 
     @property
     def mapped(self):
-        return self.context.mapped
+        return self.session.mapped
 
     @property
     def target(self):
-        return self.context.target
+        return self.session.target
 
     @property
     def module(self):
-        return self.context.module
+        return self.session.module
 
     @property
     def flags(self):
-        return self.context.flags
+        return self.session.flags
 
     @property
     def defaults(self):
-        return self.context.defaults
+        return self.session.defaults
 
     @property
     def excluded(self):
-        return self.context.excluded
+        return self.session.excluded
 
     @property
     def overloaded(self):
-        return self.context.overloaded
+        return self.session.overloaded
 
     @property
     def node_stack(self):
-        return self.context.node_stack
+        return self.session.node_stack
 
     def push_node(self, node) -> None:
-        self.context.push_node(node)
+        self.session.push_node(node)
 
     def pop_node(self) -> Node:
-        self.context.pop_node()
+        self.session.pop_node()
 
     @property
     def top_node(self) -> Optional[Node]:
-        return self.context.top_node
+        return self.session.top_node
 
     def spell(self, cursor: cindex.Cursor) -> str:
-        return self.context.spell(cursor)
+        return self.session.spell(cursor)
 
     def format_field(self, name: str) -> str:
-        return self.context.format_field(name)
+        return self.session.format_field(name)
 
     def format_type(self, name: str) -> str:
-        return self.context.format_type(name)
+        return self.session.format_type(name)
 
     def format_enum_constant(self, name: str, enum_name: str) -> str:
-        return self.context.format_enum_constant(name, enum_name)
+        return self.session.format_enum_constant(name, enum_name)
 
     def register_node(self, node: Node) -> str:
-        return self.context.register_spec(node)
+        return self.session.register_spec(node)
 
     def lookup_spec(self, key: str) -> Node:
-        return self.context.lookup_spec(key)
+        return self.session.lookup_spec(key)
 
+    @property
+    def scope(self) -> str:
+        node = self.top_node
+        if node.kind == "root":
+            return self.module
+        else:
+            return node.pyname
+
+    def module_(self, node: Node):
+        if node.kind == "root":
+            return self.module
+        else:
+            return node.pyname
+
+    '''
     @property
     def scope(self) -> str:
         node = self.top_node
@@ -104,6 +120,7 @@ class Worker(Generic[T_Context]):
             return self.module
         else:
             return node.pyname
+    '''
 
     def is_overloaded(self, cursor: cindex.Cursor) -> bool:
         return self.spell(cursor) in self.overloaded

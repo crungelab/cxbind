@@ -11,10 +11,11 @@ from .builder import Builder
 from .builder_context import BuilderContext
 
 from .node import Node, RootNode
+from .session import Session
 
 class Frontend(Builder):
-    def __init__(self, source: str, unit: Unit, **kwargs):
-        super().__init__(BuilderContext(unit, **kwargs))
+    def __init__(self, source: str, session: Session) -> None:
+        super().__init__(BuilderContext(session))
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source

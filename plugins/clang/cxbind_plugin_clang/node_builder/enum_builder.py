@@ -9,7 +9,7 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         self.node = EnumNode(kind='enum', name=self.name, cursor=self.cursor)
 
     def create_pyname(self, name):
-        return self.context.format_enum(name)
+        return self.session.format_enum(name)
 
     def should_cancel(self):
         if self.is_forward_declaration(self.cursor):

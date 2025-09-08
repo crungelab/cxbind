@@ -9,14 +9,16 @@ from clang import cindex
 from cxbind.unit import Unit
 
 from ..node import RootNode
+from ..session import Session
+
 from .render_context import RenderContext
 from .renderer import Renderer
 from .py import NodeRenderer
 
 
 class Generator(NodeRenderer):
-    def __init__(self, source: str, unit: Unit, node: RootNode, **kwargs):
-        super().__init__(RenderContext(unit, **kwargs), node)
+    def __init__(self, source: str, session: Session, node: RootNode, **kwargs):
+        super().__init__(RenderContext(session, **kwargs), node)
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source
