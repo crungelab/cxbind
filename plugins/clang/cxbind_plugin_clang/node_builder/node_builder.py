@@ -10,7 +10,6 @@ from ..node import Node
 from ..builder import Builder
 from ..builder_context import BuilderContext
 
-# Define a generic type variable
 T_Node = TypeVar("T_Node", bound=Node)
 
 
@@ -26,13 +25,13 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.cursor = cursor
         self.node: T_Node = None
 
-    def create_pyname(self, name):
+    def create_pyname(self, name) -> str:
         return self.format_type(name)
 
-    def should_cancel(self):
+    def should_cancel(self) -> bool:
         return False
 
-    def find_spec(self):
+    def find_spec(self) -> Spec:
         key = Node.make_key(self.cursor)
         spec = self.lookup_spec(key)
         return spec

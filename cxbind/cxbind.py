@@ -5,13 +5,11 @@ if TYPE_CHECKING:
 
 import os, sys
 from pathlib import Path
-import importlib.util
 from importlib.metadata import entry_points
 
 
 from loguru import logger
 
-# from . import generator as dot_cxbind
 from .project import Project
 from .unit import Unit
 from .factory.project_factory import ProjectFactory

@@ -10,7 +10,6 @@ from ...node import Node
 from ..renderer import Renderer
 from ..render_context import RenderContext
 
-# Define a generic type variable
 T_Node = TypeVar("T_Node", bound=Node)
 
 
@@ -23,10 +22,10 @@ class NodeRenderer(Renderer, Generic[T_Node]):
         super().__init__(context)
         self.node = node
 
-    def create_pyname(self, name):
+    def create_pyname(self, name) -> str:
         return self.format_type(name)
 
-    def find_spec(self):
-        key = Node.make_key(self.cursor)
+    def find_spec(self) -> Spec:
+        key = Node.make_key(self.node.cursor)
         spec = self.lookup_spec(key)
         return spec
