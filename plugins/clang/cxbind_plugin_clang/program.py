@@ -7,7 +7,8 @@ from rich import print
 from cxbind.program_base import ProgramBase
 from cxbind.unit import Unit
 
-from .generator import Generator
+from .frontend import Frontend
+from .backend.generator import Generator
 
 
 class Program(ProgramBase):
@@ -33,9 +34,20 @@ class Program(ProgramBase):
 
         text_list = []
 
+        '''
         for source in sources:
+            frontend = Frontend(source, self.unit)
+            nodes = frontend.build()
             generator = Generator(source, self.unit)
-            text_list.append(generator.generate())
+            generator.context.overloaded = frontend.context.overloaded
+            text_list.append(generator.generate(nodes))
+        '''
+        for source in sources:
+            frontend = Frontend(source, self.unit)
+            node = frontend.build()
+            generator = Generator(source, self.unit)
+            generator.context.overloaded = frontend.context.overloaded
+            text_list.append(generator.generate(node))
 
         text = "\n".join(text_list)
 

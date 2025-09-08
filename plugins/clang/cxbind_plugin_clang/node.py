@@ -16,6 +16,7 @@ class Node(BaseModel):
     first_name: Optional[str] = None
     pyname: Optional[str] = None
     children: List["Node"] = []
+    parent: Optional["Node"] = None
 
     cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
     spec: Optional[Spec] = Field(None, exclude=True, repr=False)
@@ -79,7 +80,12 @@ class Node(BaseModel):
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
     def add_child(self, child: "Node"):
+        child.parent = self
         self.children.append(child)
+
+
+class RootNode(Node):
+    kind: Literal["root"]
 
 
 class Argument(BaseModel):
@@ -127,7 +133,11 @@ class ClassTemplateSpecialization(BaseModel):
     name: str
 
 
-class ClassTemplateNode(StructBaseNode):
+class TemplateNode(Node):
+    pass
+
+
+class ClassTemplateNode(TemplateNode):
     kind: Literal["class_template"]
 
 

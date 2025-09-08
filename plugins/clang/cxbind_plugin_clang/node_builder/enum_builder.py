@@ -17,25 +17,9 @@ class EnumBuilder(NodeBuilder[EnumNode]):
         return super().should_cancel()
 
 
+    '''
     def build_node(self):
         super().build_node()
-        #logger.debug(f"Building Enum: {self.node.name}")
-
-        self.end_chain()
-
-        node = self.node
-        cursor = self.cursor
-
-        name = self.spell(cursor)
-        pyname = self.format_type(cursor.spelling)
-
-        self.out(f'py::enum_<{name}>({self.scope}, "{pyname}", py::arithmetic())')
-
-        with self.out as out:
-            for child in cursor.get_children():
-                out(
-                    f'.value("{self.format_enum_constant(child.spelling, self.node.first_name)}", {name}::{child.spelling})'
-                )
-            out(".export_values()")
-
-        self.out(";")
+        if self.top_node is not None:
+            self.top_node.add_child(self.node)
+    '''

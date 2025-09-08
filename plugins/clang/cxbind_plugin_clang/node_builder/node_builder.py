@@ -50,6 +50,7 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.node.spec = spec
 
         self.build_node()
+        self.top_node.add_child(self.node)
         self.context.visited[self.name] = self.node
         return self.node
 

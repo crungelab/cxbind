@@ -14,8 +14,6 @@ class StructBuilder(StructBaseBuilder[StructNode]):
         node = self.node
         cursor = self.cursor
 
-        self.end_chain()
-
         # Handle the case of a struct with one enum child
         children = list(cursor.get_children())  # it's an iterator
         is_enum_struct = False
@@ -27,32 +25,6 @@ class StructBuilder(StructBaseBuilder[StructNode]):
             self.visit_children(cursor)
             return
 
-        # TODO: Don't use the base class for now.  Explicit definition in Node?
-        """
-        base = None
-        for child in cursor.get_children():
-            if child.kind == cindex.CursorKind.CXX_BASE_SPECIFIER:
-                base = child
-        if base:
-            basename = self.spell(base)
-            self.out(f'py::class_<{node.name}, {basename}> {node.pyname}({self.module}, "{node.pyname}");')
-            self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
-
-        else:
-            self.out(f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");')
-            self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
-        """
-        self.out(
-            f'py::class_<{node.name}> {node.pyname}({self.module}, "{node.pyname}");'
-        )
-        self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
-
         with self.enter(node):
             self.visit_children(cursor)
 
-            if node.spec.gen_init:
-                self.gen_init()
-            elif node.spec.gen_kw_init:
-                self.gen_kw_init()
-
-        self.end_chain()

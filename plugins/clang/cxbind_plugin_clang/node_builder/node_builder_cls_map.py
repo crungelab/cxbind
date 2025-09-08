@@ -13,7 +13,6 @@ from . import (
     ClassBuilder,
     ClassTemplateBuilder,
     EnumBuilder,
-    #TypedefBuilder,
 )
 
 NODE_BUILDER_CLS_MAP = {
@@ -25,5 +24,4 @@ NODE_BUILDER_CLS_MAP = {
     "class": ClassBuilder,
     "class_template": ClassTemplateBuilder,
     "enum": EnumBuilder,
-    #"typedef": TypedefBuilder,
 }

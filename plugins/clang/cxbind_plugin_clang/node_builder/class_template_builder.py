@@ -16,12 +16,13 @@ class ClassTemplateBuilder(StructBaseBuilder[ClassTemplateNode]):
         logger.debug(f"build_node: {self.node}")
         cursor = self.cursor
 
-        for specialization in self.node.spec.specializations:
-            logger.debug(f"specialization: {specialization}")
-            args = ", ".join(specialization.args)
-            cname = f"{self.node.name}<{args}>"
+        with self.enter(self.node):
+            for specialization in self.node.spec.specializations:
+                logger.debug(f"specialization: {specialization}")
+                args = ", ".join(specialization.args)
+                cname = f"{self.node.name}<{args}>"
 
-            builder = ClassSpecializationBuilder(
-                self.context, cname, cursor, specialization
-            )
-            builder.build()
+                builder = ClassSpecializationBuilder(
+                    self.context, cname, cursor, specialization
+                )
+                builder.build()

@@ -14,3 +14,4 @@ class MethodBuilder(FunctionBaseBuilder[MethodNode]):
 
     def create_node(self):
         self.node = MethodNode(kind='method', name=self.name, cursor=self.cursor)
+        #self.top_node.add_child(self.node)

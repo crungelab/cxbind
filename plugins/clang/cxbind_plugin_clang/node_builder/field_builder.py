@@ -15,6 +15,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
     def should_cancel(self):
         return super().should_cancel() or not self.is_field_mappable(self.cursor)
     
+    '''
     def build_node(self):
         super().build_node()
         
@@ -39,52 +40,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
             else:
                 self.out(f'.def_readwrite("{pyname}", &{node.name})')
         #self.out()
-
-    #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
-    def visit_char_ptr_field(self, cursor, pyname):
-        #pname = self.spell(cursor.semantic_parent)
-        pname = self.top_node.name
-        name = cursor.spelling
-        self.out(f'.def_property("{pyname}",')
-        with self.out:
-            self.out(
-            f'[](const {pname}& self)' '{'
-            f' return self.{name};'
-            ' },'
-            )
-            self.out(
-            f'[]({pname}& self, const char* source)' '{'
-            f' self.{name} = strdup(source);'
-            ' }'
-            )
-        self.out(')')
-
-    def visit_fn_ptr_field(self, cursor, pyname):
-        #pname = self.spell(cursor.semantic_parent)
-        pname = self.top_node.name
-        name = cursor.spelling
-        typename = cursor.type.spelling
-        self.out(f'.def_property("{pyname}",')
-        with self.out:
-            self.out(
-            f'[]({pname}& self)' '{'
-            f' return self.{name};'
-            ' },')
-            self.out(
-            f'[]({pname}& self, {typename} source)' '{'
-            f' self.{name} = source;'
-            ' }'
-            )
-        self.out(')')
+    '''
 
     def is_field_mappable(self, cursor):
         return self.is_cursor_mappable(cursor)
-
-    def is_field_readonly(self, cursor):
-        if self.top_node.spec.readonly:
-            return True
-        if cursor.type.is_const_qualified():
-            return True
-        if cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return True
-        return False

@@ -6,17 +6,18 @@ from loguru import logger
 
 from clang import cindex
 
-from . import cu
-from .builder_context import BuilderContext
-from .node import Node, StructBaseNode
+from .. import cu
+from .render_context import RenderContext
+from ..node import Node, StructBaseNode
 
 
-class Builder:
+class Renderer:
     actions: Dict[cindex.CursorKind, Callable] = {}
 
-    def __init__(self, context: BuilderContext):
+    def __init__(self, context: RenderContext):
         super().__init__()
         self.context = context
+        self.out = context.out
 
     @property
     def unit(self):
@@ -27,9 +28,31 @@ class Builder:
         return self.context.prefixes
 
     @property
-    # def wrapped(self) -> dict[str, Node]:
     def wrapped(self) -> dict[str, StructBaseNode]:
         return self.context.wrapped
+
+    @property
+    def chaining(self) -> bool:
+        return self.context.chaining
+
+    @chaining.setter
+    def chaining(self, value) -> None:
+        self.context.chaining = value
+
+    def begin_chain(self, emit_scope:bool = True) -> None:
+        if self.chaining:
+            return
+        self.context.chaining = True
+        if emit_scope:
+            self.out(self.scope)
+        #self.out(self.scope)
+
+    def end_chain(self) -> None:
+        if not self.chaining:
+            return
+        self.context.chaining = False
+        self.out(";")
+        self.out()
 
     @property
     def text(self) -> str:
@@ -68,27 +91,32 @@ class Builder:
         return self.context.overloaded
 
     @property
+    def entries(self):
+        return self.context.entries
+
+    @property
+    def nodes(self):
+        return self.context.nodes
+
+    @property
     def node_stack(self):
         return self.context.node_stack
 
     @contextmanager
     def enter(self, node) -> Generator[Any, Any, Any]:
         self.context.push_node(node)
+        self.out.indent()
         yield node
+        self.out.dedent()
         self.context.pop_node()
-
-    def push_node(self, node) -> None:
-        self.context.push_node(node)
-
-    def pop_node(self) -> Node:
-        self.context.pop_node()
-
-    @property
-    def top_node(self) -> Optional[Node]:
-        return self.context.top_node
 
     def spell(self, cursor: cindex.Cursor) -> str:
         return self.context.spell(cursor)
+
+    """
+    def spell(self, cursor: cindex.Cursor, node: Node = None) -> str:
+        return self.context.spell(cursor, node)
+    """
 
     def format_field(self, name: str) -> str:
         return self.context.format_field(name)
@@ -105,8 +133,18 @@ class Builder:
     def lookup_spec(self, key: str) -> Node:
         return self.context.lookup_spec(key)
 
-    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "Builder":
+    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> Node:
         return self.context.create_builder(entry_key, cursor)
+
+    def push_node(self, node) -> None:
+        self.context.push_node(node)
+
+    def pop_node(self) -> Node:
+        self.context.pop_node()
+
+    @property
+    def top_node(self) -> Optional[Node]:
+        return self.context.top_node
 
     @property
     def scope(self) -> str:
@@ -124,12 +162,12 @@ class Builder:
 
     def is_overloaded(self, cursor: cindex.Cursor) -> bool:
         return self.spell(cursor) in self.overloaded
-        # return cursor.spelling in self.overloaded
+        #return cursor.spelling in self.overloaded
 
     def is_excluded(self, cursor: cindex.Cursor):
-        # if self.spell(cursor) in self.excluded:
+        #if self.spell(cursor) in self.excluded:
         if Node.make_key(cursor) in self.excluded:
-            # if cursor.spelling in self.excluded:
+        #if cursor.spelling in self.excluded:
             return True
         if self.is_overloaded(cursor):
             key = Node.make_key(cursor, overload=True)
@@ -154,7 +192,7 @@ class Builder:
             node_path = Path(cursor.location.file.name)
             mappable = node_path.name in self.mapped
             if not mappable:
-                # logger.debug(f"Not mappable: {node_path.name}")
+                #logger.debug(f"Not mappable: {node_path.name}")
                 return False
 
         return True
@@ -211,10 +249,8 @@ class Builder:
         if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
             logger.debug(f"Constant array: {argument.spelling}")
             element_type = argument.type.get_array_element_type()
-            # element_type_name = argument.type.get_array_element_type().spelling
-            element_type_name = cu.get_base_type_name(
-                argument.type.get_array_element_type()
-            )  # Strip qualifiers
+            #element_type_name = argument.type.get_array_element_type().spelling
+            element_type_name = cu.get_base_type_name(argument.type.get_array_element_type()) # Strip qualifiers
             logger.debug(f"Element type: {element_type.spelling}")
             logger.debug(f"Element type kind: {element_type.kind}")
             if element_type.kind == cindex.TypeKind.UNEXPOSED:
@@ -238,7 +274,7 @@ class Builder:
             resolved_type = argument.type.get_canonical()
             # resolved_type = argument.type
             # resolved_type_name = resolved_type.spelling
-            # exit()
+            #exit()
             resolved_type_name = self.resolve_template_type(
                 resolved_type.spelling, specialization_node.spec.args
             )
@@ -328,71 +364,12 @@ class Builder:
         logger.debug(
             f"Visiting {cursor.spelling} kind={cursor.kind} type={cursor.type.spelling}"
         )
-        # logger.debug(f"canonical_type={cursor.type.get_canonical().spelling}")
-        # logger.debug(f"canonical_kind={cursor.type.get_canonical().kind}")
+        #logger.debug(f"canonical_type={cursor.type.get_canonical().spelling}")
+        #logger.debug(f"canonical_kind={cursor.type.get_canonical().kind}")
 
-        return self.actions[cursor.kind](self, cursor)
+        self.actions[cursor.kind](self, cursor)
 
-    def visit_children(self, cursor: cindex.Cursor):
-        nodes = []
-        for child in cursor.get_children():
-            node = self.visit(child)
-            if node is not None:
-                if isinstance(node, list):
-                    nodes.extend(node)
-                else:
-                    nodes.append(node)
-        return nodes
-
-    def visit_none(self, cursor: cindex.Cursor):
-        logger.debug(f"visit_none: {cursor.spelling}")
-
-    def visit_typedef_decl(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"typedef/{self.spell(cursor)}", cursor=cursor)
-        return builder.build()
-
-    def visit_enum(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"enum/{self.spell(cursor)}", cursor=cursor)
-        return builder.build()
-
-    def visit_field(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"field/{self.spell(cursor)}", cursor=cursor)
-        node = builder.build()
-
-        #self.top_node.add_child(node)
-
-    def visit_constructor(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"ctor/{self.spell(cursor)}", cursor=cursor)
-        node = builder.build()
-
-    def visit_function(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"function/{self.spell(cursor)}", cursor=cursor)
-        return builder.build()
-
-    def visit_method(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"method/{self.spell(cursor)}", cursor=cursor)
-        return builder.build()
-
-    def visit_struct(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"struct/{self.spell(cursor)}", cursor=cursor)
-        return builder.build()
-
-    def visit_class(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"class/{self.spell(cursor)}", cursor=cursor)
-        return builder.build()
-
-    def visit_class_template(self, cursor: cindex.Cursor):
-        builder = self.create_builder(
-            f"class_template/{self.spell(cursor)}", cursor=cursor
-        )
-        return builder.build()
-
-    def visit_var(self, cursor: cindex.Cursor):
-        logger.debug(f"Not implemented:  visit_var: {cursor.spelling}")
-        pass
-        # raise NotImplementedError
-
-    def visit_using_decl(self, cursor: cindex.Cursor):
-        logger.debug(f"Not implemented:  visit_using_decl: {cursor.spelling}")
-        # pass
-        raise NotImplementedError
+    def render(self):
+        for child in self.node.children:
+            renderer = self.context.create_renderer(child)
+            renderer.render()

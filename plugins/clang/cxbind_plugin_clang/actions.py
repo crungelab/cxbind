@@ -12,11 +12,9 @@ MAP = {
     cindex.CursorKind.NAMESPACE : lambda self, node : self.visit_children(node),
     cindex.CursorKind.UNEXPOSED_DECL : lambda self, node : self.visit_children(node),
     cindex.CursorKind.USING_DECLARATION : lambda self, node : self.visit_using_decl(node),
-    #cindex.CursorKind.TYPEDEF_DECL : lambda self, node : self.visit_typedef_decl(node),
     cindex.CursorKind.TYPEDEF_DECL : lambda self, node : self.visit_none(node),
 
     cindex.CursorKind.FUNCTION_TEMPLATE : lambda self, node : self.visit_none(node),
-    #cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_none(node),
     cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_class_template(node),
     cindex.CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION : lambda self, node : self.visit_none(node),
     cindex.CursorKind.TYPE_ALIAS_TEMPLATE_DECL : lambda self, node : self.visit_none(node),

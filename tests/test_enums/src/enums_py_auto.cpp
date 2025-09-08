@@ -40,11 +40,7 @@ void register_enums_py_auto(py::module &_core, Registry &registry) {
         .value("VALUE3", TypedefEnum::TypedefEnumValue3)
         .export_values()
     ;
-    py::enum_<EnumStruct::Enum>(_core, "Enum", py::arithmetic())
-        .value("VALUE1", EnumStruct::Enum::Value1)
-        .value("VALUE2", EnumStruct::Enum::Value2)
-        .value("VALUE3", EnumStruct::Enum::Value3)
-        .export_values()
-    ;
+    py::class_<EnumStruct> EnumStruct(_core, "EnumStruct");
+    registry.on(_core, "EnumStruct", EnumStruct);
 
 }

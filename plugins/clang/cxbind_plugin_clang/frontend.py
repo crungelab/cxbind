@@ -4,41 +4,28 @@ import importlib
 from loguru import logger
 from rich import print
 
-import jinja2
-
 from clang import cindex
 
 from cxbind.unit import Unit
 from .builder import Builder
 from .builder_context import BuilderContext
 
+from .node import Node, RootNode
 
-class Generator(Builder):
+class Frontend(Builder):
     def __init__(self, source: str, unit: Unit, **kwargs):
         super().__init__(BuilderContext(unit, **kwargs))
 
         BASE_PATH = Path(".")
-        # self.path = BASE_PATH / self.source
         self.path = BASE_PATH / source
         self.mapped.append(self.path.name)
         logger.debug(f"mapped: {self.mapped}")
 
-        config_searchpath = BASE_PATH / ".cxbind" / "templates"
-        default_searchpath = Path(
-            os.path.dirname(os.path.abspath(__file__)), "templates"
-        )
-        searchpath = [config_searchpath, default_searchpath]
-        loader = jinja2.FileSystemLoader(searchpath=searchpath)
-        self.jinja_env = jinja2.Environment(loader=loader)
-
         self.import_actions()
 
-    @classmethod
-    def produce(self, unit: Unit):
-        instance = Generator(unit)
-        instance.import_actions()
-        return instance
-
+        self.root = RootNode(kind="root", name="root")
+        self.push_node(self.root)
+        
     def import_actions(self):
         path = Path(os.path.dirname(os.path.abspath(__file__)), "actions.py")
         spec = importlib.util.spec_from_file_location("actions", path)
@@ -47,19 +34,20 @@ class Generator(Builder):
 
         Builder.actions = __actions__.MAP
 
-    def generate(self):
+    def build(self):
         tu = cindex.TranslationUnit.from_source(
             self.path,
             args=self.flags,
             options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
         )
 
-        with self.out:
-            self.visit_overloads(tu.cursor)
-            self.visit_children(tu.cursor)
-            self.end_chain()
-
-        return self.text
+        self.visit_overloads(tu.cursor)
+        '''
+        nodes = self.visit_children(tu.cursor)
+        return nodes
+        '''
+        self.visit_children(tu.cursor)
+        return self.top_node
 
     def visit_overloads(self, cursor):
         for child in cursor.get_children():

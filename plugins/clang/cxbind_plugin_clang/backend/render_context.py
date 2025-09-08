@@ -1,8 +1,5 @@
 from typing import TYPE_CHECKING, Type, Dict, List, Any, Callable
 
-if TYPE_CHECKING:
-    from .node_builder import NodeBuilder
-
 import re
 from contextlib import contextmanager
 
@@ -14,8 +11,10 @@ from cxbind.spec import Spec
 from cxbind.unit import Unit
 from cxbind.code_stream import CodeStream
 
-from .node import Node, StructBaseNode
+from ..node import Node, StructBaseNode
 
+if TYPE_CHECKING:
+    from .renderer import Renderer
 
 # TODO: Use pydantic settings
 class Options:
@@ -36,13 +35,15 @@ class Overloaded(UserSet):
         return self.name(cursor) in self
 
 
-class BuilderContext:
+class RenderContext:
     def __init__(self, unit: Unit, **kwargs) -> None:
         self.unit = unit
 
         self.options = {"save": True}
         self.wrapped: Dict[StructBaseNode] = {}
-        self.visited: Dict[Node] = {}
+        self.chaining = False
+
+        self.out = CodeStream()
 
         self.module = unit.module
 
@@ -50,15 +51,10 @@ class BuilderContext:
         self.target = ""
         self.flags: List[str] = unit.flags.copy()
         self.defaults: Dict[str, str] = {}
-        self.excludes: List[str] = unit.excludes.copy()
         self.overloads: List[str] = []
 
         self.specs = unit.specs.copy()
-        self.node_stack: List[Node] = []
         self.prefixes = unit.prefixes
-
-        for name, spec in self.specs.items():
-            self.register_spec(spec)
 
         for key in kwargs:
             if key == "options":
@@ -69,8 +65,9 @@ class BuilderContext:
             setattr(self, key, kwargs[key])
 
         self.options = Options(self.options)
-        self.excluded = set(self.excludes)
         self.overloaded = Overloaded(self.overloads)
+
+        self.node_stack: List[Node] = []
 
     def push_node(self, node) -> None:
         self.node_stack.append(node)
@@ -84,33 +81,19 @@ class BuilderContext:
             return None
         return self.node_stack[-1]
 
-    def register_spec(self, spec: Spec) -> None:
-        logger.debug(f"Registering spec: {spec.name}")
-        name = spec.name
-        key = spec.key
-        if spec.exclude:
-            logger.debug(f"Excluding: {key}")
-            self.excludes.append(key)
-        if spec.overload:
-            self.overloads.append(key)
-        if hasattr(spec, "wrapper") and spec.wrapper:
-            logger.debug(f"Adding wrapped: {name}")
-            self.wrapped[name] = spec
+    def create_renderer(self, node: Node) -> "Renderer":
+        from .py.node_renderer_cls_map import NODE_RENDERER_CLS_MAP
 
+        cls: Type = NODE_RENDERER_CLS_MAP.get(node.kind, None)
+        if cls is None:
+            logger.warning(f"No renderer for node kind: {node.kind}")
+            return None
+        renderer = cls(self, node)
+        return renderer
+    
     def lookup_spec(self, key: str) -> Spec:
         spec = self.specs.get(key)
         return spec
-
-    def create_builder(
-        self, entry_key: str, cursor: cindex.Cursor = None
-    ) -> "NodeBuilder":
-        from .node_builder.node_builder_cls_map import NODE_BUILDER_CLS_MAP
-        from .node_builder import NodeBuilder
-
-        kind, name = entry_key.split("/")
-        builder_cls: Type[NodeBuilder] = NODE_BUILDER_CLS_MAP[kind]
-        builder = builder_cls(self, name, cursor)
-        return builder
 
     def spell(self, cursor: cindex.Cursor) -> str:
         if cursor is None:
