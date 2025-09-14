@@ -88,9 +88,10 @@ class RootNode(Node):
     kind: Literal["root"]
 
 
+'''
 class Argument(BaseModel):
     default: Optional[Any] = None
-
+'''
 
 class FunctionBaseNode(Node):
     pass

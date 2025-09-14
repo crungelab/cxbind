@@ -65,13 +65,20 @@ class FieldSpec(Spec):
     kind: Literal["field"]
 
 
+class Property(BaseModel):
+    name: str
+    getter: Optional[str] = None
+    setter: Optional[str] = None
+
 class StructBaseSpec(Spec):
-    constructible: bool = True
-    has_constructor: bool = False
+    extends: Optional[List[str]] = None
+    #constructible: bool = True
+    #has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
     wrapper: str = None
     holder: Optional[str] = None
+    properties: Optional[List[Property]] = []
 
 
 class StructSpec(StructBaseSpec):
@@ -80,15 +87,6 @@ class StructSpec(StructBaseSpec):
 
 class ClassSpec(StructBaseSpec):
     kind: Literal["class"]
-    extends: Optional[List[str]] = None
-
-
-"""
-class ClassSpecializationSpec(ClassSpec):
-    kind: Literal["class_specialization"]
-    args: List[str] = []
-"""
-
 
 class ClassTemplateSpecializationSpec(ClassSpec):
     kind: Literal["class_template_specialization"]
@@ -117,7 +115,7 @@ SpecUnion = Union[
 
 
 def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
-    # logger.debug(f"validate_binding_dict: {v}")
+    # logger.debug(f"validate_spec_dict: {v}")
     data = {}
     for key, value in v.items():
         if "/" in key:
@@ -159,10 +157,9 @@ def create_spec(key: str, **kwargs: Any) -> SpecUnion:
         "struct": StructSpec,
         "class": ClassSpec,
         "class_template": ClassTemplateSpec,
-        # "class_specialization": ClassSpecializationSpec,
         "enum": EnumSpec,
-        # }.get(kind, Spec)
     }.get(kind)
+
     if spec_cls is None:
         logger.error(f"Unknown spec kind: {kind}")
         raise ValueError(f"Unknown spec kind: {kind}")

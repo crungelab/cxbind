@@ -3,9 +3,9 @@ from ...node import ClassNode
 
 
 class ClassRenderer(StructBaseRenderer[ClassNode]):
-    def create_node(self):
-        self.node = ClassNode(kind='class', name=self.name, cursor=self.cursor)
+    pass
 
+    """
     def render(self):
         node = self.node
 
@@ -27,3 +27,4 @@ class ClassRenderer(StructBaseRenderer[ClassNode]):
                 self.gen_kw_init()
 
         self.end_chain()
+    """

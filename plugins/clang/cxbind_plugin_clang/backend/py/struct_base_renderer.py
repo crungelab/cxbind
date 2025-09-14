@@ -5,17 +5,45 @@ from ...node import StructBaseNode, FieldNode
 
 
 class StructBaseRenderer(NodeRenderer[T_Node]):
+    """
     def create_pyname(self, name):
         pyname = super().create_pyname(name)
         if isinstance(self.top_node, StructBaseNode):
             return f"{self.top_node.pyname}{pyname}"
         return pyname
+    """
 
-    def gen_init(self):
+    def render(self):
+        node = self.node
+
+        self.end_chain()
+
+        extra = f", {', '.join(node.spec.extends)}" if node.spec.extends else ""
+
+        extra += f",{node.spec.holder}<{node.name}>" if node.spec.holder else ""
+
+        self.out(
+            f'py::class_<{node.name}{extra}> {node.pyname}({self.module}, "{node.pyname}");'
+        )
+        self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
+
+        with self.enter(node):
+            super().render()
+
+            if node.spec.gen_init:
+                self.render_init()
+            elif node.spec.gen_kw_init:
+                self.render_kw_init()
+
+            self.render_properties()
+
+        self.end_chain()
+
+    def render_init(self):
         self.begin_chain()
         self.out(f".def(py::init<>())")
 
-    def gen_kw_init(self):
+    def render_kw_init(self):
         self.begin_chain()
         node = self.top_node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")
@@ -49,3 +77,18 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
                     self.out("}")
             self.out("return obj;")
         self.out("}), py::return_value_policy::automatic_reference);")
+
+    def render_properties(self):
+        node = self.node
+        for prop in node.spec.properties:
+            getter = prop.getter
+            setter = prop.setter
+            self.begin_chain()
+            if setter is not None:
+                self.out(
+                    f'.def_property("{prop.name}", &{node.name}::{getter}, &{node.name}::{setter})'
+                )
+            else:
+                self.out(
+                    f'.def_property_readonly("{prop.name}", &{node.name}::{getter})'
+                )
