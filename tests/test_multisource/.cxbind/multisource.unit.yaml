@@ -1,0 +1,5 @@
+sources: [
+  'src/multisource_1.h',
+  'src/multisource_2.h'
+]
+target: 'src/multisource_py_auto.cpp'
