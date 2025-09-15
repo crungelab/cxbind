@@ -1,8 +1,10 @@
 from clang import cindex
 from loguru import logger
 
-from .node_renderer import NodeRenderer
 from ...node import FieldNode
+from ... import cu
+
+from .node_renderer import NodeRenderer
 
 
 class FieldRenderer(NodeRenderer[FieldNode]):
@@ -11,6 +13,8 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         spec = node.spec
         pyname = spec.pyname or node.pyname
         cursor = node.cursor
+
+        field_type_name = cu.get_base_type_name(cursor.type)
 
         #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
         
@@ -25,9 +29,39 @@ class FieldRenderer(NodeRenderer[FieldNode]):
             elif self.is_function_pointer(cursor):
                 #logger.debug(f"{cursor.spelling}: is fn*")
                 self.render_fn_ptr_field(cursor, pyname)
+            elif field_type_name in self.wrapped:
+                self.render_wrapped_field(cursor, pyname)
             else:
                 self.out(f'.def_readwrite("{pyname}", &{node.name})')
         #self.out()
+
+    def render_wrapped_field(self, cursor, pyname):
+        #pname = self.spell(cursor.semantic_parent)
+        pname = self.top_node.name
+        name = cursor.spelling
+        field_type_name = cu.get_base_type_name(cursor.type)
+
+        wrapper = self.wrapped[field_type_name].wrapper
+        extra = ""
+        if wrapper == "py::capsule":
+            extra = f', "{field_type_name}"'
+        result = f"{wrapper}(self.{name}{extra})"
+        value = f"const {wrapper}& value"
+
+        self.out('//render_wrapped_field')
+        self.out(f'.def_property("{pyname}",')
+        with self.out:
+            self.out(
+            f'[](const {pname}& self)' '{'
+            f' return {result};'
+            ' },'
+            )
+            self.out(
+            f'[]({pname}& self, {value})' '{'
+            f' self.{name} = value;'
+            ' }'
+            )
+        self.out(')')
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def render_char_ptr_field(self, cursor, pyname):

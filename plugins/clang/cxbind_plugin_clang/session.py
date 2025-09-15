@@ -121,10 +121,22 @@ class Session:
             if (
                 text.startswith(prefix)
                 and len(text) > len(prefix)
+                and (text[len(prefix)].isupper() or text[len(prefix)] == "_")
+            ):
+                return text[len(prefix) :]
+        return text
+
+    '''
+    def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
+        for prefix in prefixes:
+            if (
+                text.startswith(prefix)
+                and len(text) > len(prefix)
                 and text[len(prefix)].isupper()
             ):
                 return text[len(prefix) :]
         return text
+    '''
 
     def strip_prefixes(self, text: str, prefixes: List[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
@@ -152,9 +164,17 @@ class Session:
         name = name.rstrip("_")
         return name
 
-    def format_enum_constant(self, name: str, enum_name: str = None) -> str:
-        name = self.strip_prefixes(name, [enum_name])
+    def format_enum_constant(self, enum_constant_name: str, enum_name: str = None) -> str:
+        logger.debug(f"format_enum_constant: {enum_constant_name}, {enum_name}")
+        name = self.strip_prefixes(enum_constant_name, [enum_name])
         name = self.snake(name).upper()
         name = name.replace("__", "_")
+        name = name.lstrip("_")
         name = name.rstrip("_")
+
+        if name.isdigit():
+        #if name.isnumeric():
+            #name = f"_{name}"
+            name = self.strip_prefixes(enum_constant_name).upper()
+
         return name

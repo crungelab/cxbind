@@ -3,9 +3,10 @@ from loguru import logger
 
 from cxbind.spec import Spec, create_spec
 
-from .node_renderer import NodeRenderer, T_Node
 from ...node import FunctionNode
 from ... import cu
+
+from .node_renderer import NodeRenderer, T_Node
 
 
 class FunctionBaseRenderer(NodeRenderer[T_Node]):
