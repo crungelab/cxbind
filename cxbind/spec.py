@@ -70,10 +70,11 @@ class Property(BaseModel):
     getter: Optional[str] = None
     setter: Optional[str] = None
 
+
 class StructBaseSpec(Spec):
     extends: Optional[List[str]] = None
-    #constructible: bool = True
-    #has_constructor: bool = False
+    # constructible: bool = True
+    # has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
     wrapper: str = None
@@ -88,14 +89,16 @@ class StructSpec(StructBaseSpec):
 class ClassSpec(StructBaseSpec):
     kind: Literal["class"]
 
+
 class ClassTemplateSpecializationSpec(ClassSpec):
-    kind: Literal["class_template_specialization"]
+    kind: Literal["class_template_specialization"] = "class_template_specialization"
     args: List[str]
 
 
 class ClassTemplateSpec(StructBaseSpec):
     kind: Literal["class_template"]
     specializations: List[ClassTemplateSpecializationSpec] = []
+
 
 
 class EnumSpec(Spec):

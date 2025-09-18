@@ -5,7 +5,7 @@ from . import (
     MethodRenderer,
     StructRenderer,
     ClassRenderer,
-    ClassSpecializationRenderer,
+    ClassTemplateSpecializationRenderer,
     EnumRenderer,
 )
 
@@ -16,6 +16,6 @@ NODE_RENDERER_TABLE = {
     "method": MethodRenderer,
     "struct": StructRenderer,
     "class": ClassRenderer,
-    "class_specialization": ClassSpecializationRenderer,
+    "class_template_specialization": ClassTemplateSpecializationRenderer,
     "enum": EnumRenderer,
 }

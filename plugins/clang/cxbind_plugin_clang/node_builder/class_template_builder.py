@@ -1,6 +1,6 @@
 from loguru import logger
 
-from . import StructBaseBuilder, ClassSpecializationBuilder
+from . import StructBaseBuilder, ClassTemplateSpecializationBuilder
 from ..node import ClassTemplateNode
 
 
@@ -21,7 +21,7 @@ class ClassTemplateBuilder(StructBaseBuilder[ClassTemplateNode]):
             args = ", ".join(specialization.args)
             cname = f"{self.node.name}<{args}>"
 
-            builder = ClassSpecializationBuilder(
+            builder = ClassTemplateSpecializationBuilder(
                 self.context, cname, cursor, specialization
             )
             builder.build()

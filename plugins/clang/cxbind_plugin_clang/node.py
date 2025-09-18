@@ -88,10 +88,11 @@ class RootNode(Node):
     kind: Literal["root"]
 
 
-'''
+"""
 class Argument(BaseModel):
     default: Optional[Any] = None
-'''
+"""
+
 
 class FunctionBaseNode(Node):
     pass
@@ -126,12 +127,8 @@ class ClassNode(StructBaseNode):
     kind: Literal["class"]
 
 
-class ClassSpecializationNode(ClassNode):
-    kind: Literal["class_specialization"]
-
-
-class ClassTemplateSpecialization(BaseModel):
-    name: str
+class ClassTemplateSpecializationNode(ClassNode):
+    kind: Literal["class_template_specialization"]
 
 
 class TemplateNode(Node):

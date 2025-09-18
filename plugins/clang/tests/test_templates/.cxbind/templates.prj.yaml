@@ -13,11 +13,9 @@ units:
     specs:
       'class_template/MyClass':
         specializations:
-          - kind: class_template_specialization
-            name: MyClassFD
+          - name: MyClassFD
             args: [float, double]
       'class_template/MyClass2':
         specializations:
-          - kind: class_template_specialization
-            name: MyClassI
+          - name: MyClassI
             args: [int]
