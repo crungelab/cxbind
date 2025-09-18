@@ -1,6 +1,8 @@
 from clang import cindex
 from loguru import logger
 
+from cxbind.types import EmitFn
+
 from ...node import FieldNode
 from ... import cu
 
@@ -31,6 +33,8 @@ class FieldRenderer(NodeRenderer[FieldNode]):
                 self.render_fn_ptr_field(cursor, pyname)
             elif field_type_name in self.wrapped:
                 self.render_wrapped_field(cursor, pyname)
+            elif cursor.is_bitfield():
+                self.render_bitfield(cursor, pyname)
             else:
                 self.out(f'.def_readwrite("{pyname}", &{node.name})')
         #self.out()
@@ -83,6 +87,24 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         self.out(')')
 
     def render_fn_ptr_field(self, cursor, pyname):
+        #pname = self.spell(cursor.semantic_parent)
+        pname = self.top_node.name
+        name = cursor.spelling
+        typename = cursor.type.spelling
+        self.out(f'.def_property("{pyname}",')
+        with self.out:
+            self.out(
+            f'[]({pname}& self)' '{'
+            f' return self.{name};'
+            ' },')
+            self.out(
+            f'[]({pname}& self, {typename} source)' '{'
+            f' self.{name} = source;'
+            ' }'
+            )
+        self.out(')')
+
+    def render_bitfield(self, cursor, pyname):
         #pname = self.spell(cursor.semantic_parent)
         pname = self.top_node.name
         name = cursor.spelling

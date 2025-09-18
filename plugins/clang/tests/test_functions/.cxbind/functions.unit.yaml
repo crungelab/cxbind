@@ -1,0 +1,10 @@
+source: 'src/functions.h'
+target: 'src/functions_py_auto.cpp'
+
+module: tests
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]

@@ -34,21 +34,27 @@ cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=cxbind
 cmake --install _build
 ```
 
-## Testing
+## Testing Clang Plugin
+
+### 
+```bash
+cd plugins/clang/tests
+pip install -e ../../
+```
 
 ### Building the Tests
 
 ```bash
-cd tests
+cd plugins/clang/tests
 mkdir build
 cd build
-cmake -G Ninja ..
+cmake -DCMAKE_BUILD_TYPE=Debug -G Ninja ..
 ninja
 ```
 
 ### Running the Tests
 
 ```bash
-cd tests
+cd plugins/clang/tests
 pytest
 ```

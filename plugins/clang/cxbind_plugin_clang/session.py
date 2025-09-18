@@ -165,7 +165,7 @@ class Session:
         return name
 
     def format_enum_constant(self, enum_constant_name: str, enum_name: str = None) -> str:
-        logger.debug(f"format_enum_constant: {enum_constant_name}, {enum_name}")
+        #logger.debug(f"format_enum_constant: {enum_constant_name}, {enum_name}")
         name = self.strip_prefixes(enum_constant_name, [enum_name])
         name = self.snake(name).upper()
         name = name.replace("__", "_")

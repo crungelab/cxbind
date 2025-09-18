@@ -5,14 +5,6 @@ from ...node import StructBaseNode, FieldNode
 
 
 class StructBaseRenderer(NodeRenderer[T_Node]):
-    """
-    def create_pyname(self, name):
-        pyname = super().create_pyname(name)
-        if isinstance(self.top_node, StructBaseNode):
-            return f"{self.top_node.pyname}{pyname}"
-        return pyname
-    """
-
     def render(self):
         node = self.node
 
@@ -23,9 +15,9 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
         extra += f",{node.spec.holder}<{node.name}>" if node.spec.holder else ""
 
         self.out(
-            f'py::class_<{node.name}{extra}> {node.pyname}({self.module}, "{node.pyname}");'
+            f'py::class_<{node.name}{extra}> _{node.pyname}(_{self.module}, "{node.pyname}");'
         )
-        self.out(f'registry.on({self.module}, "{node.pyname}", {node.pyname});')
+        self.out(f'registry.on(_{self.module}, "{node.pyname}", _{node.pyname});')
 
         with self.enter(node):
             super().render()

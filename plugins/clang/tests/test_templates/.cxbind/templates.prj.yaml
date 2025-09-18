@@ -1,0 +1,23 @@
+module: tests
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  templates:
+    source: 'src/templates.h'
+    target: 'src/templates_py_auto.cpp'
+    specs:
+      'class_template/MyClass':
+        specializations:
+          - kind: class_template_specialization
+            name: MyClassFD
+            args: [float, double]
+      'class_template/MyClass2':
+        specializations:
+          - kind: class_template_specialization
+            name: MyClassI
+            args: [int]

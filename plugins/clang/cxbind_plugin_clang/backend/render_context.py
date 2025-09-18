@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Type, Dict, List, Any, Callable
 
 from loguru import logger
 
-from cxbind.code_stream import CodeStream
+from cxbind.emission import Emission
 
 from ..node import Node
 from ..worker_context import WorkerContext
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class RenderContext(WorkerContext):
     def __init__(self, session: Session) -> None:
         super().__init__(session)
-        self.out = CodeStream()
+        self.out = Emission()
         self.chaining = False
 
     def create_renderer(self, node: Node) -> "Renderer":

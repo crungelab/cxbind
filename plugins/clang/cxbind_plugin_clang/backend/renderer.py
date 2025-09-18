@@ -29,7 +29,7 @@ class Renderer(Worker[RenderContext]):
             return
         self.context.chaining = True
         if emit_scope:
-            self.out(self.scope)
+            self.out(f"_{self.scope}")
         #self.out(self.scope)
 
     def end_chain(self) -> None:

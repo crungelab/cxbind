@@ -1,0 +1,2 @@
+source: 'src/bitfields.h'
+target: 'src/bitfields_py_auto.cpp'
