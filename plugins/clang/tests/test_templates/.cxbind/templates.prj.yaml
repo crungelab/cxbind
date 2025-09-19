@@ -13,13 +13,12 @@ units:
     specs:
       'class_template/MyClass':
         specializations:
-          - name: MyClassFD
-            args: [float, double]
+          - args: [float, double]
       'class_template/MyClass2':
         specializations:
-          - name: MyClassI
+          - pyname: MyClassI
             args: [int]
       'function_template/myFunction':
         specializations:
-          - name: myFunctionI
+          - pyname: my_function_i
             args: [int]

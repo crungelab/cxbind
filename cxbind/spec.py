@@ -1,7 +1,7 @@
 from typing_extensions import Annotated
 from typing import List, Dict, Optional, Any, Literal, Union
 
-from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
+from pydantic import BaseModel, Field, BeforeValidator, ConfigDict, field_validator, model_validator
 
 from loguru import logger
 
@@ -113,6 +113,36 @@ class ClassTemplateSpec(TemplateSpec):
     kind: Literal["class_template"]
     specializations: List[ClassTemplateSpecializationSpec] = []
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_specializations(cls, data: Any) -> Any:
+        # If it's not a dict (e.g., already a model), just return it
+        if not isinstance(data, dict):
+            return data
+
+        specs = data.get("specializations")
+        if specs is None:
+            return data
+
+        normalized = []
+        for item in specs:
+            if isinstance(item, dict):
+                # If a specialization dict is missing a name, inherit the parent name if available
+                if "name" not in item and "name" in data:
+                    item = {"name": data["name"], **item}
+                normalized.append(item)
+            elif isinstance(item, (list, tuple)):
+                # Optional shorthand: treat list/tuple as args with inherited name
+                normalized.append({
+                    "name": data.get("name"),
+                    "args": list(item),
+                })
+            else:
+                # Fallback shorthand: treat as a name-like value
+                normalized.append({"name": str(item)})
+
+        data["specializations"] = normalized
+        return data
 
 class EnumSpec(Spec):
     kind: Literal["enum"]

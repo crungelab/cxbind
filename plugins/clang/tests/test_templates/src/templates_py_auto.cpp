@@ -34,9 +34,9 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
             , py::return_value_policy::automatic_reference)
     ;
 
-    py::class_<MyClass2<int>> _MyClass2_int(_tests, "MyClass2_int");
-    registry.on(_tests, "MyClass2_int", _MyClass2_int);
-        _MyClass2_int
+    py::class_<MyClass2<int>> _MyClassI(_tests, "MyClassI");
+    registry.on(_tests, "MyClassI", _MyClassI);
+        _MyClassI
         .def(py::init<int>()
         , py::arg("value")
         )
@@ -48,7 +48,7 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
     ;
 
     _tests
-    .def("my_function", &myFunction<int>
+    .def("my_function_i", &myFunction<int>
         , py::return_value_policy::automatic_reference)
     ;
 
