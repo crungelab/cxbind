@@ -64,6 +64,8 @@ class Node(BaseModel):
             kind = "typedef"
         elif cursor.kind == cindex.CursorKind.CLASS_TEMPLATE:
             kind = "class_template"
+        elif cursor.kind == cindex.CursorKind.FUNCTION_TEMPLATE:
+            kind = "function_template"
 
         name = cls.spell(cursor)
         if overload:
@@ -83,6 +85,8 @@ class Node(BaseModel):
         child.parent = self
         self.children.append(child)
 
+class TemplateNode(Node):
+    pass
 
 class RootNode(Node):
     kind: Literal["root"]
@@ -100,6 +104,14 @@ class FunctionBaseNode(Node):
 
 class FunctionNode(FunctionBaseNode):
     kind: Literal["function"]
+
+
+class FunctionTemplateSpecializationNode(FunctionNode):
+    kind: Literal["function_template_specialization"]
+
+
+class FunctionTemplateNode(TemplateNode):
+    kind: Literal["function_template"]
 
 
 class MethodNode(FunctionBaseNode):
@@ -129,10 +141,6 @@ class ClassNode(StructBaseNode):
 
 class ClassTemplateSpecializationNode(ClassNode):
     kind: Literal["class_template_specialization"]
-
-
-class TemplateNode(Node):
-    pass
 
 
 class ClassTemplateNode(TemplateNode):

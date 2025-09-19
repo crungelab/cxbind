@@ -1,5 +1,6 @@
 from . import (
     FunctionBuilder,
+    FunctionTemplateBuilder,
     CtorBuilder,
     FieldBuilder,
     MethodBuilder,
@@ -11,6 +12,7 @@ from . import (
 
 NODE_BUILDER_TABLE = {
     "function": FunctionBuilder,
+    "function_template": FunctionTemplateBuilder,
     "ctor": CtorBuilder,
     "field": FieldBuilder,
     "method": MethodBuilder,

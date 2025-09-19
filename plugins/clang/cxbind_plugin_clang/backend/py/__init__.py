@@ -7,5 +7,6 @@ from .field_renderer import FieldRenderer
 from .enum_renderer import EnumRenderer
 from .struct_renderer import StructRenderer
 from .function_renderer import FunctionRenderer
+from .function_template_specialization_renderer import FunctionTemplateSpecializationRenderer
 from .ctor_renderer import CtorRenderer
 from .node_renderer import NodeRenderer

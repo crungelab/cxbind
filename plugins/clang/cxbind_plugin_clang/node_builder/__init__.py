@@ -7,6 +7,8 @@ from .field_builder import FieldBuilder
 from .enum_builder import EnumBuilder
 from .struct_builder import StructBuilder
 from .function_builder import FunctionBuilder
+from .function_template_specialization_builder import FunctionTemplateSpecializationBuilder
+from .function_template_builder import FunctionTemplateBuilder
 from .ctor_builder import CtorBuilder
 from .node_builder import NodeBuilder
 from .node_builder_table import NODE_BUILDER_TABLE

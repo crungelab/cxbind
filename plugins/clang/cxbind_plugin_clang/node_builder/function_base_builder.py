@@ -9,6 +9,10 @@ from .. import cu
 
 
 class FunctionBaseBuilder(NodeBuilder[T_Node]):
+    def create_pyname(self, name):
+        pyname = self.format_field(self.cursor.spelling)
+        return pyname
+
     def should_cancel(self):
         return super().should_cancel() or not self.is_function_mappable(self.cursor)
 

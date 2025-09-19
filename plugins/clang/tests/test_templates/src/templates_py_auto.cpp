@@ -47,5 +47,10 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
             , py::return_value_policy::automatic_reference)
     ;
 
+    _tests
+    .def("my_function", &myFunction<int>
+        , py::return_value_policy::automatic_reference)
+    ;
+
 
 }

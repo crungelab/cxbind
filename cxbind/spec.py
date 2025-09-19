@@ -31,6 +31,10 @@ class Spec(BaseModel):
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
 
+class TemplateSpec(Spec):
+    pass
+
+
 class Argument(BaseModel):
     default: Optional[Any] = None
 
@@ -53,6 +57,18 @@ class FunctionSpec(FunctionBaseSpec):
     kind: Literal["function"]
 
 
+class FunctionTemplateSpecializationSpec(FunctionSpec):
+    kind: Literal["function_template_specialization"] = (
+        "function_template_specialization"
+    )
+    args: List[str]
+
+
+class FunctionTemplateSpec(TemplateSpec):
+    kind: Literal["function_template"]
+    specializations: List[FunctionTemplateSpecializationSpec] = []
+
+
 class MethodSpec(FunctionBaseSpec):
     kind: Literal["method"]
 
@@ -73,8 +89,6 @@ class Property(BaseModel):
 
 class StructBaseSpec(Spec):
     extends: Optional[List[str]] = None
-    # constructible: bool = True
-    # has_constructor: bool = False
     gen_init: bool = False
     gen_kw_init: bool = False
     wrapper: str = None
@@ -95,10 +109,9 @@ class ClassTemplateSpecializationSpec(ClassSpec):
     args: List[str]
 
 
-class ClassTemplateSpec(StructBaseSpec):
+class ClassTemplateSpec(TemplateSpec):
     kind: Literal["class_template"]
     specializations: List[ClassTemplateSpecializationSpec] = []
-
 
 
 class EnumSpec(Spec):
@@ -111,6 +124,7 @@ SpecUnion = Union[
     ClassTemplateSpec,
     FieldSpec,
     FunctionSpec,
+    FunctionTemplateSpec,
     MethodSpec,
     CtorSpec,
     EnumSpec,
@@ -154,6 +168,7 @@ def create_spec(key: str, **kwargs: Any) -> SpecUnion:
 
     spec_cls = {
         "function": FunctionSpec,
+        "function_template": FunctionTemplateSpec,
         "method": MethodSpec,
         "ctor": CtorSpec,
         "field": FieldSpec,

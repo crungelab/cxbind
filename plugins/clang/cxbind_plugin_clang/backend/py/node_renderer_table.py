@@ -1,5 +1,6 @@
 from . import (
     FunctionRenderer,
+    FunctionTemplateSpecializationRenderer,
     CtorRenderer,
     FieldRenderer,
     MethodRenderer,
@@ -11,6 +12,7 @@ from . import (
 
 NODE_RENDERER_TABLE = {
     "function": FunctionRenderer,
+    "function_template_specialization": FunctionTemplateSpecializationRenderer,
     "ctor": CtorRenderer,
     "field": FieldRenderer,
     "method": MethodRenderer,

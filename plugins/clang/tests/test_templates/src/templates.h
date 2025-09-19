@@ -32,3 +32,8 @@ public:
 private:
     T value_;
 };
+
+template <typename T>
+T myFunction(T a, T b) {
+    return a + b;
+}

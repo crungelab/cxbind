@@ -19,3 +19,7 @@ units:
         specializations:
           - name: MyClassI
             args: [int]
+      'function_template/myFunction':
+        specializations:
+          - name: myFunctionI
+            args: [int]

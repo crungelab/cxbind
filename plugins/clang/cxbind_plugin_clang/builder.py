@@ -68,6 +68,12 @@ class Builder(Worker[BuilderContext]):
         builder = self.create_builder(f"function/{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
+    def visit_function_template(self, cursor: cindex.Cursor):
+        builder = self.create_builder(
+            f"function_template/{self.spell(cursor)}", cursor=cursor
+        )
+        builder.build()
+
     def visit_method(self, cursor: cindex.Cursor):
         builder = self.create_builder(f"method/{self.spell(cursor)}", cursor=cursor)
         builder.build()
