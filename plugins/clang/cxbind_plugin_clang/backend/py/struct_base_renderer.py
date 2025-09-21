@@ -7,8 +7,7 @@ from ...node import StructBaseNode, FieldNode
 class StructBaseRenderer(NodeRenderer[T_Node]):
     def render(self):
         node = self.node
-        spec = node.spec
-        pyname = spec.pyname or node.pyname
+        pyname = node.pyname
 
         self.end_chain()
 
@@ -20,13 +19,6 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             f'py::class_<{node.name}{extra}> _{pyname}(_{self.module}, "{pyname}");'
         )
         self.out(f'registry.on(_{self.module}, "{pyname}", _{pyname});')
-
-        '''
-        self.out(
-            f'py::class_<{node.name}{extra}> _{node.pyname}(_{self.module}, "{node.pyname}");'
-        )
-        self.out(f'registry.on(_{self.module}, "{node.pyname}", _{node.pyname});')
-        '''
 
         with self.enter(node):
             super().render()

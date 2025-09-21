@@ -22,6 +22,7 @@ class NodeRenderer(Renderer, Generic[T_Node]):
         super().__init__(context)
         self.node = node
 
+    '''
     def create_pyname(self, name) -> str:
         return self.format_type(name)
 
@@ -29,3 +30,4 @@ class NodeRenderer(Renderer, Generic[T_Node]):
         key = Node.make_key(self.node.cursor)
         spec = self.lookup_spec(key)
         return spec
+    '''

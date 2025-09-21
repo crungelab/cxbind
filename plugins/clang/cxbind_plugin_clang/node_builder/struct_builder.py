@@ -3,12 +3,14 @@ from clang import cindex
 from . import StructBaseBuilder
 from ..node import StructNode
 
+from cxbind.types import Handled
+
 
 class StructBuilder(StructBaseBuilder[StructNode]):
     def create_node(self):
         self.node = StructNode(kind="struct", name=self.name, cursor=self.cursor)
 
-    def build_node(self):
+    def build_node(self) -> Handled:
         super().build_node()
 
         node = self.node

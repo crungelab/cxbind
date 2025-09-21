@@ -13,13 +13,10 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
     def render(self):
         out = self.out
         node = self.node
-        spec = node.spec
         cursor = node.cursor
         arguments = [a for a in cursor.get_arguments()]
-        #cname = "&" + self.spell(cursor)
         cname = "&" + node.name
-        #pyname = spec.pyname or self.format_field(cursor.spelling)
-        pyname = spec.pyname or node.pyname
+        pyname = node.pyname
 
         def_call = ""
         if cursor.is_static_method():

@@ -98,21 +98,6 @@ class Worker(Generic[T_Context]):
         if node.kind == "root":
             return self.module
         else:
-            return node.spec.pyname or node.pyname
-
-    def module_(self, node: Node):
-        if node.kind == "root":
-            return self.module
-        else:
-            return node.spec.pyname or node.pyname
-
-    '''
-    @property
-    def scope(self) -> str:
-        node = self.top_node
-        if node.kind == "root":
-            return self.module
-        else:
             return node.pyname
 
     def module_(self, node: Node):
@@ -120,7 +105,6 @@ class Worker(Generic[T_Context]):
             return self.module
         else:
             return node.pyname
-    '''
 
     '''
     @property

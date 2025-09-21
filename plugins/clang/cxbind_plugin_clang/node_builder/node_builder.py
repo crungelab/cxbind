@@ -19,10 +19,12 @@ class NodeBuilder(Builder, Generic[T_Node]):
         context: BuilderContext,
         name: str,
         cursor: cindex.Cursor = None,
+        spec: Spec = None,
     ) -> None:
         super().__init__(context)
         self.name = name
         self.cursor = cursor
+        self.spec = spec or self.find_or_create_spec()
         self.node: T_Node = None
 
     def create_pyname(self, name) -> str:
@@ -36,17 +38,32 @@ class NodeBuilder(Builder, Generic[T_Node]):
         spec = self.lookup_spec(key)
         return spec
 
-    def build(self) -> T_Node:
-        if self.should_cancel():
-            return None
-
-        self.create_node()
+    def find_or_create_spec(self) -> Spec:
         spec = self.find_spec()
         if spec is None:
             key = Node.make_key(self.cursor)
             # logger.debug(f"Spec not found for {key}")
             spec = create_spec(key)
+        return spec
+
+    def build(self) -> T_Node:
+        if self.should_cancel():
+            return None
+
+        self.create_node()
+        '''
+        spec = self.find_spec()
+        if spec is None:
+            key = Node.make_key(self.cursor)
+            # logger.debug(f"Spec not found for {key}")
+            spec = create_spec(key)
+        '''
+
+        '''
+        spec = self.find_or_create_spec()
         self.node.spec = spec
+        self.node.spec = self.spec
+        '''
 
         handled = self.build_node()
         if not handled:
@@ -58,7 +75,8 @@ class NodeBuilder(Builder, Generic[T_Node]):
         pass
 
     def build_node(self):
-        self.node.pyname = self.create_pyname(self.node.first_name)
+        self.node.spec = self.spec
+        self.node.pyname = self.spec.pyname or self.create_pyname(self.node.first_name)
 
         if self.node.spec.exclude:
             raise Exception(f"Node excluded: {self.node.name}")

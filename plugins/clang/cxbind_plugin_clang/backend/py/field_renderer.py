@@ -12,8 +12,7 @@ from .node_renderer import NodeRenderer
 class FieldRenderer(NodeRenderer[FieldNode]):
     def render(self):
         node = self.node
-        spec = node.spec
-        pyname = spec.pyname or node.pyname
+        pyname = node.pyname
         cursor = node.cursor
 
         field_type_name = cu.get_base_type_name(cursor.type)
