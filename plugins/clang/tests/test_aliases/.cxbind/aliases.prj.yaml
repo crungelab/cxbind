@@ -1,0 +1,23 @@
+module: tests
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  aliases:
+    source: 'src/aliases.h'
+    target: 'src/aliases_py_auto.cpp'
+    specs:
+      'class_template/AliasClass':
+        specializations:
+          - alias: AliasClassI
+            args: [int]
+      'function_template/aliasFunction':
+        specializations:
+          - args: [float]
+          
+          - alias: aliasFunctionI
+            args: [int]

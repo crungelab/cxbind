@@ -15,7 +15,8 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
         node = self.node
         cursor = node.cursor
         arguments = [a for a in cursor.get_arguments()]
-        cname = "&" + node.name
+        #cname = "&" + node.name
+        cname = node.name if node.spec.alias else "&" + node.name
         pyname = node.pyname
 
         def_call = ""

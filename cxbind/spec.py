@@ -9,8 +9,9 @@ from loguru import logger
 class Spec(BaseModel):
     kind: str
     name: str
-    signature: Optional[str] = None
     first_name: Optional[str] = None
+    alias: Optional[str] = None
+    signature: Optional[str] = None
     pyname: Optional[str] = None
     exclude: Optional[bool] = False
     overload: Optional[bool] = False
