@@ -80,6 +80,9 @@ class Worker(Generic[T_Context]):
     def format_field(self, name: str) -> str:
         return self.session.format_field(name)
 
+    def format_function(self, name: str) -> str:
+        return self.session.format_function(name)
+
     def format_type(self, name: str) -> str:
         return self.session.format_type(name)
 

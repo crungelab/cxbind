@@ -20,5 +20,7 @@ units:
             args: [int]
       'function_template/myFunction':
         specializations:
+          - args: [float]
+          
           - pyname: my_function_i
             args: [int]

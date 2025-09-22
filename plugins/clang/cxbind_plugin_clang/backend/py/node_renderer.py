@@ -21,13 +21,3 @@ class NodeRenderer(Renderer, Generic[T_Node]):
     ) -> None:
         super().__init__(context)
         self.node = node
-
-    '''
-    def create_pyname(self, name) -> str:
-        return self.format_type(name)
-
-    def find_spec(self) -> Spec:
-        key = Node.make_key(self.node.cursor)
-        spec = self.lookup_spec(key)
-        return spec
-    '''

@@ -116,6 +116,11 @@ class Session:
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         return re.sub("([a-z])([A-Z])", r"\1_\2", s1).lower()
 
+    @classmethod
+    def camel(cls, name: str) -> str:
+        s1 = re.sub("(_[a-z])", lambda x: x.group(1)[1].upper(), name)
+        return s1[0].upper() + s1[1:]
+
     def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
         for prefix in prefixes:
             if (
@@ -148,6 +153,16 @@ class Session:
         name = name.replace("__", "_")
         return name
 
+    def format_function(self, name: str) -> str:
+        name = self.strip_prefixes(name)
+        name = self.snake(name)
+        name = name.replace(",", "_")
+        name = name.replace("<", "_")
+        name = name.replace(">", "")
+        name = name.replace(" ", "")
+        name = name.rstrip("_")
+        return name
+
     def format_type(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = name.replace(",", "_")
@@ -155,7 +170,20 @@ class Session:
         name = name.replace(">", "")
         name = name.replace(" ", "")
         name = name.rstrip("_")
+        name = self.camel(name)
         return name
+
+    '''
+    def format_type(self, name: str) -> str:
+        name = self.strip_prefixes(name)
+        name = self.camel(name)
+        name = name.replace(",", "_")
+        name = name.replace("<", "_")
+        name = name.replace(">", "")
+        name = name.replace(" ", "")
+        name = name.rstrip("_")
+        return name
+    '''
 
     def format_enum(self, name: str) -> str:
         name = self.strip_prefixes(name)

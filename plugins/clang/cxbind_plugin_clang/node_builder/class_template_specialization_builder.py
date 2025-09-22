@@ -3,15 +3,10 @@ from loguru import logger
 from ..node import ClassTemplateSpecializationNode
 from .class_builder import ClassBuilder
 
-class ClassTemplateSpecializationBuilder(ClassBuilder):
-    def __init__(self, context, name, cursor = None, spec = None):
-        super().__init__(context, name, cursor, spec)
-        #self.spec = spec
 
-    '''
-    def find_spec(self):
-        return self.spec
-    '''
+class ClassTemplateSpecializationBuilder(ClassBuilder):
+    def __init__(self, context, name, cursor=None, spec=None):
+        super().__init__(context, name, cursor, spec)
 
     def create_node(self):
         self.node = ClassTemplateSpecializationNode(
@@ -21,4 +16,3 @@ class ClassTemplateSpecializationBuilder(ClassBuilder):
             cursor=self.cursor,
             spec=self.spec,
         )
-

@@ -10,9 +10,9 @@
 namespace py = pybind11;
 
 void register_templates_py_auto(py::module &_tests, Registry &registry) {
-    py::class_<MyClass<float, double>> _MyClass_float_double(_tests, "MyClass_float_double");
-    registry.on(_tests, "MyClass_float_double", _MyClass_float_double);
-        _MyClass_float_double
+    py::class_<MyClass<float, double>> _MyClassFloatDouble(_tests, "MyClassFloatDouble");
+    registry.on(_tests, "MyClassFloatDouble", _MyClassFloatDouble);
+        _MyClassFloatDouble
         .def(py::init<float, double>()
         , py::arg("value")
         , py::arg("value2")
@@ -48,6 +48,8 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
     ;
 
     _tests
+    .def("my_function_float", &myFunction<float>
+        , py::return_value_policy::automatic_reference)
     .def("my_function_i", &myFunction<int>
         , py::return_value_policy::automatic_reference)
     ;

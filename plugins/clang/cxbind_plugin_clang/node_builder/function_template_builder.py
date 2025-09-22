@@ -1,10 +1,10 @@
 from loguru import logger
 
-from . import StructBaseBuilder, FunctionTemplateSpecializationBuilder
 from ..node import FunctionTemplateNode
+from . import FunctionTemplateSpecializationBuilder
+from .function_base_builder import FunctionBaseBuilder
 
-
-class FunctionTemplateBuilder(StructBaseBuilder[FunctionTemplateNode]):
+class FunctionTemplateBuilder(FunctionBaseBuilder[FunctionTemplateNode]):
     def create_node(self):
         self.node = FunctionTemplateNode(
             kind="function_template", name=self.name, cursor=self.cursor
