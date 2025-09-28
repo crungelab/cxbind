@@ -2,4 +2,4 @@ source: 'src/advanced.h'
 target: 'src/advanced_py_auto.cpp'
 
 specs:
-  'method/Advanced::ignore_me': {exclude: true}
+  'method@Advanced::ignore_me': {exclude: true}

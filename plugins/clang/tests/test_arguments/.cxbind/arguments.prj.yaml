@@ -12,9 +12,9 @@ units:
     target: 'src/arguments_py_auto.cpp'
 
     specs:
-      'method/Arguments::ignore_me': {exclude: true}
+      'method@Arguments::ignore_me': {exclude: true}
 
-      'method/Arguments::add':
+      'method@Arguments::add':
         arguments:
           i: { default: 0}
           j: { default: 0}

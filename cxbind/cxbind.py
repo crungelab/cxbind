@@ -96,4 +96,5 @@ class CxBind:
         for unit in project.units.values():
             program = self.create_program(unit)
             logger.debug(f"Generating {unit.name} with {program.__class__.__name__}")
+            logger.debug(f"unit: {unit}")
             program.run()

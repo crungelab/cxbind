@@ -22,8 +22,8 @@ class Spec(BaseModel):
     @property
     def key(self) -> str:
         if self.signature:
-            return f"{self.kind}/{self.name}/{self.signature}"
-        return f"{self.kind}/{self.name}"
+            return f"{self.kind}@{self.name}@{self.signature}"
+        return f"{self.kind}@{self.name}"
 
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
@@ -166,15 +166,16 @@ def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
     # logger.debug(f"validate_spec_dict: {v}")
     data = {}
     for key, value in v.items():
-        if "/" in key:
+        if "@" in key:
             kind, name, signature = None, None, None
-            parts = key.split("/")
+            parts = key.split("@")
             if len(parts) == 2:
                 kind, name = parts
             elif len(parts) == 3:
                 kind, name, signature = parts
-            value["name"] = name
+
             value["kind"] = kind
+            value["name"] = name
             value["signature"] = signature
             # data[name] = value
             data[key] = value
@@ -188,7 +189,7 @@ SpecDict = Annotated[dict[str, SpecUnion], BeforeValidator(validate_spec_dict)]
 
 def create_spec(key: str, **kwargs: Any) -> SpecUnion:
     kind, name, signature = None, None, None
-    parts = key.split("/")
+    parts = key.split("@")
     if len(parts) == 2:
         kind, name = parts
     elif len(parts) == 3:

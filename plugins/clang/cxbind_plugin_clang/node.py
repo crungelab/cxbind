@@ -27,8 +27,8 @@ class Node(BaseModel):
     @property
     def key(self) -> str:
         if self.signature:
-            return f"{self.kind}/{self.name}/{self.signature}"
-        return f"{self.kind}/{self.name}"
+            return f"{self.kind}@{self.name}@{self.signature}"
+        return f"{self.kind}@{self.name}"
 
     @classmethod
     def spell(cls, cursor: cindex.Cursor) -> str:
@@ -80,9 +80,9 @@ class Node(BaseModel):
         '''
 
         if overload:
-            key = f"{kind}/{name}/{cursor.type.spelling}"
+            key = f"{kind}@{name}@{cursor.type.spelling}"
         else:
-            key = f"{kind}/{name}"
+            key = f"{kind}@{name}"
 
         return key
 
@@ -178,16 +178,19 @@ def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
     # logger.debug(f"validate_node_dict: {v}")
     data = {}
     for key, value in v.items():
-        if "/" in key:
+        if "@" in key:
             kind, name, signature = None, None, None
-            parts = key.split("/")
+            parts = key.split("@")
+
             if len(parts) == 2:
                 kind, name = parts
             elif len(parts) == 3:
                 kind, name, signature = parts
-            value["name"] = name
+
             value["kind"] = kind
+            value["name"] = name
             value["signature"] = signature
+
             data[key] = value
         else:
             data[key] = value

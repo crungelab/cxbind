@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import yaml
 from loguru import logger
@@ -8,8 +7,8 @@ from cxbind.project import Project
 
 
 # Load the YAML file
-file_path = Path('test_project.yaml')
-with open(file_path, 'r') as file:
+file_path = Path("test_project.yaml")
+with open(file_path, "r") as file:
     yaml_data = yaml.safe_load(file)
 
 logger.debug(f"yaml_data: {yaml_data}")
@@ -17,10 +16,10 @@ logger.debug(f"yaml_data: {yaml_data}")
 # Process the entries
 data = {}
 for key, value in yaml_data.items():
-    if '/' in key:
-        kind, name = key.split('/')
-        value['name'] = name
-        value['kind'] = kind
+    if "@" in key:
+        kind, name = key.split("@")
+        value["kind"] = kind
+        value["name"] = name
         if kind in data:
             data[kind].append(value)
         else:

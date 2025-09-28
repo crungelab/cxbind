@@ -11,11 +11,11 @@ units:
     source: 'src/aliases.h'
     target: 'src/aliases_py_auto.cpp'
     specs:
-      'class_template/AliasClass':
+      'class_template@AliasClass':
         specializations:
           - alias: AliasClassI
             args: [int]
-      'function_template/aliasFunction':
+      'function_template@aliasFunction':
         specializations:
           - args: [float]
           

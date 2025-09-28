@@ -2,7 +2,7 @@ source: 'src/properties.h'
 target: 'src/properties_py_auto.cpp'
 
 specs:
-  'struct/Properties':
+  'struct@Properties':
     properties:
       - name: "x"
         getter: "getX"

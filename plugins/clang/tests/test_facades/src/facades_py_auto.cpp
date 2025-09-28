@@ -11,9 +11,13 @@ namespace py = pybind11;
 
 void register_aliases_py_auto(py::module &_tests, Registry &registry) {
     _tests
-    .def("facade_function", &facadeFunction
+    .def("facade_function", [](unsigned int count, int * a)
+        {
+            auto ret = facadeFunction(count, a);
+            return std::make_tuple(ret, a);
+        }
+        , py::arg("count")
         , py::arg("a")
-        , py::arg("b")
         , py::return_value_policy::automatic_reference)
     ;
 

@@ -22,6 +22,6 @@ class UnitLoader(UnitBaseLoader):
             #unit.name = path.stem
             unit.name = path.stem.split('.')[0]
 
-        #logger.debug(f"unit: {unit}")
+        logger.debug(f"unit: {unit}")
 
         return unit

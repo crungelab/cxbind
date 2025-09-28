@@ -10,3 +10,6 @@ units:
   defaults:
     source: 'src/defaults.h'
     target: 'src/defaults_py_auto.cpp'
+
+    defaults:
+      k: 2

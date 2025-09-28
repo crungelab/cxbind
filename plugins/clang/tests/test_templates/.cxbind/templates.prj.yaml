@@ -11,14 +11,14 @@ units:
     source: 'src/templates.h'
     target: 'src/templates_py_auto.cpp'
     specs:
-      'class_template/MyClass':
+      'class_template@MyClass':
         specializations:
           - args: [float, double]
-      'class_template/MyClass2':
+      'class_template@MyClass2':
         specializations:
           - pyname: MyClassI
             args: [int]
-      'function_template/myFunction':
+      'function_template@myFunction':
         specializations:
           - args: [float]
           

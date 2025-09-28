@@ -162,13 +162,12 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
     def get_default(self, argument: cindex.Cursor, node: FunctionNode = None):
         #logger.debug(f"Getting default for argument: {argument.spelling}")
         default = self.default_from_tokens(argument.get_tokens())
+        #default = self.defaults.get(argument.spelling, default)
+        default = str(self.defaults.get(argument.spelling, default))
         for child in argument.get_children():
             # logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
 
-            if argument.spelling in self.defaults:
-                default = self.defaults.get(argument.spelling, default)
-                logger.debug(f"Default for {argument.spelling}: {default}")
-            elif child.type.kind in [cindex.TypeKind.POINTER]:
+            if child.type.kind in [cindex.TypeKind.POINTER]:
                 default = "nullptr"
             elif (
                 child.referenced is not None
@@ -182,9 +181,9 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
 
         spec = node.spec
         if spec.arguments and argument.spelling in spec.arguments:
-            node_argument = spec.arguments[argument.spelling]
+            spec_argument = spec.arguments[argument.spelling]
             # logger.debug(f"node_argument: {node_argument}")
-            default = str(node_argument.default)
+            default = str(spec_argument.default)
 
         # Handle complex default values like initializer lists
         if default.startswith("{") and default.endswith("}"):
@@ -195,6 +194,9 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
         # logger.debug(default)
         if len(default):
             default = " = " + default
+
+        #logger.debug(f"Default for {argument.spelling}: {default}")
+        #logger.debug(f"defaults: {self.defaults}")
 
         return default
 

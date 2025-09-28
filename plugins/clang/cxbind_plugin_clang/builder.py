@@ -49,23 +49,23 @@ class Builder(Worker[BuilderContext]):
         logger.debug(f"visit_none: {cursor.spelling}")
 
     def visit_typedef_decl(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"typedef/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"typedef@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_enum(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"enum/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"enum@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_field(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"field/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"field@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_constructor(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"ctor/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"ctor@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_function(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"function/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"function@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_function_template(self, cursor: cindex.Cursor):
@@ -83,7 +83,7 @@ class Builder(Worker[BuilderContext]):
             return
 
         builder = self.create_builder(
-            f"function_template/{self.spell(cursor)}", cursor=cursor
+            f"function_template@{self.spell(cursor)}", cursor=cursor
         )
         builder.build()
 
@@ -94,7 +94,7 @@ class Builder(Worker[BuilderContext]):
                 f"Skipping method declared in a different scope: {cursor.spelling}"
             )
             return
-        builder = self.create_builder(f"method/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"method@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_struct(self, cursor: cindex.Cursor):
@@ -105,7 +105,7 @@ class Builder(Worker[BuilderContext]):
                 f"Skipping anonymous struct: {name}"
             )  # TODO: Handle this better
             return
-        builder = self.create_builder(f"struct/{name}", cursor=cursor)
+        builder = self.create_builder(f"struct@{name}", cursor=cursor)
         builder.build()
 
     """
@@ -116,17 +116,17 @@ class Builder(Worker[BuilderContext]):
             logger.debug(f"Anonymous struct detected: {name}")
             name = self.session.camel(cu.anonymous_struct_name(cursor))
             logger.debug(f"Renamed to: {name}")
-        builder = self.create_builder(f"struct/{name}", cursor=cursor)
+        builder = self.create_builder(f"struct@{name}", cursor=cursor)
         builder.build()
     """
 
     def visit_class(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"class/{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(f"class@{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
     def visit_class_template(self, cursor: cindex.Cursor):
         builder = self.create_builder(
-            f"class_template/{self.spell(cursor)}", cursor=cursor
+            f"class_template@{self.spell(cursor)}", cursor=cursor
         )
         builder.build()
 

@@ -14,10 +14,10 @@ logger.debug(f"yaml_data: {yaml_data}")
 # Process the entries
 data = {}
 for key, value in yaml_data.items():
-    if '/' in key:
-        kind, name = key.split('/')
-        value['name'] = name
+    if '@' in key:
+        kind, name = key.split('@')
         value['kind'] = kind
+        value['name'] = name
         if kind in data:
             data[kind].append(value)
         else:
