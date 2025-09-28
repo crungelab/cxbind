@@ -1,0 +1,12 @@
+module: tests
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  facades:
+    source: 'src/facades.h'
+    target: 'src/facades_py_auto.cpp'

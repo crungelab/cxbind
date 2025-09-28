@@ -8,6 +8,7 @@ from loguru import logger
 
 from cxbind.spec import Spec
 
+from . import cu
 
 class Node(BaseModel):
     kind: str
@@ -68,6 +69,16 @@ class Node(BaseModel):
             kind = "function_template"
 
         name = cls.spell(cursor)
+
+        '''
+        logger.debug(f"Struct name: '{name}'")
+        if "unnamed struct" in name:
+            logger.debug(f"Anonymous struct detected: {name}")
+            #name = self.session.camel(cu.anonymous_struct_name(cursor))
+            name = cu.anonymous_struct_name(cursor)
+            logger.debug(f"Renamed to: {name}")
+        '''
+
         if overload:
             key = f"{kind}/{name}/{cursor.type.spelling}"
         else:

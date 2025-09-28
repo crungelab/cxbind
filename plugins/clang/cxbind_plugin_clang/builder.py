@@ -79,8 +79,25 @@ class Builder(Worker[BuilderContext]):
         builder.build()
 
     def visit_struct(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"struct/{self.spell(cursor)}", cursor=cursor)
+        name = self.spell(cursor)
+        logger.debug(f"Struct name: '{name}'")
+        if "unnamed struct" in name:
+            logger.debug(f"Skipping anonymous struct: {name}") # TODO: Handle this better
+            return
+        builder = self.create_builder(f"struct/{name}", cursor=cursor)
         builder.build()
+
+    '''
+    def visit_struct(self, cursor: cindex.Cursor):
+        name = self.spell(cursor)
+        logger.debug(f"Struct name: '{name}'")
+        if "unnamed struct" in name:
+            logger.debug(f"Anonymous struct detected: {name}")
+            name = self.session.camel(cu.anonymous_struct_name(cursor))
+            logger.debug(f"Renamed to: {name}")
+        builder = self.create_builder(f"struct/{name}", cursor=cursor)
+        builder.build()
+    '''
 
     def visit_class(self, cursor: cindex.Cursor):
         builder = self.create_builder(f"class/{self.spell(cursor)}", cursor=cursor)

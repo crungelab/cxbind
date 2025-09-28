@@ -52,8 +52,8 @@ class BufferArgWrapper(ArgWrapper):
         if self.arg.type.name.get() == "buffer":
             size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
         '''
-        #size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
-        size_expr = f"{info_name}.size * {info_name}.itemsize"
+        size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
+        #size_expr = f"{info_name}.size * {info_name}.itemsize"
 
         logger.debug(
             f"BufferArgWrapper: {self.arg.name} type: {self.arg.type.name.get()} size_expr: {size_expr}"
