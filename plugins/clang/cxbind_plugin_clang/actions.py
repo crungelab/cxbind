@@ -14,7 +14,6 @@ MAP = {
     cindex.CursorKind.USING_DECLARATION : lambda self, node : self.visit_using_decl(node),
     cindex.CursorKind.TYPEDEF_DECL : lambda self, node : self.visit_none(node),
 
-    #cindex.CursorKind.FUNCTION_TEMPLATE : lambda self, node : self.visit_none(node),
     cindex.CursorKind.FUNCTION_TEMPLATE : lambda self, node : self.visit_function_template(node),
     cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_class_template(node),
     cindex.CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION : lambda self, node : self.visit_none(node),

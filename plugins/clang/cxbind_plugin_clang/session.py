@@ -44,11 +44,12 @@ class Session:
         self.mapped: List[str] = unit.mapped.copy()
         self.target = ""
         self.flags: List[str] = unit.flags.copy()
-        self.defaults: Dict[str, str] = {}
+        self.defaults: Dict[str, str] = unit.defaults.copy()
         self.excludes: List[str] = unit.excludes.copy()
+        self.specs = unit.specs.copy()
+
         self.overloads: List[str] = []
 
-        self.specs = unit.specs.copy()
         self.node_stack: List[Node] = []
         self.prefixes = unit.prefixes
 
@@ -111,10 +112,19 @@ class Session:
                 return res + "::" + cursor.spelling
         return cursor.spelling
 
+    """
     @classmethod
     def snake(cls, name: str) -> str:
         s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
         return re.sub("([a-z])([A-Z])", r"\1_\2", s1).lower()
+    """
+
+    @classmethod
+    def snake(cls, name: str) -> str:
+        s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", name)
+        s2 = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s1)
+        # collapse multiple underscores and strip edges
+        return re.sub(r"_+", "_", s2).strip("_").lower()
 
     @classmethod
     def camel(cls, name: str) -> str:
@@ -131,7 +141,7 @@ class Session:
                 return text[len(prefix) :]
         return text
 
-    '''
+    """
     def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
         for prefix in prefixes:
             if (
@@ -141,18 +151,26 @@ class Session:
             ):
                 return text[len(prefix) :]
         return text
-    '''
+    """
 
     def strip_prefixes(self, text: str, prefixes: List[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
 
+    """
     def format_field(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.snake(name)
         name = name.rstrip("_")
         name = name.replace("__", "_")
         return name
+    """
 
+    def format_field(self, name: str) -> str:
+        name = self.strip_prefixes(name)
+        name = self.snake(name)
+        return name
+
+    """
     def format_function(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.snake(name)
@@ -162,6 +180,16 @@ class Session:
         name = name.replace(" ", "")
         name = name.rstrip("_")
         return name
+    """
+
+    def format_function(self, name: str) -> str:
+        name = self.strip_prefixes(name)
+        name = self.snake(name)
+        name = name.replace(",", "_")
+        name = name.replace("<", "_")
+        name = name.replace(">", "")
+        name = name.replace(" ", "")
+        return name
 
     def format_type(self, name: str) -> str:
         name = self.strip_prefixes(name)
@@ -173,7 +201,7 @@ class Session:
         name = self.camel(name)
         return name
 
-    '''
+    """
     def format_type(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.camel(name)
@@ -183,7 +211,7 @@ class Session:
         name = name.replace(" ", "")
         name = name.rstrip("_")
         return name
-    '''
+    """
 
     def format_enum(self, name: str) -> str:
         name = self.strip_prefixes(name)
@@ -192,8 +220,10 @@ class Session:
         name = name.rstrip("_")
         return name
 
-    def format_enum_constant(self, enum_constant_name: str, enum_name: str = None) -> str:
-        #logger.debug(f"format_enum_constant: {enum_constant_name}, {enum_name}")
+    def format_enum_constant(
+        self, enum_constant_name: str, enum_name: str = None
+    ) -> str:
+        # logger.debug(f"format_enum_constant: {enum_constant_name}, {enum_name}")
         name = self.strip_prefixes(enum_constant_name, [enum_name])
         name = self.snake(name).upper()
         name = name.replace("__", "_")
@@ -201,8 +231,8 @@ class Session:
         name = name.rstrip("_")
 
         if name.isdigit():
-        #if name.isnumeric():
-            #name = f"_{name}"
+            # if name.isnumeric():
+            # name = f"_{name}"
             name = self.strip_prefixes(enum_constant_name).upper()
 
         return name

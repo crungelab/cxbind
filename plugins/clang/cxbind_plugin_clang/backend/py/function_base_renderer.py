@@ -160,12 +160,14 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
             return "py::return_value_policy::automatic_reference"
 
     def get_default(self, argument: cindex.Cursor, node: FunctionNode = None):
+        #logger.debug(f"Getting default for argument: {argument.spelling}")
         default = self.default_from_tokens(argument.get_tokens())
         for child in argument.get_children():
             # logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
 
             if argument.spelling in self.defaults:
                 default = self.defaults.get(argument.spelling, default)
+                logger.debug(f"Default for {argument.spelling}: {default}")
             elif child.type.kind in [cindex.TypeKind.POINTER]:
                 default = "nullptr"
             elif (

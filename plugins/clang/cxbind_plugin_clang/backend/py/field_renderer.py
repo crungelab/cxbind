@@ -126,6 +126,6 @@ class FieldRenderer(NodeRenderer[FieldNode]):
             return True
         if cursor.type.is_const_qualified():
             return True
-        if cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
+        if cursor.type.kind == cindex.TypeKind.CONSTANTARRAY: # TODO: render_const_array_field?
             return True
         return False

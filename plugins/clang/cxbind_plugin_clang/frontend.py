@@ -39,7 +39,8 @@ class Frontend(Builder):
         tu = cindex.TranslationUnit.from_source(
             self.path,
             args=self.flags,
-            options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
+            #options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
+            options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
         )
 
         self.visit_overloads(tu.cursor)

@@ -69,12 +69,31 @@ class Builder(Worker[BuilderContext]):
         builder.build()
 
     def visit_function_template(self, cursor: cindex.Cursor):
+        sp = cursor.semantic_parent
+        logger.debug(f"Function template semantic parent: {sp.spelling}")
+        lp = cursor.lexical_parent
+        logger.debug(f"Function template lexical parent: {lp.spelling}")
+
+
+        if sp != lp:
+            # Ignore function templates that are not defined in the same scope as they are declared
+            logger.debug(
+                f"Skipping function template declared in a different scope: {cursor.spelling}"
+            )
+            return
+
         builder = self.create_builder(
             f"function_template/{self.spell(cursor)}", cursor=cursor
         )
         builder.build()
 
     def visit_method(self, cursor: cindex.Cursor):
+        if cursor.semantic_parent != cursor.lexical_parent:
+            # Ignore methods that are not defined in the same scope as they are declared
+            logger.debug(
+                f"Skipping method declared in a different scope: {cursor.spelling}"
+            )
+            return
         builder = self.create_builder(f"method/{self.spell(cursor)}", cursor=cursor)
         builder.build()
 
@@ -82,12 +101,14 @@ class Builder(Worker[BuilderContext]):
         name = self.spell(cursor)
         logger.debug(f"Struct name: '{name}'")
         if "unnamed struct" in name:
-            logger.debug(f"Skipping anonymous struct: {name}") # TODO: Handle this better
+            logger.debug(
+                f"Skipping anonymous struct: {name}"
+            )  # TODO: Handle this better
             return
         builder = self.create_builder(f"struct/{name}", cursor=cursor)
         builder.build()
 
-    '''
+    """
     def visit_struct(self, cursor: cindex.Cursor):
         name = self.spell(cursor)
         logger.debug(f"Struct name: '{name}'")
@@ -97,7 +118,7 @@ class Builder(Worker[BuilderContext]):
             logger.debug(f"Renamed to: {name}")
         builder = self.create_builder(f"struct/{name}", cursor=cursor)
         builder.build()
-    '''
+    """
 
     def visit_class(self, cursor: cindex.Cursor):
         builder = self.create_builder(f"class/{self.spell(cursor)}", cursor=cursor)
