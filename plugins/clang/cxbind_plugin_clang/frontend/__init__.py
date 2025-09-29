@@ -1,5 +1,6 @@
 from .struct_base_builder import StructBaseBuilder
 from .class_builder import ClassBuilder
+from .template_builder import TemplateBuilder
 from .class_template_specialization_builder import ClassTemplateSpecializationBuilder
 from .class_template_builder import ClassTemplateBuilder
 from .method_builder import MethodBuilder
@@ -13,3 +14,5 @@ from .ctor_builder import CtorBuilder
 from .node_builder import NodeBuilder
 from .node_builder_table import NODE_BUILDER_TABLE
 from .node_builder import NodeBuilder
+
+from .frontend import Frontend

@@ -10,8 +10,8 @@ from cxbind.unit import Unit
 from .builder import Builder
 from .builder_context import BuilderContext
 
-from .node import Node, RootNode
-from .session import Session
+from ..node import Node, RootNode
+from ..session import Session
 
 class Frontend(Builder):
     def __init__(self, source: str, session: Session) -> None:
@@ -60,5 +60,5 @@ class Frontend(Builder):
                     self.overloaded.add(key)
                 else:
                     self.overloaded.visited.add(key)
-            elif self.is_cursor_mappable(child):
+            elif self.is_cursor_bindable(child):
                 self.visit_overloads(child)

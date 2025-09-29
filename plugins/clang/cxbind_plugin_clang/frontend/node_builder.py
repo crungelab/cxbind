@@ -7,8 +7,8 @@ from cxbind.spec import Spec, create_spec
 
 from ..node import Node
 
-from ..builder import Builder
-from ..builder_context import BuilderContext
+from .builder import Builder
+from .builder_context import BuilderContext
 
 T_Node = TypeVar("T_Node", bound=Node)
 
@@ -52,9 +52,9 @@ class NodeBuilder(Builder, Generic[T_Node]):
         pyname = self.spec.pyname or self.create_pyname(self.node.first_name)
         return pyname
 
-    def build(self) -> T_Node:
+    def build(self) -> None:
         if self.should_cancel():
-            return None
+            return
 
         self.create_node()
 
@@ -63,7 +63,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
             self.top_node.add_child(self.node)
 
         self.session.visited[self.name] = self.node
-        return self.node
 
     def create_node(self):
         pass

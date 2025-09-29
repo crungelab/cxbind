@@ -14,8 +14,11 @@ class CtorRenderer(MethodRenderer):
 
         self.begin_chain()
 
-        arguments = [a for a in node.cursor.get_arguments()]
-        if len(arguments):
+        #arguments = [a for a in node.cursor.get_arguments()]
+        arguments = node.args
+        logger.debug(f"Rendering constructor for {node.name} with args {arguments}")
+        #exit()
+        if len(arguments) > 0:
             arg_types = self.arg_types(arguments)
             if "type-parameter" in arg_types:
                 logger.warning(
@@ -23,7 +26,7 @@ class CtorRenderer(MethodRenderer):
                 )
                 return
             out(f".def(py::init<{arg_types}>()")
-            self.render_pyargs(arguments, self.node)
+            self.render_pyargs(arguments)
             out(")")
         else:
             out(".def(py::init<>())")

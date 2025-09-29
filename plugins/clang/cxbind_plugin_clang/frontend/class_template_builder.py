@@ -1,10 +1,10 @@
 from loguru import logger
 
-from . import StructBaseBuilder, ClassTemplateSpecializationBuilder
+from . import TemplateBuilder, ClassTemplateSpecializationBuilder
 from ..node import ClassTemplateNode
 
 
-class ClassTemplateBuilder(StructBaseBuilder[ClassTemplateNode]):
+class ClassTemplateBuilder(TemplateBuilder[ClassTemplateNode]):
     def create_node(self):
         self.node = ClassTemplateNode(
             kind="class_template", name=self.name, cursor=self.cursor

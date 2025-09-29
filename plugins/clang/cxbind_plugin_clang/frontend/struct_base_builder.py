@@ -1,8 +1,11 @@
+from typing import TypeVar, Generic
+
 from loguru import logger
 
-from .node_builder import NodeBuilder, T_Node
+from .node_builder import NodeBuilder
 from ..node import StructBaseNode
 
+T_Node = TypeVar("T_Node", bound=StructBaseNode)
 
 class StructBaseBuilder(NodeBuilder[T_Node]):
     def create_pyname(self, name):
@@ -12,7 +15,7 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
         return pyname
 
     def should_cancel(self):
-        if not self.is_class_mappable(self.cursor):
+        if not self.is_class_bindable(self.cursor):
             return True
         """
         # Only map top level classes for now
@@ -22,10 +25,10 @@ class StructBaseBuilder(NodeBuilder[T_Node]):
 
         return super().should_cancel()
 
-    def is_class_mappable(self, cursor):
+    def is_class_bindable(self, cursor):
         if cursor.spelling == "Init":  # TODO: Why?
             return False
-        if not self.is_cursor_mappable(cursor):
+        if not self.is_cursor_bindable(cursor):
             return False
         if not cursor.is_definition():
             return False

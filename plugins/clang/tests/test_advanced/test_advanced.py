@@ -11,8 +11,8 @@ from cxbind_tests.test_advanced import Advanced
 
 class Test(unittest.TestCase):
     def test(self):
-        advanced = Advanced()
-        result = advanced.add(2, 2)
+        advanced = Advanced(2)
+        result = advanced.add(2)
         print(result)
         self.assertEqual(result, 4)
 

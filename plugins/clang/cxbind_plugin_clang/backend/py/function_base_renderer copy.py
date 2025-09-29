@@ -3,37 +3,74 @@ from loguru import logger
 
 from cxbind.spec import Spec, create_spec
 
-from .node_builder import NodeBuilder, T_Node
-from ..node import FunctionNode
-from .. import cu
+from ...node import FunctionNode
+from ... import cu
+
+from .node_renderer import NodeRenderer, T_Node
 
 
-class FunctionBaseBuilder(NodeBuilder[T_Node]):
-    def create_pyname(self, name):
-        pyname = self.format_function(name)
-        return pyname
+class FunctionBaseRenderer(NodeRenderer[T_Node]):
+    def render(self):
+        out = self.out
+        node = self.node
+        cursor = node.cursor
+        #arguments = [a for a in cursor.get_arguments()]
+        arguments = cursor.get_arguments()
+        #cname = "&" + node.name
+        cname = node.name if node.spec.alias else "&" + node.name
+        pyname = node.pyname
 
-    '''
-    def create_pyname(self, name):
-        pyname = self.format_field(self.cursor.spelling)
-        return pyname
-    '''
-
-    def should_cancel(self):
-        return super().should_cancel() or not self.is_function_mappable(self.cursor)
-
-    def find_spec(self) -> Spec:
-        key = None
-        if self.is_overloaded(self.cursor):
-            key = FunctionNode.make_key(self.cursor, True)
+        def_call = ""
+        if cursor.is_static_method():
+            def_call = ".def_static"
         else:
-            key = FunctionNode.make_key(self.cursor)
-        spec = self.lookup_spec(key)
-        if spec is None:
-            spec = create_spec(key)
+            def_call = ".def"
 
-        logger.debug(f"FunctionBaseBuilder: find_spec: {spec}")
-        return spec
+        self.begin_chain()
+
+        if self.is_overloaded(cursor):
+            extra = ""
+            if cursor.is_const_method():
+                extra = ", py::const_"
+            cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
+
+        if self.should_wrap_function(cursor):
+            is_non_static_method = (
+                cursor.kind == cindex.CursorKind.CXX_METHOD
+                and not cursor.is_static_method()
+            )
+            self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
+            self_call = (
+                f"self.{cursor.spelling}"
+                if is_non_static_method
+                else f"{self.spell(cursor)}"
+            )
+            out(f'{def_call}("{pyname}", []({self_arg}{self.arg_string(arguments)})')
+            with out:
+                out("{")
+                ret = "" if self.is_function_void_return(cursor) else "auto ret = "
+                result = f"{self_call}({self.arg_names(arguments)})"
+
+                result_type: cindex.Cursor = cursor.result_type
+                result_type_name = cu.get_base_type_name(result_type)
+
+                if result_type_name in self.wrapped:
+                    wrapper = self.wrapped[result_type_name].wrapper
+                    extra = ""
+                    if wrapper == "py::capsule":
+                        extra = f', "{result_type_name}"'
+                    result = f"{wrapper}({result}{extra})"
+
+                with out:
+                    out(f"{ret}{result};")
+                    out(f"return {self.get_function_result(node, cursor)};")
+                out("}")
+        else:
+            out(f'{def_call}("{pyname}", {cname}')
+
+        with out:
+            self.render_pyargs(arguments, node)
+            out(f", {self.get_return_policy(cursor)})")
 
     def process_function_decl(self, decl):
         for param in decl.get_children():
@@ -50,26 +87,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             # logger.debug(f"{cursor.spelling} is explicitly inline")
             return True
         return False
-
-    def is_function_mappable(self, cursor: cindex.Cursor) -> bool:
-        if self.is_inlined(cursor):
-            return False
-        if not self.is_cursor_mappable(cursor):
-            return False
-        if cursor.is_deleted_method():
-            return False
-        if "operator" in cursor.spelling:
-            return False
-        if cursor.get_num_template_arguments() > 0:
-            return False
-        if not self.process_function_decl(cursor):
-            return False
-        for argument in cursor.get_arguments():
-            if self.is_function_pointer(argument):
-                return False
-            if argument.type.spelling == "va_list":
-                return False
-        return True
 
     def is_function_void_return(self, cursor: cindex.Cursor):
         result = cursor.type.get_result()
@@ -144,13 +161,14 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             return "py::return_value_policy::automatic_reference"
 
     def get_default(self, argument: cindex.Cursor, node: FunctionNode = None):
+        #logger.debug(f"Getting default for argument: {argument.spelling}")
         default = self.default_from_tokens(argument.get_tokens())
+        #default = self.defaults.get(argument.spelling, default)
+        default = str(self.defaults.get(argument.spelling, default))
         for child in argument.get_children():
             # logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
 
-            if argument.spelling in self.defaults:
-                default = self.defaults.get(argument.spelling, default)
-            elif child.type.kind in [cindex.TypeKind.POINTER]:
+            if child.type.kind in [cindex.TypeKind.POINTER]:
                 default = "nullptr"
             elif (
                 child.referenced is not None
@@ -164,9 +182,9 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         spec = node.spec
         if spec.arguments and argument.spelling in spec.arguments:
-            node_argument = spec.arguments[argument.spelling]
+            spec_argument = spec.arguments[argument.spelling]
             # logger.debug(f"node_argument: {node_argument}")
-            default = str(node_argument.default)
+            default = str(spec_argument.default)
 
         # Handle complex default values like initializer lists
         if default.startswith("{") and default.endswith("}"):
@@ -178,9 +196,12 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         if len(default):
             default = " = " + default
 
+        #logger.debug(f"Default for {argument.spelling}: {default}")
+        #logger.debug(f"defaults: {self.defaults}")
+
         return default
 
-    def write_pyargs(self, arguments, node: FunctionNode = None):
+    def render_pyargs(self, arguments, node: FunctionNode = None):
         for argument in arguments:
             # logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
             default = self.get_default(argument, node)

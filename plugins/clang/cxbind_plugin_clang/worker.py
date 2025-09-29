@@ -141,7 +141,7 @@ class Worker(Generic[T_Context]):
             return True
         return False
 
-    def is_cursor_mappable(self, cursor: cindex.Cursor):
+    def is_cursor_bindable(self, cursor: cindex.Cursor):
         if self.is_excluded(cursor):
             return False
         if cursor.access_specifier == cindex.AccessSpecifier.PRIVATE:
@@ -265,6 +265,7 @@ class Worker(Generic[T_Context]):
             return "arg"
         return argument.spelling
 
+    '''
     def arg_name(self, argument: cindex.Cursor):
         arg_spelling = self.arg_spelling(argument)
         if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
@@ -273,7 +274,7 @@ class Worker(Generic[T_Context]):
 
     def arg_types(self, arguments: List[cindex.Cursor]):
         return ", ".join([self.arg_type(a) for a in arguments])
-
+    
     def arg_names(self, arguments: List[cindex.Cursor]):
         return ", ".join([self.arg_name(a) for a in arguments])
 
@@ -291,6 +292,7 @@ class Worker(Generic[T_Context]):
 
             result.append(f"{arg_type} {arg_spelling}")
         return ", ".join(result)
+    '''
 
     def is_forward_declaration(self, cursor: cindex.Cursor):
         definition = cursor.get_definition()

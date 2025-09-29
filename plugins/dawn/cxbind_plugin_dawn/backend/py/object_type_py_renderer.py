@@ -39,27 +39,26 @@ class BufferArgWrapper(ArgWrapper):
         else:
             return "py::buffer"
 
-    #size_t padded_size = (size + 3) & ~size_t(3);
+    # size_t padded_size = (size + 3) & ~size_t(3);
 
     def render(self, out: RenderStream):
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
         info_name = f"{self.arg.name.camelCase()}Info"
 
-        '''
+        """
         size_expr = f"{info_name}.size * {info_name}.itemsize"
 
         if self.arg.type.name.get() == "buffer":
             size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
-        '''
+        """
         size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
-        #size_expr = f"{info_name}.size * {info_name}.itemsize"
+        # size_expr = f"{info_name}.size * {info_name}.itemsize"
 
         logger.debug(
             f"BufferArgWrapper: {self.arg.name} type: {self.arg.type.name.get()} size_expr: {size_expr}"
         )
 
-
         if self.arg.optional or self.arg.default_value is not None:
             value = f"""\
             py::buffer_info {info_name} = {arg_name}.has_value() ? {arg_name}.value().request() : py::buffer_info();
@@ -74,6 +73,7 @@ class BufferArgWrapper(ArgWrapper):
             """
 
         out(value)
+
 
 '''
     def render(self, out: RenderStream):
@@ -96,6 +96,7 @@ class BufferArgWrapper(ArgWrapper):
 
         out(value)
 '''
+
 
 class VectorArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):
@@ -117,14 +118,6 @@ class VectorArgWrapper(ArgWrapper):
 
 
 class ObjectTypePyRenderer(ObjectTypeRenderer):
-    '''
-    def exclude_method(self, object_type: ObjectType, method: Method):
-        if method.name.get() == "wait any":
-            return True
-
-        return super().exclude_method(object_type, method)
-    '''
-
     def render(self):
         class_name = self.node.name.CamelCase()
 
@@ -143,7 +136,7 @@ class ObjectTypePyRenderer(ObjectTypeRenderer):
 
             method_name = method.name.snake_case()
             if method.return_type.name.get() == "future":
-                method_name =  "_" + method_name
+                method_name = "_" + method_name
 
             method_cpp_name = method.name.CamelCase()
             use_lambda = False

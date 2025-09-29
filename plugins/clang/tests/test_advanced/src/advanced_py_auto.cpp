@@ -20,11 +20,13 @@ void register_advanced_py_auto(py::module &_tests, Registry &registry) {
     py::class_<Advanced> _Advanced(_tests, "Advanced");
     registry.on(_tests, "Advanced", _Advanced);
         _Advanced
-        .def(py::init<>())
+        .def(py::init<int>()
+        , py::arg("value") = 0
+        )
         .def("add", &Advanced::add
             , py::arg("i")
-            , py::arg("j")
             , py::return_value_policy::automatic_reference)
+        .def_readwrite("value", &Advanced::value)
     ;
 
     _tests

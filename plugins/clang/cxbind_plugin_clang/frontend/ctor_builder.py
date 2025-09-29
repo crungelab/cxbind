@@ -14,8 +14,8 @@ class CtorBuilder(MethodBuilder):
         self.node = CtorNode(kind='ctor', name=self.name, cursor=self.cursor)
 
     def build_node(self):
-        #super().build_node()
-        NodeBuilder.build_node(self)
+        super().build_node()
+        #NodeBuilder.build_node(self)
 
         if self.top_node.spec.readonly:
             return

@@ -9,7 +9,7 @@ from loguru import logger
 class Spec(BaseModel):
     kind: str
     name: str
-    first_name: Optional[str] = None
+    #first_name: Optional[str] = None
     alias: Optional[str] = None
     signature: Optional[str] = None
     pyname: Optional[str] = None
@@ -25,8 +25,14 @@ class Spec(BaseModel):
             return f"{self.kind}@{self.name}@{self.signature}"
         return f"{self.kind}@{self.name}"
 
+    @property
+    def first_name(self) -> str:
+        return self.name.split("::")[-1]
+
+    '''
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
+    '''
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
@@ -44,7 +50,7 @@ class FunctionBaseSpec(Spec):
     arguments: Optional[Dict[str, Argument]] = {}
     return_type: Optional[str] = None
     omit_ret: Optional[bool] = False
-    check_result: Optional[bool] = False
+    check_result: Optional[bool] = False # TODO: Not used yet.  Idea is to check if return value indicates error.
 
     def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)

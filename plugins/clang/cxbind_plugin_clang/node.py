@@ -10,11 +10,12 @@ from cxbind.spec import Spec
 
 from . import cu
 
+
 class Node(BaseModel):
     kind: str
     name: str
     signature: Optional[str] = None
-    first_name: Optional[str] = None
+    # first_name: Optional[str] = None
     pyname: Optional[str] = None
     children: List["Node"] = []
     parent: Optional["Node"] = None
@@ -29,6 +30,10 @@ class Node(BaseModel):
         if self.signature:
             return f"{self.kind}@{self.name}@{self.signature}"
         return f"{self.kind}@{self.name}"
+
+    @property
+    def first_name(self) -> str:
+        return self.name.split("::")[-1]
 
     @classmethod
     def spell(cls, cursor: cindex.Cursor) -> str:
@@ -70,14 +75,14 @@ class Node(BaseModel):
 
         name = cls.spell(cursor)
 
-        '''
+        """
         logger.debug(f"Struct name: '{name}'")
         if "unnamed struct" in name:
             logger.debug(f"Anonymous struct detected: {name}")
             #name = self.session.camel(cu.anonymous_struct_name(cursor))
             name = cu.anonymous_struct_name(cursor)
             logger.debug(f"Renamed to: {name}")
-        '''
+        """
 
         if overload:
             key = f"{kind}@{name}@{cursor.type.spelling}"
@@ -86,8 +91,10 @@ class Node(BaseModel):
 
         return key
 
+    """
     def model_post_init(self, __context: Any) -> None:
         self.first_name = self.name.split("::")[-1]
+    """
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
@@ -96,21 +103,32 @@ class Node(BaseModel):
         child.parent = self
         self.children.append(child)
 
+
+class TypeNode(Node):
+    pass
+
+
 class TemplateNode(Node):
     pass
+
 
 class RootNode(Node):
     kind: Literal["root"]
 
 
-"""
 class Argument(BaseModel):
+    name: str
+    type: str
     default: Optional[Any] = None
-"""
+
+    cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
+    spec: Optional[Spec] = Field(None, exclude=True, repr=False)
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class FunctionBaseNode(Node):
-    pass
+class FunctionBaseNode(TypeNode):
+    args: Optional[List[Argument]] = []
 
 
 class FunctionNode(FunctionBaseNode):
@@ -137,7 +155,7 @@ class FieldNode(Node):
     kind: Literal["field"]
 
 
-class StructBaseNode(Node):
+class StructBaseNode(TypeNode):
     constructible: bool = True
     has_constructor: bool = False
 
@@ -158,7 +176,7 @@ class ClassTemplateNode(TemplateNode):
     kind: Literal["class_template"]
 
 
-class EnumNode(Node):
+class EnumNode(TypeNode):
     kind: Literal["enum"]
 
 
@@ -168,6 +186,7 @@ NodeUnion = Union[
     ClassTemplateNode,
     FieldNode,
     FunctionNode,
+    FunctionTemplateNode,
     MethodNode,
     CtorNode,
     EnumNode,

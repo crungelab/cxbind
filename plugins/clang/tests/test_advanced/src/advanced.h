@@ -6,20 +6,20 @@ int add(int x, int y) {
 
 struct Advanced
 {
-    Advanced() {}
+    Advanced(int value = 0) : value(value) {}
 
-    int add(int i, int j)
+    int add(int i)
     {
-        return i + j;
+        return i + value;
     }
 
     // This function should not be exposed
-    int ignore_me(int i, int j)
+    int ignore_me(int i)
     {
-        return i + j;
+        return i + value;
     }
 
-    //int value = 42;
+    int value = 0;
 };
 
 int sub(int x, int y) {

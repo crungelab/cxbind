@@ -6,10 +6,10 @@ from loguru import logger
 
 from clang import cindex
 
-from . import cu
+from .. import cu
 from .builder_context import BuilderContext
-from .node import Node, StructBaseNode
-from .worker import Worker
+from ..node import Node, StructBaseNode
+from ..worker import Worker
 
 
 class Builder(Worker[BuilderContext]):
@@ -24,11 +24,14 @@ class Builder(Worker[BuilderContext]):
         yield node
         self.pop_node()
 
+    def build(self) -> None:
+        raise NotImplementedError("Builder.build must be implemented in subclasses")
+
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "Builder":
         return self.context.create_builder(entry_key, cursor)
 
     def visit(self, cursor: cindex.Cursor):
-        if not self.is_cursor_mappable(cursor):
+        if not self.is_cursor_bindable(cursor):
             return
         if not cursor.kind in self.actions:
             return

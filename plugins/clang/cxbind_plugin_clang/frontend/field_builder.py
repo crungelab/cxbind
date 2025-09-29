@@ -13,7 +13,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         return self.session.format_field(name)
 
     def should_cancel(self) -> bool:
-        return super().should_cancel() or not self.is_field_mappable(self.cursor)
+        return super().should_cancel() or not self.is_field_bindable(self.cursor)
 
-    def is_field_mappable(self, cursor) -> bool:
-        return self.is_cursor_mappable(cursor)
+    def is_field_bindable(self, cursor) -> bool:
+        return self.is_cursor_bindable(cursor)
