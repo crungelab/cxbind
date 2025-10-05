@@ -1,7 +1,14 @@
 from typing_extensions import Annotated
 from typing import List, Dict, Optional, Any, Literal, Union
 
-from pydantic import BaseModel, Field, BeforeValidator, ConfigDict, field_validator, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    BeforeValidator,
+    ConfigDict,
+    field_validator,
+    model_validator,
+)
 
 from loguru import logger
 
@@ -9,7 +16,6 @@ from loguru import logger
 class Spec(BaseModel):
     kind: str
     name: str
-    #first_name: Optional[str] = None
     alias: Optional[str] = None
     signature: Optional[str] = None
     pyname: Optional[str] = None
@@ -29,11 +35,6 @@ class Spec(BaseModel):
     def first_name(self) -> str:
         return self.name.split("::")[-1]
 
-    '''
-    def model_post_init(self, __context: Any) -> None:
-        self.first_name = self.name.split("::")[-1]
-    '''
-
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
@@ -50,7 +51,9 @@ class FunctionBaseSpec(Spec):
     arguments: Optional[Dict[str, Argument]] = {}
     return_type: Optional[str] = None
     omit_ret: Optional[bool] = False
-    check_result: Optional[bool] = False # TODO: Not used yet.  Idea is to check if return value indicates error.
+    check_result: Optional[bool] = (
+        False  # TODO: Not used yet.  Idea is to check if return value indicates error.
+    )
 
     def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
@@ -58,6 +61,7 @@ class FunctionBaseSpec(Spec):
             k: Argument(**v) if isinstance(v, dict) else v
             for k, v in self.arguments.items()
         }
+
 
 class FunctionSpec(FunctionBaseSpec):
     kind: Literal["function"]
@@ -139,16 +143,19 @@ class ClassTemplateSpec(TemplateSpec):
                 normalized.append(item)
             elif isinstance(item, (list, tuple)):
                 # Optional shorthand: treat list/tuple as args with inherited name
-                normalized.append({
-                    "name": data.get("name"),
-                    "args": list(item),
-                })
+                normalized.append(
+                    {
+                        "name": data.get("name"),
+                        "args": list(item),
+                    }
+                )
             else:
                 # Fallback shorthand: treat as a name-like value
                 normalized.append({"name": str(item)})
 
         data["specializations"] = normalized
         return data
+
 
 class EnumSpec(Spec):
     kind: Literal["enum"]

@@ -3,27 +3,16 @@ from loguru import logger
 from clang import cindex
 
 
-def print_type_info(node) -> None:
-    print("Node:", node.spelling)
-    print("Node Kind:", node.kind)
-    print("Node Parent:", node.semantic_parent.spelling)
-    print("Type:", node.type)
-    print("Type Kind:", node.type.kind)
-    if node.type.kind == cindex.TypeKind.POINTER:
-        pointee_type = node.type.get_pointee()
+def print_type_info(cursor) -> None:
+    print("Node:", cursor.spelling)
+    print("Node Kind:", cursor.kind)
+    print("Node Parent:", cursor.semantic_parent.spelling)
+    print("Type:", cursor.type)
+    print("Type Kind:", cursor.type.kind)
+    if cursor.type.kind == cindex.TypeKind.POINTER:
+        pointee_type = cursor.type.get_pointee()
         print("Pointee Type:", pointee_type)
         print("Pointee Type Kind:", pointee_type.kind)
-
-
-# This was ChatGPT's idea.  Doesn't work.
-def find_parent_typedef(cursor: cindex.Cursor) -> cindex.Cursor:
-    # Traverse up the AST from the current cursor and look for a typedef
-    parent = cursor.semantic_parent
-    while parent is not None:
-        if parent.kind == cindex.CursorKind.TYPEDEF_DECL:
-            return parent
-        parent = parent.semantic_parent
-    return None
 
 
 def is_template(cursor: cindex.Cursor) -> bool:

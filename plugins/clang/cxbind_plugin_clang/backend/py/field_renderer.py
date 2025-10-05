@@ -38,8 +38,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
                 self.out(f'.def_readwrite("{pyname}", &{node.name})')
         #self.out()
 
-    def render_wrapped_field(self, cursor, pyname):
-        #pname = self.spell(cursor.semantic_parent)
+    def render_wrapped_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
         name = cursor.spelling
         field_type_name = cu.get_base_type_name(cursor.type)
@@ -67,8 +66,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         self.out(')')
 
     #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
-    def render_char_ptr_field(self, cursor, pyname):
-        #pname = self.spell(cursor.semantic_parent)
+    def render_char_ptr_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
         name = cursor.spelling
         self.out(f'.def_property("{pyname}",')
@@ -85,8 +83,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
             )
         self.out(')')
 
-    def render_fn_ptr_field(self, cursor, pyname):
-        #pname = self.spell(cursor.semantic_parent)
+    def render_fn_ptr_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
         name = cursor.spelling
         typename = cursor.type.spelling
@@ -103,8 +100,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
             )
         self.out(')')
 
-    def render_bitfield(self, cursor, pyname):
-        #pname = self.spell(cursor.semantic_parent)
+    def render_bitfield(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
         name = cursor.spelling
         typename = cursor.type.spelling
@@ -121,7 +117,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
             )
         self.out(')')
 
-    def is_field_readonly(self, cursor):
+    def is_field_readonly(self, cursor: cindex.Cursor) -> bool:
         if self.top_node.spec.readonly:
             return True
         if cursor.type.is_const_qualified():

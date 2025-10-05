@@ -166,10 +166,9 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
         if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
             logger.debug(f"Constant array: {argument.spelling}")
             element_type = argument.type.get_array_element_type()
-            # element_type_name = argument.type.get_array_element_type().spelling
             element_type_name = cu.get_base_type_name(
                 argument.type.get_array_element_type()
-            )  # Strip qualifiers
+            )
             logger.debug(f"Element type: {element_type.spelling}")
             logger.debug(f"Element type kind: {element_type.kind}")
             if element_type.kind == cindex.TypeKind.UNEXPOSED:
@@ -181,7 +180,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 logger.debug(f"Resolved type: {resolved_type_name}")
                 element_type_name = resolved_type_name
 
-            # return f"std::array<{argument.type.get_array_element_type().spelling}, {argument.type.get_array_size()}>&"
             return f"std::array<{element_type_name}, {argument.type.get_array_size()}>&"
 
         # Handle template parameters (placeholders)
@@ -196,15 +194,12 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             )
             logger.debug(f"Resolved template parameter: {resolved_type}")
             logger.debug(f"Resolved template parameter: {resolved_type_name}")
-            #type_name = cu.get_base_type_name(argument.type)
-            #logger.debug(f"arg_type: {type_name}")
             return resolved_type_name
-            # return type_name
 
         type_name = cu.get_base_type_name(argument.type)
         # logger.debug(f"arg_type: {type_name}")
+
         if "type-parameter" in type_name:
-            # raise ValueError(f"Unresolved template parameter: {type_name}")
             logger.debug(f"arg_type: {type_name}")
             specialization_node = self.top_node
             logger.debug(f"specialization_node: {specialization_node}")
@@ -216,8 +211,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             )
             logger.debug(f"Resolved template parameter: {resolved_type}")
             logger.debug(f"Resolved template parameter: {resolved_type_name}")
-            #type_name = cu.get_base_type_name(argument.type)
-            #logger.debug(f"arg_type: {type_name}")
             return resolved_type_name
 
         if type_name in self.wrapped:

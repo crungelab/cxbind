@@ -1,9 +1,6 @@
 from typing import TYPE_CHECKING, TypeVar, Generic, Dict, List
 
-from clang import cindex
 from loguru import logger
-
-from cxbind.spec import Spec, create_spec
 
 from ...node import Node
 

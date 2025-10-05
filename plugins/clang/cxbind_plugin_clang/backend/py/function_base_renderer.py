@@ -17,7 +17,6 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
         out = self.out
         node = self.node
         cursor = node.cursor
-        #arguments = [a for a in cursor.get_arguments()]
         arguments = node.args
         #cname = "&" + node.name
         cname = node.name if node.spec.alias else "&" + node.name
