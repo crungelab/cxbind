@@ -37,6 +37,7 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
         self.out(f".def(py::init<>())")
 
     def render_kw_init(self):
+        logger.debug("renderering kw_init for: {self.node}")
         self.begin_chain()
         node = self.top_node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")

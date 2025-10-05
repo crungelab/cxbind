@@ -1,13 +1,22 @@
 from loguru import logger
-from .node_builder import NodeBuilder
 from .method_builder import MethodBuilder
 from ..node import CtorNode
 
 
 class CtorBuilder(MethodBuilder):
     def should_cancel(self):
+        '''
         if self.top_node is None:
             return True
+        '''
+        if self.cursor.is_move_constructor():
+            logger.debug(f"Skipping move constructor: {self.cursor.spelling} in {self.top_node.name}")
+            return True
+        
+        if self.cursor.is_copy_constructor():
+            logger.debug(f"Skipping copy constructor: {self.cursor.spelling} in {self.top_node.name}")
+            return True
+
         return super().should_cancel()
 
     def create_node(self):

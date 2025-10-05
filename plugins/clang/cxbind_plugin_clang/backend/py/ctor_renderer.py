@@ -20,11 +20,13 @@ class CtorRenderer(MethodRenderer):
         #exit()
         if len(arguments) > 0:
             arg_types = self.arg_types(arguments)
+            '''
             if "type-parameter" in arg_types:
                 logger.warning(
                     f"Skipping constructor with template parameters: {node.cursor.spelling} in {self.top_node.name} with args {arg_types}"
                 )
                 return
+            '''
             out(f".def(py::init<{arg_types}>()")
             self.render_pyargs(arguments)
             out(")")

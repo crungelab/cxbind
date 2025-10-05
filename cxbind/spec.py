@@ -59,7 +59,6 @@ class FunctionBaseSpec(Spec):
             for k, v in self.arguments.items()
         }
 
-
 class FunctionSpec(FunctionBaseSpec):
     kind: Literal["function"]
 

@@ -84,13 +84,6 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
                     return False
         return True
 
-    def is_inlined(self, cursor: cindex.Cursor) -> bool:
-        tokens = list(cursor.get_tokens())
-        if any(tok.spelling == "inline" for tok in tokens):
-            # logger.debug(f"{cursor.spelling} is explicitly inline")
-            return True
-        return False
-
     def is_function_void_return(self, cursor: cindex.Cursor):
         result = cursor.type.get_result()
         return result.kind == cindex.TypeKind.VOID
@@ -162,49 +155,6 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
             return "py::return_value_policy::reference"
         else:
             return "py::return_value_policy::automatic_reference"
-
-    '''
-    def get_default(self, argument: cindex.Cursor, node: FunctionNode = None):
-        #logger.debug(f"Getting default for argument: {argument.spelling}")
-        default = self.default_from_tokens(argument.get_tokens())
-        #default = self.defaults.get(argument.spelling, default)
-        default = str(self.defaults.get(argument.spelling, default))
-        for child in argument.get_children():
-            # logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
-
-            if child.type.kind in [cindex.TypeKind.POINTER]:
-                default = "nullptr"
-            elif (
-                child.referenced is not None
-                and child.referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL
-            ):
-                referenced = child.referenced
-                # logger.debug(f"referenced: {referenced.spelling}, {referenced.kind}, {referenced.type.spelling}, {referenced.type.kind}")
-                default = f"{referenced.type.spelling}::{referenced.spelling}"
-            elif not len(default):
-                default = self.default_from_tokens(child.get_tokens())
-
-        spec = node.spec
-        if spec.arguments and argument.spelling in spec.arguments:
-            spec_argument = spec.arguments[argument.spelling]
-            # logger.debug(f"node_argument: {node_argument}")
-            default = str(spec_argument.default)
-
-        # Handle complex default values like initializer lists
-        if default.startswith("{") and default.endswith("}"):
-            # Example: {0, 0} -> SkPoint{0, 0}
-            default = f"{cu.get_base_type_name(argument.type)}{default}"
-
-        # logger.debug(argument.spelling)
-        # logger.debug(default)
-        if len(default):
-            default = " = " + default
-
-        #logger.debug(f"Default for {argument.spelling}: {default}")
-        #logger.debug(f"defaults: {self.defaults}")
-
-        return default
-    '''
 
     def arg_types(self, arguments: List[Argument]):
         return ", ".join([a.type for a in arguments])

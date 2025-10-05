@@ -1,12 +1,8 @@
-//namespace test_advanced {
+// namespace test_advanced {
 
-int add(int x, int y) {
-    return x + y;
-}
-
-struct Advanced
+struct AdvancedStruct
 {
-    Advanced(int value = 0) : value(value) {}
+    AdvancedStruct(int value = 0) : value(value) {}
 
     int add(int i)
     {
@@ -22,8 +18,23 @@ struct Advanced
     int value = 0;
 };
 
-int sub(int x, int y) {
-    return x - y;
-}
+class AdvancedClass
+{
+public:
+    AdvancedClass(int value = 0) : value(value) {}
+
+    int add(int i)
+    {
+        return i + value;
+    }
+
+    // This function should not be exposed
+    int ignore_me(int i)
+    {
+        return i + value;
+    }
+
+    int value = 0;
+};
 
 //} // namespace test_advanced

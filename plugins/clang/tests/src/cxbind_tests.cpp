@@ -11,6 +11,7 @@ void register_enums_py_auto(py::module &, Registry &registry);
 void register_exclude_py_auto(py::module &, Registry &registry);
 void register_functions_py_auto(py::module &, Registry &registry);
 void register_namespace_py_auto(py::module &, Registry &registry);
+void register_inits_py_auto(py::module &, Registry &registry);
 void register_templates_py_auto(py::module &, Registry &registry);
 void register_aliases_py_auto(py::module &, Registry &registry);
 void register_overloads_py_auto(py::module &, Registry &registry);
@@ -63,6 +64,9 @@ PYBIND11_MODULE(cxbind_tests, m)
 
     auto _defaults = m.def_submodule("test_defaults");
     register_defaults_py_auto(_defaults, r);
+
+    auto _inits = m.def_submodule("test_inits");
+    register_inits_py_auto(_inits, r);
 
     auto _multisource = m.def_submodule("test_multisource");
     register_multisource_py_auto(_multisource, r);

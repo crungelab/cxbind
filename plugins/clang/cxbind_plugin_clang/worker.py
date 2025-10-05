@@ -186,7 +186,8 @@ class Worker(Generic[T_Context]):
             and type.get_pointee().kind == cindex.TypeKind.FUNCTIONPROTO
         )
 
-    def arg_type(self, argument: cindex.Cursor):
+    '''
+    def resolve_argument_type(self, argument: cindex.Cursor):
         arg_kind = argument.kind
         # logger.debug(f"arg_kind: {arg_kind}")
         arg_type = argument.type
@@ -258,41 +259,13 @@ class Worker(Generic[T_Context]):
                 return template_mapping[index]
         # Otherwise, just return the parameter as-is
         return template_param
+    '''
 
     # TODO:  Might want to pass index to handle multiple unnamed arguments
     def arg_spelling(self, argument: cindex.Cursor):
         if argument.spelling == "":
             return "arg"
         return argument.spelling
-
-    '''
-    def arg_name(self, argument: cindex.Cursor):
-        arg_spelling = self.arg_spelling(argument)
-        if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return f"&{arg_spelling}[0]"
-        return arg_spelling
-
-    def arg_types(self, arguments: List[cindex.Cursor]):
-        return ", ".join([self.arg_type(a) for a in arguments])
-    
-    def arg_names(self, arguments: List[cindex.Cursor]):
-        return ", ".join([self.arg_name(a) for a in arguments])
-
-    def arg_string(self, arguments: List[cindex.Cursor]):
-        result = []
-        for a in arguments:
-            arg_type = self.arg_type(a)
-            arg_spelling = self.arg_spelling(a)
-
-            if arg_type.endswith("[]"):
-                # Remove the array brackets for the argument type
-                arg_type = arg_type[:-2]
-                # Add the array brackets to the argument spelling
-                arg_spelling = f"{arg_spelling}[]"
-
-            result.append(f"{arg_type} {arg_spelling}")
-        return ", ".join(result)
-    '''
 
     def is_forward_declaration(self, cursor: cindex.Cursor):
         definition = cursor.get_definition()
