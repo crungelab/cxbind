@@ -5,16 +5,13 @@ from ...node import FunctionPointerType, StructureType, EnumType, BitmaskType
 from ..structure_type_renderer import StructureTypeRenderer
 
 
-class StructureTypePyRenderer(StructureTypeRenderer):
+class StructureTypePbRenderer(StructureTypeRenderer):
     def render(self):
         node = self.node
         class_name = node.name.CamelCase()
         Out = "Out" if node.output else ""
-        if Out:
-            return
         const = "const" if not node.output else ""
 
-        '''
         if node.chained:
             (
                 self.out
@@ -27,10 +24,8 @@ class StructureTypePyRenderer(StructureTypeRenderer):
                 << f'py::class_<{class_name}> _{class_name}(m, "{class_name}");'
                 << "\n"
             )
-        '''
-
-        self.out / "@dataclass(frozen=True)" << "\n"
-        self.out / f"class {class_name}:" << "\n"
+        self.out / f'registry.on(m, "{class_name}", _{class_name});' << "\n\n"
+        self.out / f"_{class_name}" << "\n"
         self.out.indent()
 
         for member in node.members:
@@ -61,25 +56,45 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             )
             # print(decoration)
 
-            (
-                self.out
-                #/ f'.{def_kind}("{member_name}", &pywgpu::{class_name}::{member_cpp_name})'
-                / f'{member_name}: Any  # type: {decoration}'
-                << "\n"
-            )
+            if decoration == "char const * " and not readonly:
+                # print(decoration, readonly)
+                self.out / f'.def_property("{member_name}",' << "\n"
+                self.out.indent()
+                self.out / f"[](const pywgpu::{class_name}& self) {{" << "\n"
+                self.out.indent()
+                self.out / f"return self.{member_cpp_name};" << "\n"
+                self.out.dedent()
+                self.out / "}," << "\n"
+                (
+                    self.out
+                    / f"[](pywgpu::{class_name}& self, {decoration} source) {{"
+                    / "\n"
+                )
+                self.out.indent()
+                self.out / f"self.{member_cpp_name} = strdup(source);" << "\n"
+                self.out.dedent()
+                self.out / "}" << "\n"
+                self.out.dedent()
+                self.out / ")" << "\n"
+            else:
+                (
+                    self.out
+                    / f'.{def_kind}("{member_name}", &pywgpu::{class_name}::{member_cpp_name})'
+                    << "\n"
+                )
 
         if node.name.get() == "surface texture":
             logger.debug(f"surface texture node: {node}")
-
-        '''
         if node.output:
             # if node.extensible == "out":
             self.render_init()
         else:
             self.render_kw_init()
-        '''
+
+        self.out / ";\n"
 
         self.out.dedent()
+        # self.out << f"PYCLASS_END(m, pywgpu::{class_name}, {class_name})" << "\n\n"
         self.out << "\n"
 
     def render_init(self):

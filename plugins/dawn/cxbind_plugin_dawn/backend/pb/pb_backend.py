@@ -10,26 +10,26 @@ from loguru import logger
 import jinja2
 import os
 
-
 from .. import Backend
 
-from .hpp_generator import HppGenerator
+from .pb_generator import PbGenerator
 
 
-class HppBackend(Backend):
+class PbBackend(Backend):
     def __init__(self, program: "Program") -> None:
         super().__init__(program)
 
     def render(self):
-        hpp_code = HppGenerator(self).generate()
+        py_code = PbGenerator(self).generate()
 
-        # Render the header template
-        header_template = self.jinja_env.get_template("pywgpu.h.j2")
-        output = header_template.render(hpp_code=hpp_code)
+        # Render the Python bindings
+        # Render the source template
+        source_template = self.jinja_env.get_template("wgpu_pb.cpp.j2")
+        output = source_template.render(py_code=py_code)
         # logger.debug(output)
         # Write the C++ code to a file
         path = Path(self.program.unit.target)
         with open(path, "w") as f:
             f.write(output)
 
-        logger.debug(f"C++ header generated in {path}")
+        logger.debug(f"C++ bindings generated in {path}")

@@ -10,31 +10,19 @@
 namespace py = pybind11;
 
 void register_advanced_py_auto(py::module &_tests, Registry &registry) {
-    py::class_<AdvancedStruct> _AdvancedStruct(_tests, "AdvancedStruct");
-    registry.on(_tests, "AdvancedStruct", _AdvancedStruct);
-        _AdvancedStruct
+    py::class_<Advanced> _Advanced(_tests, "Advanced");
+    registry.on(_tests, "Advanced", _Advanced);
+        _Advanced
         .def(py::init<int>()
         , py::arg("value") = 0
         )
-        .def("add", &AdvancedStruct::add
+        .def("add", &Advanced::add
             , py::arg("i")
             , py::return_value_policy::automatic_reference)
-        .def_readwrite("value", &AdvancedStruct::value)
-    ;
-
-    py::class_<AdvancedClass> _AdvancedClass(_tests, "AdvancedClass");
-    registry.on(_tests, "AdvancedClass", _AdvancedClass);
-        _AdvancedClass
-        .def(py::init<int>()
-        , py::arg("value") = 0
-        )
-        .def("add", &AdvancedClass::add
+        .def("ignore_me", &Advanced::ignore_me
             , py::arg("i")
             , py::return_value_policy::automatic_reference)
-        .def("ignore_me", &AdvancedClass::ignore_me
-            , py::arg("i")
-            , py::return_value_policy::automatic_reference)
-        .def_readwrite("value", &AdvancedClass::value)
+        .def_readwrite("value", &Advanced::value)
     ;
 
 

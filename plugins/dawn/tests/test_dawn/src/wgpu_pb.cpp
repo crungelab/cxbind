@@ -12,7 +12,7 @@ namespace py = pybind11;
 
 using namespace pywgpu;
 
-void init_wgpu_py_auto(py::module &m, Registry &registry) {
+void init_wgpu_pb_auto(py::module &m, Registry &registry) {
 py::enum_<RequestAdapterStatus>(m, "RequestAdapterStatus", py::arithmetic())
     .value("SUCCESS", RequestAdapterStatus::Success)
     .value("CALLBACK_CANCELLED", RequestAdapterStatus::CallbackCancelled)
@@ -1748,40 +1748,6 @@ _TextureView
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
-    ;
-
-py::class_<INTERNAL_HAVE_EMDAWNWEBGPU_HEADER> _INTERNAL_HAVE_EMDAWNWEBGPU_HEADER(m, "INTERNAL_HAVE_EMDAWNWEBGPU_HEADER");
-registry.on(m, "INTERNAL_HAVE_EMDAWNWEBGPU_HEADER", _INTERNAL_HAVE_EMDAWNWEBGPU_HEADER);
-
-_INTERNAL_HAVE_EMDAWNWEBGPU_HEADER
-    .def_readwrite("unused", &pywgpu::INTERNAL_HAVE_EMDAWNWEBGPU_HEADER::unused)
-    .def(py::init([](const py::kwargs& kwargs) {
-        pywgpu::INTERNAL_HAVE_EMDAWNWEBGPU_HEADER obj{};
-        static const std::set<std::string> allowed = {"unused"};
-        static const std::set<std::string> required = {};
-        
-        // Check for unknown keys
-        for (auto& item : kwargs) {
-            std::string key = py::cast<std::string>(item.first);
-            if (!allowed.count(key)) {
-                throw py::key_error("Unknown keyword argument: '" + key + "'");
-            }
-        }
-
-        // Check for required keys
-        for (const auto& key : required) {
-            if (!kwargs.contains(key.c_str())) {
-                throw py::key_error("Missing required keyword argument: '" + key + "'");
-            }
-        }
-        
-        if (kwargs.contains("unused"))
-        {
-            auto value = kwargs["unused"].cast<Bool>();
-            obj.unused = value;
-        }
-        return obj;
-    }), py::return_value_policy::automatic_reference)
     ;
 
 py::class_<RequestAdapterOptions> _RequestAdapterOptions(m, "RequestAdapterOptions");

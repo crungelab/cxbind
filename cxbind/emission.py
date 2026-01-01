@@ -14,10 +14,6 @@ class Emission:
         self.write(text)
 
     def __call__(self, text: str = ""):
-        '''
-        if text is None:
-            return self
-        '''
         if len(text):
             text = textwrap.dedent(text)
             text = text.split("\n")

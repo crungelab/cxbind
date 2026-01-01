@@ -18,7 +18,7 @@ class RenderContext(WorkerContext):
         self.chaining = False
 
     def create_renderer(self, node: Node) -> "Renderer":
-        from .py.node_renderer_table import NODE_RENDERER_TABLE
+        from .pb.node_renderer_table import NODE_RENDERER_TABLE
 
         cls: Type = NODE_RENDERER_TABLE.get(node.kind, None)
         if cls is None:

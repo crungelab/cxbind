@@ -28,9 +28,8 @@ class PyBackend(Backend):
         output = source_template.render(py_code=py_code)
         # logger.debug(output)
         # Write the C++ code to a file
-        # path = Path("src/wgpu_py.cpp")
         path = Path(self.program.unit.target)
         with open(path, "w") as f:
             f.write(output)
 
-        logger.debug(f"C++ bindings generated in {path}")
+        logger.debug(f"Python code generated in {path}")

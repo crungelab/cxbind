@@ -1,0 +1,3 @@
+source: 'dawn.json'
+target: 'src/wgpu_pb.cpp'
+program: dawn_pb

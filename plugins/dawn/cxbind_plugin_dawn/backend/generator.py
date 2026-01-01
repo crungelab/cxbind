@@ -11,7 +11,7 @@ from cxbind_plugin_dawn.backend.render_context import RenderContext
 from ..node import Node
 from .renderer import Renderer
 
-SpecialStructures = ["chained struct", "chained struct out"]
+SpecialStructures = ["chained struct", "chained struct out", "INTERNAL_HAVE_EMDAWNWEBGPU_HEADER"]
 SpecialFunctions = ["get proc address", "get proc address 2"]
 SpecialEnums = ["optional bool"]
 

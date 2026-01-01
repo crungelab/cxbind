@@ -13,7 +13,7 @@ from ..session import Session
 
 from .render_context import RenderContext
 from .renderer import Renderer
-from .py import NodeRenderer
+from .pb import NodeRenderer
 
 
 class Generator(NodeRenderer):

@@ -4,12 +4,6 @@
 #include <crunge/wgpu/pywgpu.h>
 
 namespace pywgpu {
-// INTERNAL_HAVE_EMDAWNWEBGPU_HEADER implementation
-
-INTERNAL_HAVE_EMDAWNWEBGPU_HEADER::operator const WGPUINTERNAL_HAVE_EMDAWNWEBGPU_HEADER&() const noexcept {
-    return *reinterpret_cast<const WGPUINTERNAL_HAVE_EMDAWNWEBGPU_HEADER*>(this);
-}
-
 // RequestAdapterOptions implementation
 
 RequestAdapterOptions::operator const WGPURequestAdapterOptions&() const noexcept {

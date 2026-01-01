@@ -28,7 +28,6 @@ class CppBackend(Backend):
         output = source_template.render(cpp_code=cpp_code)
         # logger.debug(output)
         # Write the C++ code to a file
-        # path = Path("src/pywgpu.cpp")
         path = Path(self.program.unit.target)
         with open(path, "w") as f:
             f.write(output)

@@ -1,17 +1,4 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/functional.h>
-#include <pybind11/operators.h>
-#include <pybind11/stl.h>
+from dataclasses import dataclass, field
+from typing import Optional, List, Literal, Union, Any
 
-#include <cxbind/cxbind.h>
-#include <crunge/wgpu/pywgpu.h>
-#include <crunge/wgpu/crunge-wgpu.h>
-#include <crunge/wgpu/conversions.h>
-
-namespace py = pybind11;
-
-using namespace pywgpu;
-
-void init_wgpu_py_auto(py::module &m, Registry &registry) {
 {{ py_code }}
-}

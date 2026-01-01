@@ -6,7 +6,7 @@ sys.path.insert(0, str(build_dir))
 
 import unittest
 
-from cxbind_tests.test_templates import MyClass_float_double as MyClass
+from cxbind_tests.test_templates import MyClassFloatDouble as MyClass
 
 
 class Test(unittest.TestCase):

@@ -48,7 +48,6 @@ using LoggingCallbackInfo = WGPULoggingCallbackInfo;
 using QueueWorkDoneCallbackInfo = WGPUQueueWorkDoneCallbackInfo;
 using RequestDeviceCallbackInfo = WGPURequestDeviceCallbackInfo;
 
-struct INTERNAL_HAVE_EMDAWNWEBGPU_HEADER;
 struct RequestAdapterOptions;
 struct AdapterInfo;
 struct DeviceDescriptor;
@@ -3210,11 +3209,6 @@ struct RequestAdapterOptions {
     Bool forceFallbackAdapter = false;
     BackendType backendType;
     Surface compatibleSurface = nullptr;
-};
-
-struct INTERNAL_HAVE_EMDAWNWEBGPU_HEADER {
-    operator const WGPUINTERNAL_HAVE_EMDAWNWEBGPU_HEADER&() const noexcept;
-    Bool unused = false;
 };
 
 class RenderPipeline : public ObjectBase<RenderPipeline, WGPURenderPipeline> {
