@@ -27,6 +27,11 @@ struct LinearAlloc {
     }
 
     template<class T>
+    T* alloc_array(size_t count) {
+        return reinterpret_cast<T*>(alloc(sizeof(T) * count, alignof(T)));
+    }
+
+    template<class T>
     T* make() {
         void* p = alloc(sizeof(T), alignof(T));
         return new (p) T{}; // value-init
@@ -44,2038 +49,2881 @@ namespace py = pybind11;
 using namespace pywgpu;
 
 pywgpu::RequestAdapterOptions* buildRequestAdapterOptions(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RequestAdapterOptions>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("feature_level").cast<FeatureLevel>();
-    obj->featureLevel = value;
-    auto value = handle.attr("power_preference").cast<PowerPreference>();
-    obj->powerPreference = value;
-    auto value = handle.attr("force_fallback_adapter").cast<Bool>();
-    obj->forceFallbackAdapter = value;
-    auto value = handle.attr("backend_type").cast<BackendType>();
-    obj->backendType = value;
-    auto value = handle.attr("compatible_surface").cast<Surface>();
-    obj->compatibleSurface = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RequestAdapterOptions>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("feature_level").cast<FeatureLevel>();
+        obj.featureLevel = value;
+    }
+    {
+        auto value = handle.attr("power_preference").cast<PowerPreference>();
+        obj.powerPreference = value;
+    }
+    {
+        auto value = handle.attr("force_fallback_adapter").cast<Bool>();
+        obj.forceFallbackAdapter = value;
+    }
+    {
+        auto value = handle.attr("backend_type").cast<BackendType>();
+        obj.backendType = value;
+    }
+    {
+        auto value = handle.attr("compatible_surface").cast<Surface>();
+        obj.compatibleSurface = value;
+    }
+    return &obj;
 }
 
-py::class_<AdapterInfo> _AdapterInfo(m, "AdapterInfo");
-registry.on(m, "AdapterInfo", _AdapterInfo);
-
-_AdapterInfo
-    .def_readonly("next_in_chain", &pywgpu::AdapterInfo::nextInChain)
-    .def_readonly("vendor", &pywgpu::AdapterInfo::vendor)
-    .def_readonly("architecture", &pywgpu::AdapterInfo::architecture)
-    .def_readonly("device", &pywgpu::AdapterInfo::device)
-    .def_readonly("description", &pywgpu::AdapterInfo::description)
-    .def_readonly("backend_type", &pywgpu::AdapterInfo::backendType)
-    .def_readonly("adapter_type", &pywgpu::AdapterInfo::adapterType)
-    .def_readonly("vendor_ID", &pywgpu::AdapterInfo::vendorID)
-    .def_readonly("device_ID", &pywgpu::AdapterInfo::deviceID)
-    .def_readonly("subgroup_min_size", &pywgpu::AdapterInfo::subgroupMinSize)
-    .def_readonly("subgroup_max_size", &pywgpu::AdapterInfo::subgroupMaxSize)
-    .def(py::init<>())
-    ;
-
 pywgpu::DeviceDescriptor* buildDeviceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DeviceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["required_features"].cast<std::vector<FeatureName>>();
-    auto count = _value.size();
-    auto value = new FeatureName[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.requiredFeatures = value;
-    obj.requiredFeatureCount = count;
-    auto value = handle.attr("required_limits").cast<Limits const *>();
-    obj->requiredLimits = value;
-    auto value = handle.attr("default_queue").cast<QueueDescriptor>();
-    obj->defaultQueue = value;
-    auto value = handle.attr("device_lost_callback_info").cast<DeviceLostCallbackInfo>();
-    obj->deviceLostCallbackInfo = value;
-    auto value = handle.attr("uncaptured_error_callback_info").cast<UncapturedErrorCallbackInfo>();
-    obj->uncapturedErrorCallbackInfo = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DeviceDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto py_list = handle.attr("required_features").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<FeatureName>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<FeatureName>();
+        }
+
+        obj.requiredFeatures = value;
+        obj.requiredFeatureCount = count;
+    }
+    {
+        auto value = handle.attr("required_limits").cast<Limits const *>();
+        obj.requiredLimits = value;
+    }
+    {
+        auto value = handle.attr("default_queue").cast<QueueDescriptor>();
+        obj.defaultQueue = value;
+    }
+    {
+        auto value = handle.attr("device_lost_callback_info").cast<DeviceLostCallbackInfo>();
+        obj.deviceLostCallbackInfo = value;
+    }
+    {
+        auto value = handle.attr("uncaptured_error_callback_info").cast<UncapturedErrorCallbackInfo>();
+        obj.uncapturedErrorCallbackInfo = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnTogglesDescriptor* buildDawnTogglesDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnTogglesDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnTogglesDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnCacheDeviceDescriptor* buildDawnCacheDeviceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnCacheDeviceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("isolation_key").cast<StringView>();
-    obj->isolationKey = value;
-    auto value = handle.attr("function_userdata").cast<void *>();
-    obj->functionUserdata = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnCacheDeviceDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("isolation_key").cast<StringView>();
+        obj.isolationKey = value;
+    }
+    {
+        auto value = handle.attr("function_userdata").cast<void *>();
+        obj.functionUserdata = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnWGSLBlocklist* buildDawnWGSLBlocklist(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnWGSLBlocklist>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnWGSLBlocklist>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    return &obj;
 }
 
 pywgpu::BindGroupEntry* buildBindGroupEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("binding").cast<uint32_t>();
-    obj->binding = value;
-    auto value = handle.attr("buffer").cast<Buffer>();
-    obj->buffer = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("size").cast<uint64_t>();
-    obj->size = value;
-    auto value = handle.attr("sampler").cast<Sampler>();
-    obj->sampler = value;
-    auto value = handle.attr("texture_view").cast<TextureView>();
-    obj->textureView = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BindGroupEntry>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("binding").cast<uint32_t>();
+        obj.binding = value;
+    }
+    {
+        auto value = handle.attr("buffer").cast<Buffer>();
+        obj.buffer = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("size").cast<uint64_t>();
+        obj.size = value;
+    }
+    {
+        auto value = handle.attr("sampler").cast<Sampler>();
+        obj.sampler = value;
+    }
+    {
+        auto value = handle.attr("texture_view").cast<TextureView>();
+        obj.textureView = value;
+    }
+    return &obj;
 }
 
 pywgpu::BindGroupDescriptor* buildBindGroupDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("layout").cast<BindGroupLayout>();
-    obj->layout = value;
-    auto _value = kwargs["entries"].cast<std::vector<BindGroupEntry>>();
-    auto count = _value.size();
-    auto value = new BindGroupEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.entries = value;
-    obj.entryCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::BindGroupDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("layout").cast<BindGroupLayout>();
+        obj.layout = value;
+    }
+    {
+        auto py_list = handle.attr("entries").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<BindGroupEntry>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<BindGroupEntry>();
+        }
+
+        obj.entries = value;
+        obj.entryCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::BufferBindingLayout* buildBufferBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BufferBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("type").cast<BufferBindingType>();
-    obj->type = value;
-    auto value = handle.attr("has_dynamic_offset").cast<Bool>();
-    obj->hasDynamicOffset = value;
-    auto value = handle.attr("min_binding_size").cast<uint64_t>();
-    obj->minBindingSize = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BufferBindingLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("type").cast<BufferBindingType>();
+        obj.type = value;
+    }
+    {
+        auto value = handle.attr("has_dynamic_offset").cast<Bool>();
+        obj.hasDynamicOffset = value;
+    }
+    {
+        auto value = handle.attr("min_binding_size").cast<uint64_t>();
+        obj.minBindingSize = value;
+    }
+    return &obj;
 }
 
 pywgpu::SamplerBindingLayout* buildSamplerBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SamplerBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("type").cast<SamplerBindingType>();
-    obj->type = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SamplerBindingLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("type").cast<SamplerBindingType>();
+        obj.type = value;
+    }
+    return &obj;
 }
 
 pywgpu::StaticSamplerBindingLayout* buildStaticSamplerBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::StaticSamplerBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("sampler").cast<Sampler>();
-    obj->sampler = value;
-    auto value = handle.attr("sampled_texture_binding").cast<uint32_t>();
-    obj->sampledTextureBinding = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::StaticSamplerBindingLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("sampler").cast<Sampler>();
+        obj.sampler = value;
+    }
+    {
+        auto value = handle.attr("sampled_texture_binding").cast<uint32_t>();
+        obj.sampledTextureBinding = value;
+    }
+    return &obj;
 }
 
 pywgpu::TextureBindingLayout* buildTextureBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("sample_type").cast<TextureSampleType>();
-    obj->sampleType = value;
-    auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
-    obj->viewDimension = value;
-    auto value = handle.attr("multisampled").cast<Bool>();
-    obj->multisampled = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::TextureBindingLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("sample_type").cast<TextureSampleType>();
+        obj.sampleType = value;
+    }
+    {
+        auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
+        obj.viewDimension = value;
+    }
+    {
+        auto value = handle.attr("multisampled").cast<Bool>();
+        obj.multisampled = value;
+    }
+    return &obj;
 }
 
-py::class_<SurfaceCapabilities> _SurfaceCapabilities(m, "SurfaceCapabilities");
-registry.on(m, "SurfaceCapabilities", _SurfaceCapabilities);
-
-_SurfaceCapabilities
-    .def_readonly("next_in_chain", &pywgpu::SurfaceCapabilities::nextInChain)
-    .def_readonly("usages", &pywgpu::SurfaceCapabilities::usages)
-    .def_readonly("format_count", &pywgpu::SurfaceCapabilities::formatCount)
-    .def_readonly("formats", &pywgpu::SurfaceCapabilities::formats)
-    .def_readonly("present_mode_count", &pywgpu::SurfaceCapabilities::presentModeCount)
-    .def_readonly("present_modes", &pywgpu::SurfaceCapabilities::presentModes)
-    .def_readonly("alpha_mode_count", &pywgpu::SurfaceCapabilities::alphaModeCount)
-    .def_readonly("alpha_modes", &pywgpu::SurfaceCapabilities::alphaModes)
-    .def(py::init<>())
-    ;
-
 pywgpu::SurfaceConfiguration* buildSurfaceConfiguration(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceConfiguration>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("device").cast<Device>();
-    obj->device = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("usage").cast<TextureUsage>();
-    obj->usage = value;
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    auto _value = kwargs["view_formats"].cast<std::vector<TextureFormat>>();
-    auto count = _value.size();
-    auto value = new TextureFormat[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.viewFormats = value;
-    obj.viewFormatCount = count;
-    auto value = handle.attr("alpha_mode").cast<CompositeAlphaMode>();
-    obj->alphaMode = value;
-    auto value = handle.attr("present_mode").cast<PresentMode>();
-    obj->presentMode = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceConfiguration>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("device").cast<Device>();
+        obj.device = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("usage").cast<TextureUsage>();
+        obj.usage = value;
+    }
+    {
+        auto value = handle.attr("width").cast<uint32_t>();
+        obj.width = value;
+    }
+    {
+        auto value = handle.attr("height").cast<uint32_t>();
+        obj.height = value;
+    }
+    {
+        auto py_list = handle.attr("view_formats").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<TextureFormat>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<TextureFormat>();
+        }
+
+        obj.viewFormats = value;
+        obj.viewFormatCount = count;
+    }
+    {
+        auto value = handle.attr("alpha_mode").cast<CompositeAlphaMode>();
+        obj.alphaMode = value;
+    }
+    {
+        auto value = handle.attr("present_mode").cast<PresentMode>();
+        obj.presentMode = value;
+    }
+    return &obj;
 }
 
 pywgpu::ExternalTextureBindingEntry* buildExternalTextureBindingEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ExternalTextureBindingEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("external_texture").cast<ExternalTexture>();
-    obj->externalTexture = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ExternalTextureBindingEntry>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("external_texture").cast<ExternalTexture>();
+        obj.externalTexture = value;
+    }
+    return &obj;
 }
 
 pywgpu::ExternalTextureBindingLayout* buildExternalTextureBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ExternalTextureBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ExternalTextureBindingLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    return &obj;
 }
 
 pywgpu::StorageTextureBindingLayout* buildStorageTextureBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::StorageTextureBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("access").cast<StorageTextureAccess>();
-    obj->access = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
-    obj->viewDimension = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::StorageTextureBindingLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("access").cast<StorageTextureAccess>();
+        obj.access = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
+        obj.viewDimension = value;
+    }
+    return &obj;
 }
 
 pywgpu::BindGroupLayoutEntry* buildBindGroupLayoutEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupLayoutEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("binding").cast<uint32_t>();
-    obj->binding = value;
-    auto value = handle.attr("visibility").cast<ShaderStage>();
-    obj->visibility = value;
-    auto value = handle.attr("buffer").cast<BufferBindingLayout>();
-    obj->buffer = value;
-    auto value = handle.attr("sampler").cast<SamplerBindingLayout>();
-    obj->sampler = value;
-    auto value = handle.attr("texture").cast<TextureBindingLayout>();
-    obj->texture = value;
-    auto value = handle.attr("storage_texture").cast<StorageTextureBindingLayout>();
-    obj->storageTexture = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BindGroupLayoutEntry>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("binding").cast<uint32_t>();
+        obj.binding = value;
+    }
+    {
+        auto value = handle.attr("visibility").cast<ShaderStage>();
+        obj.visibility = value;
+    }
+    {
+        auto value = handle.attr("buffer").cast<BufferBindingLayout>();
+        obj.buffer = value;
+    }
+    {
+        auto value = handle.attr("sampler").cast<SamplerBindingLayout>();
+        obj.sampler = value;
+    }
+    {
+        auto value = handle.attr("texture").cast<TextureBindingLayout>();
+        obj.texture = value;
+    }
+    {
+        auto value = handle.attr("storage_texture").cast<StorageTextureBindingLayout>();
+        obj.storageTexture = value;
+    }
+    return &obj;
 }
 
 pywgpu::BindGroupLayoutDescriptor* buildBindGroupLayoutDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupLayoutDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["entries"].cast<std::vector<BindGroupLayoutEntry>>();
-    auto count = _value.size();
-    auto value = new BindGroupLayoutEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.entries = value;
-    obj.entryCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::BindGroupLayoutDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto py_list = handle.attr("entries").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<BindGroupLayoutEntry>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<BindGroupLayoutEntry>();
+        }
+
+        obj.entries = value;
+        obj.entryCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::BlendComponent* buildBlendComponent(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BlendComponent>();
-    auto value = handle.attr("operation").cast<BlendOperation>();
-    obj->operation = value;
-    auto value = handle.attr("src_factor").cast<BlendFactor>();
-    obj->srcFactor = value;
-    auto value = handle.attr("dst_factor").cast<BlendFactor>();
-    obj->dstFactor = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BlendComponent>();
+    {
+        auto value = handle.attr("operation").cast<BlendOperation>();
+        obj.operation = value;
+    }
+    {
+        auto value = handle.attr("src_factor").cast<BlendFactor>();
+        obj.srcFactor = value;
+    }
+    {
+        auto value = handle.attr("dst_factor").cast<BlendFactor>();
+        obj.dstFactor = value;
+    }
+    return &obj;
 }
 
 pywgpu::BufferDescriptor* buildBufferDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BufferDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("usage").cast<BufferUsage>();
-    obj->usage = value;
-    auto value = handle.attr("size").cast<uint64_t>();
-    obj->size = value;
-    auto value = handle.attr("mapped_at_creation").cast<Bool>();
-    obj->mappedAtCreation = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BufferDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("usage").cast<BufferUsage>();
+        obj.usage = value;
+    }
+    {
+        auto value = handle.attr("size").cast<uint64_t>();
+        obj.size = value;
+    }
+    {
+        auto value = handle.attr("mapped_at_creation").cast<Bool>();
+        obj.mappedAtCreation = value;
+    }
+    return &obj;
 }
 
 pywgpu::BufferHostMappedPointer* buildBufferHostMappedPointer(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BufferHostMappedPointer>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("pointer").cast<void *>();
-    obj->pointer = value;
-    auto value = handle.attr("userdata").cast<void *>();
-    obj->userdata = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BufferHostMappedPointer>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("pointer").cast<void *>();
+        obj.pointer = value;
+    }
+    {
+        auto value = handle.attr("userdata").cast<void *>();
+        obj.userdata = value;
+    }
+    return &obj;
 }
 
 pywgpu::Color* buildColor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Color>();
-    auto value = handle.attr("r").cast<double>();
-    obj->r = value;
-    auto value = handle.attr("g").cast<double>();
-    obj->g = value;
-    auto value = handle.attr("b").cast<double>();
-    obj->b = value;
-    auto value = handle.attr("a").cast<double>();
-    obj->a = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Color>();
+    {
+        auto value = handle.attr("r").cast<double>();
+        obj.r = value;
+    }
+    {
+        auto value = handle.attr("g").cast<double>();
+        obj.g = value;
+    }
+    {
+        auto value = handle.attr("b").cast<double>();
+        obj.b = value;
+    }
+    {
+        auto value = handle.attr("a").cast<double>();
+        obj.a = value;
+    }
+    return &obj;
 }
 
 pywgpu::ConstantEntry* buildConstantEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ConstantEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("key").cast<StringView>();
-    obj->key = value;
-    auto value = handle.attr("value").cast<double>();
-    obj->value = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ConstantEntry>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("key").cast<StringView>();
+        obj.key = value;
+    }
+    {
+        auto value = handle.attr("value").cast<double>();
+        obj.value = value;
+    }
+    return &obj;
 }
 
 pywgpu::CommandBufferDescriptor* buildCommandBufferDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CommandBufferDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::CommandBufferDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::CommandEncoderDescriptor* buildCommandEncoderDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CommandEncoderDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::CommandEncoderDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::CompilationInfo* buildCompilationInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CompilationInfo>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto _value = kwargs["messages"].cast<std::vector<CompilationMessage>>();
-    auto count = _value.size();
-    auto value = new CompilationMessage[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.messages = value;
-    obj.messageCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::CompilationInfo>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto py_list = handle.attr("messages").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<CompilationMessage>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<CompilationMessage>();
+        }
+
+        obj.messages = value;
+        obj.messageCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::CompilationMessage* buildCompilationMessage(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CompilationMessage>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("message").cast<StringView>();
-    obj->message = value;
-    auto value = handle.attr("type").cast<CompilationMessageType>();
-    obj->type = value;
-    auto value = handle.attr("line_num").cast<uint64_t>();
-    obj->lineNum = value;
-    auto value = handle.attr("line_pos").cast<uint64_t>();
-    obj->linePos = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("length").cast<uint64_t>();
-    obj->length = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::CompilationMessage>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("message").cast<StringView>();
+        obj.message = value;
+    }
+    {
+        auto value = handle.attr("type").cast<CompilationMessageType>();
+        obj.type = value;
+    }
+    {
+        auto value = handle.attr("line_num").cast<uint64_t>();
+        obj.lineNum = value;
+    }
+    {
+        auto value = handle.attr("line_pos").cast<uint64_t>();
+        obj.linePos = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("length").cast<uint64_t>();
+        obj.length = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnCompilationMessageUtf16* buildDawnCompilationMessageUtf16(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnCompilationMessageUtf16>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("line_pos").cast<uint64_t>();
-    obj->linePos = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("length").cast<uint64_t>();
-    obj->length = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnCompilationMessageUtf16>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("line_pos").cast<uint64_t>();
+        obj.linePos = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("length").cast<uint64_t>();
+        obj.length = value;
+    }
+    return &obj;
 }
 
 pywgpu::ComputePassDescriptor* buildComputePassDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ComputePassDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("timestamp_writes").cast<PassTimestampWrites const *>();
-    obj->timestampWrites = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ComputePassDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("timestamp_writes").cast<PassTimestampWrites const *>();
+        obj.timestampWrites = value;
+    }
+    return &obj;
 }
 
 pywgpu::ComputePipelineDescriptor* buildComputePipelineDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ComputePipelineDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("layout").cast<PipelineLayout>();
-    obj->layout = value;
-    auto value = handle.attr("compute").cast<ComputeState>();
-    obj->compute = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ComputePipelineDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("layout").cast<PipelineLayout>();
+        obj.layout = value;
+    }
+    {
+        auto value = handle.attr("compute").cast<ComputeState>();
+        obj.compute = value;
+    }
+    return &obj;
 }
 
 pywgpu::CopyTextureForBrowserOptions* buildCopyTextureForBrowserOptions(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CopyTextureForBrowserOptions>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("flip_y").cast<Bool>();
-    obj->flipY = value;
-    auto value = handle.attr("needs_color_space_conversion").cast<Bool>();
-    obj->needsColorSpaceConversion = value;
-    auto value = handle.attr("src_alpha_mode").cast<AlphaMode>();
-    obj->srcAlphaMode = value;
-    auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.srcTransferFunctionParameters = value;
-    auto _value = kwargs["conversion_matrix"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.conversionMatrix = value;
-    auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.dstTransferFunctionParameters = value;
-    auto value = handle.attr("dst_alpha_mode").cast<AlphaMode>();
-    obj->dstAlphaMode = value;
-    auto value = handle.attr("internal_usage").cast<Bool>();
-    obj->internalUsage = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::CopyTextureForBrowserOptions>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("flip_y").cast<Bool>();
+        obj.flipY = value;
+    }
+    {
+        auto value = handle.attr("needs_color_space_conversion").cast<Bool>();
+        obj.needsColorSpaceConversion = value;
+    }
+    {
+        auto value = handle.attr("src_alpha_mode").cast<AlphaMode>();
+        obj.srcAlphaMode = value;
+    }
+    {
+        auto py_list = handle.attr("src_transfer_function_parameters").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.srcTransferFunctionParameters = value;
+    }
+    {
+        auto py_list = handle.attr("conversion_matrix").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.conversionMatrix = value;
+    }
+    {
+        auto py_list = handle.attr("dst_transfer_function_parameters").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.dstTransferFunctionParameters = value;
+    }
+    {
+        auto value = handle.attr("dst_alpha_mode").cast<AlphaMode>();
+        obj.dstAlphaMode = value;
+    }
+    {
+        auto value = handle.attr("internal_usage").cast<Bool>();
+        obj.internalUsage = value;
+    }
+    return &obj;
 }
 
 pywgpu::AHardwareBufferProperties* buildAHardwareBufferProperties(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::AHardwareBufferProperties>();
-    auto value = handle.attr("y_cb_cr_info").cast<YCbCrVkDescriptor>();
-    obj->yCbCrInfo = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::AHardwareBufferProperties>();
+    {
+        auto value = handle.attr("y_cb_cr_info").cast<YCbCrVkDescriptor>();
+        obj.yCbCrInfo = value;
+    }
+    return &obj;
 }
 
 pywgpu::Limits* buildLimits(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Limits>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStructOut *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("max_texture_dimension_1D").cast<uint32_t>();
-    obj->maxTextureDimension1D = value;
-    auto value = handle.attr("max_texture_dimension_2D").cast<uint32_t>();
-    obj->maxTextureDimension2D = value;
-    auto value = handle.attr("max_texture_dimension_3D").cast<uint32_t>();
-    obj->maxTextureDimension3D = value;
-    auto value = handle.attr("max_texture_array_layers").cast<uint32_t>();
-    obj->maxTextureArrayLayers = value;
-    auto value = handle.attr("max_bind_groups").cast<uint32_t>();
-    obj->maxBindGroups = value;
-    auto value = handle.attr("max_bind_groups_plus_vertex_buffers").cast<uint32_t>();
-    obj->maxBindGroupsPlusVertexBuffers = value;
-    auto value = handle.attr("max_bindings_per_bind_group").cast<uint32_t>();
-    obj->maxBindingsPerBindGroup = value;
-    auto value = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout").cast<uint32_t>();
-    obj->maxDynamicUniformBuffersPerPipelineLayout = value;
-    auto value = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout").cast<uint32_t>();
-    obj->maxDynamicStorageBuffersPerPipelineLayout = value;
-    auto value = handle.attr("max_sampled_textures_per_shader_stage").cast<uint32_t>();
-    obj->maxSampledTexturesPerShaderStage = value;
-    auto value = handle.attr("max_samplers_per_shader_stage").cast<uint32_t>();
-    obj->maxSamplersPerShaderStage = value;
-    auto value = handle.attr("max_storage_buffers_per_shader_stage").cast<uint32_t>();
-    obj->maxStorageBuffersPerShaderStage = value;
-    auto value = handle.attr("max_storage_textures_per_shader_stage").cast<uint32_t>();
-    obj->maxStorageTexturesPerShaderStage = value;
-    auto value = handle.attr("max_uniform_buffers_per_shader_stage").cast<uint32_t>();
-    obj->maxUniformBuffersPerShaderStage = value;
-    auto value = handle.attr("max_uniform_buffer_binding_size").cast<uint64_t>();
-    obj->maxUniformBufferBindingSize = value;
-    auto value = handle.attr("max_storage_buffer_binding_size").cast<uint64_t>();
-    obj->maxStorageBufferBindingSize = value;
-    auto value = handle.attr("min_uniform_buffer_offset_alignment").cast<uint32_t>();
-    obj->minUniformBufferOffsetAlignment = value;
-    auto value = handle.attr("min_storage_buffer_offset_alignment").cast<uint32_t>();
-    obj->minStorageBufferOffsetAlignment = value;
-    auto value = handle.attr("max_vertex_buffers").cast<uint32_t>();
-    obj->maxVertexBuffers = value;
-    auto value = handle.attr("max_buffer_size").cast<uint64_t>();
-    obj->maxBufferSize = value;
-    auto value = handle.attr("max_vertex_attributes").cast<uint32_t>();
-    obj->maxVertexAttributes = value;
-    auto value = handle.attr("max_vertex_buffer_array_stride").cast<uint32_t>();
-    obj->maxVertexBufferArrayStride = value;
-    auto value = handle.attr("max_inter_stage_shader_variables").cast<uint32_t>();
-    obj->maxInterStageShaderVariables = value;
-    auto value = handle.attr("max_color_attachments").cast<uint32_t>();
-    obj->maxColorAttachments = value;
-    auto value = handle.attr("max_color_attachment_bytes_per_sample").cast<uint32_t>();
-    obj->maxColorAttachmentBytesPerSample = value;
-    auto value = handle.attr("max_compute_workgroup_storage_size").cast<uint32_t>();
-    obj->maxComputeWorkgroupStorageSize = value;
-    auto value = handle.attr("max_compute_invocations_per_workgroup").cast<uint32_t>();
-    obj->maxComputeInvocationsPerWorkgroup = value;
-    auto value = handle.attr("max_compute_workgroup_size_x").cast<uint32_t>();
-    obj->maxComputeWorkgroupSizeX = value;
-    auto value = handle.attr("max_compute_workgroup_size_y").cast<uint32_t>();
-    obj->maxComputeWorkgroupSizeY = value;
-    auto value = handle.attr("max_compute_workgroup_size_z").cast<uint32_t>();
-    obj->maxComputeWorkgroupSizeZ = value;
-    auto value = handle.attr("max_compute_workgroups_per_dimension").cast<uint32_t>();
-    obj->maxComputeWorkgroupsPerDimension = value;
-    auto value = handle.attr("max_storage_buffers_in_vertex_stage").cast<uint32_t>();
-    obj->maxStorageBuffersInVertexStage = value;
-    auto value = handle.attr("max_storage_textures_in_vertex_stage").cast<uint32_t>();
-    obj->maxStorageTexturesInVertexStage = value;
-    auto value = handle.attr("max_storage_buffers_in_fragment_stage").cast<uint32_t>();
-    obj->maxStorageBuffersInFragmentStage = value;
-    auto value = handle.attr("max_storage_textures_in_fragment_stage").cast<uint32_t>();
-    obj->maxStorageTexturesInFragmentStage = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Limits>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStructOut *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("max_texture_dimension_1D").cast<uint32_t>();
+        obj.maxTextureDimension1D = value;
+    }
+    {
+        auto value = handle.attr("max_texture_dimension_2D").cast<uint32_t>();
+        obj.maxTextureDimension2D = value;
+    }
+    {
+        auto value = handle.attr("max_texture_dimension_3D").cast<uint32_t>();
+        obj.maxTextureDimension3D = value;
+    }
+    {
+        auto value = handle.attr("max_texture_array_layers").cast<uint32_t>();
+        obj.maxTextureArrayLayers = value;
+    }
+    {
+        auto value = handle.attr("max_bind_groups").cast<uint32_t>();
+        obj.maxBindGroups = value;
+    }
+    {
+        auto value = handle.attr("max_bind_groups_plus_vertex_buffers").cast<uint32_t>();
+        obj.maxBindGroupsPlusVertexBuffers = value;
+    }
+    {
+        auto value = handle.attr("max_bindings_per_bind_group").cast<uint32_t>();
+        obj.maxBindingsPerBindGroup = value;
+    }
+    {
+        auto value = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout").cast<uint32_t>();
+        obj.maxDynamicUniformBuffersPerPipelineLayout = value;
+    }
+    {
+        auto value = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout").cast<uint32_t>();
+        obj.maxDynamicStorageBuffersPerPipelineLayout = value;
+    }
+    {
+        auto value = handle.attr("max_sampled_textures_per_shader_stage").cast<uint32_t>();
+        obj.maxSampledTexturesPerShaderStage = value;
+    }
+    {
+        auto value = handle.attr("max_samplers_per_shader_stage").cast<uint32_t>();
+        obj.maxSamplersPerShaderStage = value;
+    }
+    {
+        auto value = handle.attr("max_storage_buffers_per_shader_stage").cast<uint32_t>();
+        obj.maxStorageBuffersPerShaderStage = value;
+    }
+    {
+        auto value = handle.attr("max_storage_textures_per_shader_stage").cast<uint32_t>();
+        obj.maxStorageTexturesPerShaderStage = value;
+    }
+    {
+        auto value = handle.attr("max_uniform_buffers_per_shader_stage").cast<uint32_t>();
+        obj.maxUniformBuffersPerShaderStage = value;
+    }
+    {
+        auto value = handle.attr("max_uniform_buffer_binding_size").cast<uint64_t>();
+        obj.maxUniformBufferBindingSize = value;
+    }
+    {
+        auto value = handle.attr("max_storage_buffer_binding_size").cast<uint64_t>();
+        obj.maxStorageBufferBindingSize = value;
+    }
+    {
+        auto value = handle.attr("min_uniform_buffer_offset_alignment").cast<uint32_t>();
+        obj.minUniformBufferOffsetAlignment = value;
+    }
+    {
+        auto value = handle.attr("min_storage_buffer_offset_alignment").cast<uint32_t>();
+        obj.minStorageBufferOffsetAlignment = value;
+    }
+    {
+        auto value = handle.attr("max_vertex_buffers").cast<uint32_t>();
+        obj.maxVertexBuffers = value;
+    }
+    {
+        auto value = handle.attr("max_buffer_size").cast<uint64_t>();
+        obj.maxBufferSize = value;
+    }
+    {
+        auto value = handle.attr("max_vertex_attributes").cast<uint32_t>();
+        obj.maxVertexAttributes = value;
+    }
+    {
+        auto value = handle.attr("max_vertex_buffer_array_stride").cast<uint32_t>();
+        obj.maxVertexBufferArrayStride = value;
+    }
+    {
+        auto value = handle.attr("max_inter_stage_shader_variables").cast<uint32_t>();
+        obj.maxInterStageShaderVariables = value;
+    }
+    {
+        auto value = handle.attr("max_color_attachments").cast<uint32_t>();
+        obj.maxColorAttachments = value;
+    }
+    {
+        auto value = handle.attr("max_color_attachment_bytes_per_sample").cast<uint32_t>();
+        obj.maxColorAttachmentBytesPerSample = value;
+    }
+    {
+        auto value = handle.attr("max_compute_workgroup_storage_size").cast<uint32_t>();
+        obj.maxComputeWorkgroupStorageSize = value;
+    }
+    {
+        auto value = handle.attr("max_compute_invocations_per_workgroup").cast<uint32_t>();
+        obj.maxComputeInvocationsPerWorkgroup = value;
+    }
+    {
+        auto value = handle.attr("max_compute_workgroup_size_x").cast<uint32_t>();
+        obj.maxComputeWorkgroupSizeX = value;
+    }
+    {
+        auto value = handle.attr("max_compute_workgroup_size_y").cast<uint32_t>();
+        obj.maxComputeWorkgroupSizeY = value;
+    }
+    {
+        auto value = handle.attr("max_compute_workgroup_size_z").cast<uint32_t>();
+        obj.maxComputeWorkgroupSizeZ = value;
+    }
+    {
+        auto value = handle.attr("max_compute_workgroups_per_dimension").cast<uint32_t>();
+        obj.maxComputeWorkgroupsPerDimension = value;
+    }
+    {
+        auto value = handle.attr("max_storage_buffers_in_vertex_stage").cast<uint32_t>();
+        obj.maxStorageBuffersInVertexStage = value;
+    }
+    {
+        auto value = handle.attr("max_storage_textures_in_vertex_stage").cast<uint32_t>();
+        obj.maxStorageTexturesInVertexStage = value;
+    }
+    {
+        auto value = handle.attr("max_storage_buffers_in_fragment_stage").cast<uint32_t>();
+        obj.maxStorageBuffersInFragmentStage = value;
+    }
+    {
+        auto value = handle.attr("max_storage_textures_in_fragment_stage").cast<uint32_t>();
+        obj.maxStorageTexturesInFragmentStage = value;
+    }
+    return &obj;
 }
 
-py::class_<AdapterPropertiesSubgroups, ChainedStructOut> _AdapterPropertiesSubgroups(m, "AdapterPropertiesSubgroups");
-registry.on(m, "AdapterPropertiesSubgroups", _AdapterPropertiesSubgroups);
-
-_AdapterPropertiesSubgroups
-    .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesSubgroups::nextInChain)
-    .def_readonly("subgroup_min_size", &pywgpu::AdapterPropertiesSubgroups::subgroupMinSize)
-    .def_readonly("subgroup_max_size", &pywgpu::AdapterPropertiesSubgroups::subgroupMaxSize)
-    .def(py::init<>())
-    ;
-
-py::class_<DawnExperimentalImmediateDataLimits, ChainedStructOut> _DawnExperimentalImmediateDataLimits(m, "DawnExperimentalImmediateDataLimits");
-registry.on(m, "DawnExperimentalImmediateDataLimits", _DawnExperimentalImmediateDataLimits);
-
-_DawnExperimentalImmediateDataLimits
-    .def_readonly("next_in_chain", &pywgpu::DawnExperimentalImmediateDataLimits::nextInChain)
-    .def_readonly("max_immediate_data_range_byte_size", &pywgpu::DawnExperimentalImmediateDataLimits::maxImmediateDataRangeByteSize)
-    .def(py::init<>())
-    ;
-
-py::class_<DawnTexelCopyBufferRowAlignmentLimits, ChainedStructOut> _DawnTexelCopyBufferRowAlignmentLimits(m, "DawnTexelCopyBufferRowAlignmentLimits");
-registry.on(m, "DawnTexelCopyBufferRowAlignmentLimits", _DawnTexelCopyBufferRowAlignmentLimits);
-
-_DawnTexelCopyBufferRowAlignmentLimits
-    .def_readonly("next_in_chain", &pywgpu::DawnTexelCopyBufferRowAlignmentLimits::nextInChain)
-    .def_readonly("min_texel_copy_buffer_row_alignment", &pywgpu::DawnTexelCopyBufferRowAlignmentLimits::minTexelCopyBufferRowAlignment)
-    .def(py::init<>())
-    ;
-
 pywgpu::SupportedFeatures* buildSupportedFeatures(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SupportedFeatures>();
-    auto _value = kwargs["features"].cast<std::vector<FeatureName>>();
-    auto count = _value.size();
-    auto value = new FeatureName[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.features = value;
-    obj.featureCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::SupportedFeatures>();
+    {
+        auto py_list = handle.attr("features").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<FeatureName>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<FeatureName>();
+        }
+
+        obj.features = value;
+        obj.featureCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::SupportedWGSLLanguageFeatures* buildSupportedWGSLLanguageFeatures(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SupportedWGSLLanguageFeatures>();
-    auto _value = kwargs["features"].cast<std::vector<WGSLLanguageFeatureName>>();
-    auto count = _value.size();
-    auto value = new WGSLLanguageFeatureName[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.features = value;
-    obj.featureCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::SupportedWGSLLanguageFeatures>();
+    {
+        auto py_list = handle.attr("features").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<WGSLLanguageFeatureName>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<WGSLLanguageFeatureName>();
+        }
+
+        obj.features = value;
+        obj.featureCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::Extent2D* buildExtent2D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Extent2D>();
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Extent2D>();
+    {
+        auto value = handle.attr("width").cast<uint32_t>();
+        obj.width = value;
+    }
+    {
+        auto value = handle.attr("height").cast<uint32_t>();
+        obj.height = value;
+    }
+    return &obj;
 }
 
 pywgpu::Extent3D* buildExtent3D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Extent3D>();
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    auto value = handle.attr("depth_or_array_layers").cast<uint32_t>();
-    obj->depthOrArrayLayers = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Extent3D>();
+    {
+        auto value = handle.attr("width").cast<uint32_t>();
+        obj.width = value;
+    }
+    {
+        auto value = handle.attr("height").cast<uint32_t>();
+        obj.height = value;
+    }
+    {
+        auto value = handle.attr("depth_or_array_layers").cast<uint32_t>();
+        obj.depthOrArrayLayers = value;
+    }
+    return &obj;
 }
 
 pywgpu::ExternalTextureDescriptor* buildExternalTextureDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ExternalTextureDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("plane_0").cast<TextureView>();
-    obj->plane0 = value;
-    auto value = handle.attr("plane_1").cast<TextureView>();
-    obj->plane1 = value;
-    auto value = handle.attr("crop_origin").cast<Origin2D>();
-    obj->cropOrigin = value;
-    auto value = handle.attr("crop_size").cast<Extent2D>();
-    obj->cropSize = value;
-    auto value = handle.attr("apparent_size").cast<Extent2D>();
-    obj->apparentSize = value;
-    auto value = handle.attr("do_yuv_to_rgb_conversion_only").cast<Bool>();
-    obj->doYuvToRgbConversionOnly = value;
-    auto _value = kwargs["yuv_to_rgb_conversion_matrix"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.yuvToRgbConversionMatrix = value;
-    auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.srcTransferFunctionParameters = value;
-    auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.dstTransferFunctionParameters = value;
-    auto _value = kwargs["gamut_conversion_matrix"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.gamutConversionMatrix = value;
-    auto value = handle.attr("mirrored").cast<Bool>();
-    obj->mirrored = value;
-    auto value = handle.attr("rotation").cast<ExternalTextureRotation>();
-    obj->rotation = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ExternalTextureDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("plane_0").cast<TextureView>();
+        obj.plane0 = value;
+    }
+    {
+        auto value = handle.attr("plane_1").cast<TextureView>();
+        obj.plane1 = value;
+    }
+    {
+        auto value = handle.attr("crop_origin").cast<Origin2D>();
+        obj.cropOrigin = value;
+    }
+    {
+        auto value = handle.attr("crop_size").cast<Extent2D>();
+        obj.cropSize = value;
+    }
+    {
+        auto value = handle.attr("apparent_size").cast<Extent2D>();
+        obj.apparentSize = value;
+    }
+    {
+        auto value = handle.attr("do_yuv_to_rgb_conversion_only").cast<Bool>();
+        obj.doYuvToRgbConversionOnly = value;
+    }
+    {
+        auto py_list = handle.attr("yuv_to_rgb_conversion_matrix").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.yuvToRgbConversionMatrix = value;
+    }
+    {
+        auto py_list = handle.attr("src_transfer_function_parameters").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.srcTransferFunctionParameters = value;
+    }
+    {
+        auto py_list = handle.attr("dst_transfer_function_parameters").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.dstTransferFunctionParameters = value;
+    }
+    {
+        auto py_list = handle.attr("gamut_conversion_matrix").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<float>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<float>();
+        }
+
+        obj.gamutConversionMatrix = value;
+    }
+    {
+        auto value = handle.attr("mirrored").cast<Bool>();
+        obj.mirrored = value;
+    }
+    {
+        auto value = handle.attr("rotation").cast<ExternalTextureRotation>();
+        obj.rotation = value;
+    }
+    return &obj;
 }
-
-py::class_<SharedBufferMemoryProperties> _SharedBufferMemoryProperties(m, "SharedBufferMemoryProperties");
-registry.on(m, "SharedBufferMemoryProperties", _SharedBufferMemoryProperties);
-
-_SharedBufferMemoryProperties
-    .def_readonly("next_in_chain", &pywgpu::SharedBufferMemoryProperties::nextInChain)
-    .def_readonly("usage", &pywgpu::SharedBufferMemoryProperties::usage)
-    .def_readonly("size", &pywgpu::SharedBufferMemoryProperties::size)
-    .def(py::init<>())
-    ;
 
 pywgpu::SharedBufferMemoryDescriptor* buildSharedBufferMemoryDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedBufferMemoryDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedBufferMemoryDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
-py::class_<SharedTextureMemoryProperties> _SharedTextureMemoryProperties(m, "SharedTextureMemoryProperties");
-registry.on(m, "SharedTextureMemoryProperties", _SharedTextureMemoryProperties);
-
-_SharedTextureMemoryProperties
-    .def_readonly("next_in_chain", &pywgpu::SharedTextureMemoryProperties::nextInChain)
-    .def_readonly("usage", &pywgpu::SharedTextureMemoryProperties::usage)
-    .def_readonly("size", &pywgpu::SharedTextureMemoryProperties::size)
-    .def_readonly("format", &pywgpu::SharedTextureMemoryProperties::format)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedTextureMemoryAHardwareBufferProperties, ChainedStructOut> _SharedTextureMemoryAHardwareBufferProperties(m, "SharedTextureMemoryAHardwareBufferProperties");
-registry.on(m, "SharedTextureMemoryAHardwareBufferProperties", _SharedTextureMemoryAHardwareBufferProperties);
-
-_SharedTextureMemoryAHardwareBufferProperties
-    .def_readonly("next_in_chain", &pywgpu::SharedTextureMemoryAHardwareBufferProperties::nextInChain)
-    .def_readonly("y_cb_cr_info", &pywgpu::SharedTextureMemoryAHardwareBufferProperties::yCbCrInfo)
-    .def(py::init<>())
-    ;
-
 pywgpu::SharedTextureMemoryDescriptor* buildSharedTextureMemoryDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedBufferMemoryBeginAccessDescriptor* buildSharedBufferMemoryBeginAccessDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedBufferMemoryBeginAccessDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("initialized").cast<Bool>();
-    obj->initialized = value;
-    auto _value = kwargs["fences"].cast<std::vector<SharedFence>>();
-    auto count = _value.size();
-    auto value = new SharedFence[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.fences = value;
-    obj.fenceCount = count;
-    auto _value = kwargs["signaled_values"].cast<std::vector<uint64_t>>();
-    auto count = _value.size();
-    auto value = new uint64_t[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.signaledValues = value;
-    obj.fenceCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedBufferMemoryBeginAccessDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("initialized").cast<Bool>();
+        obj.initialized = value;
+    }
+    {
+        auto py_list = handle.attr("fences").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<SharedFence>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<SharedFence>();
+        }
+
+        obj.fences = value;
+        obj.fenceCount = count;
+    }
+    {
+        auto py_list = handle.attr("signaled_values").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<uint64_t>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<uint64_t>();
+        }
+
+        obj.signaledValues = value;
+        obj.fenceCount = count;
+    }
+    return &obj;
 }
 
-py::class_<SharedBufferMemoryEndAccessState> _SharedBufferMemoryEndAccessState(m, "SharedBufferMemoryEndAccessState");
-registry.on(m, "SharedBufferMemoryEndAccessState", _SharedBufferMemoryEndAccessState);
-
-_SharedBufferMemoryEndAccessState
-    .def_readonly("next_in_chain", &pywgpu::SharedBufferMemoryEndAccessState::nextInChain)
-    .def_readonly("initialized", &pywgpu::SharedBufferMemoryEndAccessState::initialized)
-    .def_readonly("fence_count", &pywgpu::SharedBufferMemoryEndAccessState::fenceCount)
-    .def_readonly("fences", &pywgpu::SharedBufferMemoryEndAccessState::fences)
-    .def_readonly("signaled_values", &pywgpu::SharedBufferMemoryEndAccessState::signaledValues)
-    .def(py::init<>())
-    ;
-
 pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor* buildSharedTextureMemoryVkDedicatedAllocationDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("dedicated_allocation").cast<Bool>();
-    obj->dedicatedAllocation = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("dedicated_allocation").cast<Bool>();
+        obj.dedicatedAllocation = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryAHardwareBufferDescriptor* buildSharedTextureMemoryAHardwareBufferDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryAHardwareBufferDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<void *>();
-    obj->handle = value;
-    auto value = handle.attr("use_external_format").cast<Bool>();
-    obj->useExternalFormat = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryAHardwareBufferDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("handle").cast<void *>();
+        obj.handle = value;
+    }
+    {
+        auto value = handle.attr("use_external_format").cast<Bool>();
+        obj.useExternalFormat = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryDmaBufPlane* buildSharedTextureMemoryDmaBufPlane(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDmaBufPlane>();
-    auto value = handle.attr("fd").cast<int>();
-    obj->fd = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("stride").cast<uint32_t>();
-    obj->stride = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryDmaBufPlane>();
+    {
+        auto value = handle.attr("fd").cast<int>();
+        obj.fd = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("stride").cast<uint32_t>();
+        obj.stride = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryDmaBufDescriptor* buildSharedTextureMemoryDmaBufDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDmaBufDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("size").cast<Extent3D>();
-    obj->size = value;
-    auto value = handle.attr("drm_format").cast<uint32_t>();
-    obj->drmFormat = value;
-    auto value = handle.attr("drm_modifier").cast<uint64_t>();
-    obj->drmModifier = value;
-    auto _value = kwargs["planes"].cast<std::vector<SharedTextureMemoryDmaBufPlane>>();
-    auto count = _value.size();
-    auto value = new SharedTextureMemoryDmaBufPlane[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.planes = value;
-    obj.planeCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryDmaBufDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("size").cast<Extent3D>();
+        obj.size = value;
+    }
+    {
+        auto value = handle.attr("drm_format").cast<uint32_t>();
+        obj.drmFormat = value;
+    }
+    {
+        auto value = handle.attr("drm_modifier").cast<uint64_t>();
+        obj.drmModifier = value;
+    }
+    {
+        auto py_list = handle.attr("planes").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<SharedTextureMemoryDmaBufPlane>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<SharedTextureMemoryDmaBufPlane>();
+        }
+
+        obj.planes = value;
+        obj.planeCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryOpaqueFDDescriptor* buildSharedTextureMemoryOpaqueFDDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryOpaqueFDDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("vk_image_create_info").cast<void const *>();
-    obj->vkImageCreateInfo = value;
-    auto value = handle.attr("memory_FD").cast<int>();
-    obj->memoryFD = value;
-    auto value = handle.attr("memory_type_index").cast<uint32_t>();
-    obj->memoryTypeIndex = value;
-    auto value = handle.attr("allocation_size").cast<uint64_t>();
-    obj->allocationSize = value;
-    auto value = handle.attr("dedicated_allocation").cast<Bool>();
-    obj->dedicatedAllocation = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryOpaqueFDDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("vk_image_create_info").cast<void const *>();
+        obj.vkImageCreateInfo = value;
+    }
+    {
+        auto value = handle.attr("memory_FD").cast<int>();
+        obj.memoryFD = value;
+    }
+    {
+        auto value = handle.attr("memory_type_index").cast<uint32_t>();
+        obj.memoryTypeIndex = value;
+    }
+    {
+        auto value = handle.attr("allocation_size").cast<uint64_t>();
+        obj.allocationSize = value;
+    }
+    {
+        auto value = handle.attr("dedicated_allocation").cast<Bool>();
+        obj.dedicatedAllocation = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryZirconHandleDescriptor* buildSharedTextureMemoryZirconHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryZirconHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("memory_FD").cast<uint32_t>();
-    obj->memoryFD = value;
-    auto value = handle.attr("allocation_size").cast<uint64_t>();
-    obj->allocationSize = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryZirconHandleDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("memory_FD").cast<uint32_t>();
+        obj.memoryFD = value;
+    }
+    {
+        auto value = handle.attr("allocation_size").cast<uint64_t>();
+        obj.allocationSize = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor* buildSharedTextureMemoryDXGISharedHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<void *>();
-    obj->handle = value;
-    auto value = handle.attr("use_keyed_mutex").cast<Bool>();
-    obj->useKeyedMutex = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("handle").cast<void *>();
+        obj.handle = value;
+    }
+    {
+        auto value = handle.attr("use_keyed_mutex").cast<Bool>();
+        obj.useKeyedMutex = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryIOSurfaceDescriptor* buildSharedTextureMemoryIOSurfaceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryIOSurfaceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("io_surface").cast<void *>();
-    obj->ioSurface = value;
-    auto value = handle.attr("allow_storage_binding").cast<Bool>();
-    obj->allowStorageBinding = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryIOSurfaceDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("io_surface").cast<void *>();
+        obj.ioSurface = value;
+    }
+    {
+        auto value = handle.attr("allow_storage_binding").cast<Bool>();
+        obj.allowStorageBinding = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryEGLImageDescriptor* buildSharedTextureMemoryEGLImageDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryEGLImageDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("image").cast<void *>();
-    obj->image = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryEGLImageDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("image").cast<void *>();
+        obj.image = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedTextureMemoryBeginAccessDescriptor* buildSharedTextureMemoryBeginAccessDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryBeginAccessDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("concurrent_read").cast<Bool>();
-    obj->concurrentRead = value;
-    auto value = handle.attr("initialized").cast<Bool>();
-    obj->initialized = value;
-    auto _value = kwargs["fences"].cast<std::vector<SharedFence>>();
-    auto count = _value.size();
-    auto value = new SharedFence[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.fences = value;
-    obj.fenceCount = count;
-    auto _value = kwargs["signaled_values"].cast<std::vector<uint64_t>>();
-    auto count = _value.size();
-    auto value = new uint64_t[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.signaledValues = value;
-    obj.fenceCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryBeginAccessDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("concurrent_read").cast<Bool>();
+        obj.concurrentRead = value;
+    }
+    {
+        auto value = handle.attr("initialized").cast<Bool>();
+        obj.initialized = value;
+    }
+    {
+        auto py_list = handle.attr("fences").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<SharedFence>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<SharedFence>();
+        }
+
+        obj.fences = value;
+        obj.fenceCount = count;
+    }
+    {
+        auto py_list = handle.attr("signaled_values").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<uint64_t>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<uint64_t>();
+        }
+
+        obj.signaledValues = value;
+        obj.fenceCount = count;
+    }
+    return &obj;
 }
-
-py::class_<SharedTextureMemoryEndAccessState> _SharedTextureMemoryEndAccessState(m, "SharedTextureMemoryEndAccessState");
-registry.on(m, "SharedTextureMemoryEndAccessState", _SharedTextureMemoryEndAccessState);
-
-_SharedTextureMemoryEndAccessState
-    .def_readonly("next_in_chain", &pywgpu::SharedTextureMemoryEndAccessState::nextInChain)
-    .def_readonly("initialized", &pywgpu::SharedTextureMemoryEndAccessState::initialized)
-    .def_readonly("fence_count", &pywgpu::SharedTextureMemoryEndAccessState::fenceCount)
-    .def_readonly("fences", &pywgpu::SharedTextureMemoryEndAccessState::fences)
-    .def_readonly("signaled_values", &pywgpu::SharedTextureMemoryEndAccessState::signaledValues)
-    .def(py::init<>())
-    ;
 
 pywgpu::SharedTextureMemoryVkImageLayoutBeginState* buildSharedTextureMemoryVkImageLayoutBeginState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryVkImageLayoutBeginState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("old_layout").cast<int32_t>();
-    obj->oldLayout = value;
-    auto value = handle.attr("new_layout").cast<int32_t>();
-    obj->newLayout = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryVkImageLayoutBeginState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("old_layout").cast<int32_t>();
+        obj.oldLayout = value;
+    }
+    {
+        auto value = handle.attr("new_layout").cast<int32_t>();
+        obj.newLayout = value;
+    }
+    return &obj;
 }
 
-py::class_<SharedTextureMemoryVkImageLayoutEndState, ChainedStructOut> _SharedTextureMemoryVkImageLayoutEndState(m, "SharedTextureMemoryVkImageLayoutEndState");
-registry.on(m, "SharedTextureMemoryVkImageLayoutEndState", _SharedTextureMemoryVkImageLayoutEndState);
-
-_SharedTextureMemoryVkImageLayoutEndState
-    .def_readonly("next_in_chain", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::nextInChain)
-    .def_readonly("old_layout", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::oldLayout)
-    .def_readonly("new_layout", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::newLayout)
-    .def(py::init<>())
-    ;
-
 pywgpu::SharedTextureMemoryD3DSwapchainBeginState* buildSharedTextureMemoryD3DSwapchainBeginState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryD3DSwapchainBeginState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("is_swapchain").cast<Bool>();
-    obj->isSwapchain = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedTextureMemoryD3DSwapchainBeginState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("is_swapchain").cast<Bool>();
+        obj.isSwapchain = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceDescriptor* buildSharedFenceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor* buildSharedFenceVkSemaphoreOpaqueFDDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<int>();
-    obj->handle = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("handle").cast<int>();
+        obj.handle = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceSyncFDDescriptor* buildSharedFenceSyncFDDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceSyncFDDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<int>();
-    obj->handle = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceSyncFDDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("handle").cast<int>();
+        obj.handle = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor* buildSharedFenceVkSemaphoreZirconHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<uint32_t>();
-    obj->handle = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("handle").cast<uint32_t>();
+        obj.handle = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceDXGISharedHandleDescriptor* buildSharedFenceDXGISharedHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceDXGISharedHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<void *>();
-    obj->handle = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceDXGISharedHandleDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("handle").cast<void *>();
+        obj.handle = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceMTLSharedEventDescriptor* buildSharedFenceMTLSharedEventDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceMTLSharedEventDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("shared_event").cast<void *>();
-    obj->sharedEvent = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceMTLSharedEventDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("shared_event").cast<void *>();
+        obj.sharedEvent = value;
+    }
+    return &obj;
 }
 
 pywgpu::SharedFenceEGLSyncDescriptor* buildSharedFenceEGLSyncDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceEGLSyncDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("sync").cast<void *>();
-    obj->sync = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SharedFenceEGLSyncDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("sync").cast<void *>();
+        obj.sync = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnFakeBufferOOMForTesting* buildDawnFakeBufferOOMForTesting(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnFakeBufferOOMForTesting>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("fake_OOM_at_wire_client_map").cast<Bool>();
-    obj->fakeOOMAtWireClientMap = value;
-    auto value = handle.attr("fake_OOM_at_native_map").cast<Bool>();
-    obj->fakeOOMAtNativeMap = value;
-    auto value = handle.attr("fake_OOM_at_device").cast<Bool>();
-    obj->fakeOOMAtDevice = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnFakeBufferOOMForTesting>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("fake_OOM_at_wire_client_map").cast<Bool>();
+        obj.fakeOOMAtWireClientMap = value;
+    }
+    {
+        auto value = handle.attr("fake_OOM_at_native_map").cast<Bool>();
+        obj.fakeOOMAtNativeMap = value;
+    }
+    {
+        auto value = handle.attr("fake_OOM_at_device").cast<Bool>();
+        obj.fakeOOMAtDevice = value;
+    }
+    return &obj;
 }
 
-py::class_<SharedFenceExportInfo> _SharedFenceExportInfo(m, "SharedFenceExportInfo");
-registry.on(m, "SharedFenceExportInfo", _SharedFenceExportInfo);
-
-_SharedFenceExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceExportInfo::nextInChain)
-    .def_readonly("type", &pywgpu::SharedFenceExportInfo::type)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedFenceVkSemaphoreOpaqueFDExportInfo, ChainedStructOut> _SharedFenceVkSemaphoreOpaqueFDExportInfo(m, "SharedFenceVkSemaphoreOpaqueFDExportInfo");
-registry.on(m, "SharedFenceVkSemaphoreOpaqueFDExportInfo", _SharedFenceVkSemaphoreOpaqueFDExportInfo);
-
-_SharedFenceVkSemaphoreOpaqueFDExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceVkSemaphoreOpaqueFDExportInfo::nextInChain)
-    .def_readonly("handle", &pywgpu::SharedFenceVkSemaphoreOpaqueFDExportInfo::handle)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedFenceSyncFDExportInfo, ChainedStructOut> _SharedFenceSyncFDExportInfo(m, "SharedFenceSyncFDExportInfo");
-registry.on(m, "SharedFenceSyncFDExportInfo", _SharedFenceSyncFDExportInfo);
-
-_SharedFenceSyncFDExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceSyncFDExportInfo::nextInChain)
-    .def_readonly("handle", &pywgpu::SharedFenceSyncFDExportInfo::handle)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedFenceVkSemaphoreZirconHandleExportInfo, ChainedStructOut> _SharedFenceVkSemaphoreZirconHandleExportInfo(m, "SharedFenceVkSemaphoreZirconHandleExportInfo");
-registry.on(m, "SharedFenceVkSemaphoreZirconHandleExportInfo", _SharedFenceVkSemaphoreZirconHandleExportInfo);
-
-_SharedFenceVkSemaphoreZirconHandleExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceVkSemaphoreZirconHandleExportInfo::nextInChain)
-    .def_readonly("handle", &pywgpu::SharedFenceVkSemaphoreZirconHandleExportInfo::handle)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedFenceDXGISharedHandleExportInfo, ChainedStructOut> _SharedFenceDXGISharedHandleExportInfo(m, "SharedFenceDXGISharedHandleExportInfo");
-registry.on(m, "SharedFenceDXGISharedHandleExportInfo", _SharedFenceDXGISharedHandleExportInfo);
-
-_SharedFenceDXGISharedHandleExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceDXGISharedHandleExportInfo::nextInChain)
-    .def_readonly("handle", &pywgpu::SharedFenceDXGISharedHandleExportInfo::handle)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedFenceMTLSharedEventExportInfo, ChainedStructOut> _SharedFenceMTLSharedEventExportInfo(m, "SharedFenceMTLSharedEventExportInfo");
-registry.on(m, "SharedFenceMTLSharedEventExportInfo", _SharedFenceMTLSharedEventExportInfo);
-
-_SharedFenceMTLSharedEventExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceMTLSharedEventExportInfo::nextInChain)
-    .def_readonly("shared_event", &pywgpu::SharedFenceMTLSharedEventExportInfo::sharedEvent)
-    .def(py::init<>())
-    ;
-
-py::class_<SharedFenceEGLSyncExportInfo, ChainedStructOut> _SharedFenceEGLSyncExportInfo(m, "SharedFenceEGLSyncExportInfo");
-registry.on(m, "SharedFenceEGLSyncExportInfo", _SharedFenceEGLSyncExportInfo);
-
-_SharedFenceEGLSyncExportInfo
-    .def_readonly("next_in_chain", &pywgpu::SharedFenceEGLSyncExportInfo::nextInChain)
-    .def_readonly("sync", &pywgpu::SharedFenceEGLSyncExportInfo::sync)
-    .def(py::init<>())
-    ;
-
-py::class_<DawnFormatCapabilities> _DawnFormatCapabilities(m, "DawnFormatCapabilities");
-registry.on(m, "DawnFormatCapabilities", _DawnFormatCapabilities);
-
-_DawnFormatCapabilities
-    .def_readonly("next_in_chain", &pywgpu::DawnFormatCapabilities::nextInChain)
-    .def(py::init<>())
-    ;
-
-py::class_<DawnDrmFormatCapabilities, ChainedStructOut> _DawnDrmFormatCapabilities(m, "DawnDrmFormatCapabilities");
-registry.on(m, "DawnDrmFormatCapabilities", _DawnDrmFormatCapabilities);
-
-_DawnDrmFormatCapabilities
-    .def_readonly("next_in_chain", &pywgpu::DawnDrmFormatCapabilities::nextInChain)
-    .def_readonly("properties_count", &pywgpu::DawnDrmFormatCapabilities::propertiesCount)
-    .def_readonly("properties", &pywgpu::DawnDrmFormatCapabilities::properties)
-    .def(py::init<>())
-    ;
-
 pywgpu::DawnDrmFormatProperties* buildDawnDrmFormatProperties(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnDrmFormatProperties>();
-    auto value = handle.attr("modifier").cast<uint64_t>();
-    obj->modifier = value;
-    auto value = handle.attr("modifier_plane_count").cast<uint32_t>();
-    obj->modifierPlaneCount = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnDrmFormatProperties>();
+    {
+        auto value = handle.attr("modifier").cast<uint64_t>();
+        obj.modifier = value;
+    }
+    {
+        auto value = handle.attr("modifier_plane_count").cast<uint32_t>();
+        obj.modifierPlaneCount = value;
+    }
+    return &obj;
 }
 
 pywgpu::TexelCopyBufferInfo* buildTexelCopyBufferInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TexelCopyBufferInfo>();
-    auto value = handle.attr("layout").cast<TexelCopyBufferLayout>();
-    obj->layout = value;
-    auto value = handle.attr("buffer").cast<Buffer>();
-    obj->buffer = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::TexelCopyBufferInfo>();
+    {
+        auto value = handle.attr("layout").cast<TexelCopyBufferLayout>();
+        obj.layout = value;
+    }
+    {
+        auto value = handle.attr("buffer").cast<Buffer>();
+        obj.buffer = value;
+    }
+    return &obj;
 }
 
 pywgpu::TexelCopyBufferLayout* buildTexelCopyBufferLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TexelCopyBufferLayout>();
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("bytes_per_row").cast<uint32_t>();
-    obj->bytesPerRow = value;
-    auto value = handle.attr("rows_per_image").cast<uint32_t>();
-    obj->rowsPerImage = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::TexelCopyBufferLayout>();
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("bytes_per_row").cast<uint32_t>();
+        obj.bytesPerRow = value;
+    }
+    {
+        auto value = handle.attr("rows_per_image").cast<uint32_t>();
+        obj.rowsPerImage = value;
+    }
+    return &obj;
 }
 
 pywgpu::TexelCopyTextureInfo* buildTexelCopyTextureInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TexelCopyTextureInfo>();
-    auto value = handle.attr("texture").cast<Texture>();
-    obj->texture = value;
-    auto value = handle.attr("mip_level").cast<uint32_t>();
-    obj->mipLevel = value;
-    auto value = handle.attr("origin").cast<Origin3D>();
-    obj->origin = value;
-    auto value = handle.attr("aspect").cast<TextureAspect>();
-    obj->aspect = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::TexelCopyTextureInfo>();
+    {
+        auto value = handle.attr("texture").cast<Texture>();
+        obj.texture = value;
+    }
+    {
+        auto value = handle.attr("mip_level").cast<uint32_t>();
+        obj.mipLevel = value;
+    }
+    {
+        auto value = handle.attr("origin").cast<Origin3D>();
+        obj.origin = value;
+    }
+    {
+        auto value = handle.attr("aspect").cast<TextureAspect>();
+        obj.aspect = value;
+    }
+    return &obj;
 }
 
 pywgpu::ImageCopyExternalTexture* buildImageCopyExternalTexture(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ImageCopyExternalTexture>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("external_texture").cast<ExternalTexture>();
-    obj->externalTexture = value;
-    auto value = handle.attr("origin").cast<Origin3D>();
-    obj->origin = value;
-    auto value = handle.attr("natural_size").cast<Extent2D>();
-    obj->naturalSize = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ImageCopyExternalTexture>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("external_texture").cast<ExternalTexture>();
+        obj.externalTexture = value;
+    }
+    {
+        auto value = handle.attr("origin").cast<Origin3D>();
+        obj.origin = value;
+    }
+    {
+        auto value = handle.attr("natural_size").cast<Extent2D>();
+        obj.naturalSize = value;
+    }
+    return &obj;
 }
 
 pywgpu::Future* buildFuture(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Future>();
-    auto value = handle.attr("id").cast<uint64_t>();
-    obj->id = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Future>();
+    {
+        auto value = handle.attr("id").cast<uint64_t>();
+        obj.id = value;
+    }
+    return &obj;
 }
 
 pywgpu::FutureWaitInfo* buildFutureWaitInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::FutureWaitInfo>();
-    auto value = handle.attr("future").cast<Future>();
-    obj->future = value;
-    auto value = handle.attr("completed").cast<Bool>();
-    obj->completed = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::FutureWaitInfo>();
+    {
+        auto value = handle.attr("future").cast<Future>();
+        obj.future = value;
+    }
+    {
+        auto value = handle.attr("completed").cast<Bool>();
+        obj.completed = value;
+    }
+    return &obj;
 }
 
 pywgpu::InstanceCapabilities* buildInstanceCapabilities(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::InstanceCapabilities>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStructOut *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("timed_wait_any_enable").cast<Bool>();
-    obj->timedWaitAnyEnable = value;
-    auto value = handle.attr("timed_wait_any_max_count").cast<size_t>();
-    obj->timedWaitAnyMaxCount = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::InstanceCapabilities>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStructOut *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("timed_wait_any_enable").cast<Bool>();
+        obj.timedWaitAnyEnable = value;
+    }
+    {
+        auto value = handle.attr("timed_wait_any_max_count").cast<size_t>();
+        obj.timedWaitAnyMaxCount = value;
+    }
+    return &obj;
 }
 
 pywgpu::InstanceDescriptor* buildInstanceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::InstanceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("capabilities").cast<InstanceCapabilities>();
-    obj->capabilities = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::InstanceDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("capabilities").cast<InstanceCapabilities>();
+        obj.capabilities = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnWireWGSLControl* buildDawnWireWGSLControl(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnWireWGSLControl>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("enable_experimental").cast<Bool>();
-    obj->enableExperimental = value;
-    auto value = handle.attr("enable_unsafe").cast<Bool>();
-    obj->enableUnsafe = value;
-    auto value = handle.attr("enable_testing").cast<Bool>();
-    obj->enableTesting = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnWireWGSLControl>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("enable_experimental").cast<Bool>();
+        obj.enableExperimental = value;
+    }
+    {
+        auto value = handle.attr("enable_unsafe").cast<Bool>();
+        obj.enableUnsafe = value;
+    }
+    {
+        auto value = handle.attr("enable_testing").cast<Bool>();
+        obj.enableTesting = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnInjectedInvalidSType* buildDawnInjectedInvalidSType(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnInjectedInvalidSType>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("invalid_s_type").cast<SType>();
-    obj->invalidSType = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnInjectedInvalidSType>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("invalid_s_type").cast<SType>();
+        obj.invalidSType = value;
+    }
+    return &obj;
 }
 
 pywgpu::VertexAttribute* buildVertexAttribute(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::VertexAttribute>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("format").cast<VertexFormat>();
-    obj->format = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("shader_location").cast<uint32_t>();
-    obj->shaderLocation = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::VertexAttribute>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("format").cast<VertexFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("shader_location").cast<uint32_t>();
+        obj.shaderLocation = value;
+    }
+    return &obj;
 }
 
 pywgpu::VertexBufferLayout* buildVertexBufferLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::VertexBufferLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("step_mode").cast<VertexStepMode>();
-    obj->stepMode = value;
-    auto value = handle.attr("array_stride").cast<uint64_t>();
-    obj->arrayStride = value;
-    auto _value = kwargs["attributes"].cast<std::vector<VertexAttribute>>();
-    auto count = _value.size();
-    auto value = new VertexAttribute[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.attributes = value;
-    obj.attributeCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::VertexBufferLayout>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("step_mode").cast<VertexStepMode>();
+        obj.stepMode = value;
+    }
+    {
+        auto value = handle.attr("array_stride").cast<uint64_t>();
+        obj.arrayStride = value;
+    }
+    {
+        auto py_list = handle.attr("attributes").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<VertexAttribute>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<VertexAttribute>();
+        }
+
+        obj.attributes = value;
+        obj.attributeCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::Origin3D* buildOrigin3D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Origin3D>();
-    auto value = handle.attr("x").cast<uint32_t>();
-    obj->x = value;
-    auto value = handle.attr("y").cast<uint32_t>();
-    obj->y = value;
-    auto value = handle.attr("z").cast<uint32_t>();
-    obj->z = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Origin3D>();
+    {
+        auto value = handle.attr("x").cast<uint32_t>();
+        obj.x = value;
+    }
+    {
+        auto value = handle.attr("y").cast<uint32_t>();
+        obj.y = value;
+    }
+    {
+        auto value = handle.attr("z").cast<uint32_t>();
+        obj.z = value;
+    }
+    return &obj;
 }
 
 pywgpu::Origin2D* buildOrigin2D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Origin2D>();
-    auto value = handle.attr("x").cast<uint32_t>();
-    obj->x = value;
-    auto value = handle.attr("y").cast<uint32_t>();
-    obj->y = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::Origin2D>();
+    {
+        auto value = handle.attr("x").cast<uint32_t>();
+        obj.x = value;
+    }
+    {
+        auto value = handle.attr("y").cast<uint32_t>();
+        obj.y = value;
+    }
+    return &obj;
 }
 
 pywgpu::PassTimestampWrites* buildPassTimestampWrites(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PassTimestampWrites>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("query_set").cast<QuerySet>();
-    obj->querySet = value;
-    auto value = handle.attr("beginning_of_pass_write_index").cast<uint32_t>();
-    obj->beginningOfPassWriteIndex = value;
-    auto value = handle.attr("end_of_pass_write_index").cast<uint32_t>();
-    obj->endOfPassWriteIndex = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::PassTimestampWrites>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("query_set").cast<QuerySet>();
+        obj.querySet = value;
+    }
+    {
+        auto value = handle.attr("beginning_of_pass_write_index").cast<uint32_t>();
+        obj.beginningOfPassWriteIndex = value;
+    }
+    {
+        auto value = handle.attr("end_of_pass_write_index").cast<uint32_t>();
+        obj.endOfPassWriteIndex = value;
+    }
+    return &obj;
 }
 
 pywgpu::PipelineLayoutDescriptor* buildPipelineLayoutDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PipelineLayoutDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["bind_group_layouts"].cast<std::vector<BindGroupLayout>>();
-    auto count = _value.size();
-    auto value = new BindGroupLayout[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.bindGroupLayouts = value;
-    obj.bindGroupLayoutCount = count;
-    auto value = handle.attr("immediate_data_range_byte_size").cast<uint32_t>();
-    obj->immediateDataRangeByteSize = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::PipelineLayoutDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto py_list = handle.attr("bind_group_layouts").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<BindGroupLayout>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<BindGroupLayout>();
+        }
+
+        obj.bindGroupLayouts = value;
+        obj.bindGroupLayoutCount = count;
+    }
+    {
+        auto value = handle.attr("immediate_data_range_byte_size").cast<uint32_t>();
+        obj.immediateDataRangeByteSize = value;
+    }
+    return &obj;
 }
 
 pywgpu::PipelineLayoutPixelLocalStorage* buildPipelineLayoutPixelLocalStorage(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PipelineLayoutPixelLocalStorage>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
-    obj->totalPixelLocalStorageSize = value;
-    auto _value = kwargs["storage_attachments"].cast<std::vector<PipelineLayoutStorageAttachment>>();
-    auto count = _value.size();
-    auto value = new PipelineLayoutStorageAttachment[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.storageAttachments = value;
-    obj.storageAttachmentCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::PipelineLayoutPixelLocalStorage>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
+        obj.totalPixelLocalStorageSize = value;
+    }
+    {
+        auto py_list = handle.attr("storage_attachments").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<PipelineLayoutStorageAttachment>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<PipelineLayoutStorageAttachment>();
+        }
+
+        obj.storageAttachments = value;
+        obj.storageAttachmentCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::PipelineLayoutStorageAttachment* buildPipelineLayoutStorageAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PipelineLayoutStorageAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::PipelineLayoutStorageAttachment>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    return &obj;
 }
 
 pywgpu::ComputeState* buildComputeState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ComputeState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("module").cast<ShaderModule>();
-    obj->module = value;
-    auto value = handle.attr("entry_point").cast<StringView>();
-    obj->entryPoint = value;
-    auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
-    auto count = _value.size();
-    auto value = new ConstantEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.constants = value;
-    obj.constantCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::ComputeState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("module").cast<ShaderModule>();
+        obj.module = value;
+    }
+    {
+        auto value = handle.attr("entry_point").cast<StringView>();
+        obj.entryPoint = value;
+    }
+    {
+        auto py_list = handle.attr("constants").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<ConstantEntry>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<ConstantEntry>();
+        }
+
+        obj.constants = value;
+        obj.constantCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::QuerySetDescriptor* buildQuerySetDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::QuerySetDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("type").cast<QueryType>();
-    obj->type = value;
-    auto value = handle.attr("count").cast<uint32_t>();
-    obj->count = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::QuerySetDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("type").cast<QueryType>();
+        obj.type = value;
+    }
+    {
+        auto value = handle.attr("count").cast<uint32_t>();
+        obj.count = value;
+    }
+    return &obj;
 }
 
 pywgpu::QueueDescriptor* buildQueueDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::QueueDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::QueueDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderBundleDescriptor* buildRenderBundleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderBundleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderBundleDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderBundleEncoderDescriptor* buildRenderBundleEncoderDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderBundleEncoderDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["color_formats"].cast<std::vector<TextureFormat>>();
-    auto count = _value.size();
-    auto value = new TextureFormat[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.colorFormats = value;
-    obj.colorFormatCount = count;
-    auto value = handle.attr("depth_stencil_format").cast<TextureFormat>();
-    obj->depthStencilFormat = value;
-    auto value = handle.attr("sample_count").cast<uint32_t>();
-    obj->sampleCount = value;
-    auto value = handle.attr("depth_read_only").cast<Bool>();
-    obj->depthReadOnly = value;
-    auto value = handle.attr("stencil_read_only").cast<Bool>();
-    obj->stencilReadOnly = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderBundleEncoderDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto py_list = handle.attr("color_formats").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<TextureFormat>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<TextureFormat>();
+        }
+
+        obj.colorFormats = value;
+        obj.colorFormatCount = count;
+    }
+    {
+        auto value = handle.attr("depth_stencil_format").cast<TextureFormat>();
+        obj.depthStencilFormat = value;
+    }
+    {
+        auto value = handle.attr("sample_count").cast<uint32_t>();
+        obj.sampleCount = value;
+    }
+    {
+        auto value = handle.attr("depth_read_only").cast<Bool>();
+        obj.depthReadOnly = value;
+    }
+    {
+        auto value = handle.attr("stencil_read_only").cast<Bool>();
+        obj.stencilReadOnly = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassColorAttachment* buildRenderPassColorAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassColorAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("view").cast<TextureView>();
-    obj->view = value;
-    auto value = handle.attr("depth_slice").cast<uint32_t>();
-    obj->depthSlice = value;
-    auto value = handle.attr("resolve_target").cast<TextureView>();
-    obj->resolveTarget = value;
-    auto value = handle.attr("load_op").cast<LoadOp>();
-    obj->loadOp = value;
-    auto value = handle.attr("store_op").cast<StoreOp>();
-    obj->storeOp = value;
-    auto value = handle.attr("clear_value").cast<Color>();
-    obj->clearValue = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassColorAttachment>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("view").cast<TextureView>();
+        obj.view = value;
+    }
+    {
+        auto value = handle.attr("depth_slice").cast<uint32_t>();
+        obj.depthSlice = value;
+    }
+    {
+        auto value = handle.attr("resolve_target").cast<TextureView>();
+        obj.resolveTarget = value;
+    }
+    {
+        auto value = handle.attr("load_op").cast<LoadOp>();
+        obj.loadOp = value;
+    }
+    {
+        auto value = handle.attr("store_op").cast<StoreOp>();
+        obj.storeOp = value;
+    }
+    {
+        auto value = handle.attr("clear_value").cast<Color>();
+        obj.clearValue = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled* buildDawnRenderPassColorAttachmentRenderToSingleSampled(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("implicit_sample_count").cast<uint32_t>();
-    obj->implicitSampleCount = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("implicit_sample_count").cast<uint32_t>();
+        obj.implicitSampleCount = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassDepthStencilAttachment* buildRenderPassDepthStencilAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassDepthStencilAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("view").cast<TextureView>();
-    obj->view = value;
-    auto value = handle.attr("depth_load_op").cast<LoadOp>();
-    obj->depthLoadOp = value;
-    auto value = handle.attr("depth_store_op").cast<StoreOp>();
-    obj->depthStoreOp = value;
-    auto value = handle.attr("depth_clear_value").cast<float>();
-    obj->depthClearValue = value;
-    auto value = handle.attr("depth_read_only").cast<Bool>();
-    obj->depthReadOnly = value;
-    auto value = handle.attr("stencil_load_op").cast<LoadOp>();
-    obj->stencilLoadOp = value;
-    auto value = handle.attr("stencil_store_op").cast<StoreOp>();
-    obj->stencilStoreOp = value;
-    auto value = handle.attr("stencil_clear_value").cast<uint32_t>();
-    obj->stencilClearValue = value;
-    auto value = handle.attr("stencil_read_only").cast<Bool>();
-    obj->stencilReadOnly = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassDepthStencilAttachment>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("view").cast<TextureView>();
+        obj.view = value;
+    }
+    {
+        auto value = handle.attr("depth_load_op").cast<LoadOp>();
+        obj.depthLoadOp = value;
+    }
+    {
+        auto value = handle.attr("depth_store_op").cast<StoreOp>();
+        obj.depthStoreOp = value;
+    }
+    {
+        auto value = handle.attr("depth_clear_value").cast<float>();
+        obj.depthClearValue = value;
+    }
+    {
+        auto value = handle.attr("depth_read_only").cast<Bool>();
+        obj.depthReadOnly = value;
+    }
+    {
+        auto value = handle.attr("stencil_load_op").cast<LoadOp>();
+        obj.stencilLoadOp = value;
+    }
+    {
+        auto value = handle.attr("stencil_store_op").cast<StoreOp>();
+        obj.stencilStoreOp = value;
+    }
+    {
+        auto value = handle.attr("stencil_clear_value").cast<uint32_t>();
+        obj.stencilClearValue = value;
+    }
+    {
+        auto value = handle.attr("stencil_read_only").cast<Bool>();
+        obj.stencilReadOnly = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassDescriptor* buildRenderPassDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["color_attachments"].cast<std::vector<RenderPassColorAttachment>>();
-    auto count = _value.size();
-    auto value = new RenderPassColorAttachment[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.colorAttachments = value;
-    obj.colorAttachmentCount = count;
-    auto value = handle.attr("depth_stencil_attachment").cast<RenderPassDepthStencilAttachment const *>();
-    obj->depthStencilAttachment = value;
-    auto value = handle.attr("occlusion_query_set").cast<QuerySet>();
-    obj->occlusionQuerySet = value;
-    auto value = handle.attr("timestamp_writes").cast<PassTimestampWrites const *>();
-    obj->timestampWrites = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto py_list = handle.attr("color_attachments").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<RenderPassColorAttachment>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<RenderPassColorAttachment>();
+        }
+
+        obj.colorAttachments = value;
+        obj.colorAttachmentCount = count;
+    }
+    {
+        auto value = handle.attr("depth_stencil_attachment").cast<RenderPassDepthStencilAttachment const *>();
+        obj.depthStencilAttachment = value;
+    }
+    {
+        auto value = handle.attr("occlusion_query_set").cast<QuerySet>();
+        obj.occlusionQuerySet = value;
+    }
+    {
+        auto value = handle.attr("timestamp_writes").cast<PassTimestampWrites const *>();
+        obj.timestampWrites = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassMaxDrawCount* buildRenderPassMaxDrawCount(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassMaxDrawCount>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("max_draw_count").cast<uint64_t>();
-    obj->maxDrawCount = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassMaxDrawCount>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("max_draw_count").cast<uint64_t>();
+        obj.maxDrawCount = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassDescriptorExpandResolveRect* buildRenderPassDescriptorExpandResolveRect(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassDescriptorExpandResolveRect>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("x").cast<uint32_t>();
-    obj->x = value;
-    auto value = handle.attr("y").cast<uint32_t>();
-    obj->y = value;
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassDescriptorExpandResolveRect>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("x").cast<uint32_t>();
+        obj.x = value;
+    }
+    {
+        auto value = handle.attr("y").cast<uint32_t>();
+        obj.y = value;
+    }
+    {
+        auto value = handle.attr("width").cast<uint32_t>();
+        obj.width = value;
+    }
+    {
+        auto value = handle.attr("height").cast<uint32_t>();
+        obj.height = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassPixelLocalStorage* buildRenderPassPixelLocalStorage(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassPixelLocalStorage>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
-    obj->totalPixelLocalStorageSize = value;
-    auto _value = kwargs["storage_attachments"].cast<std::vector<RenderPassStorageAttachment>>();
-    auto count = _value.size();
-    auto value = new RenderPassStorageAttachment[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.storageAttachments = value;
-    obj.storageAttachmentCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassPixelLocalStorage>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
+        obj.totalPixelLocalStorageSize = value;
+    }
+    {
+        auto py_list = handle.attr("storage_attachments").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<RenderPassStorageAttachment>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<RenderPassStorageAttachment>();
+        }
+
+        obj.storageAttachments = value;
+        obj.storageAttachmentCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPassStorageAttachment* buildRenderPassStorageAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassStorageAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("storage").cast<TextureView>();
-    obj->storage = value;
-    auto value = handle.attr("load_op").cast<LoadOp>();
-    obj->loadOp = value;
-    auto value = handle.attr("store_op").cast<StoreOp>();
-    obj->storeOp = value;
-    auto value = handle.attr("clear_value").cast<Color>();
-    obj->clearValue = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPassStorageAttachment>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("offset").cast<uint64_t>();
+        obj.offset = value;
+    }
+    {
+        auto value = handle.attr("storage").cast<TextureView>();
+        obj.storage = value;
+    }
+    {
+        auto value = handle.attr("load_op").cast<LoadOp>();
+        obj.loadOp = value;
+    }
+    {
+        auto value = handle.attr("store_op").cast<StoreOp>();
+        obj.storeOp = value;
+    }
+    {
+        auto value = handle.attr("clear_value").cast<Color>();
+        obj.clearValue = value;
+    }
+    return &obj;
 }
 
 pywgpu::VertexState* buildVertexState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::VertexState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("module").cast<ShaderModule>();
-    obj->module = value;
-    auto value = handle.attr("entry_point").cast<StringView>();
-    obj->entryPoint = value;
-    auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
-    auto count = _value.size();
-    auto value = new ConstantEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.constants = value;
-    obj.constantCount = count;
-    auto _value = kwargs["buffers"].cast<std::vector<VertexBufferLayout>>();
-    auto count = _value.size();
-    auto value = new VertexBufferLayout[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.buffers = value;
-    obj.bufferCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::VertexState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("module").cast<ShaderModule>();
+        obj.module = value;
+    }
+    {
+        auto value = handle.attr("entry_point").cast<StringView>();
+        obj.entryPoint = value;
+    }
+    {
+        auto py_list = handle.attr("constants").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<ConstantEntry>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<ConstantEntry>();
+        }
+
+        obj.constants = value;
+        obj.constantCount = count;
+    }
+    {
+        auto py_list = handle.attr("buffers").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<VertexBufferLayout>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<VertexBufferLayout>();
+        }
+
+        obj.buffers = value;
+        obj.bufferCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::PrimitiveState* buildPrimitiveState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PrimitiveState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("topology").cast<PrimitiveTopology>();
-    obj->topology = value;
-    auto value = handle.attr("strip_index_format").cast<IndexFormat>();
-    obj->stripIndexFormat = value;
-    auto value = handle.attr("front_face").cast<FrontFace>();
-    obj->frontFace = value;
-    auto value = handle.attr("cull_mode").cast<CullMode>();
-    obj->cullMode = value;
-    auto value = handle.attr("unclipped_depth").cast<Bool>();
-    obj->unclippedDepth = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::PrimitiveState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("topology").cast<PrimitiveTopology>();
+        obj.topology = value;
+    }
+    {
+        auto value = handle.attr("strip_index_format").cast<IndexFormat>();
+        obj.stripIndexFormat = value;
+    }
+    {
+        auto value = handle.attr("front_face").cast<FrontFace>();
+        obj.frontFace = value;
+    }
+    {
+        auto value = handle.attr("cull_mode").cast<CullMode>();
+        obj.cullMode = value;
+    }
+    {
+        auto value = handle.attr("unclipped_depth").cast<Bool>();
+        obj.unclippedDepth = value;
+    }
+    return &obj;
 }
 
 pywgpu::DepthStencilState* buildDepthStencilState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DepthStencilState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("depth_write_enabled").cast<OptionalBool>();
-    obj->depthWriteEnabled = value;
-    auto value = handle.attr("depth_compare").cast<CompareFunction>();
-    obj->depthCompare = value;
-    auto value = handle.attr("stencil_front").cast<StencilFaceState>();
-    obj->stencilFront = value;
-    auto value = handle.attr("stencil_back").cast<StencilFaceState>();
-    obj->stencilBack = value;
-    auto value = handle.attr("stencil_read_mask").cast<uint32_t>();
-    obj->stencilReadMask = value;
-    auto value = handle.attr("stencil_write_mask").cast<uint32_t>();
-    obj->stencilWriteMask = value;
-    auto value = handle.attr("depth_bias").cast<int32_t>();
-    obj->depthBias = value;
-    auto value = handle.attr("depth_bias_slope_scale").cast<float>();
-    obj->depthBiasSlopeScale = value;
-    auto value = handle.attr("depth_bias_clamp").cast<float>();
-    obj->depthBiasClamp = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DepthStencilState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("depth_write_enabled").cast<OptionalBool>();
+        obj.depthWriteEnabled = value;
+    }
+    {
+        auto value = handle.attr("depth_compare").cast<CompareFunction>();
+        obj.depthCompare = value;
+    }
+    {
+        auto value = handle.attr("stencil_front").cast<StencilFaceState>();
+        obj.stencilFront = value;
+    }
+    {
+        auto value = handle.attr("stencil_back").cast<StencilFaceState>();
+        obj.stencilBack = value;
+    }
+    {
+        auto value = handle.attr("stencil_read_mask").cast<uint32_t>();
+        obj.stencilReadMask = value;
+    }
+    {
+        auto value = handle.attr("stencil_write_mask").cast<uint32_t>();
+        obj.stencilWriteMask = value;
+    }
+    {
+        auto value = handle.attr("depth_bias").cast<int32_t>();
+        obj.depthBias = value;
+    }
+    {
+        auto value = handle.attr("depth_bias_slope_scale").cast<float>();
+        obj.depthBiasSlopeScale = value;
+    }
+    {
+        auto value = handle.attr("depth_bias_clamp").cast<float>();
+        obj.depthBiasClamp = value;
+    }
+    return &obj;
 }
 
 pywgpu::MultisampleState* buildMultisampleState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::MultisampleState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("count").cast<uint32_t>();
-    obj->count = value;
-    auto value = handle.attr("mask").cast<uint32_t>();
-    obj->mask = value;
-    auto value = handle.attr("alpha_to_coverage_enabled").cast<Bool>();
-    obj->alphaToCoverageEnabled = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::MultisampleState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("count").cast<uint32_t>();
+        obj.count = value;
+    }
+    {
+        auto value = handle.attr("mask").cast<uint32_t>();
+        obj.mask = value;
+    }
+    {
+        auto value = handle.attr("alpha_to_coverage_enabled").cast<Bool>();
+        obj.alphaToCoverageEnabled = value;
+    }
+    return &obj;
 }
 
 pywgpu::FragmentState* buildFragmentState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::FragmentState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("module").cast<ShaderModule>();
-    obj->module = value;
-    auto value = handle.attr("entry_point").cast<StringView>();
-    obj->entryPoint = value;
-    auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
-    auto count = _value.size();
-    auto value = new ConstantEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.constants = value;
-    obj.constantCount = count;
-    auto _value = kwargs["targets"].cast<std::vector<ColorTargetState>>();
-    auto count = _value.size();
-    auto value = new ColorTargetState[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.targets = value;
-    obj.targetCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::FragmentState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("module").cast<ShaderModule>();
+        obj.module = value;
+    }
+    {
+        auto value = handle.attr("entry_point").cast<StringView>();
+        obj.entryPoint = value;
+    }
+    {
+        auto py_list = handle.attr("constants").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<ConstantEntry>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<ConstantEntry>();
+        }
+
+        obj.constants = value;
+        obj.constantCount = count;
+    }
+    {
+        auto py_list = handle.attr("targets").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<ColorTargetState>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<ColorTargetState>();
+        }
+
+        obj.targets = value;
+        obj.targetCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::ColorTargetState* buildColorTargetState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ColorTargetState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("blend").cast<BlendState const *>();
-    obj->blend = value;
-    auto value = handle.attr("write_mask").cast<ColorWriteMask>();
-    obj->writeMask = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ColorTargetState>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("blend").cast<BlendState const *>();
+        obj.blend = value;
+    }
+    {
+        auto value = handle.attr("write_mask").cast<ColorWriteMask>();
+        obj.writeMask = value;
+    }
+    return &obj;
 }
 
 pywgpu::ColorTargetStateExpandResolveTextureDawn* buildColorTargetStateExpandResolveTextureDawn(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ColorTargetStateExpandResolveTextureDawn>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("enabled").cast<Bool>();
-    obj->enabled = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ColorTargetStateExpandResolveTextureDawn>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("enabled").cast<Bool>();
+        obj.enabled = value;
+    }
+    return &obj;
 }
 
 pywgpu::BlendState* buildBlendState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BlendState>();
-    auto value = handle.attr("color").cast<BlendComponent>();
-    obj->color = value;
-    auto value = handle.attr("alpha").cast<BlendComponent>();
-    obj->alpha = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::BlendState>();
+    {
+        auto value = handle.attr("color").cast<BlendComponent>();
+        obj.color = value;
+    }
+    {
+        auto value = handle.attr("alpha").cast<BlendComponent>();
+        obj.alpha = value;
+    }
+    return &obj;
 }
 
 pywgpu::RenderPipelineDescriptor* buildRenderPipelineDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPipelineDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("layout").cast<PipelineLayout>();
-    obj->layout = value;
-    auto value = handle.attr("vertex").cast<VertexState>();
-    obj->vertex = value;
-    auto value = handle.attr("primitive").cast<PrimitiveState>();
-    obj->primitive = value;
-    auto value = handle.attr("depth_stencil").cast<DepthStencilState const *>();
-    obj->depthStencil = value;
-    auto value = handle.attr("multisample").cast<MultisampleState>();
-    obj->multisample = value;
-    auto value = handle.attr("fragment").cast<FragmentState const *>();
-    obj->fragment = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::RenderPipelineDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("layout").cast<PipelineLayout>();
+        obj.layout = value;
+    }
+    {
+        auto value = handle.attr("vertex").cast<VertexState>();
+        obj.vertex = value;
+    }
+    {
+        auto value = handle.attr("primitive").cast<PrimitiveState>();
+        obj.primitive = value;
+    }
+    {
+        auto value = handle.attr("depth_stencil").cast<DepthStencilState const *>();
+        obj.depthStencil = value;
+    }
+    {
+        auto value = handle.attr("multisample").cast<MultisampleState>();
+        obj.multisample = value;
+    }
+    {
+        auto value = handle.attr("fragment").cast<FragmentState const *>();
+        obj.fragment = value;
+    }
+    return &obj;
 }
 
 pywgpu::SamplerDescriptor* buildSamplerDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SamplerDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("address_mode_u").cast<AddressMode>();
-    obj->addressModeU = value;
-    auto value = handle.attr("address_mode_v").cast<AddressMode>();
-    obj->addressModeV = value;
-    auto value = handle.attr("address_mode_w").cast<AddressMode>();
-    obj->addressModeW = value;
-    auto value = handle.attr("mag_filter").cast<FilterMode>();
-    obj->magFilter = value;
-    auto value = handle.attr("min_filter").cast<FilterMode>();
-    obj->minFilter = value;
-    auto value = handle.attr("mipmap_filter").cast<MipmapFilterMode>();
-    obj->mipmapFilter = value;
-    auto value = handle.attr("lod_min_clamp").cast<float>();
-    obj->lodMinClamp = value;
-    auto value = handle.attr("lod_max_clamp").cast<float>();
-    obj->lodMaxClamp = value;
-    auto value = handle.attr("compare").cast<CompareFunction>();
-    obj->compare = value;
-    auto value = handle.attr("max_anisotropy").cast<uint16_t>();
-    obj->maxAnisotropy = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SamplerDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("address_mode_u").cast<AddressMode>();
+        obj.addressModeU = value;
+    }
+    {
+        auto value = handle.attr("address_mode_v").cast<AddressMode>();
+        obj.addressModeV = value;
+    }
+    {
+        auto value = handle.attr("address_mode_w").cast<AddressMode>();
+        obj.addressModeW = value;
+    }
+    {
+        auto value = handle.attr("mag_filter").cast<FilterMode>();
+        obj.magFilter = value;
+    }
+    {
+        auto value = handle.attr("min_filter").cast<FilterMode>();
+        obj.minFilter = value;
+    }
+    {
+        auto value = handle.attr("mipmap_filter").cast<MipmapFilterMode>();
+        obj.mipmapFilter = value;
+    }
+    {
+        auto value = handle.attr("lod_min_clamp").cast<float>();
+        obj.lodMinClamp = value;
+    }
+    {
+        auto value = handle.attr("lod_max_clamp").cast<float>();
+        obj.lodMaxClamp = value;
+    }
+    {
+        auto value = handle.attr("compare").cast<CompareFunction>();
+        obj.compare = value;
+    }
+    {
+        auto value = handle.attr("max_anisotropy").cast<uint16_t>();
+        obj.maxAnisotropy = value;
+    }
+    return &obj;
 }
 
 pywgpu::ShaderModuleDescriptor* buildShaderModuleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderModuleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ShaderModuleDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::ShaderSourceSPIRV* buildShaderSourceSPIRV(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderSourceSPIRV>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto _value = kwargs["code"].cast<std::vector<uint32_t>>();
-    auto count = _value.size();
-    auto value = new uint32_t[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.code = value;
-    obj.codeSize = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::ShaderSourceSPIRV>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto py_list = handle.attr("code").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<uint32_t>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<uint32_t>();
+        }
+
+        obj.code = value;
+        obj.codeSize = count;
+    }
+    return &obj;
 }
 
 pywgpu::ShaderSourceWGSL* buildShaderSourceWGSL(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderSourceWGSL>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("code").cast<StringView>();
-    obj->code = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ShaderSourceWGSL>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("code").cast<StringView>();
+        obj.code = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnShaderModuleSPIRVOptionsDescriptor* buildDawnShaderModuleSPIRVOptionsDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnShaderModuleSPIRVOptionsDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("allow_non_uniform_derivatives").cast<Bool>();
-    obj->allowNonUniformDerivatives = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnShaderModuleSPIRVOptionsDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("allow_non_uniform_derivatives").cast<Bool>();
+        obj.allowNonUniformDerivatives = value;
+    }
+    return &obj;
 }
 
 pywgpu::ShaderModuleCompilationOptions* buildShaderModuleCompilationOptions(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderModuleCompilationOptions>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("strict_math").cast<Bool>();
-    obj->strictMath = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::ShaderModuleCompilationOptions>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("strict_math").cast<Bool>();
+        obj.strictMath = value;
+    }
+    return &obj;
 }
 
 pywgpu::StencilFaceState* buildStencilFaceState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::StencilFaceState>();
-    auto value = handle.attr("compare").cast<CompareFunction>();
-    obj->compare = value;
-    auto value = handle.attr("fail_op").cast<StencilOperation>();
-    obj->failOp = value;
-    auto value = handle.attr("depth_fail_op").cast<StencilOperation>();
-    obj->depthFailOp = value;
-    auto value = handle.attr("pass_op").cast<StencilOperation>();
-    obj->passOp = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::StencilFaceState>();
+    {
+        auto value = handle.attr("compare").cast<CompareFunction>();
+        obj.compare = value;
+    }
+    {
+        auto value = handle.attr("fail_op").cast<StencilOperation>();
+        obj.failOp = value;
+    }
+    {
+        auto value = handle.attr("depth_fail_op").cast<StencilOperation>();
+        obj.depthFailOp = value;
+    }
+    {
+        auto value = handle.attr("pass_op").cast<StencilOperation>();
+        obj.passOp = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceDescriptor* buildSurfaceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceSourceAndroidNativeWindow* buildSurfaceSourceAndroidNativeWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceAndroidNativeWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("window").cast<void *>();
-    obj->window = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceSourceAndroidNativeWindow>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("window").cast<void *>();
+        obj.window = value;
+    }
+    return &obj;
 }
 
 pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector* buildEmscriptenSurfaceSourceCanvasHTMLSelector(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("selector").cast<StringView>();
-    obj->selector = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("selector").cast<StringView>();
+        obj.selector = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceSourceMetalLayer* buildSurfaceSourceMetalLayer(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceMetalLayer>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("layer").cast<void *>();
-    obj->layer = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceSourceMetalLayer>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("layer").cast<void *>();
+        obj.layer = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceSourceWindowsHWND* buildSurfaceSourceWindowsHWND(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceWindowsHWND>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("hinstance").cast<void *>();
-    obj->hinstance = value;
-    auto value = handle.attr("hwnd").cast<void *>();
-    obj->hwnd = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceSourceWindowsHWND>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("hinstance").cast<void *>();
+        obj.hinstance = value;
+    }
+    {
+        auto value = handle.attr("hwnd").cast<void *>();
+        obj.hwnd = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceSourceXCBWindow* buildSurfaceSourceXCBWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceXCBWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("connection").cast<void *>();
-    obj->connection = value;
-    auto value = handle.attr("window").cast<uint32_t>();
-    obj->window = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceSourceXCBWindow>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("connection").cast<void *>();
+        obj.connection = value;
+    }
+    {
+        auto value = handle.attr("window").cast<uint32_t>();
+        obj.window = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceSourceXlibWindow* buildSurfaceSourceXlibWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceXlibWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("display").cast<void *>();
-    obj->display = value;
-    auto value = handle.attr("window").cast<uint64_t>();
-    obj->window = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceSourceXlibWindow>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("display").cast<void *>();
+        obj.display = value;
+    }
+    {
+        auto value = handle.attr("window").cast<uint64_t>();
+        obj.window = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceSourceWaylandSurface* buildSurfaceSourceWaylandSurface(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceWaylandSurface>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("display").cast<void *>();
-    obj->display = value;
-    auto value = handle.attr("surface").cast<void *>();
-    obj->surface = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceSourceWaylandSurface>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("display").cast<void *>();
+        obj.display = value;
+    }
+    {
+        auto value = handle.attr("surface").cast<void *>();
+        obj.surface = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceDescriptorFromWindowsCoreWindow* buildSurfaceDescriptorFromWindowsCoreWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptorFromWindowsCoreWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("core_window").cast<void *>();
-    obj->coreWindow = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceDescriptorFromWindowsCoreWindow>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("core_window").cast<void *>();
+        obj.coreWindow = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel* buildSurfaceDescriptorFromWindowsUWPSwapChainPanel(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("swap_chain_panel").cast<void *>();
-    obj->swapChainPanel = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("swap_chain_panel").cast<void *>();
+        obj.swapChainPanel = value;
+    }
+    return &obj;
 }
 
 pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel* buildSurfaceDescriptorFromWindowsWinUISwapChainPanel(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("swap_chain_panel").cast<void *>();
-    obj->swapChainPanel = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("swap_chain_panel").cast<void *>();
+        obj.swapChainPanel = value;
+    }
+    return &obj;
 }
 
-py::class_<SurfaceTexture> _SurfaceTexture(m, "SurfaceTexture");
-registry.on(m, "SurfaceTexture", _SurfaceTexture);
-
-_SurfaceTexture
-    .def_readonly("next_in_chain", &pywgpu::SurfaceTexture::nextInChain)
-    .def_readonly("texture", &pywgpu::SurfaceTexture::texture)
-    .def_readonly("status", &pywgpu::SurfaceTexture::status)
-    .def(py::init<>())
-    ;
-
 pywgpu::TextureDescriptor* buildTextureDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("usage").cast<TextureUsage>();
-    obj->usage = value;
-    auto value = handle.attr("dimension").cast<TextureDimension>();
-    obj->dimension = value;
-    auto value = handle.attr("size").cast<Extent3D>();
-    obj->size = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("mip_level_count").cast<uint32_t>();
-    obj->mipLevelCount = value;
-    auto value = handle.attr("sample_count").cast<uint32_t>();
-    obj->sampleCount = value;
-    auto _value = kwargs["view_formats"].cast<std::vector<TextureFormat>>();
-    auto count = _value.size();
-    auto value = new TextureFormat[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.viewFormats = value;
-    obj.viewFormatCount = count;
-    return obj;
+    auto& obj = *la.make<pywgpu::TextureDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("usage").cast<TextureUsage>();
+        obj.usage = value;
+    }
+    {
+        auto value = handle.attr("dimension").cast<TextureDimension>();
+        obj.dimension = value;
+    }
+    {
+        auto value = handle.attr("size").cast<Extent3D>();
+        obj.size = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("mip_level_count").cast<uint32_t>();
+        obj.mipLevelCount = value;
+    }
+    {
+        auto value = handle.attr("sample_count").cast<uint32_t>();
+        obj.sampleCount = value;
+    }
+    {
+        auto py_list = handle.attr("view_formats").cast<py::sequence>();
+        uint32_t count = static_cast<uint32_t>(py_list.size());
+        auto* value = la.alloc_array<TextureFormat>(count);
+        for (uint32_t i = 0; i < count; ++i) {
+            value[i] = py_list[i].cast<TextureFormat>();
+        }
+
+        obj.viewFormats = value;
+        obj.viewFormatCount = count;
+    }
+    return &obj;
 }
 
 pywgpu::TextureBindingViewDimensionDescriptor* buildTextureBindingViewDimensionDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureBindingViewDimensionDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("texture_binding_view_dimension").cast<TextureViewDimension>();
-    obj->textureBindingViewDimension = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::TextureBindingViewDimensionDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("texture_binding_view_dimension").cast<TextureViewDimension>();
+        obj.textureBindingViewDimension = value;
+    }
+    return &obj;
 }
 
 pywgpu::TextureViewDescriptor* buildTextureViewDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureViewDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("dimension").cast<TextureViewDimension>();
-    obj->dimension = value;
-    auto value = handle.attr("base_mip_level").cast<uint32_t>();
-    obj->baseMipLevel = value;
-    auto value = handle.attr("mip_level_count").cast<uint32_t>();
-    obj->mipLevelCount = value;
-    auto value = handle.attr("base_array_layer").cast<uint32_t>();
-    obj->baseArrayLayer = value;
-    auto value = handle.attr("array_layer_count").cast<uint32_t>();
-    obj->arrayLayerCount = value;
-    auto value = handle.attr("aspect").cast<TextureAspect>();
-    obj->aspect = value;
-    auto value = handle.attr("usage").cast<TextureUsage>();
-    obj->usage = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::TextureViewDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("label").cast<StringView>();
+        obj.label = value;
+    }
+    {
+        auto value = handle.attr("format").cast<TextureFormat>();
+        obj.format = value;
+    }
+    {
+        auto value = handle.attr("dimension").cast<TextureViewDimension>();
+        obj.dimension = value;
+    }
+    {
+        auto value = handle.attr("base_mip_level").cast<uint32_t>();
+        obj.baseMipLevel = value;
+    }
+    {
+        auto value = handle.attr("mip_level_count").cast<uint32_t>();
+        obj.mipLevelCount = value;
+    }
+    {
+        auto value = handle.attr("base_array_layer").cast<uint32_t>();
+        obj.baseArrayLayer = value;
+    }
+    {
+        auto value = handle.attr("array_layer_count").cast<uint32_t>();
+        obj.arrayLayerCount = value;
+    }
+    {
+        auto value = handle.attr("aspect").cast<TextureAspect>();
+        obj.aspect = value;
+    }
+    {
+        auto value = handle.attr("usage").cast<TextureUsage>();
+        obj.usage = value;
+    }
+    return &obj;
 }
 
 pywgpu::YCbCrVkDescriptor* buildYCbCrVkDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::YCbCrVkDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("vk_format").cast<uint32_t>();
-    obj->vkFormat = value;
-    auto value = handle.attr("vk_y_cb_cr_model").cast<uint32_t>();
-    obj->vkYCbCrModel = value;
-    auto value = handle.attr("vk_y_cb_cr_range").cast<uint32_t>();
-    obj->vkYCbCrRange = value;
-    auto value = handle.attr("vk_component_swizzle_red").cast<uint32_t>();
-    obj->vkComponentSwizzleRed = value;
-    auto value = handle.attr("vk_component_swizzle_green").cast<uint32_t>();
-    obj->vkComponentSwizzleGreen = value;
-    auto value = handle.attr("vk_component_swizzle_blue").cast<uint32_t>();
-    obj->vkComponentSwizzleBlue = value;
-    auto value = handle.attr("vk_component_swizzle_alpha").cast<uint32_t>();
-    obj->vkComponentSwizzleAlpha = value;
-    auto value = handle.attr("vk_x_chroma_offset").cast<uint32_t>();
-    obj->vkXChromaOffset = value;
-    auto value = handle.attr("vk_y_chroma_offset").cast<uint32_t>();
-    obj->vkYChromaOffset = value;
-    auto value = handle.attr("vk_chroma_filter").cast<FilterMode>();
-    obj->vkChromaFilter = value;
-    auto value = handle.attr("force_explicit_reconstruction").cast<Bool>();
-    obj->forceExplicitReconstruction = value;
-    auto value = handle.attr("external_format").cast<uint64_t>();
-    obj->externalFormat = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::YCbCrVkDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("vk_format").cast<uint32_t>();
+        obj.vkFormat = value;
+    }
+    {
+        auto value = handle.attr("vk_y_cb_cr_model").cast<uint32_t>();
+        obj.vkYCbCrModel = value;
+    }
+    {
+        auto value = handle.attr("vk_y_cb_cr_range").cast<uint32_t>();
+        obj.vkYCbCrRange = value;
+    }
+    {
+        auto value = handle.attr("vk_component_swizzle_red").cast<uint32_t>();
+        obj.vkComponentSwizzleRed = value;
+    }
+    {
+        auto value = handle.attr("vk_component_swizzle_green").cast<uint32_t>();
+        obj.vkComponentSwizzleGreen = value;
+    }
+    {
+        auto value = handle.attr("vk_component_swizzle_blue").cast<uint32_t>();
+        obj.vkComponentSwizzleBlue = value;
+    }
+    {
+        auto value = handle.attr("vk_component_swizzle_alpha").cast<uint32_t>();
+        obj.vkComponentSwizzleAlpha = value;
+    }
+    {
+        auto value = handle.attr("vk_x_chroma_offset").cast<uint32_t>();
+        obj.vkXChromaOffset = value;
+    }
+    {
+        auto value = handle.attr("vk_y_chroma_offset").cast<uint32_t>();
+        obj.vkYChromaOffset = value;
+    }
+    {
+        auto value = handle.attr("vk_chroma_filter").cast<FilterMode>();
+        obj.vkChromaFilter = value;
+    }
+    {
+        auto value = handle.attr("force_explicit_reconstruction").cast<Bool>();
+        obj.forceExplicitReconstruction = value;
+    }
+    {
+        auto value = handle.attr("external_format").cast<uint64_t>();
+        obj.externalFormat = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnTextureInternalUsageDescriptor* buildDawnTextureInternalUsageDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnTextureInternalUsageDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("internal_usage").cast<TextureUsage>();
-    obj->internalUsage = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnTextureInternalUsageDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("internal_usage").cast<TextureUsage>();
+        obj.internalUsage = value;
+    }
+    return &obj;
 }
 
 pywgpu::DawnEncoderInternalUsageDescriptor* buildDawnEncoderInternalUsageDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnEncoderInternalUsageDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("use_internal_usages").cast<Bool>();
-    obj->useInternalUsages = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnEncoderInternalUsageDescriptor>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("use_internal_usages").cast<Bool>();
+        obj.useInternalUsages = value;
+    }
+    return &obj;
 }
-
-py::class_<DawnAdapterPropertiesPowerPreference, ChainedStructOut> _DawnAdapterPropertiesPowerPreference(m, "DawnAdapterPropertiesPowerPreference");
-registry.on(m, "DawnAdapterPropertiesPowerPreference", _DawnAdapterPropertiesPowerPreference);
-
-_DawnAdapterPropertiesPowerPreference
-    .def_readonly("next_in_chain", &pywgpu::DawnAdapterPropertiesPowerPreference::nextInChain)
-    .def_readonly("power_preference", &pywgpu::DawnAdapterPropertiesPowerPreference::powerPreference)
-    .def(py::init<>())
-    ;
 
 pywgpu::MemoryHeapInfo* buildMemoryHeapInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::MemoryHeapInfo>();
-    auto value = handle.attr("properties").cast<HeapProperty>();
-    obj->properties = value;
-    auto value = handle.attr("size").cast<uint64_t>();
-    obj->size = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::MemoryHeapInfo>();
+    {
+        auto value = handle.attr("properties").cast<HeapProperty>();
+        obj.properties = value;
+    }
+    {
+        auto value = handle.attr("size").cast<uint64_t>();
+        obj.size = value;
+    }
+    return &obj;
 }
 
-py::class_<AdapterPropertiesMemoryHeaps, ChainedStructOut> _AdapterPropertiesMemoryHeaps(m, "AdapterPropertiesMemoryHeaps");
-registry.on(m, "AdapterPropertiesMemoryHeaps", _AdapterPropertiesMemoryHeaps);
-
-_AdapterPropertiesMemoryHeaps
-    .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesMemoryHeaps::nextInChain)
-    .def_readonly("heap_count", &pywgpu::AdapterPropertiesMemoryHeaps::heapCount)
-    .def_readonly("heap_info", &pywgpu::AdapterPropertiesMemoryHeaps::heapInfo)
-    .def(py::init<>())
-    ;
-
-py::class_<AdapterPropertiesD3D, ChainedStructOut> _AdapterPropertiesD3D(m, "AdapterPropertiesD3D");
-registry.on(m, "AdapterPropertiesD3D", _AdapterPropertiesD3D);
-
-_AdapterPropertiesD3D
-    .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesD3D::nextInChain)
-    .def_readonly("shader_model", &pywgpu::AdapterPropertiesD3D::shaderModel)
-    .def(py::init<>())
-    ;
-
-py::class_<AdapterPropertiesVk, ChainedStructOut> _AdapterPropertiesVk(m, "AdapterPropertiesVk");
-registry.on(m, "AdapterPropertiesVk", _AdapterPropertiesVk);
-
-_AdapterPropertiesVk
-    .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesVk::nextInChain)
-    .def_readonly("driver_version", &pywgpu::AdapterPropertiesVk::driverVersion)
-    .def(py::init<>())
-    ;
-
 pywgpu::DawnBufferDescriptorErrorInfoFromWireClient* buildDawnBufferDescriptorErrorInfoFromWireClient(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnBufferDescriptorErrorInfoFromWireClient>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("out_of_memory").cast<Bool>();
-    obj->outOfMemory = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::DawnBufferDescriptorErrorInfoFromWireClient>();
+    {
+        auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
+        obj.nextInChain = value;
+    }
+    {
+        auto value = handle.attr("out_of_memory").cast<Bool>();
+        obj.outOfMemory = value;
+    }
+    return &obj;
 }
 
 pywgpu::SubgroupMatrixConfig* buildSubgroupMatrixConfig(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SubgroupMatrixConfig>();
-    auto value = handle.attr("component_type").cast<SubgroupMatrixComponentType>();
-    obj->componentType = value;
-    auto value = handle.attr("result_component_type").cast<SubgroupMatrixComponentType>();
-    obj->resultComponentType = value;
-    auto value = handle.attr("M").cast<uint32_t>();
-    obj->M = value;
-    auto value = handle.attr("N").cast<uint32_t>();
-    obj->N = value;
-    auto value = handle.attr("K").cast<uint32_t>();
-    obj->K = value;
-    return obj;
+    auto& obj = *la.make<pywgpu::SubgroupMatrixConfig>();
+    {
+        auto value = handle.attr("component_type").cast<SubgroupMatrixComponentType>();
+        obj.componentType = value;
+    }
+    {
+        auto value = handle.attr("result_component_type").cast<SubgroupMatrixComponentType>();
+        obj.resultComponentType = value;
+    }
+    {
+        auto value = handle.attr("M").cast<uint32_t>();
+        obj.M = value;
+    }
+    {
+        auto value = handle.attr("N").cast<uint32_t>();
+        obj.N = value;
+    }
+    {
+        auto value = handle.attr("K").cast<uint32_t>();
+        obj.K = value;
+    }
+    return &obj;
 }
-
-py::class_<AdapterPropertiesSubgroupMatrixConfigs, ChainedStructOut> _AdapterPropertiesSubgroupMatrixConfigs(m, "AdapterPropertiesSubgroupMatrixConfigs");
-registry.on(m, "AdapterPropertiesSubgroupMatrixConfigs", _AdapterPropertiesSubgroupMatrixConfigs);
-
-_AdapterPropertiesSubgroupMatrixConfigs
-    .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesSubgroupMatrixConfigs::nextInChain)
-    .def_readonly("config_count", &pywgpu::AdapterPropertiesSubgroupMatrixConfigs::configCount)
-    .def_readonly("configs", &pywgpu::AdapterPropertiesSubgroupMatrixConfigs::configs)
-    .def(py::init<>())
-    ;
 
 
 
@@ -2864,23 +3712,6 @@ py::enum_<HeapProperty>(m, "HeapProperty", py::arithmetic())
     }, py::is_operator());
     
 
-pywgpu::RequestAdapterOptions* buildRequestAdapterOptions(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RequestAdapterOptions>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("feature_level").cast<FeatureLevel>();
-    obj->featureLevel = value;
-    auto value = handle.attr("power_preference").cast<PowerPreference>();
-    obj->powerPreference = value;
-    auto value = handle.attr("force_fallback_adapter").cast<Bool>();
-    obj->forceFallbackAdapter = value;
-    auto value = handle.attr("backend_type").cast<BackendType>();
-    obj->backendType = value;
-    auto value = handle.attr("compatible_surface").cast<Surface>();
-    obj->compatibleSurface = value;
-    return obj;
-}
-
 py::class_<AdapterInfo> _AdapterInfo(m, "AdapterInfo");
 registry.on(m, "AdapterInfo", _AdapterInfo);
 
@@ -2899,136 +3730,6 @@ _AdapterInfo
     .def(py::init<>())
     ;
 
-pywgpu::DeviceDescriptor* buildDeviceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DeviceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["required_features"].cast<std::vector<FeatureName>>();
-    auto count = _value.size();
-    auto value = new FeatureName[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.requiredFeatures = value;
-    obj.requiredFeatureCount = count;
-    auto value = handle.attr("required_limits").cast<Limits const *>();
-    obj->requiredLimits = value;
-    auto value = handle.attr("default_queue").cast<QueueDescriptor>();
-    obj->defaultQueue = value;
-    auto value = handle.attr("device_lost_callback_info").cast<DeviceLostCallbackInfo>();
-    obj->deviceLostCallbackInfo = value;
-    auto value = handle.attr("uncaptured_error_callback_info").cast<UncapturedErrorCallbackInfo>();
-    obj->uncapturedErrorCallbackInfo = value;
-    return obj;
-}
-
-pywgpu::DawnTogglesDescriptor* buildDawnTogglesDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnTogglesDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    return obj;
-}
-
-pywgpu::DawnCacheDeviceDescriptor* buildDawnCacheDeviceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnCacheDeviceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("isolation_key").cast<StringView>();
-    obj->isolationKey = value;
-    auto value = handle.attr("function_userdata").cast<void *>();
-    obj->functionUserdata = value;
-    return obj;
-}
-
-pywgpu::DawnWGSLBlocklist* buildDawnWGSLBlocklist(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnWGSLBlocklist>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    return obj;
-}
-
-pywgpu::BindGroupEntry* buildBindGroupEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("binding").cast<uint32_t>();
-    obj->binding = value;
-    auto value = handle.attr("buffer").cast<Buffer>();
-    obj->buffer = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("size").cast<uint64_t>();
-    obj->size = value;
-    auto value = handle.attr("sampler").cast<Sampler>();
-    obj->sampler = value;
-    auto value = handle.attr("texture_view").cast<TextureView>();
-    obj->textureView = value;
-    return obj;
-}
-
-pywgpu::BindGroupDescriptor* buildBindGroupDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("layout").cast<BindGroupLayout>();
-    obj->layout = value;
-    auto _value = kwargs["entries"].cast<std::vector<BindGroupEntry>>();
-    auto count = _value.size();
-    auto value = new BindGroupEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.entries = value;
-    obj.entryCount = count;
-    return obj;
-}
-
-pywgpu::BufferBindingLayout* buildBufferBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BufferBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("type").cast<BufferBindingType>();
-    obj->type = value;
-    auto value = handle.attr("has_dynamic_offset").cast<Bool>();
-    obj->hasDynamicOffset = value;
-    auto value = handle.attr("min_binding_size").cast<uint64_t>();
-    obj->minBindingSize = value;
-    return obj;
-}
-
-pywgpu::SamplerBindingLayout* buildSamplerBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SamplerBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("type").cast<SamplerBindingType>();
-    obj->type = value;
-    return obj;
-}
-
-pywgpu::StaticSamplerBindingLayout* buildStaticSamplerBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::StaticSamplerBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("sampler").cast<Sampler>();
-    obj->sampler = value;
-    auto value = handle.attr("sampled_texture_binding").cast<uint32_t>();
-    obj->sampledTextureBinding = value;
-    return obj;
-}
-
-pywgpu::TextureBindingLayout* buildTextureBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("sample_type").cast<TextureSampleType>();
-    obj->sampleType = value;
-    auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
-    obj->viewDimension = value;
-    auto value = handle.attr("multisampled").cast<Bool>();
-    obj->multisampled = value;
-    return obj;
-}
-
 py::class_<SurfaceCapabilities> _SurfaceCapabilities(m, "SurfaceCapabilities");
 registry.on(m, "SurfaceCapabilities", _SurfaceCapabilities);
 
@@ -3043,360 +3744,6 @@ _SurfaceCapabilities
     .def_readonly("alpha_modes", &pywgpu::SurfaceCapabilities::alphaModes)
     .def(py::init<>())
     ;
-
-pywgpu::SurfaceConfiguration* buildSurfaceConfiguration(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceConfiguration>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("device").cast<Device>();
-    obj->device = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("usage").cast<TextureUsage>();
-    obj->usage = value;
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    auto _value = kwargs["view_formats"].cast<std::vector<TextureFormat>>();
-    auto count = _value.size();
-    auto value = new TextureFormat[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.viewFormats = value;
-    obj.viewFormatCount = count;
-    auto value = handle.attr("alpha_mode").cast<CompositeAlphaMode>();
-    obj->alphaMode = value;
-    auto value = handle.attr("present_mode").cast<PresentMode>();
-    obj->presentMode = value;
-    return obj;
-}
-
-pywgpu::ExternalTextureBindingEntry* buildExternalTextureBindingEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ExternalTextureBindingEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("external_texture").cast<ExternalTexture>();
-    obj->externalTexture = value;
-    return obj;
-}
-
-pywgpu::ExternalTextureBindingLayout* buildExternalTextureBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ExternalTextureBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    return obj;
-}
-
-pywgpu::StorageTextureBindingLayout* buildStorageTextureBindingLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::StorageTextureBindingLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("access").cast<StorageTextureAccess>();
-    obj->access = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
-    obj->viewDimension = value;
-    return obj;
-}
-
-pywgpu::BindGroupLayoutEntry* buildBindGroupLayoutEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupLayoutEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("binding").cast<uint32_t>();
-    obj->binding = value;
-    auto value = handle.attr("visibility").cast<ShaderStage>();
-    obj->visibility = value;
-    auto value = handle.attr("buffer").cast<BufferBindingLayout>();
-    obj->buffer = value;
-    auto value = handle.attr("sampler").cast<SamplerBindingLayout>();
-    obj->sampler = value;
-    auto value = handle.attr("texture").cast<TextureBindingLayout>();
-    obj->texture = value;
-    auto value = handle.attr("storage_texture").cast<StorageTextureBindingLayout>();
-    obj->storageTexture = value;
-    return obj;
-}
-
-pywgpu::BindGroupLayoutDescriptor* buildBindGroupLayoutDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BindGroupLayoutDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["entries"].cast<std::vector<BindGroupLayoutEntry>>();
-    auto count = _value.size();
-    auto value = new BindGroupLayoutEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.entries = value;
-    obj.entryCount = count;
-    return obj;
-}
-
-pywgpu::BlendComponent* buildBlendComponent(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BlendComponent>();
-    auto value = handle.attr("operation").cast<BlendOperation>();
-    obj->operation = value;
-    auto value = handle.attr("src_factor").cast<BlendFactor>();
-    obj->srcFactor = value;
-    auto value = handle.attr("dst_factor").cast<BlendFactor>();
-    obj->dstFactor = value;
-    return obj;
-}
-
-pywgpu::BufferDescriptor* buildBufferDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BufferDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("usage").cast<BufferUsage>();
-    obj->usage = value;
-    auto value = handle.attr("size").cast<uint64_t>();
-    obj->size = value;
-    auto value = handle.attr("mapped_at_creation").cast<Bool>();
-    obj->mappedAtCreation = value;
-    return obj;
-}
-
-pywgpu::BufferHostMappedPointer* buildBufferHostMappedPointer(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BufferHostMappedPointer>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("pointer").cast<void *>();
-    obj->pointer = value;
-    auto value = handle.attr("userdata").cast<void *>();
-    obj->userdata = value;
-    return obj;
-}
-
-pywgpu::Color* buildColor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Color>();
-    auto value = handle.attr("r").cast<double>();
-    obj->r = value;
-    auto value = handle.attr("g").cast<double>();
-    obj->g = value;
-    auto value = handle.attr("b").cast<double>();
-    obj->b = value;
-    auto value = handle.attr("a").cast<double>();
-    obj->a = value;
-    return obj;
-}
-
-pywgpu::ConstantEntry* buildConstantEntry(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ConstantEntry>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("key").cast<StringView>();
-    obj->key = value;
-    auto value = handle.attr("value").cast<double>();
-    obj->value = value;
-    return obj;
-}
-
-pywgpu::CommandBufferDescriptor* buildCommandBufferDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CommandBufferDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::CommandEncoderDescriptor* buildCommandEncoderDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CommandEncoderDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::CompilationInfo* buildCompilationInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CompilationInfo>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto _value = kwargs["messages"].cast<std::vector<CompilationMessage>>();
-    auto count = _value.size();
-    auto value = new CompilationMessage[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.messages = value;
-    obj.messageCount = count;
-    return obj;
-}
-
-pywgpu::CompilationMessage* buildCompilationMessage(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CompilationMessage>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("message").cast<StringView>();
-    obj->message = value;
-    auto value = handle.attr("type").cast<CompilationMessageType>();
-    obj->type = value;
-    auto value = handle.attr("line_num").cast<uint64_t>();
-    obj->lineNum = value;
-    auto value = handle.attr("line_pos").cast<uint64_t>();
-    obj->linePos = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("length").cast<uint64_t>();
-    obj->length = value;
-    return obj;
-}
-
-pywgpu::DawnCompilationMessageUtf16* buildDawnCompilationMessageUtf16(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnCompilationMessageUtf16>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("line_pos").cast<uint64_t>();
-    obj->linePos = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("length").cast<uint64_t>();
-    obj->length = value;
-    return obj;
-}
-
-pywgpu::ComputePassDescriptor* buildComputePassDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ComputePassDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("timestamp_writes").cast<PassTimestampWrites const *>();
-    obj->timestampWrites = value;
-    return obj;
-}
-
-pywgpu::ComputePipelineDescriptor* buildComputePipelineDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ComputePipelineDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("layout").cast<PipelineLayout>();
-    obj->layout = value;
-    auto value = handle.attr("compute").cast<ComputeState>();
-    obj->compute = value;
-    return obj;
-}
-
-pywgpu::CopyTextureForBrowserOptions* buildCopyTextureForBrowserOptions(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::CopyTextureForBrowserOptions>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("flip_y").cast<Bool>();
-    obj->flipY = value;
-    auto value = handle.attr("needs_color_space_conversion").cast<Bool>();
-    obj->needsColorSpaceConversion = value;
-    auto value = handle.attr("src_alpha_mode").cast<AlphaMode>();
-    obj->srcAlphaMode = value;
-    auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.srcTransferFunctionParameters = value;
-    auto _value = kwargs["conversion_matrix"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.conversionMatrix = value;
-    auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.dstTransferFunctionParameters = value;
-    auto value = handle.attr("dst_alpha_mode").cast<AlphaMode>();
-    obj->dstAlphaMode = value;
-    auto value = handle.attr("internal_usage").cast<Bool>();
-    obj->internalUsage = value;
-    return obj;
-}
-
-pywgpu::AHardwareBufferProperties* buildAHardwareBufferProperties(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::AHardwareBufferProperties>();
-    auto value = handle.attr("y_cb_cr_info").cast<YCbCrVkDescriptor>();
-    obj->yCbCrInfo = value;
-    return obj;
-}
-
-pywgpu::Limits* buildLimits(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Limits>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStructOut *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("max_texture_dimension_1D").cast<uint32_t>();
-    obj->maxTextureDimension1D = value;
-    auto value = handle.attr("max_texture_dimension_2D").cast<uint32_t>();
-    obj->maxTextureDimension2D = value;
-    auto value = handle.attr("max_texture_dimension_3D").cast<uint32_t>();
-    obj->maxTextureDimension3D = value;
-    auto value = handle.attr("max_texture_array_layers").cast<uint32_t>();
-    obj->maxTextureArrayLayers = value;
-    auto value = handle.attr("max_bind_groups").cast<uint32_t>();
-    obj->maxBindGroups = value;
-    auto value = handle.attr("max_bind_groups_plus_vertex_buffers").cast<uint32_t>();
-    obj->maxBindGroupsPlusVertexBuffers = value;
-    auto value = handle.attr("max_bindings_per_bind_group").cast<uint32_t>();
-    obj->maxBindingsPerBindGroup = value;
-    auto value = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout").cast<uint32_t>();
-    obj->maxDynamicUniformBuffersPerPipelineLayout = value;
-    auto value = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout").cast<uint32_t>();
-    obj->maxDynamicStorageBuffersPerPipelineLayout = value;
-    auto value = handle.attr("max_sampled_textures_per_shader_stage").cast<uint32_t>();
-    obj->maxSampledTexturesPerShaderStage = value;
-    auto value = handle.attr("max_samplers_per_shader_stage").cast<uint32_t>();
-    obj->maxSamplersPerShaderStage = value;
-    auto value = handle.attr("max_storage_buffers_per_shader_stage").cast<uint32_t>();
-    obj->maxStorageBuffersPerShaderStage = value;
-    auto value = handle.attr("max_storage_textures_per_shader_stage").cast<uint32_t>();
-    obj->maxStorageTexturesPerShaderStage = value;
-    auto value = handle.attr("max_uniform_buffers_per_shader_stage").cast<uint32_t>();
-    obj->maxUniformBuffersPerShaderStage = value;
-    auto value = handle.attr("max_uniform_buffer_binding_size").cast<uint64_t>();
-    obj->maxUniformBufferBindingSize = value;
-    auto value = handle.attr("max_storage_buffer_binding_size").cast<uint64_t>();
-    obj->maxStorageBufferBindingSize = value;
-    auto value = handle.attr("min_uniform_buffer_offset_alignment").cast<uint32_t>();
-    obj->minUniformBufferOffsetAlignment = value;
-    auto value = handle.attr("min_storage_buffer_offset_alignment").cast<uint32_t>();
-    obj->minStorageBufferOffsetAlignment = value;
-    auto value = handle.attr("max_vertex_buffers").cast<uint32_t>();
-    obj->maxVertexBuffers = value;
-    auto value = handle.attr("max_buffer_size").cast<uint64_t>();
-    obj->maxBufferSize = value;
-    auto value = handle.attr("max_vertex_attributes").cast<uint32_t>();
-    obj->maxVertexAttributes = value;
-    auto value = handle.attr("max_vertex_buffer_array_stride").cast<uint32_t>();
-    obj->maxVertexBufferArrayStride = value;
-    auto value = handle.attr("max_inter_stage_shader_variables").cast<uint32_t>();
-    obj->maxInterStageShaderVariables = value;
-    auto value = handle.attr("max_color_attachments").cast<uint32_t>();
-    obj->maxColorAttachments = value;
-    auto value = handle.attr("max_color_attachment_bytes_per_sample").cast<uint32_t>();
-    obj->maxColorAttachmentBytesPerSample = value;
-    auto value = handle.attr("max_compute_workgroup_storage_size").cast<uint32_t>();
-    obj->maxComputeWorkgroupStorageSize = value;
-    auto value = handle.attr("max_compute_invocations_per_workgroup").cast<uint32_t>();
-    obj->maxComputeInvocationsPerWorkgroup = value;
-    auto value = handle.attr("max_compute_workgroup_size_x").cast<uint32_t>();
-    obj->maxComputeWorkgroupSizeX = value;
-    auto value = handle.attr("max_compute_workgroup_size_y").cast<uint32_t>();
-    obj->maxComputeWorkgroupSizeY = value;
-    auto value = handle.attr("max_compute_workgroup_size_z").cast<uint32_t>();
-    obj->maxComputeWorkgroupSizeZ = value;
-    auto value = handle.attr("max_compute_workgroups_per_dimension").cast<uint32_t>();
-    obj->maxComputeWorkgroupsPerDimension = value;
-    auto value = handle.attr("max_storage_buffers_in_vertex_stage").cast<uint32_t>();
-    obj->maxStorageBuffersInVertexStage = value;
-    auto value = handle.attr("max_storage_textures_in_vertex_stage").cast<uint32_t>();
-    obj->maxStorageTexturesInVertexStage = value;
-    auto value = handle.attr("max_storage_buffers_in_fragment_stage").cast<uint32_t>();
-    obj->maxStorageBuffersInFragmentStage = value;
-    auto value = handle.attr("max_storage_textures_in_fragment_stage").cast<uint32_t>();
-    obj->maxStorageTexturesInFragmentStage = value;
-    return obj;
-}
 
 py::class_<AdapterPropertiesSubgroups, ChainedStructOut> _AdapterPropertiesSubgroups(m, "AdapterPropertiesSubgroups");
 registry.on(m, "AdapterPropertiesSubgroups", _AdapterPropertiesSubgroups);
@@ -3426,93 +3773,6 @@ _DawnTexelCopyBufferRowAlignmentLimits
     .def(py::init<>())
     ;
 
-pywgpu::SupportedFeatures* buildSupportedFeatures(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SupportedFeatures>();
-    auto _value = kwargs["features"].cast<std::vector<FeatureName>>();
-    auto count = _value.size();
-    auto value = new FeatureName[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.features = value;
-    obj.featureCount = count;
-    return obj;
-}
-
-pywgpu::SupportedWGSLLanguageFeatures* buildSupportedWGSLLanguageFeatures(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SupportedWGSLLanguageFeatures>();
-    auto _value = kwargs["features"].cast<std::vector<WGSLLanguageFeatureName>>();
-    auto count = _value.size();
-    auto value = new WGSLLanguageFeatureName[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.features = value;
-    obj.featureCount = count;
-    return obj;
-}
-
-pywgpu::Extent2D* buildExtent2D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Extent2D>();
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    return obj;
-}
-
-pywgpu::Extent3D* buildExtent3D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Extent3D>();
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    auto value = handle.attr("depth_or_array_layers").cast<uint32_t>();
-    obj->depthOrArrayLayers = value;
-    return obj;
-}
-
-pywgpu::ExternalTextureDescriptor* buildExternalTextureDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ExternalTextureDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("plane_0").cast<TextureView>();
-    obj->plane0 = value;
-    auto value = handle.attr("plane_1").cast<TextureView>();
-    obj->plane1 = value;
-    auto value = handle.attr("crop_origin").cast<Origin2D>();
-    obj->cropOrigin = value;
-    auto value = handle.attr("crop_size").cast<Extent2D>();
-    obj->cropSize = value;
-    auto value = handle.attr("apparent_size").cast<Extent2D>();
-    obj->apparentSize = value;
-    auto value = handle.attr("do_yuv_to_rgb_conversion_only").cast<Bool>();
-    obj->doYuvToRgbConversionOnly = value;
-    auto _value = kwargs["yuv_to_rgb_conversion_matrix"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.yuvToRgbConversionMatrix = value;
-    auto _value = kwargs["src_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.srcTransferFunctionParameters = value;
-    auto _value = kwargs["dst_transfer_function_parameters"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.dstTransferFunctionParameters = value;
-    auto _value = kwargs["gamut_conversion_matrix"].cast<std::vector<float>>();
-    auto count = _value.size();
-    auto value = new float[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.gamutConversionMatrix = value;
-    auto value = handle.attr("mirrored").cast<Bool>();
-    obj->mirrored = value;
-    auto value = handle.attr("rotation").cast<ExternalTextureRotation>();
-    obj->rotation = value;
-    return obj;
-}
-
 py::class_<SharedBufferMemoryProperties> _SharedBufferMemoryProperties(m, "SharedBufferMemoryProperties");
 registry.on(m, "SharedBufferMemoryProperties", _SharedBufferMemoryProperties);
 
@@ -3522,15 +3782,6 @@ _SharedBufferMemoryProperties
     .def_readonly("size", &pywgpu::SharedBufferMemoryProperties::size)
     .def(py::init<>())
     ;
-
-pywgpu::SharedBufferMemoryDescriptor* buildSharedBufferMemoryDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedBufferMemoryDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
 
 py::class_<SharedTextureMemoryProperties> _SharedTextureMemoryProperties(m, "SharedTextureMemoryProperties");
 registry.on(m, "SharedTextureMemoryProperties", _SharedTextureMemoryProperties);
@@ -3552,36 +3803,6 @@ _SharedTextureMemoryAHardwareBufferProperties
     .def(py::init<>())
     ;
 
-pywgpu::SharedTextureMemoryDescriptor* buildSharedTextureMemoryDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::SharedBufferMemoryBeginAccessDescriptor* buildSharedBufferMemoryBeginAccessDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedBufferMemoryBeginAccessDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("initialized").cast<Bool>();
-    obj->initialized = value;
-    auto _value = kwargs["fences"].cast<std::vector<SharedFence>>();
-    auto count = _value.size();
-    auto value = new SharedFence[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.fences = value;
-    obj.fenceCount = count;
-    auto _value = kwargs["signaled_values"].cast<std::vector<uint64_t>>();
-    auto count = _value.size();
-    auto value = new uint64_t[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.signaledValues = value;
-    obj.fenceCount = count;
-    return obj;
-}
-
 py::class_<SharedBufferMemoryEndAccessState> _SharedBufferMemoryEndAccessState(m, "SharedBufferMemoryEndAccessState");
 registry.on(m, "SharedBufferMemoryEndAccessState", _SharedBufferMemoryEndAccessState);
 
@@ -3593,138 +3814,6 @@ _SharedBufferMemoryEndAccessState
     .def_readonly("signaled_values", &pywgpu::SharedBufferMemoryEndAccessState::signaledValues)
     .def(py::init<>())
     ;
-
-pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor* buildSharedTextureMemoryVkDedicatedAllocationDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("dedicated_allocation").cast<Bool>();
-    obj->dedicatedAllocation = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryAHardwareBufferDescriptor* buildSharedTextureMemoryAHardwareBufferDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryAHardwareBufferDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<void *>();
-    obj->handle = value;
-    auto value = handle.attr("use_external_format").cast<Bool>();
-    obj->useExternalFormat = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryDmaBufPlane* buildSharedTextureMemoryDmaBufPlane(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDmaBufPlane>();
-    auto value = handle.attr("fd").cast<int>();
-    obj->fd = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("stride").cast<uint32_t>();
-    obj->stride = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryDmaBufDescriptor* buildSharedTextureMemoryDmaBufDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDmaBufDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("size").cast<Extent3D>();
-    obj->size = value;
-    auto value = handle.attr("drm_format").cast<uint32_t>();
-    obj->drmFormat = value;
-    auto value = handle.attr("drm_modifier").cast<uint64_t>();
-    obj->drmModifier = value;
-    auto _value = kwargs["planes"].cast<std::vector<SharedTextureMemoryDmaBufPlane>>();
-    auto count = _value.size();
-    auto value = new SharedTextureMemoryDmaBufPlane[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.planes = value;
-    obj.planeCount = count;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryOpaqueFDDescriptor* buildSharedTextureMemoryOpaqueFDDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryOpaqueFDDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("vk_image_create_info").cast<void const *>();
-    obj->vkImageCreateInfo = value;
-    auto value = handle.attr("memory_FD").cast<int>();
-    obj->memoryFD = value;
-    auto value = handle.attr("memory_type_index").cast<uint32_t>();
-    obj->memoryTypeIndex = value;
-    auto value = handle.attr("allocation_size").cast<uint64_t>();
-    obj->allocationSize = value;
-    auto value = handle.attr("dedicated_allocation").cast<Bool>();
-    obj->dedicatedAllocation = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryZirconHandleDescriptor* buildSharedTextureMemoryZirconHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryZirconHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("memory_FD").cast<uint32_t>();
-    obj->memoryFD = value;
-    auto value = handle.attr("allocation_size").cast<uint64_t>();
-    obj->allocationSize = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor* buildSharedTextureMemoryDXGISharedHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<void *>();
-    obj->handle = value;
-    auto value = handle.attr("use_keyed_mutex").cast<Bool>();
-    obj->useKeyedMutex = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryIOSurfaceDescriptor* buildSharedTextureMemoryIOSurfaceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryIOSurfaceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("io_surface").cast<void *>();
-    obj->ioSurface = value;
-    auto value = handle.attr("allow_storage_binding").cast<Bool>();
-    obj->allowStorageBinding = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryEGLImageDescriptor* buildSharedTextureMemoryEGLImageDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryEGLImageDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("image").cast<void *>();
-    obj->image = value;
-    return obj;
-}
-
-pywgpu::SharedTextureMemoryBeginAccessDescriptor* buildSharedTextureMemoryBeginAccessDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryBeginAccessDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("concurrent_read").cast<Bool>();
-    obj->concurrentRead = value;
-    auto value = handle.attr("initialized").cast<Bool>();
-    obj->initialized = value;
-    auto _value = kwargs["fences"].cast<std::vector<SharedFence>>();
-    auto count = _value.size();
-    auto value = new SharedFence[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.fences = value;
-    obj.fenceCount = count;
-    auto _value = kwargs["signaled_values"].cast<std::vector<uint64_t>>();
-    auto count = _value.size();
-    auto value = new uint64_t[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.signaledValues = value;
-    obj.fenceCount = count;
-    return obj;
-}
 
 py::class_<SharedTextureMemoryEndAccessState> _SharedTextureMemoryEndAccessState(m, "SharedTextureMemoryEndAccessState");
 registry.on(m, "SharedTextureMemoryEndAccessState", _SharedTextureMemoryEndAccessState);
@@ -3738,17 +3827,6 @@ _SharedTextureMemoryEndAccessState
     .def(py::init<>())
     ;
 
-pywgpu::SharedTextureMemoryVkImageLayoutBeginState* buildSharedTextureMemoryVkImageLayoutBeginState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryVkImageLayoutBeginState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("old_layout").cast<int32_t>();
-    obj->oldLayout = value;
-    auto value = handle.attr("new_layout").cast<int32_t>();
-    obj->newLayout = value;
-    return obj;
-}
-
 py::class_<SharedTextureMemoryVkImageLayoutEndState, ChainedStructOut> _SharedTextureMemoryVkImageLayoutEndState(m, "SharedTextureMemoryVkImageLayoutEndState");
 registry.on(m, "SharedTextureMemoryVkImageLayoutEndState", _SharedTextureMemoryVkImageLayoutEndState);
 
@@ -3758,91 +3836,6 @@ _SharedTextureMemoryVkImageLayoutEndState
     .def_readonly("new_layout", &pywgpu::SharedTextureMemoryVkImageLayoutEndState::newLayout)
     .def(py::init<>())
     ;
-
-pywgpu::SharedTextureMemoryD3DSwapchainBeginState* buildSharedTextureMemoryD3DSwapchainBeginState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedTextureMemoryD3DSwapchainBeginState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("is_swapchain").cast<Bool>();
-    obj->isSwapchain = value;
-    return obj;
-}
-
-pywgpu::SharedFenceDescriptor* buildSharedFenceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor* buildSharedFenceVkSemaphoreOpaqueFDDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<int>();
-    obj->handle = value;
-    return obj;
-}
-
-pywgpu::SharedFenceSyncFDDescriptor* buildSharedFenceSyncFDDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceSyncFDDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<int>();
-    obj->handle = value;
-    return obj;
-}
-
-pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor* buildSharedFenceVkSemaphoreZirconHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<uint32_t>();
-    obj->handle = value;
-    return obj;
-}
-
-pywgpu::SharedFenceDXGISharedHandleDescriptor* buildSharedFenceDXGISharedHandleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceDXGISharedHandleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("handle").cast<void *>();
-    obj->handle = value;
-    return obj;
-}
-
-pywgpu::SharedFenceMTLSharedEventDescriptor* buildSharedFenceMTLSharedEventDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceMTLSharedEventDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("shared_event").cast<void *>();
-    obj->sharedEvent = value;
-    return obj;
-}
-
-pywgpu::SharedFenceEGLSyncDescriptor* buildSharedFenceEGLSyncDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SharedFenceEGLSyncDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("sync").cast<void *>();
-    obj->sync = value;
-    return obj;
-}
-
-pywgpu::DawnFakeBufferOOMForTesting* buildDawnFakeBufferOOMForTesting(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnFakeBufferOOMForTesting>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("fake_OOM_at_wire_client_map").cast<Bool>();
-    obj->fakeOOMAtWireClientMap = value;
-    auto value = handle.attr("fake_OOM_at_native_map").cast<Bool>();
-    obj->fakeOOMAtNativeMap = value;
-    auto value = handle.attr("fake_OOM_at_device").cast<Bool>();
-    obj->fakeOOMAtDevice = value;
-    return obj;
-}
 
 py::class_<SharedFenceExportInfo> _SharedFenceExportInfo(m, "SharedFenceExportInfo");
 registry.on(m, "SharedFenceExportInfo", _SharedFenceExportInfo);
@@ -3925,779 +3918,6 @@ _DawnDrmFormatCapabilities
     .def(py::init<>())
     ;
 
-pywgpu::DawnDrmFormatProperties* buildDawnDrmFormatProperties(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnDrmFormatProperties>();
-    auto value = handle.attr("modifier").cast<uint64_t>();
-    obj->modifier = value;
-    auto value = handle.attr("modifier_plane_count").cast<uint32_t>();
-    obj->modifierPlaneCount = value;
-    return obj;
-}
-
-pywgpu::TexelCopyBufferInfo* buildTexelCopyBufferInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TexelCopyBufferInfo>();
-    auto value = handle.attr("layout").cast<TexelCopyBufferLayout>();
-    obj->layout = value;
-    auto value = handle.attr("buffer").cast<Buffer>();
-    obj->buffer = value;
-    return obj;
-}
-
-pywgpu::TexelCopyBufferLayout* buildTexelCopyBufferLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TexelCopyBufferLayout>();
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("bytes_per_row").cast<uint32_t>();
-    obj->bytesPerRow = value;
-    auto value = handle.attr("rows_per_image").cast<uint32_t>();
-    obj->rowsPerImage = value;
-    return obj;
-}
-
-pywgpu::TexelCopyTextureInfo* buildTexelCopyTextureInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TexelCopyTextureInfo>();
-    auto value = handle.attr("texture").cast<Texture>();
-    obj->texture = value;
-    auto value = handle.attr("mip_level").cast<uint32_t>();
-    obj->mipLevel = value;
-    auto value = handle.attr("origin").cast<Origin3D>();
-    obj->origin = value;
-    auto value = handle.attr("aspect").cast<TextureAspect>();
-    obj->aspect = value;
-    return obj;
-}
-
-pywgpu::ImageCopyExternalTexture* buildImageCopyExternalTexture(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ImageCopyExternalTexture>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("external_texture").cast<ExternalTexture>();
-    obj->externalTexture = value;
-    auto value = handle.attr("origin").cast<Origin3D>();
-    obj->origin = value;
-    auto value = handle.attr("natural_size").cast<Extent2D>();
-    obj->naturalSize = value;
-    return obj;
-}
-
-pywgpu::Future* buildFuture(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Future>();
-    auto value = handle.attr("id").cast<uint64_t>();
-    obj->id = value;
-    return obj;
-}
-
-pywgpu::FutureWaitInfo* buildFutureWaitInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::FutureWaitInfo>();
-    auto value = handle.attr("future").cast<Future>();
-    obj->future = value;
-    auto value = handle.attr("completed").cast<Bool>();
-    obj->completed = value;
-    return obj;
-}
-
-pywgpu::InstanceCapabilities* buildInstanceCapabilities(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::InstanceCapabilities>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStructOut *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("timed_wait_any_enable").cast<Bool>();
-    obj->timedWaitAnyEnable = value;
-    auto value = handle.attr("timed_wait_any_max_count").cast<size_t>();
-    obj->timedWaitAnyMaxCount = value;
-    return obj;
-}
-
-pywgpu::InstanceDescriptor* buildInstanceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::InstanceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("capabilities").cast<InstanceCapabilities>();
-    obj->capabilities = value;
-    return obj;
-}
-
-pywgpu::DawnWireWGSLControl* buildDawnWireWGSLControl(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnWireWGSLControl>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("enable_experimental").cast<Bool>();
-    obj->enableExperimental = value;
-    auto value = handle.attr("enable_unsafe").cast<Bool>();
-    obj->enableUnsafe = value;
-    auto value = handle.attr("enable_testing").cast<Bool>();
-    obj->enableTesting = value;
-    return obj;
-}
-
-pywgpu::DawnInjectedInvalidSType* buildDawnInjectedInvalidSType(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnInjectedInvalidSType>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("invalid_s_type").cast<SType>();
-    obj->invalidSType = value;
-    return obj;
-}
-
-pywgpu::VertexAttribute* buildVertexAttribute(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::VertexAttribute>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("format").cast<VertexFormat>();
-    obj->format = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("shader_location").cast<uint32_t>();
-    obj->shaderLocation = value;
-    return obj;
-}
-
-pywgpu::VertexBufferLayout* buildVertexBufferLayout(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::VertexBufferLayout>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("step_mode").cast<VertexStepMode>();
-    obj->stepMode = value;
-    auto value = handle.attr("array_stride").cast<uint64_t>();
-    obj->arrayStride = value;
-    auto _value = kwargs["attributes"].cast<std::vector<VertexAttribute>>();
-    auto count = _value.size();
-    auto value = new VertexAttribute[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.attributes = value;
-    obj.attributeCount = count;
-    return obj;
-}
-
-pywgpu::Origin3D* buildOrigin3D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Origin3D>();
-    auto value = handle.attr("x").cast<uint32_t>();
-    obj->x = value;
-    auto value = handle.attr("y").cast<uint32_t>();
-    obj->y = value;
-    auto value = handle.attr("z").cast<uint32_t>();
-    obj->z = value;
-    return obj;
-}
-
-pywgpu::Origin2D* buildOrigin2D(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::Origin2D>();
-    auto value = handle.attr("x").cast<uint32_t>();
-    obj->x = value;
-    auto value = handle.attr("y").cast<uint32_t>();
-    obj->y = value;
-    return obj;
-}
-
-pywgpu::PassTimestampWrites* buildPassTimestampWrites(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PassTimestampWrites>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("query_set").cast<QuerySet>();
-    obj->querySet = value;
-    auto value = handle.attr("beginning_of_pass_write_index").cast<uint32_t>();
-    obj->beginningOfPassWriteIndex = value;
-    auto value = handle.attr("end_of_pass_write_index").cast<uint32_t>();
-    obj->endOfPassWriteIndex = value;
-    return obj;
-}
-
-pywgpu::PipelineLayoutDescriptor* buildPipelineLayoutDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PipelineLayoutDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["bind_group_layouts"].cast<std::vector<BindGroupLayout>>();
-    auto count = _value.size();
-    auto value = new BindGroupLayout[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.bindGroupLayouts = value;
-    obj.bindGroupLayoutCount = count;
-    auto value = handle.attr("immediate_data_range_byte_size").cast<uint32_t>();
-    obj->immediateDataRangeByteSize = value;
-    return obj;
-}
-
-pywgpu::PipelineLayoutPixelLocalStorage* buildPipelineLayoutPixelLocalStorage(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PipelineLayoutPixelLocalStorage>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
-    obj->totalPixelLocalStorageSize = value;
-    auto _value = kwargs["storage_attachments"].cast<std::vector<PipelineLayoutStorageAttachment>>();
-    auto count = _value.size();
-    auto value = new PipelineLayoutStorageAttachment[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.storageAttachments = value;
-    obj.storageAttachmentCount = count;
-    return obj;
-}
-
-pywgpu::PipelineLayoutStorageAttachment* buildPipelineLayoutStorageAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PipelineLayoutStorageAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    return obj;
-}
-
-pywgpu::ComputeState* buildComputeState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ComputeState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("module").cast<ShaderModule>();
-    obj->module = value;
-    auto value = handle.attr("entry_point").cast<StringView>();
-    obj->entryPoint = value;
-    auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
-    auto count = _value.size();
-    auto value = new ConstantEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.constants = value;
-    obj.constantCount = count;
-    return obj;
-}
-
-pywgpu::QuerySetDescriptor* buildQuerySetDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::QuerySetDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("type").cast<QueryType>();
-    obj->type = value;
-    auto value = handle.attr("count").cast<uint32_t>();
-    obj->count = value;
-    return obj;
-}
-
-pywgpu::QueueDescriptor* buildQueueDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::QueueDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::RenderBundleDescriptor* buildRenderBundleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderBundleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::RenderBundleEncoderDescriptor* buildRenderBundleEncoderDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderBundleEncoderDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["color_formats"].cast<std::vector<TextureFormat>>();
-    auto count = _value.size();
-    auto value = new TextureFormat[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.colorFormats = value;
-    obj.colorFormatCount = count;
-    auto value = handle.attr("depth_stencil_format").cast<TextureFormat>();
-    obj->depthStencilFormat = value;
-    auto value = handle.attr("sample_count").cast<uint32_t>();
-    obj->sampleCount = value;
-    auto value = handle.attr("depth_read_only").cast<Bool>();
-    obj->depthReadOnly = value;
-    auto value = handle.attr("stencil_read_only").cast<Bool>();
-    obj->stencilReadOnly = value;
-    return obj;
-}
-
-pywgpu::RenderPassColorAttachment* buildRenderPassColorAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassColorAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("view").cast<TextureView>();
-    obj->view = value;
-    auto value = handle.attr("depth_slice").cast<uint32_t>();
-    obj->depthSlice = value;
-    auto value = handle.attr("resolve_target").cast<TextureView>();
-    obj->resolveTarget = value;
-    auto value = handle.attr("load_op").cast<LoadOp>();
-    obj->loadOp = value;
-    auto value = handle.attr("store_op").cast<StoreOp>();
-    obj->storeOp = value;
-    auto value = handle.attr("clear_value").cast<Color>();
-    obj->clearValue = value;
-    return obj;
-}
-
-pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled* buildDawnRenderPassColorAttachmentRenderToSingleSampled(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("implicit_sample_count").cast<uint32_t>();
-    obj->implicitSampleCount = value;
-    return obj;
-}
-
-pywgpu::RenderPassDepthStencilAttachment* buildRenderPassDepthStencilAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassDepthStencilAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("view").cast<TextureView>();
-    obj->view = value;
-    auto value = handle.attr("depth_load_op").cast<LoadOp>();
-    obj->depthLoadOp = value;
-    auto value = handle.attr("depth_store_op").cast<StoreOp>();
-    obj->depthStoreOp = value;
-    auto value = handle.attr("depth_clear_value").cast<float>();
-    obj->depthClearValue = value;
-    auto value = handle.attr("depth_read_only").cast<Bool>();
-    obj->depthReadOnly = value;
-    auto value = handle.attr("stencil_load_op").cast<LoadOp>();
-    obj->stencilLoadOp = value;
-    auto value = handle.attr("stencil_store_op").cast<StoreOp>();
-    obj->stencilStoreOp = value;
-    auto value = handle.attr("stencil_clear_value").cast<uint32_t>();
-    obj->stencilClearValue = value;
-    auto value = handle.attr("stencil_read_only").cast<Bool>();
-    obj->stencilReadOnly = value;
-    return obj;
-}
-
-pywgpu::RenderPassDescriptor* buildRenderPassDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto _value = kwargs["color_attachments"].cast<std::vector<RenderPassColorAttachment>>();
-    auto count = _value.size();
-    auto value = new RenderPassColorAttachment[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.colorAttachments = value;
-    obj.colorAttachmentCount = count;
-    auto value = handle.attr("depth_stencil_attachment").cast<RenderPassDepthStencilAttachment const *>();
-    obj->depthStencilAttachment = value;
-    auto value = handle.attr("occlusion_query_set").cast<QuerySet>();
-    obj->occlusionQuerySet = value;
-    auto value = handle.attr("timestamp_writes").cast<PassTimestampWrites const *>();
-    obj->timestampWrites = value;
-    return obj;
-}
-
-pywgpu::RenderPassMaxDrawCount* buildRenderPassMaxDrawCount(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassMaxDrawCount>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("max_draw_count").cast<uint64_t>();
-    obj->maxDrawCount = value;
-    return obj;
-}
-
-pywgpu::RenderPassDescriptorExpandResolveRect* buildRenderPassDescriptorExpandResolveRect(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassDescriptorExpandResolveRect>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("x").cast<uint32_t>();
-    obj->x = value;
-    auto value = handle.attr("y").cast<uint32_t>();
-    obj->y = value;
-    auto value = handle.attr("width").cast<uint32_t>();
-    obj->width = value;
-    auto value = handle.attr("height").cast<uint32_t>();
-    obj->height = value;
-    return obj;
-}
-
-pywgpu::RenderPassPixelLocalStorage* buildRenderPassPixelLocalStorage(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassPixelLocalStorage>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
-    obj->totalPixelLocalStorageSize = value;
-    auto _value = kwargs["storage_attachments"].cast<std::vector<RenderPassStorageAttachment>>();
-    auto count = _value.size();
-    auto value = new RenderPassStorageAttachment[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.storageAttachments = value;
-    obj.storageAttachmentCount = count;
-    return obj;
-}
-
-pywgpu::RenderPassStorageAttachment* buildRenderPassStorageAttachment(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPassStorageAttachment>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("offset").cast<uint64_t>();
-    obj->offset = value;
-    auto value = handle.attr("storage").cast<TextureView>();
-    obj->storage = value;
-    auto value = handle.attr("load_op").cast<LoadOp>();
-    obj->loadOp = value;
-    auto value = handle.attr("store_op").cast<StoreOp>();
-    obj->storeOp = value;
-    auto value = handle.attr("clear_value").cast<Color>();
-    obj->clearValue = value;
-    return obj;
-}
-
-pywgpu::VertexState* buildVertexState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::VertexState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("module").cast<ShaderModule>();
-    obj->module = value;
-    auto value = handle.attr("entry_point").cast<StringView>();
-    obj->entryPoint = value;
-    auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
-    auto count = _value.size();
-    auto value = new ConstantEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.constants = value;
-    obj.constantCount = count;
-    auto _value = kwargs["buffers"].cast<std::vector<VertexBufferLayout>>();
-    auto count = _value.size();
-    auto value = new VertexBufferLayout[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.buffers = value;
-    obj.bufferCount = count;
-    return obj;
-}
-
-pywgpu::PrimitiveState* buildPrimitiveState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::PrimitiveState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("topology").cast<PrimitiveTopology>();
-    obj->topology = value;
-    auto value = handle.attr("strip_index_format").cast<IndexFormat>();
-    obj->stripIndexFormat = value;
-    auto value = handle.attr("front_face").cast<FrontFace>();
-    obj->frontFace = value;
-    auto value = handle.attr("cull_mode").cast<CullMode>();
-    obj->cullMode = value;
-    auto value = handle.attr("unclipped_depth").cast<Bool>();
-    obj->unclippedDepth = value;
-    return obj;
-}
-
-pywgpu::DepthStencilState* buildDepthStencilState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DepthStencilState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("depth_write_enabled").cast<OptionalBool>();
-    obj->depthWriteEnabled = value;
-    auto value = handle.attr("depth_compare").cast<CompareFunction>();
-    obj->depthCompare = value;
-    auto value = handle.attr("stencil_front").cast<StencilFaceState>();
-    obj->stencilFront = value;
-    auto value = handle.attr("stencil_back").cast<StencilFaceState>();
-    obj->stencilBack = value;
-    auto value = handle.attr("stencil_read_mask").cast<uint32_t>();
-    obj->stencilReadMask = value;
-    auto value = handle.attr("stencil_write_mask").cast<uint32_t>();
-    obj->stencilWriteMask = value;
-    auto value = handle.attr("depth_bias").cast<int32_t>();
-    obj->depthBias = value;
-    auto value = handle.attr("depth_bias_slope_scale").cast<float>();
-    obj->depthBiasSlopeScale = value;
-    auto value = handle.attr("depth_bias_clamp").cast<float>();
-    obj->depthBiasClamp = value;
-    return obj;
-}
-
-pywgpu::MultisampleState* buildMultisampleState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::MultisampleState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("count").cast<uint32_t>();
-    obj->count = value;
-    auto value = handle.attr("mask").cast<uint32_t>();
-    obj->mask = value;
-    auto value = handle.attr("alpha_to_coverage_enabled").cast<Bool>();
-    obj->alphaToCoverageEnabled = value;
-    return obj;
-}
-
-pywgpu::FragmentState* buildFragmentState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::FragmentState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("module").cast<ShaderModule>();
-    obj->module = value;
-    auto value = handle.attr("entry_point").cast<StringView>();
-    obj->entryPoint = value;
-    auto _value = kwargs["constants"].cast<std::vector<ConstantEntry>>();
-    auto count = _value.size();
-    auto value = new ConstantEntry[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.constants = value;
-    obj.constantCount = count;
-    auto _value = kwargs["targets"].cast<std::vector<ColorTargetState>>();
-    auto count = _value.size();
-    auto value = new ColorTargetState[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.targets = value;
-    obj.targetCount = count;
-    return obj;
-}
-
-pywgpu::ColorTargetState* buildColorTargetState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ColorTargetState>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("blend").cast<BlendState const *>();
-    obj->blend = value;
-    auto value = handle.attr("write_mask").cast<ColorWriteMask>();
-    obj->writeMask = value;
-    return obj;
-}
-
-pywgpu::ColorTargetStateExpandResolveTextureDawn* buildColorTargetStateExpandResolveTextureDawn(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ColorTargetStateExpandResolveTextureDawn>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("enabled").cast<Bool>();
-    obj->enabled = value;
-    return obj;
-}
-
-pywgpu::BlendState* buildBlendState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::BlendState>();
-    auto value = handle.attr("color").cast<BlendComponent>();
-    obj->color = value;
-    auto value = handle.attr("alpha").cast<BlendComponent>();
-    obj->alpha = value;
-    return obj;
-}
-
-pywgpu::RenderPipelineDescriptor* buildRenderPipelineDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::RenderPipelineDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("layout").cast<PipelineLayout>();
-    obj->layout = value;
-    auto value = handle.attr("vertex").cast<VertexState>();
-    obj->vertex = value;
-    auto value = handle.attr("primitive").cast<PrimitiveState>();
-    obj->primitive = value;
-    auto value = handle.attr("depth_stencil").cast<DepthStencilState const *>();
-    obj->depthStencil = value;
-    auto value = handle.attr("multisample").cast<MultisampleState>();
-    obj->multisample = value;
-    auto value = handle.attr("fragment").cast<FragmentState const *>();
-    obj->fragment = value;
-    return obj;
-}
-
-pywgpu::SamplerDescriptor* buildSamplerDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SamplerDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("address_mode_u").cast<AddressMode>();
-    obj->addressModeU = value;
-    auto value = handle.attr("address_mode_v").cast<AddressMode>();
-    obj->addressModeV = value;
-    auto value = handle.attr("address_mode_w").cast<AddressMode>();
-    obj->addressModeW = value;
-    auto value = handle.attr("mag_filter").cast<FilterMode>();
-    obj->magFilter = value;
-    auto value = handle.attr("min_filter").cast<FilterMode>();
-    obj->minFilter = value;
-    auto value = handle.attr("mipmap_filter").cast<MipmapFilterMode>();
-    obj->mipmapFilter = value;
-    auto value = handle.attr("lod_min_clamp").cast<float>();
-    obj->lodMinClamp = value;
-    auto value = handle.attr("lod_max_clamp").cast<float>();
-    obj->lodMaxClamp = value;
-    auto value = handle.attr("compare").cast<CompareFunction>();
-    obj->compare = value;
-    auto value = handle.attr("max_anisotropy").cast<uint16_t>();
-    obj->maxAnisotropy = value;
-    return obj;
-}
-
-pywgpu::ShaderModuleDescriptor* buildShaderModuleDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderModuleDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::ShaderSourceSPIRV* buildShaderSourceSPIRV(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderSourceSPIRV>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto _value = kwargs["code"].cast<std::vector<uint32_t>>();
-    auto count = _value.size();
-    auto value = new uint32_t[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.code = value;
-    obj.codeSize = count;
-    return obj;
-}
-
-pywgpu::ShaderSourceWGSL* buildShaderSourceWGSL(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderSourceWGSL>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("code").cast<StringView>();
-    obj->code = value;
-    return obj;
-}
-
-pywgpu::DawnShaderModuleSPIRVOptionsDescriptor* buildDawnShaderModuleSPIRVOptionsDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnShaderModuleSPIRVOptionsDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("allow_non_uniform_derivatives").cast<Bool>();
-    obj->allowNonUniformDerivatives = value;
-    return obj;
-}
-
-pywgpu::ShaderModuleCompilationOptions* buildShaderModuleCompilationOptions(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::ShaderModuleCompilationOptions>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("strict_math").cast<Bool>();
-    obj->strictMath = value;
-    return obj;
-}
-
-pywgpu::StencilFaceState* buildStencilFaceState(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::StencilFaceState>();
-    auto value = handle.attr("compare").cast<CompareFunction>();
-    obj->compare = value;
-    auto value = handle.attr("fail_op").cast<StencilOperation>();
-    obj->failOp = value;
-    auto value = handle.attr("depth_fail_op").cast<StencilOperation>();
-    obj->depthFailOp = value;
-    auto value = handle.attr("pass_op").cast<StencilOperation>();
-    obj->passOp = value;
-    return obj;
-}
-
-pywgpu::SurfaceDescriptor* buildSurfaceDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    return obj;
-}
-
-pywgpu::SurfaceSourceAndroidNativeWindow* buildSurfaceSourceAndroidNativeWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceAndroidNativeWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("window").cast<void *>();
-    obj->window = value;
-    return obj;
-}
-
-pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector* buildEmscriptenSurfaceSourceCanvasHTMLSelector(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("selector").cast<StringView>();
-    obj->selector = value;
-    return obj;
-}
-
-pywgpu::SurfaceSourceMetalLayer* buildSurfaceSourceMetalLayer(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceMetalLayer>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("layer").cast<void *>();
-    obj->layer = value;
-    return obj;
-}
-
-pywgpu::SurfaceSourceWindowsHWND* buildSurfaceSourceWindowsHWND(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceWindowsHWND>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("hinstance").cast<void *>();
-    obj->hinstance = value;
-    auto value = handle.attr("hwnd").cast<void *>();
-    obj->hwnd = value;
-    return obj;
-}
-
-pywgpu::SurfaceSourceXCBWindow* buildSurfaceSourceXCBWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceXCBWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("connection").cast<void *>();
-    obj->connection = value;
-    auto value = handle.attr("window").cast<uint32_t>();
-    obj->window = value;
-    return obj;
-}
-
-pywgpu::SurfaceSourceXlibWindow* buildSurfaceSourceXlibWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceXlibWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("display").cast<void *>();
-    obj->display = value;
-    auto value = handle.attr("window").cast<uint64_t>();
-    obj->window = value;
-    return obj;
-}
-
-pywgpu::SurfaceSourceWaylandSurface* buildSurfaceSourceWaylandSurface(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceSourceWaylandSurface>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("display").cast<void *>();
-    obj->display = value;
-    auto value = handle.attr("surface").cast<void *>();
-    obj->surface = value;
-    return obj;
-}
-
-pywgpu::SurfaceDescriptorFromWindowsCoreWindow* buildSurfaceDescriptorFromWindowsCoreWindow(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptorFromWindowsCoreWindow>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("core_window").cast<void *>();
-    obj->coreWindow = value;
-    return obj;
-}
-
-pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel* buildSurfaceDescriptorFromWindowsUWPSwapChainPanel(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("swap_chain_panel").cast<void *>();
-    obj->swapChainPanel = value;
-    return obj;
-}
-
-pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel* buildSurfaceDescriptorFromWindowsWinUISwapChainPanel(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("swap_chain_panel").cast<void *>();
-    obj->swapChainPanel = value;
-    return obj;
-}
-
 py::class_<SurfaceTexture> _SurfaceTexture(m, "SurfaceTexture");
 registry.on(m, "SurfaceTexture", _SurfaceTexture);
 
@@ -4708,116 +3928,6 @@ _SurfaceTexture
     .def(py::init<>())
     ;
 
-pywgpu::TextureDescriptor* buildTextureDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("usage").cast<TextureUsage>();
-    obj->usage = value;
-    auto value = handle.attr("dimension").cast<TextureDimension>();
-    obj->dimension = value;
-    auto value = handle.attr("size").cast<Extent3D>();
-    obj->size = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("mip_level_count").cast<uint32_t>();
-    obj->mipLevelCount = value;
-    auto value = handle.attr("sample_count").cast<uint32_t>();
-    obj->sampleCount = value;
-    auto _value = kwargs["view_formats"].cast<std::vector<TextureFormat>>();
-    auto count = _value.size();
-    auto value = new TextureFormat[count];
-    std::copy(_value.begin(), _value.end(), value);
-    obj.viewFormats = value;
-    obj.viewFormatCount = count;
-    return obj;
-}
-
-pywgpu::TextureBindingViewDimensionDescriptor* buildTextureBindingViewDimensionDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureBindingViewDimensionDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("texture_binding_view_dimension").cast<TextureViewDimension>();
-    obj->textureBindingViewDimension = value;
-    return obj;
-}
-
-pywgpu::TextureViewDescriptor* buildTextureViewDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::TextureViewDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("label").cast<StringView>();
-    obj->label = value;
-    auto value = handle.attr("format").cast<TextureFormat>();
-    obj->format = value;
-    auto value = handle.attr("dimension").cast<TextureViewDimension>();
-    obj->dimension = value;
-    auto value = handle.attr("base_mip_level").cast<uint32_t>();
-    obj->baseMipLevel = value;
-    auto value = handle.attr("mip_level_count").cast<uint32_t>();
-    obj->mipLevelCount = value;
-    auto value = handle.attr("base_array_layer").cast<uint32_t>();
-    obj->baseArrayLayer = value;
-    auto value = handle.attr("array_layer_count").cast<uint32_t>();
-    obj->arrayLayerCount = value;
-    auto value = handle.attr("aspect").cast<TextureAspect>();
-    obj->aspect = value;
-    auto value = handle.attr("usage").cast<TextureUsage>();
-    obj->usage = value;
-    return obj;
-}
-
-pywgpu::YCbCrVkDescriptor* buildYCbCrVkDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::YCbCrVkDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("vk_format").cast<uint32_t>();
-    obj->vkFormat = value;
-    auto value = handle.attr("vk_y_cb_cr_model").cast<uint32_t>();
-    obj->vkYCbCrModel = value;
-    auto value = handle.attr("vk_y_cb_cr_range").cast<uint32_t>();
-    obj->vkYCbCrRange = value;
-    auto value = handle.attr("vk_component_swizzle_red").cast<uint32_t>();
-    obj->vkComponentSwizzleRed = value;
-    auto value = handle.attr("vk_component_swizzle_green").cast<uint32_t>();
-    obj->vkComponentSwizzleGreen = value;
-    auto value = handle.attr("vk_component_swizzle_blue").cast<uint32_t>();
-    obj->vkComponentSwizzleBlue = value;
-    auto value = handle.attr("vk_component_swizzle_alpha").cast<uint32_t>();
-    obj->vkComponentSwizzleAlpha = value;
-    auto value = handle.attr("vk_x_chroma_offset").cast<uint32_t>();
-    obj->vkXChromaOffset = value;
-    auto value = handle.attr("vk_y_chroma_offset").cast<uint32_t>();
-    obj->vkYChromaOffset = value;
-    auto value = handle.attr("vk_chroma_filter").cast<FilterMode>();
-    obj->vkChromaFilter = value;
-    auto value = handle.attr("force_explicit_reconstruction").cast<Bool>();
-    obj->forceExplicitReconstruction = value;
-    auto value = handle.attr("external_format").cast<uint64_t>();
-    obj->externalFormat = value;
-    return obj;
-}
-
-pywgpu::DawnTextureInternalUsageDescriptor* buildDawnTextureInternalUsageDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnTextureInternalUsageDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("internal_usage").cast<TextureUsage>();
-    obj->internalUsage = value;
-    return obj;
-}
-
-pywgpu::DawnEncoderInternalUsageDescriptor* buildDawnEncoderInternalUsageDescriptor(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnEncoderInternalUsageDescriptor>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("use_internal_usages").cast<Bool>();
-    obj->useInternalUsages = value;
-    return obj;
-}
-
 py::class_<DawnAdapterPropertiesPowerPreference, ChainedStructOut> _DawnAdapterPropertiesPowerPreference(m, "DawnAdapterPropertiesPowerPreference");
 registry.on(m, "DawnAdapterPropertiesPowerPreference", _DawnAdapterPropertiesPowerPreference);
 
@@ -4826,15 +3936,6 @@ _DawnAdapterPropertiesPowerPreference
     .def_readonly("power_preference", &pywgpu::DawnAdapterPropertiesPowerPreference::powerPreference)
     .def(py::init<>())
     ;
-
-pywgpu::MemoryHeapInfo* buildMemoryHeapInfo(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::MemoryHeapInfo>();
-    auto value = handle.attr("properties").cast<HeapProperty>();
-    obj->properties = value;
-    auto value = handle.attr("size").cast<uint64_t>();
-    obj->size = value;
-    return obj;
-}
 
 py::class_<AdapterPropertiesMemoryHeaps, ChainedStructOut> _AdapterPropertiesMemoryHeaps(m, "AdapterPropertiesMemoryHeaps");
 registry.on(m, "AdapterPropertiesMemoryHeaps", _AdapterPropertiesMemoryHeaps);
@@ -4863,30 +3964,6 @@ _AdapterPropertiesVk
     .def_readonly("driver_version", &pywgpu::AdapterPropertiesVk::driverVersion)
     .def(py::init<>())
     ;
-
-pywgpu::DawnBufferDescriptorErrorInfoFromWireClient* buildDawnBufferDescriptorErrorInfoFromWireClient(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::DawnBufferDescriptorErrorInfoFromWireClient>();
-    auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
-    obj->nextInChain = value;
-    auto value = handle.attr("out_of_memory").cast<Bool>();
-    obj->outOfMemory = value;
-    return obj;
-}
-
-pywgpu::SubgroupMatrixConfig* buildSubgroupMatrixConfig(py::handle handle, LinearAlloc& la) {
-    auto* obj = la.make<pywgpu::SubgroupMatrixConfig>();
-    auto value = handle.attr("component_type").cast<SubgroupMatrixComponentType>();
-    obj->componentType = value;
-    auto value = handle.attr("result_component_type").cast<SubgroupMatrixComponentType>();
-    obj->resultComponentType = value;
-    auto value = handle.attr("M").cast<uint32_t>();
-    obj->M = value;
-    auto value = handle.attr("N").cast<uint32_t>();
-    obj->N = value;
-    auto value = handle.attr("K").cast<uint32_t>();
-    obj->K = value;
-    return obj;
-}
 
 py::class_<AdapterPropertiesSubgroupMatrixConfigs, ChainedStructOut> _AdapterPropertiesSubgroupMatrixConfigs(m, "AdapterPropertiesSubgroupMatrixConfigs");
 registry.on(m, "AdapterPropertiesSubgroupMatrixConfigs", _AdapterPropertiesSubgroupMatrixConfigs);
