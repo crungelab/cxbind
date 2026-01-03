@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Optional, List, Literal, Union, Any
 
+from ._wgpu import *
+
 @dataclass(frozen=True, kw_only=True)
 class RequestAdapterOptions:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -9,6 +11,7 @@ class RequestAdapterOptions:
     force_fallback_adapter: Any = False  # type: Bool , default: False
     backend_type: Any  # type: BackendType , default: None
     compatible_surface: Optional[Any] = None  # type: Surface , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class DeviceDescriptor:
@@ -21,11 +24,13 @@ class DeviceDescriptor:
     device_lost_callback_info: Any  # type: DeviceLostCallbackInfo , default: None
     uncaptured_error_callback_info: Any  # type: UncapturedErrorCallbackInfo , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnTogglesDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     enabled_toggle_count: Any = 0  # type: size_t , default: 0
     disabled_toggle_count: Any = 0  # type: size_t , default: 0
+
 
 @dataclass(frozen=True, kw_only=True)
 class DawnCacheDeviceDescriptor:
@@ -33,10 +38,12 @@ class DawnCacheDeviceDescriptor:
     isolation_key: Any  # type: StringView , default: None
     function_userdata: Any = None  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnWGSLBlocklist:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     blocklisted_feature_count: Any = 0  # type: size_t , default: 0
+
 
 @dataclass(frozen=True, kw_only=True)
 class BindGroupEntry:
@@ -48,6 +55,7 @@ class BindGroupEntry:
     sampler: Optional[Any] = None  # type: Sampler , default: None
     texture_view: Optional[Any] = None  # type: TextureView , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class BindGroupDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -56,6 +64,7 @@ class BindGroupDescriptor:
     entry_count: Any  # type: size_t , default: None
     entries: Any  # type: BindGroupEntry const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class BufferBindingLayout:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -63,10 +72,12 @@ class BufferBindingLayout:
     has_dynamic_offset: Any = False  # type: Bool , default: False
     min_binding_size: Any = 0  # type: uint64_t , default: 0
 
+
 @dataclass(frozen=True, kw_only=True)
 class SamplerBindingLayout:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     type: Any = SamplerBindingType.FILTERING  # type: SamplerBindingType , default: SamplerBindingType.FILTERING
+
 
 @dataclass(frozen=True, kw_only=True)
 class StaticSamplerBindingLayout:
@@ -74,12 +85,14 @@ class StaticSamplerBindingLayout:
     sampler: Any  # type: Sampler , default: None
     sampled_texture_binding: Any = 4294967295  # type: uint32_t , default: 4294967295
 
+
 @dataclass(frozen=True, kw_only=True)
 class TextureBindingLayout:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     sample_type: Any = TextureSampleType.FLOAT  # type: TextureSampleType , default: TextureSampleType.FLOAT
     view_dimension: Any = TextureViewDimension.E2D  # type: TextureViewDimension , default: TextureViewDimension.E2D
     multisampled: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class SurfaceConfiguration:
@@ -94,14 +107,17 @@ class SurfaceConfiguration:
     alpha_mode: Any = CompositeAlphaMode.AUTO  # type: CompositeAlphaMode , default: CompositeAlphaMode.AUTO
     present_mode: Any = PresentMode.FIFO  # type: PresentMode , default: PresentMode.FIFO
 
+
 @dataclass(frozen=True, kw_only=True)
 class ExternalTextureBindingEntry:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     external_texture: Any  # type: ExternalTexture , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class ExternalTextureBindingLayout:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class StorageTextureBindingLayout:
@@ -110,15 +126,17 @@ class StorageTextureBindingLayout:
     format: Any  # type: TextureFormat , default: None
     view_dimension: Any = TextureViewDimension.E2D  # type: TextureViewDimension , default: TextureViewDimension.E2D
 
+
 @dataclass(frozen=True, kw_only=True)
 class BindGroupLayoutEntry:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     binding: Any  # type: uint32_t , default: None
     visibility: Any  # type: ShaderStage , default: None
-    buffer: Any = BufferBindingLayout()  # type: BufferBindingLayout , default: BufferBindingLayout()
-    sampler: Any = SamplerBindingLayout()  # type: SamplerBindingLayout , default: SamplerBindingLayout()
-    texture: Any = TextureBindingLayout()  # type: TextureBindingLayout , default: TextureBindingLayout()
-    storage_texture: Any = StorageTextureBindingLayout()  # type: StorageTextureBindingLayout , default: StorageTextureBindingLayout()
+    buffer: Any = 0  # type: BufferBindingLayout , default: 0
+    sampler: Any = 0  # type: SamplerBindingLayout , default: 0
+    texture: Any = 0  # type: TextureBindingLayout , default: 0
+    storage_texture: Any = 0  # type: StorageTextureBindingLayout , default: 0
+
 
 @dataclass(frozen=True, kw_only=True)
 class BindGroupLayoutDescriptor:
@@ -127,11 +145,13 @@ class BindGroupLayoutDescriptor:
     entry_count: Any  # type: size_t , default: None
     entries: Any  # type: BindGroupLayoutEntry const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class BlendComponent:
     operation: Any = BlendOperation.ADD  # type: BlendOperation , default: BlendOperation.ADD
     src_factor: Any = BlendFactor.ONE  # type: BlendFactor , default: BlendFactor.ONE
-    dst_factor: Any = BlendFactor.ZERO  # type: BlendFactor , default: BlendFactor.ZERO
+    dst_factor: Any = 0  # type: BlendFactor , default: 0
+
 
 @dataclass(frozen=True, kw_only=True)
 class BufferDescriptor:
@@ -141,11 +161,13 @@ class BufferDescriptor:
     size: Any  # type: uint64_t , default: None
     mapped_at_creation: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class BufferHostMappedPointer:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     pointer: Any  # type: void * , default: None
     userdata: Any  # type: void * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class Color:
@@ -154,27 +176,32 @@ class Color:
     b: Any  # type: double , default: None
     a: Any  # type: double , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class ConstantEntry:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     key: Any  # type: StringView , default: None
     value: Any  # type: double , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class CommandBufferDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class CommandEncoderDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class CompilationInfo:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     message_count: Any  # type: size_t , default: None
     messages: Any  # type: CompilationMessage const * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class CompilationMessage:
@@ -186,6 +213,7 @@ class CompilationMessage:
     offset: Any  # type: uint64_t , default: None
     length: Any  # type: uint64_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnCompilationMessageUtf16:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -193,11 +221,13 @@ class DawnCompilationMessageUtf16:
     offset: Any  # type: uint64_t , default: None
     length: Any  # type: uint64_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class ComputePassDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
     timestamp_writes: Optional[Any] = None  # type: PassTimestampWrites const * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class ComputePipelineDescriptor:
@@ -205,6 +235,7 @@ class ComputePipelineDescriptor:
     label: Optional[Any] = None  # type: StringView , default: None
     layout: Optional[Any] = None  # type: PipelineLayout , default: None
     compute: Any  # type: ComputeState , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class CopyTextureForBrowserOptions:
@@ -218,9 +249,11 @@ class CopyTextureForBrowserOptions:
     dst_alpha_mode: Any = AlphaMode.UNPREMULTIPLIED  # type: AlphaMode , default: AlphaMode.UNPREMULTIPLIED
     internal_usage: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class AHardwareBufferProperties:
     y_cb_cr_info: Any  # type: YCbCrVkDescriptor , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class Limits:
@@ -261,26 +294,31 @@ class Limits:
     max_storage_buffers_in_fragment_stage: Any = 4294967295  # type: uint32_t , default: 4294967295
     max_storage_textures_in_fragment_stage: Any = 4294967295  # type: uint32_t , default: 4294967295
 
+
 @dataclass(frozen=True, kw_only=True)
 class SupportedFeatures:
     feature_count: Any  # type: size_t , default: None
     features: Any  # type: FeatureName const * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SupportedWGSLLanguageFeatures:
     feature_count: Any  # type: size_t , default: None
     features: Any  # type: WGSLLanguageFeatureName const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class Extent2D:
     width: Any  # type: uint32_t , default: None
     height: Any  # type: uint32_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class Extent3D:
     width: Any  # type: uint32_t , default: None
     height: Any = 1  # type: uint32_t , default: 1
     depth_or_array_layers: Any = 1  # type: uint32_t , default: 1
+
 
 @dataclass(frozen=True, kw_only=True)
 class ExternalTextureDescriptor:
@@ -299,15 +337,18 @@ class ExternalTextureDescriptor:
     mirrored: Any = False  # type: Bool , default: False
     rotation: Any = ExternalTextureRotation.ROTATE0_DEGREES  # type: ExternalTextureRotation , default: ExternalTextureRotation.ROTATE0_DEGREES
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedBufferMemoryDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedBufferMemoryBeginAccessDescriptor:
@@ -317,10 +358,12 @@ class SharedBufferMemoryBeginAccessDescriptor:
     fences: Any  # type: SharedFence const * , default: None
     signaled_values: Any  # type: uint64_t const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryVkDedicatedAllocationDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     dedicated_allocation: Any  # type: Bool , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryAHardwareBufferDescriptor:
@@ -328,11 +371,13 @@ class SharedTextureMemoryAHardwareBufferDescriptor:
     handle: Any  # type: void * , default: None
     use_external_format: Any  # type: Bool , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryDmaBufPlane:
     fd: Any  # type: int , default: None
     offset: Any  # type: uint64_t , default: None
     stride: Any  # type: uint32_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryDmaBufDescriptor:
@@ -343,6 +388,7 @@ class SharedTextureMemoryDmaBufDescriptor:
     plane_count: Any  # type: size_t , default: None
     planes: Any  # type: SharedTextureMemoryDmaBufPlane const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryOpaqueFDDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -352,11 +398,13 @@ class SharedTextureMemoryOpaqueFDDescriptor:
     allocation_size: Any  # type: uint64_t , default: None
     dedicated_allocation: Any  # type: Bool , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryZirconHandleDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     memory_FD: Any  # type: uint32_t , default: None
     allocation_size: Any  # type: uint64_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryDXGISharedHandleDescriptor:
@@ -364,16 +412,19 @@ class SharedTextureMemoryDXGISharedHandleDescriptor:
     handle: Any  # type: void * , default: None
     use_keyed_mutex: Any  # type: Bool , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryIOSurfaceDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     io_surface: Any  # type: void * , default: None
     allow_storage_binding: Any = True  # type: Bool , default: True
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryEGLImageDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     image: Any  # type: void * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryBeginAccessDescriptor:
@@ -384,51 +435,61 @@ class SharedTextureMemoryBeginAccessDescriptor:
     fences: Any  # type: SharedFence const * , default: None
     signaled_values: Any  # type: uint64_t const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryVkImageLayoutBeginState:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     old_layout: Any  # type: int32_t , default: None
     new_layout: Any  # type: int32_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedTextureMemoryD3DSwapchainBeginState:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     is_swapchain: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceVkSemaphoreOpaqueFDDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     handle: Any  # type: int , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceSyncFDDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     handle: Any  # type: int , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceVkSemaphoreZirconHandleDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     handle: Any  # type: uint32_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceDXGISharedHandleDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     handle: Any  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceMTLSharedEventDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     shared_event: Any  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SharedFenceEGLSyncDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     sync: Any  # type: void * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class DawnFakeBufferOOMForTesting:
@@ -437,21 +498,25 @@ class DawnFakeBufferOOMForTesting:
     fake_OOM_at_native_map: Any  # type: Bool , default: None
     fake_OOM_at_device: Any  # type: Bool , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnDrmFormatProperties:
     modifier: Any  # type: uint64_t , default: None
     modifier_plane_count: Any  # type: uint32_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class TexelCopyBufferInfo:
     layout: Any  # type: TexelCopyBufferLayout , default: None
     buffer: Any  # type: Buffer , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class TexelCopyBufferLayout:
     offset: Any = 0  # type: uint64_t , default: 0
     bytes_per_row: Any = 4294967295  # type: uint32_t , default: 4294967295
     rows_per_image: Any = 4294967295  # type: uint32_t , default: 4294967295
+
 
 @dataclass(frozen=True, kw_only=True)
 class TexelCopyTextureInfo:
@@ -460,6 +525,7 @@ class TexelCopyTextureInfo:
     origin: Any  # type: Origin3D , default: None
     aspect: Any = TextureAspect.ALL  # type: TextureAspect , default: TextureAspect.ALL
 
+
 @dataclass(frozen=True, kw_only=True)
 class ImageCopyExternalTexture:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -467,14 +533,17 @@ class ImageCopyExternalTexture:
     origin: Any  # type: Origin3D , default: None
     natural_size: Any  # type: Extent2D , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class Future:
     id: Any  # type: uint64_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class FutureWaitInfo:
     future: Any  # type: Future , default: None
     completed: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class InstanceCapabilities:
@@ -482,10 +551,12 @@ class InstanceCapabilities:
     timed_wait_any_enable: Any = False  # type: Bool , default: False
     timed_wait_any_max_count: Any = 0  # type: size_t , default: 0
 
+
 @dataclass(frozen=True, kw_only=True)
 class InstanceDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     capabilities: Any  # type: InstanceCapabilities , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class DawnWireWGSLControl:
@@ -494,10 +565,12 @@ class DawnWireWGSLControl:
     enable_unsafe: Any = False  # type: Bool , default: False
     enable_testing: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnInjectedInvalidSType:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     invalid_s_type: Any  # type: SType , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class VertexAttribute:
@@ -505,6 +578,7 @@ class VertexAttribute:
     format: Any  # type: VertexFormat , default: None
     offset: Any  # type: uint64_t , default: None
     shader_location: Any  # type: uint32_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class VertexBufferLayout:
@@ -514,16 +588,19 @@ class VertexBufferLayout:
     attribute_count: Any  # type: size_t , default: None
     attributes: Any  # type: VertexAttribute const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class Origin3D:
     x: Any = 0  # type: uint32_t , default: 0
     y: Any = 0  # type: uint32_t , default: 0
     z: Any = 0  # type: uint32_t , default: 0
 
+
 @dataclass(frozen=True, kw_only=True)
 class Origin2D:
     x: Any = 0  # type: uint32_t , default: 0
     y: Any = 0  # type: uint32_t , default: 0
+
 
 @dataclass(frozen=True, kw_only=True)
 class PassTimestampWrites:
@@ -531,6 +608,7 @@ class PassTimestampWrites:
     query_set: Any  # type: QuerySet , default: None
     beginning_of_pass_write_index: Any = 4294967295  # type: uint32_t , default: 4294967295
     end_of_pass_write_index: Any = 4294967295  # type: uint32_t , default: 4294967295
+
 
 @dataclass(frozen=True, kw_only=True)
 class PipelineLayoutDescriptor:
@@ -540,6 +618,7 @@ class PipelineLayoutDescriptor:
     bind_group_layouts: Optional[Any] = None  # type: BindGroupLayout const * , default: None
     immediate_data_range_byte_size: Any = 0  # type: uint32_t , default: 0
 
+
 @dataclass(frozen=True, kw_only=True)
 class PipelineLayoutPixelLocalStorage:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -547,11 +626,13 @@ class PipelineLayoutPixelLocalStorage:
     storage_attachment_count: Any = 0  # type: size_t , default: 0
     storage_attachments: Any  # type: PipelineLayoutStorageAttachment const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class PipelineLayoutStorageAttachment:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     offset: Any = 0  # type: uint64_t , default: 0
     format: Any  # type: TextureFormat , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class ComputeState:
@@ -561,6 +642,7 @@ class ComputeState:
     constant_count: Any = 0  # type: size_t , default: 0
     constants: Any  # type: ConstantEntry const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class QuerySetDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -568,15 +650,18 @@ class QuerySetDescriptor:
     type: Any  # type: QueryType , default: None
     count: Any  # type: uint32_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class QueueDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class RenderBundleDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class RenderBundleEncoderDescriptor:
@@ -589,6 +674,7 @@ class RenderBundleEncoderDescriptor:
     depth_read_only: Any = False  # type: Bool , default: False
     stencil_read_only: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class RenderPassColorAttachment:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -599,10 +685,12 @@ class RenderPassColorAttachment:
     store_op: Any  # type: StoreOp , default: None
     clear_value: Any  # type: Color , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnRenderPassColorAttachmentRenderToSingleSampled:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     implicit_sample_count: Any = 1  # type: uint32_t , default: 1
+
 
 @dataclass(frozen=True, kw_only=True)
 class RenderPassDepthStencilAttachment:
@@ -610,12 +698,13 @@ class RenderPassDepthStencilAttachment:
     view: Any  # type: TextureView , default: None
     depth_load_op: Any  # type: LoadOp , default: None
     depth_store_op: Any  # type: StoreOp , default: None
-    depth_clear_value: Any = nan  # type: float , default: nan
+    depth_clear_value: Any = None  # type: float , default: None
     depth_read_only: Any = False  # type: Bool , default: False
     stencil_load_op: Any  # type: LoadOp , default: None
     stencil_store_op: Any  # type: StoreOp , default: None
     stencil_clear_value: Any = 0  # type: uint32_t , default: 0
     stencil_read_only: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class RenderPassDescriptor:
@@ -627,10 +716,12 @@ class RenderPassDescriptor:
     occlusion_query_set: Optional[Any] = None  # type: QuerySet , default: None
     timestamp_writes: Optional[Any] = None  # type: PassTimestampWrites const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class RenderPassMaxDrawCount:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     max_draw_count: Any = 50000000  # type: uint64_t , default: 50000000
+
 
 @dataclass(frozen=True, kw_only=True)
 class RenderPassDescriptorExpandResolveRect:
@@ -640,12 +731,14 @@ class RenderPassDescriptorExpandResolveRect:
     width: Any  # type: uint32_t , default: None
     height: Any  # type: uint32_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class RenderPassPixelLocalStorage:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     total_pixel_local_storage_size: Any  # type: uint64_t , default: None
     storage_attachment_count: Any = 0  # type: size_t , default: 0
     storage_attachments: Any  # type: RenderPassStorageAttachment const * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class RenderPassStorageAttachment:
@@ -655,6 +748,7 @@ class RenderPassStorageAttachment:
     load_op: Any  # type: LoadOp , default: None
     store_op: Any  # type: StoreOp , default: None
     clear_value: Any  # type: Color , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class VertexState:
@@ -666,6 +760,7 @@ class VertexState:
     buffer_count: Any = 0  # type: size_t , default: 0
     buffers: Any  # type: VertexBufferLayout const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class PrimitiveState:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -674,6 +769,7 @@ class PrimitiveState:
     front_face: Any = FrontFace.CCW  # type: FrontFace , default: FrontFace.CCW
     cull_mode: Any = CullMode.NONE  # type: CullMode , default: CullMode.NONE
     unclipped_depth: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class DepthStencilState:
@@ -689,12 +785,14 @@ class DepthStencilState:
     depth_bias_slope_scale: Any = 0.0  # type: float , default: 0.0
     depth_bias_clamp: Any = 0.0  # type: float , default: 0.0
 
+
 @dataclass(frozen=True, kw_only=True)
 class MultisampleState:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     count: Any = 1  # type: uint32_t , default: 1
     mask: Any = 0xFFFFFFFF  # type: uint32_t , default: 0xFFFFFFFF
     alpha_to_coverage_enabled: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class FragmentState:
@@ -706,6 +804,7 @@ class FragmentState:
     target_count: Any  # type: size_t , default: None
     targets: Any  # type: ColorTargetState const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class ColorTargetState:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
@@ -713,15 +812,18 @@ class ColorTargetState:
     blend: Optional[Any] = None  # type: BlendState const * , default: None
     write_mask: Any = ColorWriteMask.ALL  # type: ColorWriteMask , default: ColorWriteMask.ALL
 
+
 @dataclass(frozen=True, kw_only=True)
 class ColorTargetStateExpandResolveTextureDawn:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     enabled: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class BlendState:
     color: Any  # type: BlendComponent , default: None
     alpha: Any  # type: BlendComponent , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class RenderPipelineDescriptor:
@@ -733,6 +835,7 @@ class RenderPipelineDescriptor:
     depth_stencil: Optional[Any] = None  # type: DepthStencilState const * , default: None
     multisample: Any  # type: MultisampleState , default: None
     fragment: Optional[Any] = None  # type: FragmentState const * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SamplerDescriptor:
@@ -749,10 +852,12 @@ class SamplerDescriptor:
     compare: Any  # type: CompareFunction , default: None
     max_anisotropy: Any = 1  # type: uint16_t , default: 1
 
+
 @dataclass(frozen=True, kw_only=True)
 class ShaderModuleDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class ShaderSourceSPIRV:
@@ -760,20 +865,24 @@ class ShaderSourceSPIRV:
     code_size: Any  # type: uint32_t , default: None
     code: Any  # type: uint32_t const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class ShaderSourceWGSL:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     code: Any  # type: StringView , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class DawnShaderModuleSPIRVOptionsDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     allow_non_uniform_derivatives: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class ShaderModuleCompilationOptions:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     strict_math: Any  # type: Bool , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class StencilFaceState:
@@ -782,25 +891,30 @@ class StencilFaceState:
     depth_fail_op: Any = StencilOperation.KEEP  # type: StencilOperation , default: StencilOperation.KEEP
     pass_op: Any = StencilOperation.KEEP  # type: StencilOperation , default: StencilOperation.KEEP
 
+
 @dataclass(frozen=True, kw_only=True)
 class SurfaceDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SurfaceSourceAndroidNativeWindow:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     window: Any  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class EmscriptenSurfaceSourceCanvasHTMLSelector:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     selector: Any  # type: StringView , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SurfaceSourceMetalLayer:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     layer: Any  # type: void * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SurfaceSourceWindowsHWND:
@@ -808,11 +922,13 @@ class SurfaceSourceWindowsHWND:
     hinstance: Any  # type: void * , default: None
     hwnd: Any  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SurfaceSourceXCBWindow:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     connection: Any  # type: void * , default: None
     window: Any  # type: uint32_t , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SurfaceSourceXlibWindow:
@@ -820,26 +936,31 @@ class SurfaceSourceXlibWindow:
     display: Any  # type: void * , default: None
     window: Any  # type: uint64_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SurfaceSourceWaylandSurface:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     display: Any  # type: void * , default: None
     surface: Any  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SurfaceDescriptorFromWindowsCoreWindow:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     core_window: Any  # type: void * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class SurfaceDescriptorFromWindowsUWPSwapChainPanel:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     swap_chain_panel: Any  # type: void * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class SurfaceDescriptorFromWindowsWinUISwapChainPanel:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     swap_chain_panel: Any  # type: void * , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class TextureDescriptor:
@@ -854,10 +975,12 @@ class TextureDescriptor:
     view_format_count: Any = 0  # type: size_t , default: 0
     view_formats: Any = None  # type: TextureFormat const * , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class TextureBindingViewDimensionDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     texture_binding_view_dimension: Any  # type: TextureViewDimension , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class TextureViewDescriptor:
@@ -871,6 +994,7 @@ class TextureViewDescriptor:
     array_layer_count: Any = 4294967295  # type: uint32_t , default: 4294967295
     aspect: Any = TextureAspect.ALL  # type: TextureAspect , default: TextureAspect.ALL
     usage: Any  # type: TextureUsage , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class YCbCrVkDescriptor:
@@ -888,25 +1012,30 @@ class YCbCrVkDescriptor:
     force_explicit_reconstruction: Any = False  # type: Bool , default: False
     external_format: Any = 0  # type: uint64_t , default: 0
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnTextureInternalUsageDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     internal_usage: Any  # type: TextureUsage , default: None
+
 
 @dataclass(frozen=True, kw_only=True)
 class DawnEncoderInternalUsageDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     use_internal_usages: Any = False  # type: Bool , default: False
 
+
 @dataclass(frozen=True, kw_only=True)
 class MemoryHeapInfo:
     properties: Any  # type: HeapProperty , default: None
     size: Any  # type: uint64_t , default: None
 
+
 @dataclass(frozen=True, kw_only=True)
 class DawnBufferDescriptorErrorInfoFromWireClient:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     out_of_memory: Any = False  # type: Bool , default: False
+
 
 @dataclass(frozen=True, kw_only=True)
 class SubgroupMatrixConfig:
@@ -915,4 +1044,5 @@ class SubgroupMatrixConfig:
     M: Any  # type: uint32_t , default: None
     N: Any  # type: uint32_t , default: None
     K: Any  # type: uint32_t , default: None
+
 

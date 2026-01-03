@@ -16,7 +16,7 @@ default_map = {
     "mip level count undefined": 0xFFFFFFFF,
     "array layer count undefined": 0xFFFFFFFF,
     #"depth clear value undefined": float('nan'),
-    "depth clear value undefined": None,
+    "depth clear value undefined": None, #TODO: handle float('nan') properly
     "query set index undefined": 0xFFFFFFFF,
     "whole size": 0xFFFFFFFFFFFFFFFF,
 }

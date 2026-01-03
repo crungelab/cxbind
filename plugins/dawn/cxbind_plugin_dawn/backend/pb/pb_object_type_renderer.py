@@ -1,11 +1,10 @@
 from loguru import logger
 
 from ...name import Name
-from ...node import Method, RecordMember
+from ...node import Method, RecordMember, StructureType
 
 from ..render_stream import RenderStream
-from ..object_type_renderer import ObjectTypeRenderer, ObjectType
-
+from ..object_type_renderer import ObjectTypeRenderer
 
 def get_arg_type_string(arg) -> str:
     arg_type = ""
@@ -75,29 +74,6 @@ class BufferArgWrapper(ArgWrapper):
         out(value)
 
 
-'''
-    def render(self, out: RenderStream):
-        arg_name = self.arg.name.camelCase()
-        arg_type = get_arg_type_string(self.arg)
-        info_name = f"{self.arg.name.camelCase()}Info"
-
-        if self.arg.optional or self.arg.default_value is not None:
-            value = f"""\
-            py::buffer_info {info_name} = {arg_name}.has_value() ? {arg_name}.value().request() : py::buffer_info();
-            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
-            auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
-            """
-        else:
-            value = f"""\
-            py::buffer_info {info_name} = {arg_name}.request();
-            {arg_type} {self.arg.annotation} _{arg_name} = ({arg_type} {self.arg.annotation}){info_name}.ptr;
-            auto {self.length_member.name.camelCase()} = {info_name}.size * {info_name}.itemsize;
-            """
-
-        out(value)
-'''
-
-
 class VectorArgWrapper(ArgWrapper):
     def __init__(self, arg: RecordMember, length_member: RecordMember):
         super().__init__(arg)
@@ -116,6 +92,22 @@ class VectorArgWrapper(ArgWrapper):
         """
         out(value)
 
+
+class DescriptorArgWrapper(ArgWrapper):
+    def __init__(self, arg: RecordMember):
+        super().__init__(arg)
+
+    def make_wrapper_type(self):
+        return f"py::handle"
+
+    def render(self, out: RenderStream):
+        logger.debug(f"DescriptorArgWrapper: {self.arg.name} type: {self.arg.type.name.get()}")
+        arg_name = self.arg.name.camelCase()
+        arg_type = get_arg_type_string(self.arg)
+        value = f"""\
+        {arg_type} {self.arg.annotation} _{arg_name} = build{self.arg.type.name.CamelCase()}({arg_name});
+        """
+        out(value)
 
 class PbObjectTypeRenderer(ObjectTypeRenderer):
     def render(self):
@@ -147,6 +139,14 @@ class PbObjectTypeRenderer(ObjectTypeRenderer):
                 if arg.length_member is not None
             }
 
+            '''
+            excluded_names.update({
+                arg.name
+                for arg in method.args
+                if isinstance(arg.type, StructureType) and not arg.type.output
+            })
+            '''
+
             if excluded_names:
                 use_lambda = True
 
@@ -158,9 +158,20 @@ class PbObjectTypeRenderer(ObjectTypeRenderer):
             arg_wrappers = {}
 
             for arg in args:
-                if arg.length_member is not None:
-                    arg_type = arg.type
-                    arg_wrapper = None
+                arg_wrapper = None
+                arg_type = arg.type
+
+                if isinstance(arg_type, StructureType) and not arg_type.output:
+                #if isinstance(arg_type, StructureType) and arg_type.extensible == "in":
+                    logger.debug(f"Descriptor arg detected: {arg.name} of type {arg.type.name.get()}")
+                    arg_wrapper = DescriptorArgWrapper(arg)
+                    arg_wrappers[arg.name] = arg_wrapper
+                    snippet_list.append(arg_wrapper)
+                    use_lambda = True
+
+                elif arg.length_member is not None:
+                    #arg_type = arg.type
+                    #arg_wrapper = None
                     if arg_type.name.native:
                         arg_wrapper = BufferArgWrapper(arg, arg.length_member)
                     else:

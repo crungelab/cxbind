@@ -3991,7 +3991,11 @@ _Adapter
     .def("get_instance",&pywgpu::Adapter::GetInstance
         , py::return_value_policy::automatic_reference)
         
-    .def("get_limits",&pywgpu::Adapter::GetLimits
+    .def("get_limits",[](pywgpu::Adapter& self, py::handle limits) {
+        pywgpu::Limits * _limits = buildLimits(limits);
+        
+        return self.GetLimits(_limits);
+        }
         , py::arg("limits")
         , py::return_value_policy::automatic_reference)
         
@@ -4003,15 +4007,27 @@ _Adapter
         , py::arg("feature")
         , py::return_value_policy::automatic_reference)
         
-    .def("get_features",&pywgpu::Adapter::GetFeatures
+    .def("get_features",[](pywgpu::Adapter& self, py::handle features) {
+        pywgpu::SupportedFeatures * _features = buildSupportedFeatures(features);
+        
+        return self.GetFeatures(_features);
+        }
         , py::arg("features")
         , py::return_value_policy::automatic_reference)
         
-    .def("_request_device",&pywgpu::Adapter::RequestDevice
+    .def("_request_device",[](pywgpu::Adapter& self, py::handle options, RequestDeviceCallbackInfo callbackInfo) {
+        pywgpu::DeviceDescriptor const* _options = buildDeviceDescriptor(options);
+        
+        return self.RequestDevice(_options, callbackInfo);
+        }
         , py::arg("options"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_device",&pywgpu::Adapter::CreateDevice
+    .def("create_device",[](pywgpu::Adapter& self, py::handle descriptor) {
+        pywgpu::DeviceDescriptor const* _descriptor = buildDeviceDescriptor(descriptor);
+        
+        return self.CreateDevice(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
@@ -4025,7 +4041,11 @@ py::class_<BindGroup> _BindGroup(m, "BindGroup");
 registry.on(m, "BindGroup", _BindGroup);
 
 _BindGroup
-    .def("set_label",&pywgpu::BindGroup::SetLabel
+    .def("set_label",[](pywgpu::BindGroup& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4035,7 +4055,11 @@ py::class_<BindGroupLayout> _BindGroupLayout(m, "BindGroupLayout");
 registry.on(m, "BindGroupLayout", _BindGroupLayout);
 
 _BindGroupLayout
-    .def("set_label",&pywgpu::BindGroupLayout::SetLabel
+    .def("set_label",[](pywgpu::BindGroupLayout& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4057,27 +4081,31 @@ _Buffer
         , py::arg("offset") = 0, py::arg("size") = kWholeMapSize
         , py::return_value_policy::automatic_reference)
         
-    .def("write_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data) {
+    .def("write_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data, size_t size) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.WriteMappedRange(offset, _data, size);
         }
-        , py::arg("offset"), py::arg("data")
+        , py::arg("offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
-    .def("read_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data) {
+    .def("read_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data, size_t size) {
         py::buffer_info dataInfo = data.request();
         void * _data = (void *)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.ReadMappedRange(offset, _data, size);
         }
-        , py::arg("offset"), py::arg("data")
+        , py::arg("offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::Buffer::SetLabel
+    .def("set_label",[](pywgpu::Buffer& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4102,7 +4130,11 @@ py::class_<CommandBuffer> _CommandBuffer(m, "CommandBuffer");
 registry.on(m, "CommandBuffer", _CommandBuffer);
 
 _CommandBuffer
-    .def("set_label",&pywgpu::CommandBuffer::SetLabel
+    .def("set_label",[](pywgpu::CommandBuffer& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4112,15 +4144,27 @@ py::class_<CommandEncoder> _CommandEncoder(m, "CommandEncoder");
 registry.on(m, "CommandEncoder", _CommandEncoder);
 
 _CommandEncoder
-    .def("finish",&pywgpu::CommandEncoder::Finish
+    .def("finish",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+        pywgpu::CommandBufferDescriptor const* _descriptor = buildCommandBufferDescriptor(descriptor);
+        
+        return self.Finish(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("begin_compute_pass",&pywgpu::CommandEncoder::BeginComputePass
+    .def("begin_compute_pass",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+        pywgpu::ComputePassDescriptor const* _descriptor = buildComputePassDescriptor(descriptor);
+        
+        return self.BeginComputePass(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("begin_render_pass",&pywgpu::CommandEncoder::BeginRenderPass
+    .def("begin_render_pass",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+        pywgpu::RenderPassDescriptor const* _descriptor = buildRenderPassDescriptor(descriptor);
+        
+        return self.BeginRenderPass(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
@@ -4128,15 +4172,39 @@ _CommandEncoder
         , py::arg("source"), py::arg("source_offset"), py::arg("destination"), py::arg("destination_offset"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
-    .def("copy_buffer_to_texture",&pywgpu::CommandEncoder::CopyBufferToTexture
+    .def("copy_buffer_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+        pywgpu::TexelCopyBufferInfo const* _source = buildTexelCopyBufferInfo(source);
+        
+        pywgpu::TexelCopyTextureInfo const* _destination = buildTexelCopyTextureInfo(destination);
+        
+        pywgpu::Extent3D const* _copySize = buildExtent3D(copySize);
+        
+        return self.CopyBufferToTexture(_source, _destination, _copySize);
+        }
         , py::arg("source"), py::arg("destination"), py::arg("copy_size")
         , py::return_value_policy::automatic_reference)
         
-    .def("copy_texture_to_buffer",&pywgpu::CommandEncoder::CopyTextureToBuffer
+    .def("copy_texture_to_buffer",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+        pywgpu::TexelCopyTextureInfo const* _source = buildTexelCopyTextureInfo(source);
+        
+        pywgpu::TexelCopyBufferInfo const* _destination = buildTexelCopyBufferInfo(destination);
+        
+        pywgpu::Extent3D const* _copySize = buildExtent3D(copySize);
+        
+        return self.CopyTextureToBuffer(_source, _destination, _copySize);
+        }
         , py::arg("source"), py::arg("destination"), py::arg("copy_size")
         , py::return_value_policy::automatic_reference)
         
-    .def("copy_texture_to_texture",&pywgpu::CommandEncoder::CopyTextureToTexture
+    .def("copy_texture_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+        pywgpu::TexelCopyTextureInfo const* _source = buildTexelCopyTextureInfo(source);
+        
+        pywgpu::TexelCopyTextureInfo const* _destination = buildTexelCopyTextureInfo(destination);
+        
+        pywgpu::Extent3D const* _copySize = buildExtent3D(copySize);
+        
+        return self.CopyTextureToTexture(_source, _destination, _copySize);
+        }
         , py::arg("source"), py::arg("destination"), py::arg("copy_size")
         , py::return_value_policy::automatic_reference)
         
@@ -4144,18 +4212,30 @@ _CommandEncoder
         , py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize
         , py::return_value_policy::automatic_reference)
         
-    .def("inject_validation_error",&pywgpu::CommandEncoder::InjectValidationError
+    .def("inject_validation_error",[](pywgpu::CommandEncoder& self, py::handle message) {
+        pywgpu::StringView None _message = buildStringView(message);
+        
+        return self.InjectValidationError(_message);
+        }
         , py::arg("message")
         , py::return_value_policy::automatic_reference)
         
-    .def("insert_debug_marker",&pywgpu::CommandEncoder::InsertDebugMarker
+    .def("insert_debug_marker",[](pywgpu::CommandEncoder& self, py::handle markerLabel) {
+        pywgpu::StringView None _markerLabel = buildStringView(markerLabel);
+        
+        return self.InsertDebugMarker(_markerLabel);
+        }
         , py::arg("marker_label")
         , py::return_value_policy::automatic_reference)
         
     .def("pop_debug_group",&pywgpu::CommandEncoder::PopDebugGroup
         , py::return_value_policy::automatic_reference)
         
-    .def("push_debug_group",&pywgpu::CommandEncoder::PushDebugGroup
+    .def("push_debug_group",[](pywgpu::CommandEncoder& self, py::handle groupLabel) {
+        pywgpu::StringView None _groupLabel = buildStringView(groupLabel);
+        
+        return self.PushDebugGroup(_groupLabel);
+        }
         , py::arg("group_label")
         , py::return_value_policy::automatic_reference)
         
@@ -4163,21 +4243,25 @@ _CommandEncoder
         , py::arg("query_set"), py::arg("first_query"), py::arg("query_count"), py::arg("destination"), py::arg("destination_offset")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_buffer",[](pywgpu::CommandEncoder& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    .def("write_buffer",[](pywgpu::CommandEncoder& self, Buffer buffer, uint64_t bufferOffset, py::buffer data, uint64_t size) {
         py::buffer_info dataInfo = data.request();
         uint8_t const* _data = (uint8_t const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.WriteBuffer(buffer, bufferOffset, _data, size);
         }
-        , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data")
+        , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
     .def("write_timestamp",&pywgpu::CommandEncoder::WriteTimestamp
         , py::arg("query_set"), py::arg("query_index")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::CommandEncoder::SetLabel
+    .def("set_label",[](pywgpu::CommandEncoder& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4187,14 +4271,22 @@ py::class_<ComputePassEncoder> _ComputePassEncoder(m, "ComputePassEncoder");
 registry.on(m, "ComputePassEncoder", _ComputePassEncoder);
 
 _ComputePassEncoder
-    .def("insert_debug_marker",&pywgpu::ComputePassEncoder::InsertDebugMarker
+    .def("insert_debug_marker",[](pywgpu::ComputePassEncoder& self, py::handle markerLabel) {
+        pywgpu::StringView None _markerLabel = buildStringView(markerLabel);
+        
+        return self.InsertDebugMarker(_markerLabel);
+        }
         , py::arg("marker_label")
         , py::return_value_policy::automatic_reference)
         
     .def("pop_debug_group",&pywgpu::ComputePassEncoder::PopDebugGroup
         , py::return_value_policy::automatic_reference)
         
-    .def("push_debug_group",&pywgpu::ComputePassEncoder::PushDebugGroup
+    .def("push_debug_group",[](pywgpu::ComputePassEncoder& self, py::handle groupLabel) {
+        pywgpu::StringView None _groupLabel = buildStringView(groupLabel);
+        
+        return self.PushDebugGroup(_groupLabel);
+        }
         , py::arg("group_label")
         , py::return_value_policy::automatic_reference)
         
@@ -4202,14 +4294,14 @@ _ComputePassEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, std::optional<py::buffer> dynamicOffsets) {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = ((dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
         }
-        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr
+        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offset_count") = 0, py::arg("dynamic_offsets") = nullptr
         , py::return_value_policy::automatic_reference)
         
     .def("write_timestamp",&pywgpu::ComputePassEncoder::WriteTimestamp
@@ -4227,18 +4319,22 @@ _ComputePassEncoder
     .def("end",&pywgpu::ComputePassEncoder::End
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::ComputePassEncoder::SetLabel
+    .def("set_label",[](pywgpu::ComputePassEncoder& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_immediate_data",[](pywgpu::ComputePassEncoder& self, uint32_t offset, py::buffer data) {
+    .def("set_immediate_data",[](pywgpu::ComputePassEncoder& self, uint32_t offset, py::buffer data, size_t size) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetImmediateData(offset, _data, size);
         }
-        , py::arg("offset"), py::arg("data")
+        , py::arg("offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
     ;
@@ -4251,7 +4347,11 @@ _ComputePipeline
         , py::arg("group_index")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::ComputePipeline::SetLabel
+    .def("set_label",[](pywgpu::ComputePipeline& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4261,101 +4361,195 @@ py::class_<Device> _Device(m, "Device");
 registry.on(m, "Device", _Device);
 
 _Device
-    .def("create_bind_group",&pywgpu::Device::CreateBindGroup
+    .def("create_bind_group",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::BindGroupDescriptor const* _descriptor = buildBindGroupDescriptor(descriptor);
+        
+        return self.CreateBindGroup(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_bind_group_layout",&pywgpu::Device::CreateBindGroupLayout
+    .def("create_bind_group_layout",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::BindGroupLayoutDescriptor const* _descriptor = buildBindGroupLayoutDescriptor(descriptor);
+        
+        return self.CreateBindGroupLayout(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_buffer",&pywgpu::Device::CreateBuffer
+    .def("create_buffer",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::BufferDescriptor const* _descriptor = buildBufferDescriptor(descriptor);
+        
+        return self.CreateBuffer(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_error_buffer",&pywgpu::Device::CreateErrorBuffer
+    .def("create_error_buffer",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::BufferDescriptor const* _descriptor = buildBufferDescriptor(descriptor);
+        
+        return self.CreateErrorBuffer(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_command_encoder",&pywgpu::Device::CreateCommandEncoder
+    .def("create_command_encoder",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::CommandEncoderDescriptor const* _descriptor = buildCommandEncoderDescriptor(descriptor);
+        
+        return self.CreateCommandEncoder(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("create_compute_pipeline",&pywgpu::Device::CreateComputePipeline
+    .def("create_compute_pipeline",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::ComputePipelineDescriptor const* _descriptor = buildComputePipelineDescriptor(descriptor);
+        
+        return self.CreateComputePipeline(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("_create_compute_pipeline_async",&pywgpu::Device::CreateComputePipelineAsync
+    .def("_create_compute_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) {
+        pywgpu::ComputePipelineDescriptor const* _descriptor = buildComputePipelineDescriptor(descriptor);
+        
+        return self.CreateComputePipelineAsync(_descriptor, callbackInfo);
+        }
         , py::arg("descriptor"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_external_texture",&pywgpu::Device::CreateExternalTexture
+    .def("create_external_texture",[](pywgpu::Device& self, py::handle externalTextureDescriptor) {
+        pywgpu::ExternalTextureDescriptor const* _externalTextureDescriptor = buildExternalTextureDescriptor(externalTextureDescriptor);
+        
+        return self.CreateExternalTexture(_externalTextureDescriptor);
+        }
         , py::arg("external_texture_descriptor")
         , py::return_value_policy::automatic_reference)
         
     .def("create_error_external_texture",&pywgpu::Device::CreateErrorExternalTexture
         , py::return_value_policy::automatic_reference)
         
-    .def("create_pipeline_layout",&pywgpu::Device::CreatePipelineLayout
+    .def("create_pipeline_layout",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::PipelineLayoutDescriptor const* _descriptor = buildPipelineLayoutDescriptor(descriptor);
+        
+        return self.CreatePipelineLayout(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_query_set",&pywgpu::Device::CreateQuerySet
+    .def("create_query_set",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::QuerySetDescriptor const* _descriptor = buildQuerySetDescriptor(descriptor);
+        
+        return self.CreateQuerySet(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("_create_render_pipeline_async",&pywgpu::Device::CreateRenderPipelineAsync
+    .def("_create_render_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) {
+        pywgpu::RenderPipelineDescriptor const* _descriptor = buildRenderPipelineDescriptor(descriptor);
+        
+        return self.CreateRenderPipelineAsync(_descriptor, callbackInfo);
+        }
         , py::arg("descriptor"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_render_bundle_encoder",&pywgpu::Device::CreateRenderBundleEncoder
+    .def("create_render_bundle_encoder",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::RenderBundleEncoderDescriptor const* _descriptor = buildRenderBundleEncoderDescriptor(descriptor);
+        
+        return self.CreateRenderBundleEncoder(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_render_pipeline",&pywgpu::Device::CreateRenderPipeline
+    .def("create_render_pipeline",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::RenderPipelineDescriptor const* _descriptor = buildRenderPipelineDescriptor(descriptor);
+        
+        return self.CreateRenderPipeline(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_sampler",&pywgpu::Device::CreateSampler
+    .def("create_sampler",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::SamplerDescriptor const* _descriptor = buildSamplerDescriptor(descriptor);
+        
+        return self.CreateSampler(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("create_shader_module",&pywgpu::Device::CreateShaderModule
+    .def("create_shader_module",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::ShaderModuleDescriptor const* _descriptor = buildShaderModuleDescriptor(descriptor);
+        
+        return self.CreateShaderModule(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_error_shader_module",&pywgpu::Device::CreateErrorShaderModule
+    .def("create_error_shader_module",[](pywgpu::Device& self, py::handle descriptor, py::handle errorMessage) {
+        pywgpu::ShaderModuleDescriptor const* _descriptor = buildShaderModuleDescriptor(descriptor);
+        
+        pywgpu::StringView None _errorMessage = buildStringView(errorMessage);
+        
+        return self.CreateErrorShaderModule(_descriptor, _errorMessage);
+        }
         , py::arg("descriptor"), py::arg("error_message")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_texture",&pywgpu::Device::CreateTexture
+    .def("create_texture",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::TextureDescriptor const* _descriptor = buildTextureDescriptor(descriptor);
+        
+        return self.CreateTexture(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("import_shared_buffer_memory",&pywgpu::Device::ImportSharedBufferMemory
+    .def("import_shared_buffer_memory",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::SharedBufferMemoryDescriptor const* _descriptor = buildSharedBufferMemoryDescriptor(descriptor);
+        
+        return self.ImportSharedBufferMemory(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("import_shared_texture_memory",&pywgpu::Device::ImportSharedTextureMemory
+    .def("import_shared_texture_memory",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::SharedTextureMemoryDescriptor const* _descriptor = buildSharedTextureMemoryDescriptor(descriptor);
+        
+        return self.ImportSharedTextureMemory(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("import_shared_fence",&pywgpu::Device::ImportSharedFence
+    .def("import_shared_fence",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::SharedFenceDescriptor const* _descriptor = buildSharedFenceDescriptor(descriptor);
+        
+        return self.ImportSharedFence(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_error_texture",&pywgpu::Device::CreateErrorTexture
+    .def("create_error_texture",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::TextureDescriptor const* _descriptor = buildTextureDescriptor(descriptor);
+        
+        return self.CreateErrorTexture(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
     .def("destroy",&pywgpu::Device::Destroy
         , py::return_value_policy::automatic_reference)
         
-    .def("get_a_hardware_buffer_properties",&pywgpu::Device::GetAHardwareBufferProperties
+    .def("get_a_hardware_buffer_properties",[](pywgpu::Device& self, void * handle, py::handle properties) {
+        pywgpu::AHardwareBufferProperties * _properties = buildAHardwareBufferProperties(properties);
+        
+        return self.GetAHardwareBufferProperties(handle, _properties);
+        }
         , py::arg("handle"), py::arg("properties")
         , py::return_value_policy::automatic_reference)
         
-    .def("get_limits",&pywgpu::Device::GetLimits
+    .def("get_limits",[](pywgpu::Device& self, py::handle limits) {
+        pywgpu::Limits * _limits = buildLimits(limits);
+        
+        return self.GetLimits(_limits);
+        }
         , py::arg("limits")
         , py::return_value_policy::automatic_reference)
         
@@ -4366,7 +4560,11 @@ _Device
         , py::arg("feature")
         , py::return_value_policy::automatic_reference)
         
-    .def("get_features",&pywgpu::Device::GetFeatures
+    .def("get_features",[](pywgpu::Device& self, py::handle features) {
+        pywgpu::SupportedFeatures * _features = buildSupportedFeatures(features);
+        
+        return self.GetFeatures(_features);
+        }
         , py::arg("features")
         , py::return_value_policy::automatic_reference)
         
@@ -4380,11 +4578,19 @@ _Device
     .def("get_queue",&pywgpu::Device::GetQueue
         , py::return_value_policy::automatic_reference)
         
-    .def("inject_error",&pywgpu::Device::InjectError
+    .def("inject_error",[](pywgpu::Device& self, ErrorType type, py::handle message) {
+        pywgpu::StringView None _message = buildStringView(message);
+        
+        return self.InjectError(type, _message);
+        }
         , py::arg("type"), py::arg("message")
         , py::return_value_policy::automatic_reference)
         
-    .def("force_loss",&pywgpu::Device::ForceLoss
+    .def("force_loss",[](pywgpu::Device& self, DeviceLostReason type, py::handle message) {
+        pywgpu::StringView None _message = buildStringView(message);
+        
+        return self.ForceLoss(type, _message);
+        }
         , py::arg("type"), py::arg("message")
         , py::return_value_policy::automatic_reference)
         
@@ -4403,11 +4609,19 @@ _Device
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::Device::SetLabel
+    .def("set_label",[](pywgpu::Device& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
-    .def("validate_texture_descriptor",&pywgpu::Device::ValidateTextureDescriptor
+    .def("validate_texture_descriptor",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::TextureDescriptor const* _descriptor = buildTextureDescriptor(descriptor);
+        
+        return self.ValidateTextureDescriptor(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
@@ -4417,7 +4631,11 @@ py::class_<ExternalTexture> _ExternalTexture(m, "ExternalTexture");
 registry.on(m, "ExternalTexture", _ExternalTexture);
 
 _ExternalTexture
-    .def("set_label",&pywgpu::ExternalTexture::SetLabel
+    .def("set_label",[](pywgpu::ExternalTexture& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4436,7 +4654,11 @@ py::class_<SharedBufferMemory> _SharedBufferMemory(m, "SharedBufferMemory");
 registry.on(m, "SharedBufferMemory", _SharedBufferMemory);
 
 _SharedBufferMemory
-    .def("set_label",&pywgpu::SharedBufferMemory::SetLabel
+    .def("set_label",[](pywgpu::SharedBufferMemory& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4444,11 +4666,19 @@ _SharedBufferMemory
         , py::arg("properties")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_buffer",&pywgpu::SharedBufferMemory::CreateBuffer
+    .def("create_buffer",[](pywgpu::SharedBufferMemory& self, py::handle descriptor) {
+        pywgpu::BufferDescriptor const* _descriptor = buildBufferDescriptor(descriptor);
+        
+        return self.CreateBuffer(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("begin_access",&pywgpu::SharedBufferMemory::BeginAccess
+    .def("begin_access",[](pywgpu::SharedBufferMemory& self, Buffer buffer, py::handle descriptor) {
+        pywgpu::SharedBufferMemoryBeginAccessDescriptor const* _descriptor = buildSharedBufferMemoryBeginAccessDescriptor(descriptor);
+        
+        return self.BeginAccess(buffer, _descriptor);
+        }
         , py::arg("buffer"), py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
@@ -4465,7 +4695,11 @@ py::class_<SharedTextureMemory> _SharedTextureMemory(m, "SharedTextureMemory");
 registry.on(m, "SharedTextureMemory", _SharedTextureMemory);
 
 _SharedTextureMemory
-    .def("set_label",&pywgpu::SharedTextureMemory::SetLabel
+    .def("set_label",[](pywgpu::SharedTextureMemory& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4473,11 +4707,19 @@ _SharedTextureMemory
         , py::arg("properties")
         , py::return_value_policy::automatic_reference)
         
-    .def("create_texture",&pywgpu::SharedTextureMemory::CreateTexture
+    .def("create_texture",[](pywgpu::SharedTextureMemory& self, py::handle descriptor) {
+        pywgpu::TextureDescriptor const* _descriptor = buildTextureDescriptor(descriptor);
+        
+        return self.CreateTexture(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("begin_access",&pywgpu::SharedTextureMemory::BeginAccess
+    .def("begin_access",[](pywgpu::SharedTextureMemory& self, Texture texture, py::handle descriptor) {
+        pywgpu::SharedTextureMemoryBeginAccessDescriptor const* _descriptor = buildSharedTextureMemoryBeginAccessDescriptor(descriptor);
+        
+        return self.BeginAccess(texture, _descriptor);
+        }
         , py::arg("texture"), py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
@@ -4504,23 +4746,30 @@ py::class_<Instance> _Instance(m, "Instance");
 registry.on(m, "Instance", _Instance);
 
 _Instance
-    .def("create_surface",&pywgpu::Instance::CreateSurface
+    .def("create_surface",[](pywgpu::Instance& self, py::handle descriptor) {
+        pywgpu::SurfaceDescriptor const* _descriptor = buildSurfaceDescriptor(descriptor);
+        
+        return self.CreateSurface(_descriptor);
+        }
         , py::arg("descriptor")
         , py::return_value_policy::automatic_reference)
         
     .def("process_events",&pywgpu::Instance::ProcessEvents
         , py::return_value_policy::automatic_reference)
         
-    .def("wait_any",[](pywgpu::Instance& self, std::vector<pywgpu::FutureWaitInfo> futures, uint64_t timeoutNS) {
-        pywgpu::FutureWaitInfo * _futures = (pywgpu::FutureWaitInfo *)futures.data();
-        auto futureCount = futures.size();
+    .def("wait_any",[](pywgpu::Instance& self, size_t futureCount, py::handle futures, uint64_t timeoutNS) {
+        pywgpu::FutureWaitInfo * _futures = buildFutureWaitInfo(futures);
         
         return self.WaitAny(futureCount, _futures, timeoutNS);
         }
-        , py::arg("futures"), py::arg("timeout_NS")
+        , py::arg("future_count"), py::arg("futures"), py::arg("timeout_NS")
         , py::return_value_policy::automatic_reference)
         
-    .def("_request_adapter",&pywgpu::Instance::RequestAdapter
+    .def("_request_adapter",[](pywgpu::Instance& self, py::handle options, RequestAdapterCallbackInfo callbackInfo) {
+        pywgpu::RequestAdapterOptions const* _options = buildRequestAdapterOptions(options);
+        
+        return self.RequestAdapter(_options, callbackInfo);
+        }
         , py::arg("options"), py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
@@ -4528,7 +4777,11 @@ _Instance
         , py::arg("feature")
         , py::return_value_policy::automatic_reference)
         
-    .def("get_WGSL_language_features",&pywgpu::Instance::GetWGSLLanguageFeatures
+    .def("get_WGSL_language_features",[](pywgpu::Instance& self, py::handle features) {
+        pywgpu::SupportedWGSLLanguageFeatures * _features = buildSupportedWGSLLanguageFeatures(features);
+        
+        return self.GetWGSLLanguageFeatures(_features);
+        }
         , py::arg("features")
         , py::return_value_policy::automatic_reference)
         
@@ -4538,7 +4791,11 @@ py::class_<PipelineLayout> _PipelineLayout(m, "PipelineLayout");
 registry.on(m, "PipelineLayout", _PipelineLayout);
 
 _PipelineLayout
-    .def("set_label",&pywgpu::PipelineLayout::SetLabel
+    .def("set_label",[](pywgpu::PipelineLayout& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4548,7 +4805,11 @@ py::class_<QuerySet> _QuerySet(m, "QuerySet");
 registry.on(m, "QuerySet", _QuerySet);
 
 _QuerySet
-    .def("set_label",&pywgpu::QuerySet::SetLabel
+    .def("set_label",[](pywgpu::QuerySet& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4567,48 +4828,78 @@ py::class_<Queue> _Queue(m, "Queue");
 registry.on(m, "Queue", _Queue);
 
 _Queue
-    .def("submit",[](pywgpu::Queue& self, std::vector<pywgpu::CommandBuffer> commands) {
+    .def("submit",[](pywgpu::Queue& self, size_t commandCount, std::vector<pywgpu::CommandBuffer> commands) {
         pywgpu::CommandBuffer const* _commands = (pywgpu::CommandBuffer const*)commands.data();
         auto commandCount = commands.size();
         
         return self.Submit(commandCount, _commands);
         }
-        , py::arg("commands")
+        , py::arg("command_count"), py::arg("commands")
         , py::return_value_policy::automatic_reference)
         
     .def("_on_submitted_work_done",&pywgpu::Queue::OnSubmittedWorkDone
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    .def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data, size_t size) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.WriteBuffer(buffer, bufferOffset, _data, size);
         }
-        , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data")
+        , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
-    .def("write_texture",[](pywgpu::Queue& self, TexelCopyTextureInfo const * destination, py::buffer data, TexelCopyBufferLayout const * dataLayout, Extent3D const * writeSize) {
+    .def("write_texture",[](pywgpu::Queue& self, py::handle destination, py::buffer data, size_t dataSize, py::handle dataLayout, py::handle writeSize) {
+        pywgpu::TexelCopyTextureInfo const* _destination = buildTexelCopyTextureInfo(destination);
+        
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto dataSize = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
-        return self.WriteTexture(destination, _data, dataSize, dataLayout, writeSize);
+        pywgpu::TexelCopyBufferLayout const* _dataLayout = buildTexelCopyBufferLayout(dataLayout);
+        
+        pywgpu::Extent3D const* _writeSize = buildExtent3D(writeSize);
+        
+        return self.WriteTexture(_destination, _data, dataSize, _dataLayout, _writeSize);
         }
-        , py::arg("destination"), py::arg("data"), py::arg("data_layout"), py::arg("write_size")
+        , py::arg("destination"), py::arg("data"), py::arg("data_size"), py::arg("data_layout"), py::arg("write_size")
         , py::return_value_policy::automatic_reference)
         
-    .def("copy_texture_for_browser",&pywgpu::Queue::CopyTextureForBrowser
+    .def("copy_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+        pywgpu::TexelCopyTextureInfo const* _source = buildTexelCopyTextureInfo(source);
+        
+        pywgpu::TexelCopyTextureInfo const* _destination = buildTexelCopyTextureInfo(destination);
+        
+        pywgpu::Extent3D const* _copySize = buildExtent3D(copySize);
+        
+        pywgpu::CopyTextureForBrowserOptions const* _options = buildCopyTextureForBrowserOptions(options);
+        
+        return self.CopyTextureForBrowser(_source, _destination, _copySize, _options);
+        }
         , py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options")
         , py::return_value_policy::automatic_reference)
         
-    .def("copy_external_texture_for_browser",&pywgpu::Queue::CopyExternalTextureForBrowser
+    .def("copy_external_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+        pywgpu::ImageCopyExternalTexture const* _source = buildImageCopyExternalTexture(source);
+        
+        pywgpu::TexelCopyTextureInfo const* _destination = buildTexelCopyTextureInfo(destination);
+        
+        pywgpu::Extent3D const* _copySize = buildExtent3D(copySize);
+        
+        pywgpu::CopyTextureForBrowserOptions const* _options = buildCopyTextureForBrowserOptions(options);
+        
+        return self.CopyExternalTextureForBrowser(_source, _destination, _copySize, _options);
+        }
         , py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::Queue::SetLabel
+    .def("set_label",[](pywgpu::Queue& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4618,7 +4909,11 @@ py::class_<RenderBundle> _RenderBundle(m, "RenderBundle");
 registry.on(m, "RenderBundle", _RenderBundle);
 
 _RenderBundle
-    .def("set_label",&pywgpu::RenderBundle::SetLabel
+    .def("set_label",[](pywgpu::RenderBundle& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4632,14 +4927,14 @@ _RenderBundleEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, std::optional<py::buffer> dynamicOffsets) {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = ((dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
         }
-        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr
+        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offset_count") = 0, py::arg("dynamic_offsets") = nullptr
         , py::return_value_policy::automatic_reference)
         
     .def("draw",&pywgpu::RenderBundleEncoder::Draw
@@ -4658,14 +4953,22 @@ _RenderBundleEncoder
         , py::arg("indirect_buffer"), py::arg("indirect_offset")
         , py::return_value_policy::automatic_reference)
         
-    .def("insert_debug_marker",&pywgpu::RenderBundleEncoder::InsertDebugMarker
+    .def("insert_debug_marker",[](pywgpu::RenderBundleEncoder& self, py::handle markerLabel) {
+        pywgpu::StringView None _markerLabel = buildStringView(markerLabel);
+        
+        return self.InsertDebugMarker(_markerLabel);
+        }
         , py::arg("marker_label")
         , py::return_value_policy::automatic_reference)
         
     .def("pop_debug_group",&pywgpu::RenderBundleEncoder::PopDebugGroup
         , py::return_value_policy::automatic_reference)
         
-    .def("push_debug_group",&pywgpu::RenderBundleEncoder::PushDebugGroup
+    .def("push_debug_group",[](pywgpu::RenderBundleEncoder& self, py::handle groupLabel) {
+        pywgpu::StringView None _groupLabel = buildStringView(groupLabel);
+        
+        return self.PushDebugGroup(_groupLabel);
+        }
         , py::arg("group_label")
         , py::return_value_policy::automatic_reference)
         
@@ -4677,22 +4980,30 @@ _RenderBundleEncoder
         , py::arg("buffer"), py::arg("format"), py::arg("offset") = 0, py::arg("size") = kWholeSize
         , py::return_value_policy::automatic_reference)
         
-    .def("finish",&pywgpu::RenderBundleEncoder::Finish
+    .def("finish",[](pywgpu::RenderBundleEncoder& self, py::handle descriptor) {
+        pywgpu::RenderBundleDescriptor const* _descriptor = buildRenderBundleDescriptor(descriptor);
+        
+        return self.Finish(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::RenderBundleEncoder::SetLabel
+    .def("set_label",[](pywgpu::RenderBundleEncoder& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_immediate_data",[](pywgpu::RenderBundleEncoder& self, uint32_t offset, py::buffer data) {
+    .def("set_immediate_data",[](pywgpu::RenderBundleEncoder& self, uint32_t offset, py::buffer data, size_t size) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetImmediateData(offset, _data, size);
         }
-        , py::arg("offset"), py::arg("data")
+        , py::arg("offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
     ;
@@ -4705,14 +5016,14 @@ _RenderPassEncoder
         , py::arg("pipeline")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, BindGroup group, size_t dynamicOffsetCount, std::optional<py::buffer> dynamicOffsets) {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = ((dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
         }
-        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr
+        , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offset_count") = 0, py::arg("dynamic_offsets") = nullptr
         , py::return_value_policy::automatic_reference)
         
     .def("draw",&pywgpu::RenderPassEncoder::Draw
@@ -4739,23 +5050,31 @@ _RenderPassEncoder
         , py::arg("indirect_buffer"), py::arg("indirect_offset"), py::arg("max_draw_count"), py::arg("draw_count_buffer"), py::arg("draw_count_buffer_offset") = 0
         , py::return_value_policy::automatic_reference)
         
-    .def("execute_bundles",[](pywgpu::RenderPassEncoder& self, std::vector<pywgpu::RenderBundle> bundles) {
+    .def("execute_bundles",[](pywgpu::RenderPassEncoder& self, size_t bundleCount, std::vector<pywgpu::RenderBundle> bundles) {
         pywgpu::RenderBundle const* _bundles = (pywgpu::RenderBundle const*)bundles.data();
         auto bundleCount = bundles.size();
         
         return self.ExecuteBundles(bundleCount, _bundles);
         }
-        , py::arg("bundles")
+        , py::arg("bundle_count"), py::arg("bundles")
         , py::return_value_policy::automatic_reference)
         
-    .def("insert_debug_marker",&pywgpu::RenderPassEncoder::InsertDebugMarker
+    .def("insert_debug_marker",[](pywgpu::RenderPassEncoder& self, py::handle markerLabel) {
+        pywgpu::StringView None _markerLabel = buildStringView(markerLabel);
+        
+        return self.InsertDebugMarker(_markerLabel);
+        }
         , py::arg("marker_label")
         , py::return_value_policy::automatic_reference)
         
     .def("pop_debug_group",&pywgpu::RenderPassEncoder::PopDebugGroup
         , py::return_value_policy::automatic_reference)
         
-    .def("push_debug_group",&pywgpu::RenderPassEncoder::PushDebugGroup
+    .def("push_debug_group",[](pywgpu::RenderPassEncoder& self, py::handle groupLabel) {
+        pywgpu::StringView None _groupLabel = buildStringView(groupLabel);
+        
+        return self.PushDebugGroup(_groupLabel);
+        }
         , py::arg("group_label")
         , py::return_value_policy::automatic_reference)
         
@@ -4763,7 +5082,11 @@ _RenderPassEncoder
         , py::arg("reference")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_blend_constant",&pywgpu::RenderPassEncoder::SetBlendConstant
+    .def("set_blend_constant",[](pywgpu::RenderPassEncoder& self, py::handle color) {
+        pywgpu::Color const* _color = buildColor(color);
+        
+        return self.SetBlendConstant(_color);
+        }
         , py::arg("color")
         , py::return_value_policy::automatic_reference)
         
@@ -4800,18 +5123,22 @@ _RenderPassEncoder
     .def("end",&pywgpu::RenderPassEncoder::End
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::RenderPassEncoder::SetLabel
+    .def("set_label",[](pywgpu::RenderPassEncoder& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_immediate_data",[](pywgpu::RenderPassEncoder& self, uint32_t offset, py::buffer data) {
+    .def("set_immediate_data",[](pywgpu::RenderPassEncoder& self, uint32_t offset, py::buffer data, size_t size) {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetImmediateData(offset, _data, size);
         }
-        , py::arg("offset"), py::arg("data")
+        , py::arg("offset"), py::arg("data"), py::arg("size")
         , py::return_value_policy::automatic_reference)
         
     ;
@@ -4824,7 +5151,11 @@ _RenderPipeline
         , py::arg("group_index")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::RenderPipeline::SetLabel
+    .def("set_label",[](pywgpu::RenderPipeline& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4834,7 +5165,11 @@ py::class_<Sampler> _Sampler(m, "Sampler");
 registry.on(m, "Sampler", _Sampler);
 
 _Sampler
-    .def("set_label",&pywgpu::Sampler::SetLabel
+    .def("set_label",[](pywgpu::Sampler& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4848,7 +5183,11 @@ _ShaderModule
         , py::arg("callback_info")
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::ShaderModule::SetLabel
+    .def("set_label",[](pywgpu::ShaderModule& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4858,7 +5197,11 @@ py::class_<Surface> _Surface(m, "Surface");
 registry.on(m, "Surface", _Surface);
 
 _Surface
-    .def("configure",&pywgpu::Surface::Configure
+    .def("configure",[](pywgpu::Surface& self, py::handle config) {
+        pywgpu::SurfaceConfiguration const* _config = buildSurfaceConfiguration(config);
+        
+        return self.Configure(_config);
+        }
         , py::arg("config")
         , py::return_value_policy::automatic_reference)
         
@@ -4876,7 +5219,11 @@ _Surface
     .def("unconfigure",&pywgpu::Surface::Unconfigure
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::Surface::SetLabel
+    .def("set_label",[](pywgpu::Surface& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4886,15 +5233,27 @@ py::class_<Texture> _Texture(m, "Texture");
 registry.on(m, "Texture", _Texture);
 
 _Texture
-    .def("create_view",&pywgpu::Texture::CreateView
+    .def("create_view",[](pywgpu::Texture& self, py::handle descriptor) {
+        pywgpu::TextureViewDescriptor const* _descriptor = buildTextureViewDescriptor(descriptor);
+        
+        return self.CreateView(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("create_error_view",&pywgpu::Texture::CreateErrorView
+    .def("create_error_view",[](pywgpu::Texture& self, py::handle descriptor) {
+        pywgpu::TextureViewDescriptor const* _descriptor = buildTextureViewDescriptor(descriptor);
+        
+        return self.CreateErrorView(_descriptor);
+        }
         , py::arg("descriptor") = nullptr
         , py::return_value_policy::automatic_reference)
         
-    .def("set_label",&pywgpu::Texture::SetLabel
+    .def("set_label",[](pywgpu::Texture& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
@@ -4931,7 +5290,11 @@ py::class_<TextureView> _TextureView(m, "TextureView");
 registry.on(m, "TextureView", _TextureView);
 
 _TextureView
-    .def("set_label",&pywgpu::TextureView::SetLabel
+    .def("set_label",[](pywgpu::TextureView& self, py::handle label) {
+        pywgpu::StringView None _label = buildStringView(label);
+        
+        return self.SetLabel(_label);
+        }
         , py::arg("label")
         , py::return_value_policy::automatic_reference)
         
