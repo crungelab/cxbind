@@ -20,9 +20,10 @@ class Generator(Renderer):
         super().__init__(context)
         self.backend = backend
 
-    def generate(self) -> str:
+    def generate(self) -> RenderContext:
         self.render()
-        return self.context.out.text
+        #return self.context.out.text
+        return self.context
     
     def render(self):
         pass

@@ -20,7 +20,8 @@ class CppBackend(Backend):
         super().__init__(program)
 
     def render(self):
-        cpp_code = CppGenerator(self).generate()
+        context = CppGenerator(self).generate()
+        cpp_code = context.get_text("default")
 
         # Render the source template
         # source_template = self.jinja_env.get_template("wgpu.cpp.j2")

@@ -20,8 +20,12 @@ class Renderer(Generic[T_Node]):
         node: Node = None,
     ) -> None:
         self.context = context
-        self.out = context.out
+        #self.out = context.out
         self.node = node
+
+    @property
+    def out(self):
+        return self.context.out
 
     def render(self):
         raise NotImplementedError

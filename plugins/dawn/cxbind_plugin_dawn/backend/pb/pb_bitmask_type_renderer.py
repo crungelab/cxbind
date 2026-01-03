@@ -1,7 +1,7 @@
-from ...bitmask_type_renderer import BitmaskTypeRenderer
+from ..bitmask_type_renderer import BitmaskTypeRenderer
 
 
-class BitmaskTypePbBodyRenderer(BitmaskTypeRenderer):
+class PbBitmaskTypeRenderer(BitmaskTypeRenderer):
     def render(self):
         enum_name = self.node.name.CamelCase()
 

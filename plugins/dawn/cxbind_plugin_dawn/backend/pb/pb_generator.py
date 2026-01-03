@@ -2,15 +2,15 @@ from typing import TYPE_CHECKING
 from typing import List
 
 if TYPE_CHECKING:
-    from ... import Backend
+    from .. import Backend
 
-from ...generator import Generator
+from ..generator import Generator
 
 from .pb_body_render_context import PbBodyRenderContext
 
 SpecialStructures = ["string view", "nullable string view"]
 
-class PbBodyGenerator(Generator):
+class PbGenerator(Generator):
     def __init__(self, backend: "Backend") -> None:
         context = PbBodyRenderContext(backend.program.unit, backend.program.root, backend.jinja_env)
         super().__init__(context, backend)

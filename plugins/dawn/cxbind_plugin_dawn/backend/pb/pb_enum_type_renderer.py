@@ -1,7 +1,7 @@
-from ...enum_type_renderer import EnumTypeRenderer
+from ..enum_type_renderer import EnumTypeRenderer
 
 
-class EnumTypePbBodyRenderer(EnumTypeRenderer):
+class PbEnumTypeRenderer(EnumTypeRenderer):
     def render(self):
         enum_name = self.node.name.CamelCase()
 

@@ -21,7 +21,8 @@ class HppBackend(Backend):
         super().__init__(program)
 
     def render(self):
-        hpp_code = HppGenerator(self).generate()
+        context = HppGenerator(self).generate()
+        hpp_code = context.get_text("default")
 
         # Render the header template
         header_template = self.jinja_env.get_template("pywgpu.h.j2")

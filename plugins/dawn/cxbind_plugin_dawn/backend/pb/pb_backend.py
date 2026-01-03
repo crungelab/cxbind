@@ -12,8 +12,7 @@ import os
 
 from .. import Backend
 
-from .prologue.pb_prologue_generator import PbPrologueGenerator
-from .body.pb_body_generator import PbBodyGenerator
+from .pb_generator import PbGenerator
 
 
 class PbBackend(Backend):
@@ -21,8 +20,9 @@ class PbBackend(Backend):
         super().__init__(program)
 
     def render(self):
-        prologue = PbPrologueGenerator(self).generate()
-        py_code = PbBodyGenerator(self).generate()
+        context = PbGenerator(self).generate()
+        prologue = context.get_text("prologue")
+        py_code = context.get_text("default")
 
         # Render the Python bindings
         # Render the source template

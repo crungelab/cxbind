@@ -20,7 +20,8 @@ class PyBackend(Backend):
         super().__init__(program)
 
     def render(self):
-        py_code = PyGenerator(self).generate()
+        context = PyGenerator(self).generate()
+        py_code = context.get_text("default")
 
         # Render the Python bindings
         # Render the source template
