@@ -37,6 +37,15 @@ struct LinearAlloc {
         return new (p) T{}; // value-init
     }
 
+    template<class T>
+    T* make_array(size_t count) {
+        T* p = alloc_array<T>(count);
+        for (size_t i = 0; i < count; ++i) {
+            new (&p[i]) T{}; // value-init each element
+        }
+        return p;
+    }
+
     const char* copy_cstr(const std::string& s) {
         char* p = (char*)alloc(s.size() + 1, alignof(char));
         std::memcpy(p, s.c_str(), s.size() + 1);
@@ -2927,7 +2936,7 @@ pywgpu::SubgroupMatrixConfig* buildSubgroupMatrixConfig(py::handle handle, Linea
 
 
 
-void init_wgpu_pb_auto(py::module &m, Registry &registry) {
+void init_wgpu_py_auto(py::module &m, Registry &registry) {
 py::enum_<RequestAdapterStatus>(m, "RequestAdapterStatus", py::arithmetic())
     .value("SUCCESS", RequestAdapterStatus::Success)
     .value("CALLBACK_CANCELLED", RequestAdapterStatus::CallbackCancelled)

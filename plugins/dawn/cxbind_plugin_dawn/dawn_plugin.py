@@ -4,7 +4,7 @@ from loguru import logger
 from cxbind import CxBind
 from cxbind.plugin import Plugin
 
-from .program import Program, HppProgram, CppProgram, PbProgram, PyProgram
+from .program import Program, HppProgram, CppProgram, PbProgram, PyProgram, PyiProgram
 
 
 class DawnPlugin(Plugin):
@@ -17,3 +17,4 @@ class DawnPlugin(Plugin):
         app.register_program("dawn_cpp", CppProgram)
         app.register_program("dawn_pb", PbProgram)
         app.register_program("dawn_py", PyProgram)
+        app.register_program("dawn_pyi", PyiProgram)

@@ -4,6 +4,22 @@ from ...name import Name
 from ...node import FunctionPointerType, StructureType, EnumType, BitmaskType
 from ..structure_type_renderer import StructureTypeRenderer
 
+default_map = {
+    "nullptr": "None",
+    "true": "True",
+    "false": "False",
+    "zero": 0,
+    "copy stride undefined": 0xFFFFFFFF,
+    "limit u32 undefined": 0xFFFFFFFF,
+    "limit u64 undefined": 0xFFFFFFFFFFFFFFFF,
+    "depth slice undefined": 0xFFFFFFFF,
+    "mip level count undefined": 0xFFFFFFFF,
+    "array layer count undefined": 0xFFFFFFFF,
+    #"depth clear value undefined": float('nan'),
+    "depth clear value undefined": None,
+    "query set index undefined": 0xFFFFFFFF,
+    "whole size": 0xFFFFFFFFFFFFFFFF,
+}
 
 class StructureTypePyRenderer(StructureTypeRenderer):
     def render(self):
@@ -29,7 +45,7 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             )
         '''
 
-        self.out / "@dataclass(frozen=True)" << "\n"
+        self.out / "@dataclass(frozen=True, kw_only=True)" << "\n"
         self.out / f"class {class_name}:" << "\n"
         self.out.indent()
 
@@ -60,11 +76,36 @@ class StructureTypePyRenderer(StructureTypeRenderer):
                 "", self.as_cppType(member_type.name), member
             )
             # print(decoration)
+            extra = ""
+            if member.optional:
+                extra = "Optional[Any] = None"
+            else:
+                extra = "Any"
 
+            member_default = member.default_value
+            if member_default is not None:
+                if isinstance(member_default, str) and member_default[0].isdigit() and member_default[-1] == 'f':
+                    member_default = member_default[:-1]
+                if member_default in default_map:
+                    member_default = default_map[member_default]
+                
+                #elif isinstance(member_type, StructureType):
+                #    logger.debug(f"Structure member default: {member_default}")
+                #    member_default = f"{member_type.name.CamelCase()}()"
+                elif isinstance(member_type, EnumType):
+                    logger.debug(f"Enum member default: {member_default}")
+                    #member_default = f"{member_type.name.CamelCase()}.{Name(member_default).CamelCase()}"
+                    member_default = f"{member_type.name.CamelCase()}.{self.as_pyEnum(Name(member_default))}"
+                elif isinstance(member_type, BitmaskType):
+                    logger.debug(f"Bitmask member default: {member_default}")
+                    #member_default = f"{member_type.name.CamelCase()}.{Name(member_default).CamelCase()}"
+                    member_default = f"{member_type.name.CamelCase()}.{self.as_pyEnum(Name(member_default))}"
+                extra += f" = {member_default}"
             (
                 self.out
                 #/ f'.{def_kind}("{member_name}", &pywgpu::{class_name}::{member_cpp_name})'
-                / f'{member_name}: Any  # type: {decoration}'
+                # / f'{member_name}: Any  # type: {decoration}, default: {member.default_value}'
+                / f'{member_name}: {extra}  # type: {decoration}, default: {member_default}'
                 << "\n"
             )
 
@@ -80,7 +121,7 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         '''
 
         self.out.dedent()
-        self.out << "\n"
+        self.out << "\n\n"
 
     def render_init(self):
         self.out / f".def(py::init<>())" << "\n"
