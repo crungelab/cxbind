@@ -12,7 +12,8 @@ import os
 
 from .. import Backend
 
-from .pb_generator import PbGenerator
+from .prologue.pb_prologue_generator import PbPrologueGenerator
+from .body.pb_body_generator import PbBodyGenerator
 
 
 class PbBackend(Backend):
@@ -20,12 +21,13 @@ class PbBackend(Backend):
         super().__init__(program)
 
     def render(self):
-        py_code = PbGenerator(self).generate()
+        prologue = PbPrologueGenerator(self).generate()
+        py_code = PbBodyGenerator(self).generate()
 
         # Render the Python bindings
         # Render the source template
         source_template = self.jinja_env.get_template("wgpu_pb.cpp.j2")
-        output = source_template.render(py_code=py_code)
+        output = source_template.render(prologue=prologue, py_code=py_code)
         # logger.debug(output)
         # Write the C++ code to a file
         path = Path(self.program.unit.target)

@@ -1,10 +1,10 @@
 from loguru import logger
 
-from ...name import Name
-from ...node import Method, RecordMember
+from ....name import Name
+from ....node import Method, RecordMember
 
-from ..render_stream import RenderStream
-from ..object_type_renderer import ObjectTypeRenderer, ObjectType
+from ...render_stream import RenderStream
+from ...object_type_renderer import ObjectTypeRenderer, ObjectType
 
 
 def get_arg_type_string(arg) -> str:
@@ -117,7 +117,7 @@ class VectorArgWrapper(ArgWrapper):
         out(value)
 
 
-class ObjectTypePbRenderer(ObjectTypeRenderer):
+class ObjectTypePbBodyRenderer(ObjectTypeRenderer):
     def render(self):
         class_name = self.node.name.CamelCase()
 

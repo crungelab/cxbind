@@ -1,10 +1,10 @@
 from loguru import logger
 
-from ...name import Name
-from ..function_declaration_renderer import FunctionDeclarationRenderer
+from ....name import Name
+from ...function_declaration_renderer import FunctionDeclarationRenderer
 
 
-class FunctionDeclarationPbRenderer(FunctionDeclarationRenderer):
+class PbPrologueFunctionDeclarationRenderer(FunctionDeclarationRenderer):
     def render(self):
         fn = self.node
         fn_name = fn.name.snake_case()
