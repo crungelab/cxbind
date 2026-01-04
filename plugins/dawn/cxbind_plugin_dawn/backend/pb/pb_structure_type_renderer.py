@@ -8,10 +8,17 @@ from ..structure_type_renderer import StructureTypeRenderer
 class PbStructureTypeRenderer(StructureTypeRenderer):
     def render(self):
         node = self.node
+        if self.is_descriptor_node(node):
+            self.render_builder()
+        else:
+            self.render_class()
+
+        '''
         if node.output:
             self.render_class()
         else:
             self.render_builder()
+        '''
 
     def render_class(self):
         node = self.node

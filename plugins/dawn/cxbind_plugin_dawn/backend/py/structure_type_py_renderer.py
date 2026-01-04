@@ -43,9 +43,13 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         node = self.node
         class_name = node.name.CamelCase()
         Out = "Out" if node.output else ""
+        '''
         if Out:
             return
-
+        '''
+        if not self.is_descriptor_node(node):
+            return
+        
         self.out / "@dataclass(frozen=True, kw_only=True)" << "\n"
         self.out / f"class {class_name}:" << "\n"
         self.out.indent()

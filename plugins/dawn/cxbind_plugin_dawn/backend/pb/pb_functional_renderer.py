@@ -261,6 +261,7 @@ class PbFunctionalRenderer(Renderer[T_Node]):
         else:
             self.out << f"&pywgpu::{class_name}::{method_cpp_name}" << "\n"
 
+        '''
         if py_arg_list:
             self.out(
                 f"""\
@@ -274,6 +275,20 @@ class PbFunctionalRenderer(Renderer[T_Node]):
             , py::return_value_policy::automatic_reference)
             """
             )
+        '''
+        if py_arg_list:
+            self.out(
+                f"""\
+            , {', '.join(py_arg_list)})
+            """
+            )
+        else:
+            self.out(
+                f"""\
+            )
+            """
+            )
+
         if not use_lambda:
             self.out.dedent()
 

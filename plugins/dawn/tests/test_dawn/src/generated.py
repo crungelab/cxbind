@@ -535,11 +535,6 @@ class ImageCopyExternalTexture:
 
 
 @dataclass(frozen=True, kw_only=True)
-class Future:
-    id: Any  # type: uint64_t , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
 class FutureWaitInfo:
     future: Any  # type: Future , default: None
     completed: Any = False  # type: Bool , default: False

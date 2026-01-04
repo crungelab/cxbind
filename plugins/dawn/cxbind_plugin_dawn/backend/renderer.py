@@ -8,7 +8,7 @@ from ..node import Node, RecordMember, Type, StructureType
 from ..name import Name
 from .render_context import RenderContext
 
-SpecialStructures = ["string view", "nullable string view"]
+SpecialStructures = ["string view", "nullable string view", "future"]
 
 # Define a generic type variable
 T_Node = TypeVar("T_Node", bound=Node)
@@ -150,11 +150,19 @@ class Renderer(Generic[T_Node]):
             self.as_cppType(arg.type.name), arg, make_const
         )
 
+    def is_descriptor_node(self, node: Type) -> bool:
+        if isinstance(node, StructureType) and not node.output and not node.name.get() in SpecialStructures:
+            return True
+        return False
+    
     def is_descriptor_member(self, arg: RecordMember) -> bool:
         arg_type = arg.type
+        return self.is_descriptor_node(arg_type)
+        '''
         if isinstance(arg_type, StructureType) and not arg_type.output and not arg_type.name.get() in SpecialStructures:
             return True
         return False
+        '''
 
     def render_cpp_default_value(
         self,
