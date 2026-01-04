@@ -2,9 +2,13 @@ import textwrap
 
 
 class RenderStream:
-    def __init__(self) -> None:
-        self.indentation = 0
+    def __init__(self, indentation: int = 0) -> None:
+        self.indentation = indentation
         self.text = ""
+
+    def inject(self, other: "RenderStream") -> "RenderStream":
+        self.text += other.text
+        return self
 
     def write(self, text: str) -> None:
         self.text += text
@@ -34,6 +38,7 @@ class RenderStream:
 
     def __enter__(self):
         self.indent()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.dedent()

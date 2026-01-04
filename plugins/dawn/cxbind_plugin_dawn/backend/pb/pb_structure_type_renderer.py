@@ -268,7 +268,7 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
         self.out / "}), py::return_value_policy::automatic_reference)" << "\n"
 
     def render_builder(self):
-        self.context.push_stream("prologue")
+        self.context.push_stream("function_header")
 
         node = self.node
 
@@ -280,7 +280,12 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
             / f"inline void Builder<{class_name}>::fill(pywgpu::{class_name}& obj, py::handle handle) {{"
             << "\n"
         )
+
+        self.context.pop_stream()
+        self.context.push_stream("function_body")
+
         self.out.indent()
+        self.context.open_stream("function_preamble") # open here to inherit indentation
 
         excluded_names = {
             member.length_member.name
@@ -318,6 +323,8 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                 )
                 continue
 
+        uses_allocator = False
+
         for member in members:
             if member.name in excluded_names:
                 continue
@@ -343,7 +350,6 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
             self.out.indent()
 
             cppType = self.as_annotated_cppType(member, node.has_free_members_function)
-
             stripped_cppType = cppType.replace("const ", "").replace(" *", "")
 
             if member.length:
@@ -369,6 +375,11 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                             << "\n"
                         )
                 else:
+                    if not uses_allocator:
+                        uses_allocator = True
+                        self.context.push_stream("function_preamble")
+                        self.out / "LinearAlloc la;" << "\n"
+                        self.context.pop_stream()
                     (
                         self.out
                         / f'auto py_list = handle.attr("{member_name}").cast<py::sequence>();'
@@ -407,8 +418,18 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
             self.out.dedent()
             self.out / "}" << "\n"
 
-        #self.out / "return &obj;" << "\n"
+        # self.out / "return &obj;" << "\n"
         self.out.dedent()
         self.out / "}" << "\n" << "\n"
 
-        self.context.pop_stream()
+        # self.context.pop_stream()
+        # self.context.open_stream("prologue").inject(self.context.pop_stream())
+        # self.context.open_stream("prologue").inject(self.context.open_stream("function_preamble")).inject(self.context.pop_stream())
+        self.context.open_stream("prologue").inject(
+            self.context.open_stream("function_header")
+        ).inject(self.context.open_stream("function_preamble")).inject(
+            self.context.pop_stream()
+        )
+        self.context.destroy_streams(
+            ["function_header", "function_preamble", "function_body"]
+        )

@@ -14,6 +14,7 @@ from .pb_functional_renderer import (
     BufferArgWrapper,
     VectorArgWrapper,
     DescriptorArgWrapper,
+    DescriptorArrayArgWrapper,
     SpecialStructures,
 )
 
@@ -65,7 +66,10 @@ class PbMethodRenderer(PbFunctionalRenderer[Method]):
                 logger.debug(
                     f"Descriptor arg detected: {arg.name} of type {arg.type.name.get()}"
                 )
-                arg_wrapper = DescriptorArgWrapper(arg)
+                if arg.length_member is not None:
+                    arg_wrapper = DescriptorArrayArgWrapper(arg, arg.length_member)
+                else:
+                    arg_wrapper = DescriptorArgWrapper(arg)
                 arg_wrappers[arg.name] = arg_wrapper
                 snippet_list.append(arg_wrapper)
                 use_lambda = True

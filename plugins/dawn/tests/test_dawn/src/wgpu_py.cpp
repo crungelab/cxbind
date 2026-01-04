@@ -143,6 +143,7 @@ inline void Builder<RequestAdapterOptions>::fill(pywgpu::RequestAdapterOptions& 
 
 template <>
 inline void Builder<DeviceDescriptor>::fill(pywgpu::DeviceDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -246,6 +247,7 @@ inline void Builder<BindGroupEntry>::fill(pywgpu::BindGroupEntry& obj, py::handl
 
 template <>
 inline void Builder<BindGroupDescriptor>::fill(pywgpu::BindGroupDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -341,6 +343,7 @@ inline void Builder<TextureBindingLayout>::fill(pywgpu::TextureBindingLayout& ob
 
 template <>
 inline void Builder<SurfaceConfiguration>::fill(pywgpu::SurfaceConfiguration& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -460,6 +463,7 @@ inline void Builder<BindGroupLayoutEntry>::fill(pywgpu::BindGroupLayoutEntry& ob
 
 template <>
 inline void Builder<BindGroupLayoutDescriptor>::fill(pywgpu::BindGroupLayoutDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -599,6 +603,7 @@ inline void Builder<CommandEncoderDescriptor>::fill(pywgpu::CommandEncoderDescri
 
 template <>
 inline void Builder<CompilationInfo>::fill(pywgpu::CompilationInfo& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -706,6 +711,7 @@ inline void Builder<ComputePipelineDescriptor>::fill(pywgpu::ComputePipelineDesc
 
 template <>
 inline void Builder<CopyTextureForBrowserOptions>::fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -920,6 +926,7 @@ inline void Builder<Limits>::fill(pywgpu::Limits& obj, py::handle handle) {
 
 template <>
 inline void Builder<SupportedFeatures>::fill(pywgpu::SupportedFeatures& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto py_list = handle.attr("features").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
@@ -935,6 +942,7 @@ inline void Builder<SupportedFeatures>::fill(pywgpu::SupportedFeatures& obj, py:
 
 template <>
 inline void Builder<SupportedWGSLLanguageFeatures>::fill(pywgpu::SupportedWGSLLanguageFeatures& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto py_list = handle.attr("features").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
@@ -978,6 +986,7 @@ inline void Builder<Extent3D>::fill(pywgpu::Extent3D& obj, py::handle handle) {
 
 template <>
 inline void Builder<ExternalTextureDescriptor>::fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1086,6 +1095,7 @@ inline void Builder<SharedTextureMemoryDescriptor>::fill(pywgpu::SharedTextureMe
 
 template <>
 inline void Builder<SharedBufferMemoryBeginAccessDescriptor>::fill(pywgpu::SharedBufferMemoryBeginAccessDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1164,6 +1174,7 @@ inline void Builder<SharedTextureMemoryDmaBufPlane>::fill(pywgpu::SharedTextureM
 
 template <>
 inline void Builder<SharedTextureMemoryDmaBufDescriptor>::fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1283,6 +1294,7 @@ inline void Builder<SharedTextureMemoryEGLImageDescriptor>::fill(pywgpu::SharedT
 
 template <>
 inline void Builder<SharedTextureMemoryBeginAccessDescriptor>::fill(pywgpu::SharedTextureMemoryBeginAccessDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1633,6 +1645,7 @@ inline void Builder<VertexAttribute>::fill(pywgpu::VertexAttribute& obj, py::han
 
 template <>
 inline void Builder<VertexBufferLayout>::fill(pywgpu::VertexBufferLayout& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1708,6 +1721,7 @@ inline void Builder<PassTimestampWrites>::fill(pywgpu::PassTimestampWrites& obj,
 
 template <>
 inline void Builder<PipelineLayoutDescriptor>::fill(pywgpu::PipelineLayoutDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1735,6 +1749,7 @@ inline void Builder<PipelineLayoutDescriptor>::fill(pywgpu::PipelineLayoutDescri
 
 template <>
 inline void Builder<PipelineLayoutPixelLocalStorage>::fill(pywgpu::PipelineLayoutPixelLocalStorage& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1774,6 +1789,7 @@ inline void Builder<PipelineLayoutStorageAttachment>::fill(pywgpu::PipelineLayou
 
 template <>
 inline void Builder<ComputeState>::fill(pywgpu::ComputeState& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1845,6 +1861,7 @@ inline void Builder<RenderBundleDescriptor>::fill(pywgpu::RenderBundleDescriptor
 
 template <>
 inline void Builder<RenderBundleEncoderDescriptor>::fill(pywgpu::RenderBundleEncoderDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -1972,6 +1989,7 @@ inline void Builder<RenderPassDepthStencilAttachment>::fill(pywgpu::RenderPassDe
 
 template <>
 inline void Builder<RenderPassDescriptor>::fill(pywgpu::RenderPassDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -2043,6 +2061,7 @@ inline void Builder<RenderPassDescriptorExpandResolveRect>::fill(pywgpu::RenderP
 
 template <>
 inline void Builder<RenderPassPixelLocalStorage>::fill(pywgpu::RenderPassPixelLocalStorage& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -2094,6 +2113,7 @@ inline void Builder<RenderPassStorageAttachment>::fill(pywgpu::RenderPassStorage
 
 template <>
 inline void Builder<VertexState>::fill(pywgpu::VertexState& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -2228,6 +2248,7 @@ inline void Builder<MultisampleState>::fill(pywgpu::MultisampleState& obj, py::h
 
 template <>
 inline void Builder<FragmentState>::fill(pywgpu::FragmentState& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -2410,6 +2431,7 @@ inline void Builder<ShaderModuleDescriptor>::fill(pywgpu::ShaderModuleDescriptor
 
 template <>
 inline void Builder<ShaderSourceSPIRV>::fill(pywgpu::ShaderSourceSPIRV& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -2633,6 +2655,7 @@ inline void Builder<SurfaceDescriptorFromWindowsWinUISwapChainPanel>::fill(pywgp
 
 template <>
 inline void Builder<TextureDescriptor>::fill(pywgpu::TextureDescriptor& obj, py::handle handle) {
+    LinearAlloc la;
     {
         auto value = handle.attr("next_in_chain").cast<ChainedStruct const *>();
         obj.nextInChain = value;
@@ -4776,7 +4799,8 @@ _Instance
         LinearAlloc la;
         BuildCtx ctx{la};
         
-        pywgpu::FutureWaitInfo * _futures = Builder<FutureWaitInfo>(ctx).build(futures);
+        uint32_t futureCount;
+        pywgpu::FutureWaitInfo * _futures = Builder<FutureWaitInfo>(ctx).build_array(futures, &futureCount);
         
         return self.WaitAny(futureCount, _futures, timeoutNS);
         }

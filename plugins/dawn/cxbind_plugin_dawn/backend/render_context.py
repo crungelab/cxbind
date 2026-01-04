@@ -42,15 +42,50 @@ class RenderContext:
             return ""
         return stream.text
     
+    def open_stream(self, name: str) -> RenderStream:
+        stream = self.streams.get(name)
+        if stream is None:
+            indentation = 0
+            if len(self.stream_stack):
+                indentation = self.stream_stack[-1].indentation
+            stream = RenderStream(indentation)
+            self.streams[name] = stream
+        return stream
+    
+    def close_stream(self, name: str) -> None:
+        pass
+
+    def destroy_stream(self, name: str) -> None:
+        if name in self.streams:
+            del self.streams[name]
+
+    def destroy_streams(self, names: List[str]) -> None:
+        for name in names:
+            self.destroy_stream(name)
+
     def push_stream(self, name: str) -> None:
         stream = self.streams.get(name)
         if stream is None:
-            stream = RenderStream()
+            indentation = 0
+            if len(self.stream_stack):
+                indentation = self.stream_stack[-1].indentation
+            stream = RenderStream(indentation)
             self.streams[name] = stream
         self.stream_stack.append(stream)
 
-    def pop_stream(self) -> RenderStream:
-        return self.stream_stack.pop()
+    def pop_stream(self, destroy: bool = False) -> RenderStream:
+        #return self.stream_stack.pop()
+        stream = self.stream_stack.pop()
+        if destroy:
+            for key, val in self.streams.items():
+                if val is stream:
+                    del self.streams[key]
+                    break
+        return stream
+    
+    def combine_streams(self, streams: List[RenderStream]) -> None:
+        for stream in streams:
+            self.out.inject(stream)
     
     def init_render_table(self):
         raise NotImplementedError

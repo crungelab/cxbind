@@ -113,6 +113,26 @@ class DescriptorArgWrapper(ArgWrapper):
         out(value)
 
 
+class DescriptorArrayArgWrapper(ArgWrapper):
+    def __init__(self, arg: RecordMember, length_member: RecordMember):
+        super().__init__(arg)
+        self.length_member = length_member
+
+    def make_wrapper_type(self):
+        return f"py::handle"
+
+    def render(self, out: RenderStream):
+        logger.debug(f"DescriptorArrayArgWrapper: {self.arg.name} type: {self.arg.type.name.get()}")
+        arg_name = self.arg.name.camelCase()
+        arg_type = get_arg_type_string(self.arg)
+        arg_type_spelling = self.arg.type.name.CamelCase()
+        value = f"""\
+        uint32_t {self.length_member.name.camelCase()};
+        {arg_type} {self.arg.annotation} _{arg_name} = Builder<{arg_type_spelling}>(ctx).build_array({arg_name}, &{self.length_member.name.camelCase()});
+        """
+        out(value)
+
+
 class PbFunctionalRenderer(Renderer[T_Node]):
     def is_descriptor_arg(self, arg: RecordMember) -> bool:
         arg_type = arg.type
