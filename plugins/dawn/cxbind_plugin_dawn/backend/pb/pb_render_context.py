@@ -11,7 +11,7 @@ from ...node import (
 )
 
 
-class PbBodyRenderContext(RenderContext):
+class PbRenderContext(RenderContext):
     def init_render_table(self):
         from ..renderer import NullRenderer
         from .pb_object_type_renderer import PbObjectTypeRenderer

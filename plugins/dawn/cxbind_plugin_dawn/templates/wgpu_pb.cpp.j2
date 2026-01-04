@@ -53,6 +53,62 @@ struct LinearAlloc {
     }
 };
 
+struct BuildCtx {
+    LinearAlloc& la;
+    //const ChainRegistry* chains = nullptr; // optional; nullptr if you don't support nextInChain yet
+};
+
+template <class T>
+struct Builder {
+    BuildCtx ctx;
+
+    explicit Builder(BuildCtx c) : ctx(c) {}
+
+    // Allocate one T and fill it.
+    T* build(py::handle dc) {
+        auto* p = ctx.la.make<T>();
+        fill(*p, dc);
+        return p;
+    }
+
+    // Allocate N Ts and fill each element.
+    T* build_array(py::handle seq_h, uint32_t* outCount) {
+        if (seq_h.is_none()) {
+            *outCount = 0;
+            return nullptr;
+        }
+        py::sequence seq = seq_h.cast<py::sequence>();
+        *outCount = static_cast<uint32_t>(seq.size());
+        if (*outCount == 0) return nullptr;
+
+        T* arr = ctx.la.make_array<T>(*outCount);
+        for (uint32_t i = 0; i < *outCount; ++i) {
+            fill(arr[i], seq[i]);
+        }
+        return arr;
+    }
+
+    // Default fill must be specialized per T (your generator writes specializations).
+    void fill(T&, py::handle) {
+        static_assert(sizeof(T) == 0, "Builder<T>::fill must be specialized/generated for this T");
+    }
+
+    // Common helpers
+    const char* str_or_null(py::handle h) {
+        if (h.is_none()) return nullptr;
+        return ctx.la.copy_cstr(std::string(py::str(h)));
+    }
+
+    template <class H>
+    H handle(py::handle h) { return h.cast<H>(); }
+
+    template <class U>
+    U* optional_ptr(py::handle h) {
+        if (h.is_none()) return nullptr;
+        return Builder<U>(ctx).build(h);
+    }
+};
+
 namespace py = pybind11;
 
 using namespace pywgpu;

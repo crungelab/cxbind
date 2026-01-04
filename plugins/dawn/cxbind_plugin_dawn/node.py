@@ -23,6 +23,13 @@ class TypedNode(Node):
     def type(self, value: "Type"):
         self._type = value
 
+class Type(TypedNode):
+    category: str
+    name: Optional[Name] = None
+
+    def __hash__(self):
+        return hash(self.name)
+
 
 class RecordMember(TypedNode):
     name: Name
@@ -34,13 +41,26 @@ class RecordMember(TypedNode):
     length_member: Optional["RecordMember"] = None
 
 
-class Method(Node):
-    name: Name
+class Functional(Type):
     return_type_ref: Optional[str] = Field(alias="returns", default=None)
     return_type: Optional["Type"] = None
     args: Optional[List[RecordMember]] = []
+
+#class Method(Node):
+class Method(Functional):
+    category: Literal["method"] = "method"
+    #name: Name
+    #return_type_ref: Optional[str] = Field(alias="returns", default=None)
+    #return_type: Optional["Type"] = None
+    #args: Optional[List[RecordMember]] = []
     no_autolock: Optional[bool] = Field(alias="no autolock", default=None)
 
+class FunctionDeclaration(Functional):
+    category: Literal["function"]
+    #return_type_ref: Optional[str] = Field(alias="returns", default=None)
+    #return_type: Optional["Type"] = None
+
+    #args: Optional[List[RecordMember]] = []
 
 class EnumValue(Node):
     name: Name
@@ -50,14 +70,6 @@ class EnumValue(Node):
 class BitmaskValue(Node):
     name: Name
     value: int
-
-
-class Type(TypedNode):
-    category: str
-    name: Optional[Name] = None
-
-    def __hash__(self):
-        return hash(self.name)
 
 
 class TypeDefinition(Type):
@@ -185,14 +197,14 @@ class ConstantDefinition(Type):
     value: str
     cpp_value: Optional[str] = None
 
-
+'''
 class FunctionDeclaration(Type):
     category: Literal["function"]
     return_type_ref: Optional[str] = Field(alias="returns", default=None)
     return_type: Optional["Type"] = None
 
     args: Optional[List[RecordMember]] = []
-
+'''
 
 TypeUnion = Annotated[
     Union[

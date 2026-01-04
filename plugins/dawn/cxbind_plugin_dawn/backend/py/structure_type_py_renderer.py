@@ -135,8 +135,6 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         self.out.indent()
         self.out / f"pywgpu::{class_name} obj{{}};" << "\n"
 
-        members_by_name = {member.name: member for member in node.members}
-
         excluded_names = {
             member.length_member.name
             for member in node.members

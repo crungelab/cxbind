@@ -6,13 +6,13 @@ if TYPE_CHECKING:
 
 from ..generator import Generator
 
-from .pb_body_render_context import PbBodyRenderContext
+from .pb_render_context import PbRenderContext
 
 SpecialStructures = ["string view", "nullable string view"]
 
 class PbGenerator(Generator):
     def __init__(self, backend: "Backend") -> None:
-        context = PbBodyRenderContext(backend.program.unit, backend.program.root, backend.jinja_env)
+        context = PbRenderContext(backend.program.unit, backend.program.root, backend.jinja_env)
         super().__init__(context, backend)
 
     def exclude_structure_type(self, structure_type):

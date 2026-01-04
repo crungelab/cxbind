@@ -1,6 +1,7 @@
 from .renderer import Renderer
 from ..node import ObjectType, Method
 
+
 class ObjectTypeRenderer(Renderer[ObjectType]):
     def exclude_method(self, object_type: ObjectType, method: Method):
         key = f"method/pywgpu::{self.as_cppType(object_type.name)}::{self.as_cppType(method.name)}"
