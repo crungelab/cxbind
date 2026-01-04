@@ -7,6 +7,8 @@ from ..render_stream import RenderStream
 from ..renderer import Renderer, T_Node
 
 from .pb_render_context import PbRenderContext
+from .pb_functional_renderer import PbFunctionalRenderer
+'''
 from .pb_functional_renderer import (
     PbFunctionalRenderer,
     get_arg_type_string,
@@ -17,13 +19,14 @@ from .pb_functional_renderer import (
     DescriptorArrayArgWrapper,
     SpecialStructures,
 )
-
+'''
 
 class PbMethodRenderer(PbFunctionalRenderer[Method]):
     def __init__(self, context: PbRenderContext, node: Method, object_type: ObjectType):
-        super().__init__(context, node)
-        self.object_type = object_type
+        super().__init__(context, node, object_type)
+        #self.object_type = object_type
 
+    '''
     def render(self):
         method = self.node
         class_name = self.object_type.name.CamelCase()
@@ -45,7 +48,6 @@ class PbMethodRenderer(PbFunctionalRenderer[Method]):
         if excluded_names:
             use_lambda = True
             logger.debug(
-                #f"Method '{method_name}' has excluded names: {', '.join(excluded_names)}"
                 f"Method '{method_name}' has excluded names: {excluded_names}"
             )
 
@@ -61,7 +63,6 @@ class PbMethodRenderer(PbFunctionalRenderer[Method]):
             arg_type = arg.type
             arg_type_name = arg_type.name
 
-            #if isinstance(arg_type, StructureType) and not arg_type.output and not arg_type_name.get() in SpecialStructures:
             if self.is_descriptor_arg(arg):
                 logger.debug(
                     f"Descriptor arg detected: {arg.name} of type {arg.type.name.get()}"
@@ -76,8 +77,6 @@ class PbMethodRenderer(PbFunctionalRenderer[Method]):
                 use_builders = True
 
             elif arg.length_member is not None:
-                # arg_type = arg.type
-                # arg_wrapper = None
                 if arg_type.name.native:
                     arg_wrapper = BufferArgWrapper(arg, arg.length_member)
                 else:
@@ -148,3 +147,4 @@ class PbMethodRenderer(PbFunctionalRenderer[Method]):
             )
 
         self.out.dedent()
+    '''

@@ -336,6 +336,8 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
             member_type = member.type
             member_annotation = member.annotation
 
+            use_assignment = True
+
             if member_annotation == "const*const*":
                 logger.debug(f"Skipping const*const* member {member_name}")
                 continue
@@ -408,12 +410,29 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                     if length_member is not None:
                         self.out / f"obj.{length_member_cpp_name} = count;" << "\n"
             else:
-                (
-                    self.out
-                    / f'auto value = handle.attr("{member_name}").cast<{cppType}>();'
-                    << "\n"
-                )
-                self.out / f"obj.{member_cpp_name} = value;" << "\n"
+                if self.is_descriptor_member(member):
+                    if member.annotation is None:
+                        (
+                            self.out
+                            / f'Builder<{member_type.name.CamelCase()}>(ctx).fill(obj.{member_cpp_name}, handle.attr("{member_name}"));'
+                            << "\n"
+                        )
+                        use_assignment = False
+                    else:
+                
+                        (
+                            self.out
+                            / f'auto value = Builder<{member_type.name.CamelCase()}>(ctx).build(handle.attr("{member_name}"));'
+                            << "\n"
+                        )
+                else:
+                    (
+                        self.out
+                        / f'auto value = handle.attr("{member_name}").cast<{cppType}>();'
+                        << "\n"
+                    )
+                if use_assignment:
+                    self.out / f"obj.{member_cpp_name} = value;" << "\n"
 
             self.out.dedent()
             self.out / "}" << "\n"

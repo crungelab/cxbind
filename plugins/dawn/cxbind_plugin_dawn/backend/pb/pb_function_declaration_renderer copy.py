@@ -3,14 +3,8 @@ from loguru import logger
 from ...name import Name
 from ..function_declaration_renderer import FunctionDeclarationRenderer
 
-from .pb_function_renderer import PbFunctionRenderer
 
 class PbFunctionDeclarationRenderer(FunctionDeclarationRenderer):
-    def render(self):
-        fn_renderer = PbFunctionRenderer(self.context, self.node)
-        fn_renderer.render()
-
-    '''
     def render(self):
         fn = self.node
         fn_name = fn.name.snake_case()
@@ -64,4 +58,3 @@ class PbFunctionDeclarationRenderer(FunctionDeclarationRenderer):
             """)
 
         self.out << ";\n\n"
-    '''
