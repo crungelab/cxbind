@@ -1,3 +1,10 @@
+#include <typeinfo>
+#include <sstream>
+#ifdef __GNUG__
+  #include <cxxabi.h>
+  #include <cstdlib>
+#endif
+
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/operators.h>
@@ -7,6 +14,26 @@
 #include <crunge/wgpu/pywgpu.h>
 #include <crunge/wgpu/crunge-wgpu.h>
 #include <crunge/wgpu/conversions.h>
+
+inline std::string demangle_type_name(const char* name) {
+#ifdef __GNUG__
+    int status = 0;
+    char* dem = abi::__cxa_demangle(name, nullptr, nullptr, &status);
+    std::string out = (status == 0 && dem) ? dem : name;
+    std::free(dem);
+    return out;
+#else
+    return name;
+#endif
+}
+
+inline std::string py_type_qualname(py::handle h) {
+    if (h.is_none()) return "None";
+    py::object t = py::type::of(h);
+    std::string mod = py::str(t.attr("__module__"));
+    std::string name = py::str(t.attr("__qualname__"));
+    return mod + "." + name;
+}
 
 struct LinearAlloc {
     uint8_t* base = nullptr;
@@ -58,6 +85,16 @@ struct BuildCtx {
     //const ChainRegistry* chains = nullptr; // optional; nullptr if you don't support nextInChain yet
 };
 
+// Fallback: if no overload exists for T, this will be selected.
+template<class T>
+inline void fill(T&, py::handle h, BuildCtx) {
+    std::ostringstream oss;
+    oss << "No generated fill(T&, py::handle, BuildCtx) overload for C++ type '"
+        << demangle_type_name(typeid(T).name())
+        << "'. Python value type was '" << py_type_qualname(h) << "'.";
+    throw std::runtime_error(oss.str());
+}
+
 template <class T>
 struct Builder {
     BuildCtx ctx;
@@ -66,6 +103,7 @@ struct Builder {
 
     // Allocate one T and fill it.
     T* build(py::handle dc) {
+        if (dc.is_none()) return nullptr;
         auto* p = ctx.la.make<T>();
         fill(*p, dc);
         return p;
@@ -88,9 +126,9 @@ struct Builder {
         return arr;
     }
 
-    // Default fill must be specialized per T (your generator writes specializations).
-    void fill(T&, py::handle) {
-        static_assert(sizeof(T) == 0, "Builder<T>::fill must be specialized/generated for this T");
+    void fill(T& out, py::handle h) {
+        using ::fill;
+        fill(out, h, ctx);
     }
 
     // Common helpers

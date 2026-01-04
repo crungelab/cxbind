@@ -276,8 +276,7 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
 
         (
             self.out
-            / "template <>\n"
-            / f"inline void Builder<{class_name}>::fill(pywgpu::{class_name}& obj, py::handle handle) {{"
+            / f"inline void fill(pywgpu::{class_name}& obj, py::handle handle, BuildCtx ctx) {{"
             << "\n"
         )
 
