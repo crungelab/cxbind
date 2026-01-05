@@ -50,6 +50,10 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
             member_name = member.name.snake_case()
             member_cpp_name = member.name.camelCase()
             member_type = member.type
+
+            if member_type is None:
+                logger.debug(f"Skipping member with no type: {member_name}")
+                exit()
             member_annotation = member.annotation
 
             if member_annotation == "const*const*":
@@ -354,6 +358,8 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                 continue
 
             # self.out / f'if (kwargs.contains("{member_name}"))' << "\n"
+            self.out / f'auto py_{member_name} = handle.attr("{member_name}");' << "\n"
+            self.out / f'if (!py_{member_name}.is_none())' << "\n"
             self.out / "{" << "\n"
             self.out.indent()
 
@@ -386,7 +392,7 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                     if not uses_allocator:
                         uses_allocator = True
                         self.context.push_stream("function_preamble")
-                        self.out / "LinearAlloc la;" << "\n"
+                        #self.out / "LinearAlloc la;" << "\n"
                         self.context.pop_stream()
                     (
                         self.out
@@ -400,7 +406,7 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                     )
                     (
                         self.out
-                        / f"auto* value = la.alloc_array<{stripped_cppType}>(count);"
+                        / f"auto* value = ctx.la.alloc_array<{stripped_cppType}>(count);"
                         << "\n"
                     )
                     self.out / "for (uint32_t i = 0; i < count; ++i) {" << "\n"
@@ -432,11 +438,26 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                             << "\n"
                         )
                 else:
-                    (
-                        self.out
-                        / f'auto value = handle.attr("{member_name}").cast<{cppType}>();'
-                        << "\n"
-                    )
+                    needs_cast = False
+                    caster = ""
+
+                    if member_type.name.get() == "callback mode":
+                        needs_cast = True
+                        caster = "static_cast<WGPUCallbackMode>"
+
+                    if needs_cast:
+                        (
+                            self.out
+                            / f'auto value = {caster}(handle.attr("{member_name}").cast<{cppType}>());'
+                            << "\n"
+                        )
+                    else:
+                        (
+                            self.out
+                            / f'auto value = handle.attr("{member_name}").cast<{cppType}>();'
+                            << "\n"
+                        )
+
                 if use_assignment:
                     self.out / f"obj.{member_cpp_name} = value;" << "\n"
 

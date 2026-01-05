@@ -147,6 +147,12 @@ struct Builder {
     }
 };
 
+template <class DstEnum, class SrcEnum>
+constexpr DstEnum enum_cast(SrcEnum v) {
+    using U = std::underlying_type_t<SrcEnum>;
+    return static_cast<DstEnum>(static_cast<U>(v));
+}
+
 namespace py = pybind11;
 
 using namespace pywgpu;

@@ -1,8 +1,17 @@
 from typing import List, Optional, Dict, Union, Literal, Annotated, Any
+from enum import Enum
+
 from pydantic import BaseModel, Field, ValidationError, RootModel, ConfigDict
 
 from .name import Name
 
+
+class PassStyle(Enum):
+    VALUE = "value"
+    POINTER = "pointer"
+    REFERENCE = "reference"
+    CONST_POINTER = "const pointer"
+    CONST_REFERENCE = "const reference"
 
 class Node(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -26,6 +35,7 @@ class TypedNode(Node):
 class Type(TypedNode):
     category: str
     name: Optional[Name] = None
+    pass_style: PassStyle = PassStyle.VALUE
 
     def __hash__(self):
         return hash(self.name)
@@ -93,12 +103,13 @@ class ObjectType(Type):
     no_autolock: Optional[bool] = Field(alias="no autolock", default=None)
 
 
-class StructureBase(Type):
+class Structural(Type):
     members: List[RecordMember]
 
 
-class StructureType(StructureBase):
+class StructureType(Structural):
     category: Literal["structure"]
+    pass_style: PassStyle = PassStyle.POINTER
     extensible: Optional[Union[str, bool]] = None
     chained: Optional[str] = None
     chain_roots: Optional[List[str]] = Field(alias="chain roots", default=None)
@@ -172,8 +183,12 @@ class StructureType(StructureBase):
         return False
 
 
-class CallbackInfoType(StructureBase):
+class CallbackInfoType(Structural):
     category: Literal["callback info"]
+    output: Optional[bool] = False
+    chained: Optional[str] = None
+    extensible: Optional[Union[str, bool]] = None
+    has_free_members_function: Optional[bool] = False
 
 
 class NativeType(Type):

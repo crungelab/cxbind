@@ -21,7 +21,8 @@ class PbRenderContext(RenderContext):
         from .pb_function_declaration_renderer import PbFunctionDeclarationRenderer
 
         self.render_table = {
-            CallbackInfoType: NullRenderer,
+            #CallbackInfoType: NullRenderer,
+            CallbackInfoType: PbStructureTypeRenderer,
             ObjectType: PbObjectTypeRenderer,
             StructureType: PbStructureTypeRenderer,
             EnumType: PbEnumTypeRenderer,

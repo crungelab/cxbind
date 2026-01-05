@@ -30,6 +30,10 @@ class HppGenerator(Generator):
             self.out << f"using {self.as_cppType(node.name)} = {self.as_cType(node.name)};" << "\n"
         self.out << "\n"
 
+        for node in self.backend.callback_function_types:
+            self.out << f"using {self.as_cppType(node.name)} = {self.as_cType(node.name)};" << "\n"
+        self.out << "\n"
+
         # forward declarations
         for node in self.backend.structure_types:
             if self.exclude_structure_type(node):

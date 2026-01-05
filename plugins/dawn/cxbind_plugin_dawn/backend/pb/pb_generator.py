@@ -23,6 +23,7 @@ class PbGenerator(Generator):
     def render(self):
         self.render_enum_types()
         self.render_bitmask_types()
+        self.render_callback_info_types()
         self.render_structure_types()
         self.render_object_types()
         #self.render_structure_types()

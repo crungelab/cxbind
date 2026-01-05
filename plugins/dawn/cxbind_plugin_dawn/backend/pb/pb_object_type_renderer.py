@@ -21,7 +21,7 @@ class PbObjectTypeRenderer(ObjectTypeRenderer):
         self.out / f'registry.on(m, "{class_name}", _{class_name});' << "\n\n"
         self.out / f"_{class_name}" << "\n"
 
-        self.out.indent()
+        #self.out.indent()
         for method in self.node.methods:
             if self.exclude_method(self.node, method):
                 continue
@@ -30,5 +30,5 @@ class PbObjectTypeRenderer(ObjectTypeRenderer):
             method_renderer.render()
 
         self.out / ";\n"
-        self.out.dedent()
+        #self.out.dedent()
         self.out << "\n"

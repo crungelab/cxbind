@@ -25,4 +25,5 @@ class PyGenerator(Generator):
         #self.render_bitmask_types()
         #self.render_object_types()
         self.render_structure_types()
+        self.render_callback_info_types()
         #self.render_function_declarations()

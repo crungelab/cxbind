@@ -1,7 +1,7 @@
 from loguru import logger
 
 from ...name import Name
-from ...node import Method, RecordMember, StructureType, ObjectType
+from ...node import Method, RecordMember, StructureType, ObjectType, PassStyle
 
 from ..render_stream import RenderStream
 from ..renderer import Renderer, T_Node
@@ -108,9 +108,18 @@ class DescriptorArgWrapper(ArgWrapper):
         arg_name = self.arg.name.camelCase()
         arg_type = get_arg_type_string(self.arg)
         arg_type_spelling = self.arg.type.name.CamelCase()
-        value = f"""\
-        {arg_type} {self.arg.annotation} _{arg_name} = Builder<{arg_type_spelling}>(ctx).build({arg_name});
-        """
+        annotation = self.arg.annotation if self.arg.annotation else ""
+
+        if self.arg.type.pass_style == PassStyle.VALUE:
+            value = f'''\
+            {arg_type} {annotation} _{arg_name}{{}};
+            Builder<{arg_type_spelling}>(ctx).fill(_{arg_name}, {arg_name});
+            '''
+            # / f'Builder<{member_type.name.CamelCase()}>(ctx).fill(obj.{member_cpp_name}, handle.attr("{member_name}"));'
+        else:            
+            value = f"""\
+            {arg_type} {annotation} _{arg_name} = Builder<{arg_type_spelling}>(ctx).build({arg_name});
+            """
         out(value)
 
 
@@ -222,9 +231,10 @@ class PbFunctionalRenderer(Renderer[T_Node]):
                 arg_name_list.append(f"{arg.name.camelCase()}")
 
         self.out / f'.def("{method_name}",'
-        self.out.indent()
 
         if use_lambda:
+            self.out.indent()
+
             if self.object_type:
                 (
                     self.out
@@ -237,9 +247,13 @@ class PbFunctionalRenderer(Renderer[T_Node]):
                     << f"[]({', '.join(arg_list)}) {{"
                     << "\n"
                 )
+
+            self.out / "try {" << "\n"
+            self.out.indent()
+
             if use_builders:
                 self.out("""
-                LinearAlloc la;
+                LinearAlloc la{};
                 BuildCtx ctx{la};
                 """)
             for snippet in snippet_list:
@@ -255,11 +269,38 @@ class PbFunctionalRenderer(Renderer[T_Node]):
                     self.out / f"return {method_cpp_name}({', '.join(arg_name_list)});"
                     << "\n"
                 )
+
+            self.out.dedent()
+
+            self.out(f"""
+                }} catch (const py::error_already_set& e) {{
+                    // propagate Python-side exception with stack
+                    throw;
+                }} catch (const std::exception& e) {{
+                    fprintf(stderr, "C++ exception what(): '%s'\\n", e.what());
+                    PyErr_SetString(PyExc_RuntimeError, e.what());
+                    throw py::error_already_set();
+                }}
+            """)
+
+            '''
+            self.out(f"""
+                }} catch (const py::error_already_set& e) {{
+                    // propagate Python-side exception with stack
+                    throw;
+                }} catch (const std::exception& e) {{
+                    throw py::type_error(std::string("{method_name} failed: ") + e.what());
+                }}
+            """)
+            '''
+
             self.out.dedent()
             self.out / "}" << "\n"
 
         else:
+            self.out.indent()
             self.out << f"&pywgpu::{class_name}::{method_cpp_name}" << "\n"
+            self.out.dedent()
 
         '''
         if py_arg_list:
@@ -288,9 +329,6 @@ class PbFunctionalRenderer(Renderer[T_Node]):
             )
             """
             )
-
-        if not use_lambda:
-            self.out.dedent()
 
         if not self.object_type:
             self.out << ";" << "\n" << "\n"

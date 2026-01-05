@@ -48,6 +48,18 @@ using LoggingCallbackInfo = WGPULoggingCallbackInfo;
 using QueueWorkDoneCallbackInfo = WGPUQueueWorkDoneCallbackInfo;
 using RequestDeviceCallbackInfo = WGPURequestDeviceCallbackInfo;
 
+using RequestAdapterCallback = WGPURequestAdapterCallback;
+using BufferMapCallback = WGPUBufferMapCallback;
+using CompilationInfoCallback = WGPUCompilationInfoCallback;
+using CreateComputePipelineAsyncCallback = WGPUCreateComputePipelineAsyncCallback;
+using CreateRenderPipelineAsyncCallback = WGPUCreateRenderPipelineAsyncCallback;
+using DeviceLostCallback = WGPUDeviceLostCallback;
+using UncapturedErrorCallback = WGPUUncapturedErrorCallback;
+using PopErrorScopeCallback = WGPUPopErrorScopeCallback;
+using LoggingCallback = WGPULoggingCallback;
+using QueueWorkDoneCallback = WGPUQueueWorkDoneCallback;
+using RequestDeviceCallback = WGPURequestDeviceCallback;
+
 struct RequestAdapterOptions;
 struct AdapterInfo;
 struct DeviceDescriptor;

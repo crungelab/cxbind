@@ -139,6 +139,12 @@ class Backend(Processor):
 
     def process_callback_info_type(self, callback_info: CallbackInfoType):
         # logger.debug(f"Backend: Processing callback info type '{callback_info.name.CamelCase()}'")
+        members_by_name = {member.name: member for member in callback_info.members}
+        for member in callback_info.members:
+            member.type = self.program.lookup(member.type_ref)
+            if member.length is not None and isinstance(member.length, str):
+                member.length_member = members_by_name[Name.intern(member.length)]
+
         self.callback_info_types.append(callback_info)
 
     def process_callback_function_type(self, callback_function: CallbackFunctionType):

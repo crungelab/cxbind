@@ -147,31 +147,202 @@ struct Builder {
     }
 };
 
+template <class DstEnum, class SrcEnum>
+constexpr DstEnum enum_cast(SrcEnum v) {
+    using U = std::underlying_type_t<SrcEnum>;
+    return static_cast<DstEnum>(static_cast<U>(v));
+}
+
 namespace py = pybind11;
 
 using namespace pywgpu;
 
+inline void fill(pywgpu::RequestAdapterCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<RequestAdapterCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::BufferMapCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<BufferMapCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::CompilationInfoCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<CompilationInfoCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::CreateComputePipelineAsyncCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<CreateComputePipelineAsyncCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::CreateRenderPipelineAsyncCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<CreateRenderPipelineAsyncCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::DeviceLostCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<DeviceLostCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::UncapturedErrorCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<UncapturedErrorCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::PopErrorScopeCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<PopErrorScopeCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::LoggingCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<LoggingCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::QueueWorkDoneCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<QueueWorkDoneCallback>();
+        obj.callback = value;
+    }
+}
+
+inline void fill(pywgpu::RequestDeviceCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_mode = handle.attr("mode");
+    if (!py_mode.is_none())
+    {
+        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
+        obj.mode = value;
+    }
+    auto py_callback = handle.attr("callback");
+    if (!py_callback.is_none())
+    {
+        auto value = handle.attr("callback").cast<RequestDeviceCallback>();
+        obj.callback = value;
+    }
+}
+
 inline void fill(pywgpu::RequestAdapterOptions& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_feature_level = handle.attr("feature_level");
+    if (!py_feature_level.is_none())
     {
         auto value = handle.attr("feature_level").cast<FeatureLevel>();
         obj.featureLevel = value;
     }
+    auto py_power_preference = handle.attr("power_preference");
+    if (!py_power_preference.is_none())
     {
         auto value = handle.attr("power_preference").cast<PowerPreference>();
         obj.powerPreference = value;
     }
+    auto py_force_fallback_adapter = handle.attr("force_fallback_adapter");
+    if (!py_force_fallback_adapter.is_none())
     {
         auto value = handle.attr("force_fallback_adapter").cast<Bool>();
         obj.forceFallbackAdapter = value;
     }
+    auto py_backend_type = handle.attr("backend_type");
+    if (!py_backend_type.is_none())
     {
         auto value = handle.attr("backend_type").cast<BackendType>();
         obj.backendType = value;
     }
+    auto py_compatible_surface = handle.attr("compatible_surface");
+    if (!py_compatible_surface.is_none())
     {
         auto value = handle.attr("compatible_surface").cast<Surface>();
         obj.compatibleSurface = value;
@@ -179,19 +350,24 @@ inline void fill(pywgpu::RequestAdapterOptions& obj, py::handle handle, BuildCtx
 }
 
 inline void fill(pywgpu::DeviceDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_required_features = handle.attr("required_features");
+    if (!py_required_features.is_none())
     {
         auto py_list = handle.attr("required_features").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<FeatureName>(count);
+        auto* value = ctx.la.alloc_array<FeatureName>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<FeatureName>();
         }
@@ -199,24 +375,32 @@ inline void fill(pywgpu::DeviceDescriptor& obj, py::handle handle, BuildCtx ctx)
         obj.requiredFeatures = value;
         obj.requiredFeatureCount = count;
     }
+    auto py_required_limits = handle.attr("required_limits");
+    if (!py_required_limits.is_none())
     {
         auto value = Builder<Limits>(ctx).build(handle.attr("required_limits"));
         obj.requiredLimits = value;
     }
+    auto py_default_queue = handle.attr("default_queue");
+    if (!py_default_queue.is_none())
     {
         Builder<QueueDescriptor>(ctx).fill(obj.defaultQueue, handle.attr("default_queue"));
     }
+    auto py_device_lost_callback_info = handle.attr("device_lost_callback_info");
+    if (!py_device_lost_callback_info.is_none())
     {
-        auto value = handle.attr("device_lost_callback_info").cast<DeviceLostCallbackInfo>();
-        obj.deviceLostCallbackInfo = value;
+        Builder<DeviceLostCallbackInfo>(ctx).fill(obj.deviceLostCallbackInfo, handle.attr("device_lost_callback_info"));
     }
+    auto py_uncaptured_error_callback_info = handle.attr("uncaptured_error_callback_info");
+    if (!py_uncaptured_error_callback_info.is_none())
     {
-        auto value = handle.attr("uncaptured_error_callback_info").cast<UncapturedErrorCallbackInfo>();
-        obj.uncapturedErrorCallbackInfo = value;
+        Builder<UncapturedErrorCallbackInfo>(ctx).fill(obj.uncapturedErrorCallbackInfo, handle.attr("uncaptured_error_callback_info"));
     }
 }
 
 inline void fill(pywgpu::DawnTogglesDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
@@ -224,14 +408,20 @@ inline void fill(pywgpu::DawnTogglesDescriptor& obj, py::handle handle, BuildCtx
 }
 
 inline void fill(pywgpu::DawnCacheDeviceDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_isolation_key = handle.attr("isolation_key");
+    if (!py_isolation_key.is_none())
     {
         auto value = handle.attr("isolation_key").cast<StringView>();
         obj.isolationKey = value;
     }
+    auto py_function_userdata = handle.attr("function_userdata");
+    if (!py_function_userdata.is_none())
     {
         auto value = handle.attr("function_userdata").cast<void *>();
         obj.functionUserdata = value;
@@ -239,6 +429,8 @@ inline void fill(pywgpu::DawnCacheDeviceDescriptor& obj, py::handle handle, Buil
 }
 
 inline void fill(pywgpu::DawnWGSLBlocklist& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
@@ -246,30 +438,44 @@ inline void fill(pywgpu::DawnWGSLBlocklist& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::BindGroupEntry& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_binding = handle.attr("binding");
+    if (!py_binding.is_none())
     {
         auto value = handle.attr("binding").cast<uint32_t>();
         obj.binding = value;
     }
+    auto py_buffer = handle.attr("buffer");
+    if (!py_buffer.is_none())
     {
         auto value = handle.attr("buffer").cast<Buffer>();
         obj.buffer = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_size = handle.attr("size");
+    if (!py_size.is_none())
     {
         auto value = handle.attr("size").cast<uint64_t>();
         obj.size = value;
     }
+    auto py_sampler = handle.attr("sampler");
+    if (!py_sampler.is_none())
     {
         auto value = handle.attr("sampler").cast<Sampler>();
         obj.sampler = value;
     }
+    auto py_texture_view = handle.attr("texture_view");
+    if (!py_texture_view.is_none())
     {
         auto value = handle.attr("texture_view").cast<TextureView>();
         obj.textureView = value;
@@ -277,23 +483,30 @@ inline void fill(pywgpu::BindGroupEntry& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::BindGroupDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_layout = handle.attr("layout");
+    if (!py_layout.is_none())
     {
         auto value = handle.attr("layout").cast<BindGroupLayout>();
         obj.layout = value;
     }
+    auto py_entries = handle.attr("entries");
+    if (!py_entries.is_none())
     {
         auto py_list = handle.attr("entries").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<BindGroupEntry>(count);
+        auto* value = ctx.la.alloc_array<BindGroupEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<BindGroupEntry>();
         }
@@ -304,18 +517,26 @@ inline void fill(pywgpu::BindGroupDescriptor& obj, py::handle handle, BuildCtx c
 }
 
 inline void fill(pywgpu::BufferBindingLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_type = handle.attr("type");
+    if (!py_type.is_none())
     {
         auto value = handle.attr("type").cast<BufferBindingType>();
         obj.type = value;
     }
+    auto py_has_dynamic_offset = handle.attr("has_dynamic_offset");
+    if (!py_has_dynamic_offset.is_none())
     {
         auto value = handle.attr("has_dynamic_offset").cast<Bool>();
         obj.hasDynamicOffset = value;
     }
+    auto py_min_binding_size = handle.attr("min_binding_size");
+    if (!py_min_binding_size.is_none())
     {
         auto value = handle.attr("min_binding_size").cast<uint64_t>();
         obj.minBindingSize = value;
@@ -323,10 +544,14 @@ inline void fill(pywgpu::BufferBindingLayout& obj, py::handle handle, BuildCtx c
 }
 
 inline void fill(pywgpu::SamplerBindingLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_type = handle.attr("type");
+    if (!py_type.is_none())
     {
         auto value = handle.attr("type").cast<SamplerBindingType>();
         obj.type = value;
@@ -334,14 +559,20 @@ inline void fill(pywgpu::SamplerBindingLayout& obj, py::handle handle, BuildCtx 
 }
 
 inline void fill(pywgpu::StaticSamplerBindingLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_sampler = handle.attr("sampler");
+    if (!py_sampler.is_none())
     {
         auto value = handle.attr("sampler").cast<Sampler>();
         obj.sampler = value;
     }
+    auto py_sampled_texture_binding = handle.attr("sampled_texture_binding");
+    if (!py_sampled_texture_binding.is_none())
     {
         auto value = handle.attr("sampled_texture_binding").cast<uint32_t>();
         obj.sampledTextureBinding = value;
@@ -349,18 +580,26 @@ inline void fill(pywgpu::StaticSamplerBindingLayout& obj, py::handle handle, Bui
 }
 
 inline void fill(pywgpu::TextureBindingLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_sample_type = handle.attr("sample_type");
+    if (!py_sample_type.is_none())
     {
         auto value = handle.attr("sample_type").cast<TextureSampleType>();
         obj.sampleType = value;
     }
+    auto py_view_dimension = handle.attr("view_dimension");
+    if (!py_view_dimension.is_none())
     {
         auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
         obj.viewDimension = value;
     }
+    auto py_multisampled = handle.attr("multisampled");
+    if (!py_multisampled.is_none())
     {
         auto value = handle.attr("multisampled").cast<Bool>();
         obj.multisampled = value;
@@ -368,35 +607,48 @@ inline void fill(pywgpu::TextureBindingLayout& obj, py::handle handle, BuildCtx 
 }
 
 inline void fill(pywgpu::SurfaceConfiguration& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_device = handle.attr("device");
+    if (!py_device.is_none())
     {
         auto value = handle.attr("device").cast<Device>();
         obj.device = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
+    auto py_usage = handle.attr("usage");
+    if (!py_usage.is_none())
     {
         auto value = handle.attr("usage").cast<TextureUsage>();
         obj.usage = value;
     }
+    auto py_width = handle.attr("width");
+    if (!py_width.is_none())
     {
         auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
+    auto py_height = handle.attr("height");
+    if (!py_height.is_none())
     {
         auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
     }
+    auto py_view_formats = handle.attr("view_formats");
+    if (!py_view_formats.is_none())
     {
         auto py_list = handle.attr("view_formats").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<TextureFormat>(count);
+        auto* value = ctx.la.alloc_array<TextureFormat>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<TextureFormat>();
         }
@@ -404,10 +656,14 @@ inline void fill(pywgpu::SurfaceConfiguration& obj, py::handle handle, BuildCtx 
         obj.viewFormats = value;
         obj.viewFormatCount = count;
     }
+    auto py_alpha_mode = handle.attr("alpha_mode");
+    if (!py_alpha_mode.is_none())
     {
         auto value = handle.attr("alpha_mode").cast<CompositeAlphaMode>();
         obj.alphaMode = value;
     }
+    auto py_present_mode = handle.attr("present_mode");
+    if (!py_present_mode.is_none())
     {
         auto value = handle.attr("present_mode").cast<PresentMode>();
         obj.presentMode = value;
@@ -415,10 +671,14 @@ inline void fill(pywgpu::SurfaceConfiguration& obj, py::handle handle, BuildCtx 
 }
 
 inline void fill(pywgpu::ExternalTextureBindingEntry& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_external_texture = handle.attr("external_texture");
+    if (!py_external_texture.is_none())
     {
         auto value = handle.attr("external_texture").cast<ExternalTexture>();
         obj.externalTexture = value;
@@ -426,6 +686,8 @@ inline void fill(pywgpu::ExternalTextureBindingEntry& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::ExternalTextureBindingLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
@@ -433,18 +695,26 @@ inline void fill(pywgpu::ExternalTextureBindingLayout& obj, py::handle handle, B
 }
 
 inline void fill(pywgpu::StorageTextureBindingLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_access = handle.attr("access");
+    if (!py_access.is_none())
     {
         auto value = handle.attr("access").cast<StorageTextureAccess>();
         obj.access = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
+    auto py_view_dimension = handle.attr("view_dimension");
+    if (!py_view_dimension.is_none())
     {
         auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
         obj.viewDimension = value;
@@ -452,46 +722,65 @@ inline void fill(pywgpu::StorageTextureBindingLayout& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::BindGroupLayoutEntry& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_binding = handle.attr("binding");
+    if (!py_binding.is_none())
     {
         auto value = handle.attr("binding").cast<uint32_t>();
         obj.binding = value;
     }
+    auto py_visibility = handle.attr("visibility");
+    if (!py_visibility.is_none())
     {
         auto value = handle.attr("visibility").cast<ShaderStage>();
         obj.visibility = value;
     }
+    auto py_buffer = handle.attr("buffer");
+    if (!py_buffer.is_none())
     {
         Builder<BufferBindingLayout>(ctx).fill(obj.buffer, handle.attr("buffer"));
     }
+    auto py_sampler = handle.attr("sampler");
+    if (!py_sampler.is_none())
     {
         Builder<SamplerBindingLayout>(ctx).fill(obj.sampler, handle.attr("sampler"));
     }
+    auto py_texture = handle.attr("texture");
+    if (!py_texture.is_none())
     {
         Builder<TextureBindingLayout>(ctx).fill(obj.texture, handle.attr("texture"));
     }
+    auto py_storage_texture = handle.attr("storage_texture");
+    if (!py_storage_texture.is_none())
     {
         Builder<StorageTextureBindingLayout>(ctx).fill(obj.storageTexture, handle.attr("storage_texture"));
     }
 }
 
 inline void fill(pywgpu::BindGroupLayoutDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_entries = handle.attr("entries");
+    if (!py_entries.is_none())
     {
         auto py_list = handle.attr("entries").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<BindGroupLayoutEntry>(count);
+        auto* value = ctx.la.alloc_array<BindGroupLayoutEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<BindGroupLayoutEntry>();
         }
@@ -502,14 +791,20 @@ inline void fill(pywgpu::BindGroupLayoutDescriptor& obj, py::handle handle, Buil
 }
 
 inline void fill(pywgpu::BlendComponent& obj, py::handle handle, BuildCtx ctx) {
+    auto py_operation = handle.attr("operation");
+    if (!py_operation.is_none())
     {
         auto value = handle.attr("operation").cast<BlendOperation>();
         obj.operation = value;
     }
+    auto py_src_factor = handle.attr("src_factor");
+    if (!py_src_factor.is_none())
     {
         auto value = handle.attr("src_factor").cast<BlendFactor>();
         obj.srcFactor = value;
     }
+    auto py_dst_factor = handle.attr("dst_factor");
+    if (!py_dst_factor.is_none())
     {
         auto value = handle.attr("dst_factor").cast<BlendFactor>();
         obj.dstFactor = value;
@@ -517,22 +812,32 @@ inline void fill(pywgpu::BlendComponent& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::BufferDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_usage = handle.attr("usage");
+    if (!py_usage.is_none())
     {
         auto value = handle.attr("usage").cast<BufferUsage>();
         obj.usage = value;
     }
+    auto py_size = handle.attr("size");
+    if (!py_size.is_none())
     {
         auto value = handle.attr("size").cast<uint64_t>();
         obj.size = value;
     }
+    auto py_mapped_at_creation = handle.attr("mapped_at_creation");
+    if (!py_mapped_at_creation.is_none())
     {
         auto value = handle.attr("mapped_at_creation").cast<Bool>();
         obj.mappedAtCreation = value;
@@ -540,14 +845,20 @@ inline void fill(pywgpu::BufferDescriptor& obj, py::handle handle, BuildCtx ctx)
 }
 
 inline void fill(pywgpu::BufferHostMappedPointer& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_pointer = handle.attr("pointer");
+    if (!py_pointer.is_none())
     {
         auto value = handle.attr("pointer").cast<void *>();
         obj.pointer = value;
     }
+    auto py_userdata = handle.attr("userdata");
+    if (!py_userdata.is_none())
     {
         auto value = handle.attr("userdata").cast<void *>();
         obj.userdata = value;
@@ -555,18 +866,26 @@ inline void fill(pywgpu::BufferHostMappedPointer& obj, py::handle handle, BuildC
 }
 
 inline void fill(pywgpu::Color& obj, py::handle handle, BuildCtx ctx) {
+    auto py_r = handle.attr("r");
+    if (!py_r.is_none())
     {
         auto value = handle.attr("r").cast<double>();
         obj.r = value;
     }
+    auto py_g = handle.attr("g");
+    if (!py_g.is_none())
     {
         auto value = handle.attr("g").cast<double>();
         obj.g = value;
     }
+    auto py_b = handle.attr("b");
+    if (!py_b.is_none())
     {
         auto value = handle.attr("b").cast<double>();
         obj.b = value;
     }
+    auto py_a = handle.attr("a");
+    if (!py_a.is_none())
     {
         auto value = handle.attr("a").cast<double>();
         obj.a = value;
@@ -574,14 +893,20 @@ inline void fill(pywgpu::Color& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::ConstantEntry& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_key = handle.attr("key");
+    if (!py_key.is_none())
     {
         auto value = handle.attr("key").cast<StringView>();
         obj.key = value;
     }
+    auto py_value = handle.attr("value");
+    if (!py_value.is_none())
     {
         auto value = handle.attr("value").cast<double>();
         obj.value = value;
@@ -589,10 +914,14 @@ inline void fill(pywgpu::ConstantEntry& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::CommandBufferDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -600,10 +929,14 @@ inline void fill(pywgpu::CommandBufferDescriptor& obj, py::handle handle, BuildC
 }
 
 inline void fill(pywgpu::CommandEncoderDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -611,15 +944,18 @@ inline void fill(pywgpu::CommandEncoderDescriptor& obj, py::handle handle, Build
 }
 
 inline void fill(pywgpu::CompilationInfo& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_messages = handle.attr("messages");
+    if (!py_messages.is_none())
     {
         auto py_list = handle.attr("messages").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<CompilationMessage>(count);
+        auto* value = ctx.la.alloc_array<CompilationMessage>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<CompilationMessage>();
         }
@@ -630,30 +966,44 @@ inline void fill(pywgpu::CompilationInfo& obj, py::handle handle, BuildCtx ctx) 
 }
 
 inline void fill(pywgpu::CompilationMessage& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_message = handle.attr("message");
+    if (!py_message.is_none())
     {
         auto value = handle.attr("message").cast<StringView>();
         obj.message = value;
     }
+    auto py_type = handle.attr("type");
+    if (!py_type.is_none())
     {
         auto value = handle.attr("type").cast<CompilationMessageType>();
         obj.type = value;
     }
+    auto py_line_num = handle.attr("line_num");
+    if (!py_line_num.is_none())
     {
         auto value = handle.attr("line_num").cast<uint64_t>();
         obj.lineNum = value;
     }
+    auto py_line_pos = handle.attr("line_pos");
+    if (!py_line_pos.is_none())
     {
         auto value = handle.attr("line_pos").cast<uint64_t>();
         obj.linePos = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_length = handle.attr("length");
+    if (!py_length.is_none())
     {
         auto value = handle.attr("length").cast<uint64_t>();
         obj.length = value;
@@ -661,18 +1011,26 @@ inline void fill(pywgpu::CompilationMessage& obj, py::handle handle, BuildCtx ct
 }
 
 inline void fill(pywgpu::DawnCompilationMessageUtf16& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_line_pos = handle.attr("line_pos");
+    if (!py_line_pos.is_none())
     {
         auto value = handle.attr("line_pos").cast<uint64_t>();
         obj.linePos = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_length = handle.attr("length");
+    if (!py_length.is_none())
     {
         auto value = handle.attr("length").cast<uint64_t>();
         obj.length = value;
@@ -680,14 +1038,20 @@ inline void fill(pywgpu::DawnCompilationMessageUtf16& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::ComputePassDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_timestamp_writes = handle.attr("timestamp_writes");
+    if (!py_timestamp_writes.is_none())
     {
         auto value = Builder<PassTimestampWrites>(ctx).build(handle.attr("timestamp_writes"));
         obj.timestampWrites = value;
@@ -695,75 +1059,100 @@ inline void fill(pywgpu::ComputePassDescriptor& obj, py::handle handle, BuildCtx
 }
 
 inline void fill(pywgpu::ComputePipelineDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_layout = handle.attr("layout");
+    if (!py_layout.is_none())
     {
         auto value = handle.attr("layout").cast<PipelineLayout>();
         obj.layout = value;
     }
+    auto py_compute = handle.attr("compute");
+    if (!py_compute.is_none())
     {
         Builder<ComputeState>(ctx).fill(obj.compute, handle.attr("compute"));
     }
 }
 
 inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_flip_y = handle.attr("flip_y");
+    if (!py_flip_y.is_none())
     {
         auto value = handle.attr("flip_y").cast<Bool>();
         obj.flipY = value;
     }
+    auto py_needs_color_space_conversion = handle.attr("needs_color_space_conversion");
+    if (!py_needs_color_space_conversion.is_none())
     {
         auto value = handle.attr("needs_color_space_conversion").cast<Bool>();
         obj.needsColorSpaceConversion = value;
     }
+    auto py_src_alpha_mode = handle.attr("src_alpha_mode");
+    if (!py_src_alpha_mode.is_none())
     {
         auto value = handle.attr("src_alpha_mode").cast<AlphaMode>();
         obj.srcAlphaMode = value;
     }
+    auto py_src_transfer_function_parameters = handle.attr("src_transfer_function_parameters");
+    if (!py_src_transfer_function_parameters.is_none())
     {
         auto py_list = handle.attr("src_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.srcTransferFunctionParameters = value;
     }
+    auto py_conversion_matrix = handle.attr("conversion_matrix");
+    if (!py_conversion_matrix.is_none())
     {
         auto py_list = handle.attr("conversion_matrix").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.conversionMatrix = value;
     }
+    auto py_dst_transfer_function_parameters = handle.attr("dst_transfer_function_parameters");
+    if (!py_dst_transfer_function_parameters.is_none())
     {
         auto py_list = handle.attr("dst_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.dstTransferFunctionParameters = value;
     }
+    auto py_dst_alpha_mode = handle.attr("dst_alpha_mode");
+    if (!py_dst_alpha_mode.is_none())
     {
         auto value = handle.attr("dst_alpha_mode").cast<AlphaMode>();
         obj.dstAlphaMode = value;
     }
+    auto py_internal_usage = handle.attr("internal_usage");
+    if (!py_internal_usage.is_none())
     {
         auto value = handle.attr("internal_usage").cast<Bool>();
         obj.internalUsage = value;
@@ -771,152 +1160,226 @@ inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, B
 }
 
 inline void fill(pywgpu::AHardwareBufferProperties& obj, py::handle handle, BuildCtx ctx) {
+    auto py_y_cb_cr_info = handle.attr("y_cb_cr_info");
+    if (!py_y_cb_cr_info.is_none())
     {
         Builder<YCbCrVkDescriptor>(ctx).fill(obj.yCbCrInfo, handle.attr("y_cb_cr_info"));
     }
 }
 
 inline void fill(pywgpu::Limits& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStructOut>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_max_texture_dimension_1D = handle.attr("max_texture_dimension_1D");
+    if (!py_max_texture_dimension_1D.is_none())
     {
         auto value = handle.attr("max_texture_dimension_1D").cast<uint32_t>();
         obj.maxTextureDimension1D = value;
     }
+    auto py_max_texture_dimension_2D = handle.attr("max_texture_dimension_2D");
+    if (!py_max_texture_dimension_2D.is_none())
     {
         auto value = handle.attr("max_texture_dimension_2D").cast<uint32_t>();
         obj.maxTextureDimension2D = value;
     }
+    auto py_max_texture_dimension_3D = handle.attr("max_texture_dimension_3D");
+    if (!py_max_texture_dimension_3D.is_none())
     {
         auto value = handle.attr("max_texture_dimension_3D").cast<uint32_t>();
         obj.maxTextureDimension3D = value;
     }
+    auto py_max_texture_array_layers = handle.attr("max_texture_array_layers");
+    if (!py_max_texture_array_layers.is_none())
     {
         auto value = handle.attr("max_texture_array_layers").cast<uint32_t>();
         obj.maxTextureArrayLayers = value;
     }
+    auto py_max_bind_groups = handle.attr("max_bind_groups");
+    if (!py_max_bind_groups.is_none())
     {
         auto value = handle.attr("max_bind_groups").cast<uint32_t>();
         obj.maxBindGroups = value;
     }
+    auto py_max_bind_groups_plus_vertex_buffers = handle.attr("max_bind_groups_plus_vertex_buffers");
+    if (!py_max_bind_groups_plus_vertex_buffers.is_none())
     {
         auto value = handle.attr("max_bind_groups_plus_vertex_buffers").cast<uint32_t>();
         obj.maxBindGroupsPlusVertexBuffers = value;
     }
+    auto py_max_bindings_per_bind_group = handle.attr("max_bindings_per_bind_group");
+    if (!py_max_bindings_per_bind_group.is_none())
     {
         auto value = handle.attr("max_bindings_per_bind_group").cast<uint32_t>();
         obj.maxBindingsPerBindGroup = value;
     }
+    auto py_max_dynamic_uniform_buffers_per_pipeline_layout = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout");
+    if (!py_max_dynamic_uniform_buffers_per_pipeline_layout.is_none())
     {
         auto value = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout").cast<uint32_t>();
         obj.maxDynamicUniformBuffersPerPipelineLayout = value;
     }
+    auto py_max_dynamic_storage_buffers_per_pipeline_layout = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout");
+    if (!py_max_dynamic_storage_buffers_per_pipeline_layout.is_none())
     {
         auto value = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout").cast<uint32_t>();
         obj.maxDynamicStorageBuffersPerPipelineLayout = value;
     }
+    auto py_max_sampled_textures_per_shader_stage = handle.attr("max_sampled_textures_per_shader_stage");
+    if (!py_max_sampled_textures_per_shader_stage.is_none())
     {
         auto value = handle.attr("max_sampled_textures_per_shader_stage").cast<uint32_t>();
         obj.maxSampledTexturesPerShaderStage = value;
     }
+    auto py_max_samplers_per_shader_stage = handle.attr("max_samplers_per_shader_stage");
+    if (!py_max_samplers_per_shader_stage.is_none())
     {
         auto value = handle.attr("max_samplers_per_shader_stage").cast<uint32_t>();
         obj.maxSamplersPerShaderStage = value;
     }
+    auto py_max_storage_buffers_per_shader_stage = handle.attr("max_storage_buffers_per_shader_stage");
+    if (!py_max_storage_buffers_per_shader_stage.is_none())
     {
         auto value = handle.attr("max_storage_buffers_per_shader_stage").cast<uint32_t>();
         obj.maxStorageBuffersPerShaderStage = value;
     }
+    auto py_max_storage_textures_per_shader_stage = handle.attr("max_storage_textures_per_shader_stage");
+    if (!py_max_storage_textures_per_shader_stage.is_none())
     {
         auto value = handle.attr("max_storage_textures_per_shader_stage").cast<uint32_t>();
         obj.maxStorageTexturesPerShaderStage = value;
     }
+    auto py_max_uniform_buffers_per_shader_stage = handle.attr("max_uniform_buffers_per_shader_stage");
+    if (!py_max_uniform_buffers_per_shader_stage.is_none())
     {
         auto value = handle.attr("max_uniform_buffers_per_shader_stage").cast<uint32_t>();
         obj.maxUniformBuffersPerShaderStage = value;
     }
+    auto py_max_uniform_buffer_binding_size = handle.attr("max_uniform_buffer_binding_size");
+    if (!py_max_uniform_buffer_binding_size.is_none())
     {
         auto value = handle.attr("max_uniform_buffer_binding_size").cast<uint64_t>();
         obj.maxUniformBufferBindingSize = value;
     }
+    auto py_max_storage_buffer_binding_size = handle.attr("max_storage_buffer_binding_size");
+    if (!py_max_storage_buffer_binding_size.is_none())
     {
         auto value = handle.attr("max_storage_buffer_binding_size").cast<uint64_t>();
         obj.maxStorageBufferBindingSize = value;
     }
+    auto py_min_uniform_buffer_offset_alignment = handle.attr("min_uniform_buffer_offset_alignment");
+    if (!py_min_uniform_buffer_offset_alignment.is_none())
     {
         auto value = handle.attr("min_uniform_buffer_offset_alignment").cast<uint32_t>();
         obj.minUniformBufferOffsetAlignment = value;
     }
+    auto py_min_storage_buffer_offset_alignment = handle.attr("min_storage_buffer_offset_alignment");
+    if (!py_min_storage_buffer_offset_alignment.is_none())
     {
         auto value = handle.attr("min_storage_buffer_offset_alignment").cast<uint32_t>();
         obj.minStorageBufferOffsetAlignment = value;
     }
+    auto py_max_vertex_buffers = handle.attr("max_vertex_buffers");
+    if (!py_max_vertex_buffers.is_none())
     {
         auto value = handle.attr("max_vertex_buffers").cast<uint32_t>();
         obj.maxVertexBuffers = value;
     }
+    auto py_max_buffer_size = handle.attr("max_buffer_size");
+    if (!py_max_buffer_size.is_none())
     {
         auto value = handle.attr("max_buffer_size").cast<uint64_t>();
         obj.maxBufferSize = value;
     }
+    auto py_max_vertex_attributes = handle.attr("max_vertex_attributes");
+    if (!py_max_vertex_attributes.is_none())
     {
         auto value = handle.attr("max_vertex_attributes").cast<uint32_t>();
         obj.maxVertexAttributes = value;
     }
+    auto py_max_vertex_buffer_array_stride = handle.attr("max_vertex_buffer_array_stride");
+    if (!py_max_vertex_buffer_array_stride.is_none())
     {
         auto value = handle.attr("max_vertex_buffer_array_stride").cast<uint32_t>();
         obj.maxVertexBufferArrayStride = value;
     }
+    auto py_max_inter_stage_shader_variables = handle.attr("max_inter_stage_shader_variables");
+    if (!py_max_inter_stage_shader_variables.is_none())
     {
         auto value = handle.attr("max_inter_stage_shader_variables").cast<uint32_t>();
         obj.maxInterStageShaderVariables = value;
     }
+    auto py_max_color_attachments = handle.attr("max_color_attachments");
+    if (!py_max_color_attachments.is_none())
     {
         auto value = handle.attr("max_color_attachments").cast<uint32_t>();
         obj.maxColorAttachments = value;
     }
+    auto py_max_color_attachment_bytes_per_sample = handle.attr("max_color_attachment_bytes_per_sample");
+    if (!py_max_color_attachment_bytes_per_sample.is_none())
     {
         auto value = handle.attr("max_color_attachment_bytes_per_sample").cast<uint32_t>();
         obj.maxColorAttachmentBytesPerSample = value;
     }
+    auto py_max_compute_workgroup_storage_size = handle.attr("max_compute_workgroup_storage_size");
+    if (!py_max_compute_workgroup_storage_size.is_none())
     {
         auto value = handle.attr("max_compute_workgroup_storage_size").cast<uint32_t>();
         obj.maxComputeWorkgroupStorageSize = value;
     }
+    auto py_max_compute_invocations_per_workgroup = handle.attr("max_compute_invocations_per_workgroup");
+    if (!py_max_compute_invocations_per_workgroup.is_none())
     {
         auto value = handle.attr("max_compute_invocations_per_workgroup").cast<uint32_t>();
         obj.maxComputeInvocationsPerWorkgroup = value;
     }
+    auto py_max_compute_workgroup_size_x = handle.attr("max_compute_workgroup_size_x");
+    if (!py_max_compute_workgroup_size_x.is_none())
     {
         auto value = handle.attr("max_compute_workgroup_size_x").cast<uint32_t>();
         obj.maxComputeWorkgroupSizeX = value;
     }
+    auto py_max_compute_workgroup_size_y = handle.attr("max_compute_workgroup_size_y");
+    if (!py_max_compute_workgroup_size_y.is_none())
     {
         auto value = handle.attr("max_compute_workgroup_size_y").cast<uint32_t>();
         obj.maxComputeWorkgroupSizeY = value;
     }
+    auto py_max_compute_workgroup_size_z = handle.attr("max_compute_workgroup_size_z");
+    if (!py_max_compute_workgroup_size_z.is_none())
     {
         auto value = handle.attr("max_compute_workgroup_size_z").cast<uint32_t>();
         obj.maxComputeWorkgroupSizeZ = value;
     }
+    auto py_max_compute_workgroups_per_dimension = handle.attr("max_compute_workgroups_per_dimension");
+    if (!py_max_compute_workgroups_per_dimension.is_none())
     {
         auto value = handle.attr("max_compute_workgroups_per_dimension").cast<uint32_t>();
         obj.maxComputeWorkgroupsPerDimension = value;
     }
+    auto py_max_storage_buffers_in_vertex_stage = handle.attr("max_storage_buffers_in_vertex_stage");
+    if (!py_max_storage_buffers_in_vertex_stage.is_none())
     {
         auto value = handle.attr("max_storage_buffers_in_vertex_stage").cast<uint32_t>();
         obj.maxStorageBuffersInVertexStage = value;
     }
+    auto py_max_storage_textures_in_vertex_stage = handle.attr("max_storage_textures_in_vertex_stage");
+    if (!py_max_storage_textures_in_vertex_stage.is_none())
     {
         auto value = handle.attr("max_storage_textures_in_vertex_stage").cast<uint32_t>();
         obj.maxStorageTexturesInVertexStage = value;
     }
+    auto py_max_storage_buffers_in_fragment_stage = handle.attr("max_storage_buffers_in_fragment_stage");
+    if (!py_max_storage_buffers_in_fragment_stage.is_none())
     {
         auto value = handle.attr("max_storage_buffers_in_fragment_stage").cast<uint32_t>();
         obj.maxStorageBuffersInFragmentStage = value;
     }
+    auto py_max_storage_textures_in_fragment_stage = handle.attr("max_storage_textures_in_fragment_stage");
+    if (!py_max_storage_textures_in_fragment_stage.is_none())
     {
         auto value = handle.attr("max_storage_textures_in_fragment_stage").cast<uint32_t>();
         obj.maxStorageTexturesInFragmentStage = value;
@@ -924,11 +1387,12 @@ inline void fill(pywgpu::Limits& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::SupportedFeatures& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_features = handle.attr("features");
+    if (!py_features.is_none())
     {
         auto py_list = handle.attr("features").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<FeatureName>(count);
+        auto* value = ctx.la.alloc_array<FeatureName>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<FeatureName>();
         }
@@ -939,11 +1403,12 @@ inline void fill(pywgpu::SupportedFeatures& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::SupportedWGSLLanguageFeatures& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_features = handle.attr("features");
+    if (!py_features.is_none())
     {
         auto py_list = handle.attr("features").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<WGSLLanguageFeatureName>(count);
+        auto* value = ctx.la.alloc_array<WGSLLanguageFeatureName>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<WGSLLanguageFeatureName>();
         }
@@ -954,10 +1419,14 @@ inline void fill(pywgpu::SupportedWGSLLanguageFeatures& obj, py::handle handle, 
 }
 
 inline void fill(pywgpu::Extent2D& obj, py::handle handle, BuildCtx ctx) {
+    auto py_width = handle.attr("width");
+    if (!py_width.is_none())
     {
         auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
+    auto py_height = handle.attr("height");
+    if (!py_height.is_none())
     {
         auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
@@ -965,14 +1434,20 @@ inline void fill(pywgpu::Extent2D& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::Extent3D& obj, py::handle handle, BuildCtx ctx) {
+    auto py_width = handle.attr("width");
+    if (!py_width.is_none())
     {
         auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
+    auto py_height = handle.attr("height");
+    if (!py_height.is_none())
     {
         auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
     }
+    auto py_depth_or_array_layers = handle.attr("depth_or_array_layers");
+    if (!py_depth_or_array_layers.is_none())
     {
         auto value = handle.attr("depth_or_array_layers").cast<uint32_t>();
         obj.depthOrArrayLayers = value;
@@ -980,80 +1455,107 @@ inline void fill(pywgpu::Extent3D& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_plane_0 = handle.attr("plane_0");
+    if (!py_plane_0.is_none())
     {
         auto value = handle.attr("plane_0").cast<TextureView>();
         obj.plane0 = value;
     }
+    auto py_plane_1 = handle.attr("plane_1");
+    if (!py_plane_1.is_none())
     {
         auto value = handle.attr("plane_1").cast<TextureView>();
         obj.plane1 = value;
     }
+    auto py_crop_origin = handle.attr("crop_origin");
+    if (!py_crop_origin.is_none())
     {
         Builder<Origin2D>(ctx).fill(obj.cropOrigin, handle.attr("crop_origin"));
     }
+    auto py_crop_size = handle.attr("crop_size");
+    if (!py_crop_size.is_none())
     {
         Builder<Extent2D>(ctx).fill(obj.cropSize, handle.attr("crop_size"));
     }
+    auto py_apparent_size = handle.attr("apparent_size");
+    if (!py_apparent_size.is_none())
     {
         Builder<Extent2D>(ctx).fill(obj.apparentSize, handle.attr("apparent_size"));
     }
+    auto py_do_yuv_to_rgb_conversion_only = handle.attr("do_yuv_to_rgb_conversion_only");
+    if (!py_do_yuv_to_rgb_conversion_only.is_none())
     {
         auto value = handle.attr("do_yuv_to_rgb_conversion_only").cast<Bool>();
         obj.doYuvToRgbConversionOnly = value;
     }
+    auto py_yuv_to_rgb_conversion_matrix = handle.attr("yuv_to_rgb_conversion_matrix");
+    if (!py_yuv_to_rgb_conversion_matrix.is_none())
     {
         auto py_list = handle.attr("yuv_to_rgb_conversion_matrix").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.yuvToRgbConversionMatrix = value;
     }
+    auto py_src_transfer_function_parameters = handle.attr("src_transfer_function_parameters");
+    if (!py_src_transfer_function_parameters.is_none())
     {
         auto py_list = handle.attr("src_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.srcTransferFunctionParameters = value;
     }
+    auto py_dst_transfer_function_parameters = handle.attr("dst_transfer_function_parameters");
+    if (!py_dst_transfer_function_parameters.is_none())
     {
         auto py_list = handle.attr("dst_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.dstTransferFunctionParameters = value;
     }
+    auto py_gamut_conversion_matrix = handle.attr("gamut_conversion_matrix");
+    if (!py_gamut_conversion_matrix.is_none())
     {
         auto py_list = handle.attr("gamut_conversion_matrix").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<float>(count);
+        auto* value = ctx.la.alloc_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
 
         obj.gamutConversionMatrix = value;
     }
+    auto py_mirrored = handle.attr("mirrored");
+    if (!py_mirrored.is_none())
     {
         auto value = handle.attr("mirrored").cast<Bool>();
         obj.mirrored = value;
     }
+    auto py_rotation = handle.attr("rotation");
+    if (!py_rotation.is_none())
     {
         auto value = handle.attr("rotation").cast<ExternalTextureRotation>();
         obj.rotation = value;
@@ -1061,10 +1563,14 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
 }
 
 inline void fill(pywgpu::SharedBufferMemoryDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -1072,10 +1578,14 @@ inline void fill(pywgpu::SharedBufferMemoryDescriptor& obj, py::handle handle, B
 }
 
 inline void fill(pywgpu::SharedTextureMemoryDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -1083,19 +1593,24 @@ inline void fill(pywgpu::SharedTextureMemoryDescriptor& obj, py::handle handle, 
 }
 
 inline void fill(pywgpu::SharedBufferMemoryBeginAccessDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_initialized = handle.attr("initialized");
+    if (!py_initialized.is_none())
     {
         auto value = handle.attr("initialized").cast<Bool>();
         obj.initialized = value;
     }
+    auto py_fences = handle.attr("fences");
+    if (!py_fences.is_none())
     {
         auto py_list = handle.attr("fences").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<SharedFence>(count);
+        auto* value = ctx.la.alloc_array<SharedFence>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<SharedFence>();
         }
@@ -1103,10 +1618,12 @@ inline void fill(pywgpu::SharedBufferMemoryBeginAccessDescriptor& obj, py::handl
         obj.fences = value;
         obj.fenceCount = count;
     }
+    auto py_signaled_values = handle.attr("signaled_values");
+    if (!py_signaled_values.is_none())
     {
         auto py_list = handle.attr("signaled_values").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<uint64_t>(count);
+        auto* value = ctx.la.alloc_array<uint64_t>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<uint64_t>();
         }
@@ -1117,10 +1634,14 @@ inline void fill(pywgpu::SharedBufferMemoryBeginAccessDescriptor& obj, py::handl
 }
 
 inline void fill(pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_dedicated_allocation = handle.attr("dedicated_allocation");
+    if (!py_dedicated_allocation.is_none())
     {
         auto value = handle.attr("dedicated_allocation").cast<Bool>();
         obj.dedicatedAllocation = value;
@@ -1128,14 +1649,20 @@ inline void fill(pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor& obj
 }
 
 inline void fill(pywgpu::SharedTextureMemoryAHardwareBufferDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_handle = handle.attr("handle");
+    if (!py_handle.is_none())
     {
         auto value = handle.attr("handle").cast<void *>();
         obj.handle = value;
     }
+    auto py_use_external_format = handle.attr("use_external_format");
+    if (!py_use_external_format.is_none())
     {
         auto value = handle.attr("use_external_format").cast<Bool>();
         obj.useExternalFormat = value;
@@ -1143,14 +1670,20 @@ inline void fill(pywgpu::SharedTextureMemoryAHardwareBufferDescriptor& obj, py::
 }
 
 inline void fill(pywgpu::SharedTextureMemoryDmaBufPlane& obj, py::handle handle, BuildCtx ctx) {
+    auto py_fd = handle.attr("fd");
+    if (!py_fd.is_none())
     {
         auto value = handle.attr("fd").cast<int>();
         obj.fd = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_stride = handle.attr("stride");
+    if (!py_stride.is_none())
     {
         auto value = handle.attr("stride").cast<uint32_t>();
         obj.stride = value;
@@ -1158,26 +1691,35 @@ inline void fill(pywgpu::SharedTextureMemoryDmaBufPlane& obj, py::handle handle,
 }
 
 inline void fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_size = handle.attr("size");
+    if (!py_size.is_none())
     {
         Builder<Extent3D>(ctx).fill(obj.size, handle.attr("size"));
     }
+    auto py_drm_format = handle.attr("drm_format");
+    if (!py_drm_format.is_none())
     {
         auto value = handle.attr("drm_format").cast<uint32_t>();
         obj.drmFormat = value;
     }
+    auto py_drm_modifier = handle.attr("drm_modifier");
+    if (!py_drm_modifier.is_none())
     {
         auto value = handle.attr("drm_modifier").cast<uint64_t>();
         obj.drmModifier = value;
     }
+    auto py_planes = handle.attr("planes");
+    if (!py_planes.is_none())
     {
         auto py_list = handle.attr("planes").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<SharedTextureMemoryDmaBufPlane>(count);
+        auto* value = ctx.la.alloc_array<SharedTextureMemoryDmaBufPlane>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<SharedTextureMemoryDmaBufPlane>();
         }
@@ -1188,26 +1730,38 @@ inline void fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle ha
 }
 
 inline void fill(pywgpu::SharedTextureMemoryOpaqueFDDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_vk_image_create_info = handle.attr("vk_image_create_info");
+    if (!py_vk_image_create_info.is_none())
     {
         auto value = handle.attr("vk_image_create_info").cast<void const *>();
         obj.vkImageCreateInfo = value;
     }
+    auto py_memory_FD = handle.attr("memory_FD");
+    if (!py_memory_FD.is_none())
     {
         auto value = handle.attr("memory_FD").cast<int>();
         obj.memoryFD = value;
     }
+    auto py_memory_type_index = handle.attr("memory_type_index");
+    if (!py_memory_type_index.is_none())
     {
         auto value = handle.attr("memory_type_index").cast<uint32_t>();
         obj.memoryTypeIndex = value;
     }
+    auto py_allocation_size = handle.attr("allocation_size");
+    if (!py_allocation_size.is_none())
     {
         auto value = handle.attr("allocation_size").cast<uint64_t>();
         obj.allocationSize = value;
     }
+    auto py_dedicated_allocation = handle.attr("dedicated_allocation");
+    if (!py_dedicated_allocation.is_none())
     {
         auto value = handle.attr("dedicated_allocation").cast<Bool>();
         obj.dedicatedAllocation = value;
@@ -1215,14 +1769,20 @@ inline void fill(pywgpu::SharedTextureMemoryOpaqueFDDescriptor& obj, py::handle 
 }
 
 inline void fill(pywgpu::SharedTextureMemoryZirconHandleDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_memory_FD = handle.attr("memory_FD");
+    if (!py_memory_FD.is_none())
     {
         auto value = handle.attr("memory_FD").cast<uint32_t>();
         obj.memoryFD = value;
     }
+    auto py_allocation_size = handle.attr("allocation_size");
+    if (!py_allocation_size.is_none())
     {
         auto value = handle.attr("allocation_size").cast<uint64_t>();
         obj.allocationSize = value;
@@ -1230,14 +1790,20 @@ inline void fill(pywgpu::SharedTextureMemoryZirconHandleDescriptor& obj, py::han
 }
 
 inline void fill(pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_handle = handle.attr("handle");
+    if (!py_handle.is_none())
     {
         auto value = handle.attr("handle").cast<void *>();
         obj.handle = value;
     }
+    auto py_use_keyed_mutex = handle.attr("use_keyed_mutex");
+    if (!py_use_keyed_mutex.is_none())
     {
         auto value = handle.attr("use_keyed_mutex").cast<Bool>();
         obj.useKeyedMutex = value;
@@ -1245,14 +1811,20 @@ inline void fill(pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor& obj, py:
 }
 
 inline void fill(pywgpu::SharedTextureMemoryIOSurfaceDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_io_surface = handle.attr("io_surface");
+    if (!py_io_surface.is_none())
     {
         auto value = handle.attr("io_surface").cast<void *>();
         obj.ioSurface = value;
     }
+    auto py_allow_storage_binding = handle.attr("allow_storage_binding");
+    if (!py_allow_storage_binding.is_none())
     {
         auto value = handle.attr("allow_storage_binding").cast<Bool>();
         obj.allowStorageBinding = value;
@@ -1260,10 +1832,14 @@ inline void fill(pywgpu::SharedTextureMemoryIOSurfaceDescriptor& obj, py::handle
 }
 
 inline void fill(pywgpu::SharedTextureMemoryEGLImageDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_image = handle.attr("image");
+    if (!py_image.is_none())
     {
         auto value = handle.attr("image").cast<void *>();
         obj.image = value;
@@ -1271,23 +1847,30 @@ inline void fill(pywgpu::SharedTextureMemoryEGLImageDescriptor& obj, py::handle 
 }
 
 inline void fill(pywgpu::SharedTextureMemoryBeginAccessDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_concurrent_read = handle.attr("concurrent_read");
+    if (!py_concurrent_read.is_none())
     {
         auto value = handle.attr("concurrent_read").cast<Bool>();
         obj.concurrentRead = value;
     }
+    auto py_initialized = handle.attr("initialized");
+    if (!py_initialized.is_none())
     {
         auto value = handle.attr("initialized").cast<Bool>();
         obj.initialized = value;
     }
+    auto py_fences = handle.attr("fences");
+    if (!py_fences.is_none())
     {
         auto py_list = handle.attr("fences").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<SharedFence>(count);
+        auto* value = ctx.la.alloc_array<SharedFence>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<SharedFence>();
         }
@@ -1295,10 +1878,12 @@ inline void fill(pywgpu::SharedTextureMemoryBeginAccessDescriptor& obj, py::hand
         obj.fences = value;
         obj.fenceCount = count;
     }
+    auto py_signaled_values = handle.attr("signaled_values");
+    if (!py_signaled_values.is_none())
     {
         auto py_list = handle.attr("signaled_values").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<uint64_t>(count);
+        auto* value = ctx.la.alloc_array<uint64_t>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<uint64_t>();
         }
@@ -1309,14 +1894,20 @@ inline void fill(pywgpu::SharedTextureMemoryBeginAccessDescriptor& obj, py::hand
 }
 
 inline void fill(pywgpu::SharedTextureMemoryVkImageLayoutBeginState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_old_layout = handle.attr("old_layout");
+    if (!py_old_layout.is_none())
     {
         auto value = handle.attr("old_layout").cast<int32_t>();
         obj.oldLayout = value;
     }
+    auto py_new_layout = handle.attr("new_layout");
+    if (!py_new_layout.is_none())
     {
         auto value = handle.attr("new_layout").cast<int32_t>();
         obj.newLayout = value;
@@ -1324,10 +1915,14 @@ inline void fill(pywgpu::SharedTextureMemoryVkImageLayoutBeginState& obj, py::ha
 }
 
 inline void fill(pywgpu::SharedTextureMemoryD3DSwapchainBeginState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_is_swapchain = handle.attr("is_swapchain");
+    if (!py_is_swapchain.is_none())
     {
         auto value = handle.attr("is_swapchain").cast<Bool>();
         obj.isSwapchain = value;
@@ -1335,10 +1930,14 @@ inline void fill(pywgpu::SharedTextureMemoryD3DSwapchainBeginState& obj, py::han
 }
 
 inline void fill(pywgpu::SharedFenceDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -1346,10 +1945,14 @@ inline void fill(pywgpu::SharedFenceDescriptor& obj, py::handle handle, BuildCtx
 }
 
 inline void fill(pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_handle = handle.attr("handle");
+    if (!py_handle.is_none())
     {
         auto value = handle.attr("handle").cast<int>();
         obj.handle = value;
@@ -1357,10 +1960,14 @@ inline void fill(pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor& obj, py::hand
 }
 
 inline void fill(pywgpu::SharedFenceSyncFDDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_handle = handle.attr("handle");
+    if (!py_handle.is_none())
     {
         auto value = handle.attr("handle").cast<int>();
         obj.handle = value;
@@ -1368,10 +1975,14 @@ inline void fill(pywgpu::SharedFenceSyncFDDescriptor& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_handle = handle.attr("handle");
+    if (!py_handle.is_none())
     {
         auto value = handle.attr("handle").cast<uint32_t>();
         obj.handle = value;
@@ -1379,10 +1990,14 @@ inline void fill(pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor& obj, py::
 }
 
 inline void fill(pywgpu::SharedFenceDXGISharedHandleDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_handle = handle.attr("handle");
+    if (!py_handle.is_none())
     {
         auto value = handle.attr("handle").cast<void *>();
         obj.handle = value;
@@ -1390,10 +2005,14 @@ inline void fill(pywgpu::SharedFenceDXGISharedHandleDescriptor& obj, py::handle 
 }
 
 inline void fill(pywgpu::SharedFenceMTLSharedEventDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_shared_event = handle.attr("shared_event");
+    if (!py_shared_event.is_none())
     {
         auto value = handle.attr("shared_event").cast<void *>();
         obj.sharedEvent = value;
@@ -1401,10 +2020,14 @@ inline void fill(pywgpu::SharedFenceMTLSharedEventDescriptor& obj, py::handle ha
 }
 
 inline void fill(pywgpu::SharedFenceEGLSyncDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_sync = handle.attr("sync");
+    if (!py_sync.is_none())
     {
         auto value = handle.attr("sync").cast<void *>();
         obj.sync = value;
@@ -1412,18 +2035,26 @@ inline void fill(pywgpu::SharedFenceEGLSyncDescriptor& obj, py::handle handle, B
 }
 
 inline void fill(pywgpu::DawnFakeBufferOOMForTesting& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_fake_OOM_at_wire_client_map = handle.attr("fake_OOM_at_wire_client_map");
+    if (!py_fake_OOM_at_wire_client_map.is_none())
     {
         auto value = handle.attr("fake_OOM_at_wire_client_map").cast<Bool>();
         obj.fakeOOMAtWireClientMap = value;
     }
+    auto py_fake_OOM_at_native_map = handle.attr("fake_OOM_at_native_map");
+    if (!py_fake_OOM_at_native_map.is_none())
     {
         auto value = handle.attr("fake_OOM_at_native_map").cast<Bool>();
         obj.fakeOOMAtNativeMap = value;
     }
+    auto py_fake_OOM_at_device = handle.attr("fake_OOM_at_device");
+    if (!py_fake_OOM_at_device.is_none())
     {
         auto value = handle.attr("fake_OOM_at_device").cast<Bool>();
         obj.fakeOOMAtDevice = value;
@@ -1431,10 +2062,14 @@ inline void fill(pywgpu::DawnFakeBufferOOMForTesting& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::DawnDrmFormatProperties& obj, py::handle handle, BuildCtx ctx) {
+    auto py_modifier = handle.attr("modifier");
+    if (!py_modifier.is_none())
     {
         auto value = handle.attr("modifier").cast<uint64_t>();
         obj.modifier = value;
     }
+    auto py_modifier_plane_count = handle.attr("modifier_plane_count");
+    if (!py_modifier_plane_count.is_none())
     {
         auto value = handle.attr("modifier_plane_count").cast<uint32_t>();
         obj.modifierPlaneCount = value;
@@ -1442,9 +2077,13 @@ inline void fill(pywgpu::DawnDrmFormatProperties& obj, py::handle handle, BuildC
 }
 
 inline void fill(pywgpu::TexelCopyBufferInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_layout = handle.attr("layout");
+    if (!py_layout.is_none())
     {
         Builder<TexelCopyBufferLayout>(ctx).fill(obj.layout, handle.attr("layout"));
     }
+    auto py_buffer = handle.attr("buffer");
+    if (!py_buffer.is_none())
     {
         auto value = handle.attr("buffer").cast<Buffer>();
         obj.buffer = value;
@@ -1452,14 +2091,20 @@ inline void fill(pywgpu::TexelCopyBufferInfo& obj, py::handle handle, BuildCtx c
 }
 
 inline void fill(pywgpu::TexelCopyBufferLayout& obj, py::handle handle, BuildCtx ctx) {
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_bytes_per_row = handle.attr("bytes_per_row");
+    if (!py_bytes_per_row.is_none())
     {
         auto value = handle.attr("bytes_per_row").cast<uint32_t>();
         obj.bytesPerRow = value;
     }
+    auto py_rows_per_image = handle.attr("rows_per_image");
+    if (!py_rows_per_image.is_none())
     {
         auto value = handle.attr("rows_per_image").cast<uint32_t>();
         obj.rowsPerImage = value;
@@ -1467,17 +2112,25 @@ inline void fill(pywgpu::TexelCopyBufferLayout& obj, py::handle handle, BuildCtx
 }
 
 inline void fill(pywgpu::TexelCopyTextureInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_texture = handle.attr("texture");
+    if (!py_texture.is_none())
     {
         auto value = handle.attr("texture").cast<Texture>();
         obj.texture = value;
     }
+    auto py_mip_level = handle.attr("mip_level");
+    if (!py_mip_level.is_none())
     {
         auto value = handle.attr("mip_level").cast<uint32_t>();
         obj.mipLevel = value;
     }
+    auto py_origin = handle.attr("origin");
+    if (!py_origin.is_none())
     {
         Builder<Origin3D>(ctx).fill(obj.origin, handle.attr("origin"));
     }
+    auto py_aspect = handle.attr("aspect");
+    if (!py_aspect.is_none())
     {
         auto value = handle.attr("aspect").cast<TextureAspect>();
         obj.aspect = value;
@@ -1485,27 +2138,39 @@ inline void fill(pywgpu::TexelCopyTextureInfo& obj, py::handle handle, BuildCtx 
 }
 
 inline void fill(pywgpu::ImageCopyExternalTexture& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_external_texture = handle.attr("external_texture");
+    if (!py_external_texture.is_none())
     {
         auto value = handle.attr("external_texture").cast<ExternalTexture>();
         obj.externalTexture = value;
     }
+    auto py_origin = handle.attr("origin");
+    if (!py_origin.is_none())
     {
         Builder<Origin3D>(ctx).fill(obj.origin, handle.attr("origin"));
     }
+    auto py_natural_size = handle.attr("natural_size");
+    if (!py_natural_size.is_none())
     {
         Builder<Extent2D>(ctx).fill(obj.naturalSize, handle.attr("natural_size"));
     }
 }
 
 inline void fill(pywgpu::FutureWaitInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_future = handle.attr("future");
+    if (!py_future.is_none())
     {
         auto value = handle.attr("future").cast<Future>();
         obj.future = value;
     }
+    auto py_completed = handle.attr("completed");
+    if (!py_completed.is_none())
     {
         auto value = handle.attr("completed").cast<Bool>();
         obj.completed = value;
@@ -1513,14 +2178,20 @@ inline void fill(pywgpu::FutureWaitInfo& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::InstanceCapabilities& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStructOut>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_timed_wait_any_enable = handle.attr("timed_wait_any_enable");
+    if (!py_timed_wait_any_enable.is_none())
     {
         auto value = handle.attr("timed_wait_any_enable").cast<Bool>();
         obj.timedWaitAnyEnable = value;
     }
+    auto py_timed_wait_any_max_count = handle.attr("timed_wait_any_max_count");
+    if (!py_timed_wait_any_max_count.is_none())
     {
         auto value = handle.attr("timed_wait_any_max_count").cast<size_t>();
         obj.timedWaitAnyMaxCount = value;
@@ -1528,28 +2199,40 @@ inline void fill(pywgpu::InstanceCapabilities& obj, py::handle handle, BuildCtx 
 }
 
 inline void fill(pywgpu::InstanceDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_capabilities = handle.attr("capabilities");
+    if (!py_capabilities.is_none())
     {
         Builder<InstanceCapabilities>(ctx).fill(obj.capabilities, handle.attr("capabilities"));
     }
 }
 
 inline void fill(pywgpu::DawnWireWGSLControl& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_enable_experimental = handle.attr("enable_experimental");
+    if (!py_enable_experimental.is_none())
     {
         auto value = handle.attr("enable_experimental").cast<Bool>();
         obj.enableExperimental = value;
     }
+    auto py_enable_unsafe = handle.attr("enable_unsafe");
+    if (!py_enable_unsafe.is_none())
     {
         auto value = handle.attr("enable_unsafe").cast<Bool>();
         obj.enableUnsafe = value;
     }
+    auto py_enable_testing = handle.attr("enable_testing");
+    if (!py_enable_testing.is_none())
     {
         auto value = handle.attr("enable_testing").cast<Bool>();
         obj.enableTesting = value;
@@ -1557,10 +2240,14 @@ inline void fill(pywgpu::DawnWireWGSLControl& obj, py::handle handle, BuildCtx c
 }
 
 inline void fill(pywgpu::DawnInjectedInvalidSType& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_invalid_s_type = handle.attr("invalid_s_type");
+    if (!py_invalid_s_type.is_none())
     {
         auto value = handle.attr("invalid_s_type").cast<SType>();
         obj.invalidSType = value;
@@ -1568,18 +2255,26 @@ inline void fill(pywgpu::DawnInjectedInvalidSType& obj, py::handle handle, Build
 }
 
 inline void fill(pywgpu::VertexAttribute& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<VertexFormat>();
         obj.format = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_shader_location = handle.attr("shader_location");
+    if (!py_shader_location.is_none())
     {
         auto value = handle.attr("shader_location").cast<uint32_t>();
         obj.shaderLocation = value;
@@ -1587,23 +2282,30 @@ inline void fill(pywgpu::VertexAttribute& obj, py::handle handle, BuildCtx ctx) 
 }
 
 inline void fill(pywgpu::VertexBufferLayout& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_step_mode = handle.attr("step_mode");
+    if (!py_step_mode.is_none())
     {
         auto value = handle.attr("step_mode").cast<VertexStepMode>();
         obj.stepMode = value;
     }
+    auto py_array_stride = handle.attr("array_stride");
+    if (!py_array_stride.is_none())
     {
         auto value = handle.attr("array_stride").cast<uint64_t>();
         obj.arrayStride = value;
     }
+    auto py_attributes = handle.attr("attributes");
+    if (!py_attributes.is_none())
     {
         auto py_list = handle.attr("attributes").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<VertexAttribute>(count);
+        auto* value = ctx.la.alloc_array<VertexAttribute>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<VertexAttribute>();
         }
@@ -1614,14 +2316,20 @@ inline void fill(pywgpu::VertexBufferLayout& obj, py::handle handle, BuildCtx ct
 }
 
 inline void fill(pywgpu::Origin3D& obj, py::handle handle, BuildCtx ctx) {
+    auto py_x = handle.attr("x");
+    if (!py_x.is_none())
     {
         auto value = handle.attr("x").cast<uint32_t>();
         obj.x = value;
     }
+    auto py_y = handle.attr("y");
+    if (!py_y.is_none())
     {
         auto value = handle.attr("y").cast<uint32_t>();
         obj.y = value;
     }
+    auto py_z = handle.attr("z");
+    if (!py_z.is_none())
     {
         auto value = handle.attr("z").cast<uint32_t>();
         obj.z = value;
@@ -1629,10 +2337,14 @@ inline void fill(pywgpu::Origin3D& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::Origin2D& obj, py::handle handle, BuildCtx ctx) {
+    auto py_x = handle.attr("x");
+    if (!py_x.is_none())
     {
         auto value = handle.attr("x").cast<uint32_t>();
         obj.x = value;
     }
+    auto py_y = handle.attr("y");
+    if (!py_y.is_none())
     {
         auto value = handle.attr("y").cast<uint32_t>();
         obj.y = value;
@@ -1640,18 +2352,26 @@ inline void fill(pywgpu::Origin2D& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::PassTimestampWrites& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_query_set = handle.attr("query_set");
+    if (!py_query_set.is_none())
     {
         auto value = handle.attr("query_set").cast<QuerySet>();
         obj.querySet = value;
     }
+    auto py_beginning_of_pass_write_index = handle.attr("beginning_of_pass_write_index");
+    if (!py_beginning_of_pass_write_index.is_none())
     {
         auto value = handle.attr("beginning_of_pass_write_index").cast<uint32_t>();
         obj.beginningOfPassWriteIndex = value;
     }
+    auto py_end_of_pass_write_index = handle.attr("end_of_pass_write_index");
+    if (!py_end_of_pass_write_index.is_none())
     {
         auto value = handle.attr("end_of_pass_write_index").cast<uint32_t>();
         obj.endOfPassWriteIndex = value;
@@ -1659,19 +2379,24 @@ inline void fill(pywgpu::PassTimestampWrites& obj, py::handle handle, BuildCtx c
 }
 
 inline void fill(pywgpu::PipelineLayoutDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_bind_group_layouts = handle.attr("bind_group_layouts");
+    if (!py_bind_group_layouts.is_none())
     {
         auto py_list = handle.attr("bind_group_layouts").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<BindGroupLayout>(count);
+        auto* value = ctx.la.alloc_array<BindGroupLayout>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<BindGroupLayout>();
         }
@@ -1679,6 +2404,8 @@ inline void fill(pywgpu::PipelineLayoutDescriptor& obj, py::handle handle, Build
         obj.bindGroupLayouts = value;
         obj.bindGroupLayoutCount = count;
     }
+    auto py_immediate_data_range_byte_size = handle.attr("immediate_data_range_byte_size");
+    if (!py_immediate_data_range_byte_size.is_none())
     {
         auto value = handle.attr("immediate_data_range_byte_size").cast<uint32_t>();
         obj.immediateDataRangeByteSize = value;
@@ -1686,19 +2413,24 @@ inline void fill(pywgpu::PipelineLayoutDescriptor& obj, py::handle handle, Build
 }
 
 inline void fill(pywgpu::PipelineLayoutPixelLocalStorage& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_total_pixel_local_storage_size = handle.attr("total_pixel_local_storage_size");
+    if (!py_total_pixel_local_storage_size.is_none())
     {
         auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
         obj.totalPixelLocalStorageSize = value;
     }
+    auto py_storage_attachments = handle.attr("storage_attachments");
+    if (!py_storage_attachments.is_none())
     {
         auto py_list = handle.attr("storage_attachments").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<PipelineLayoutStorageAttachment>(count);
+        auto* value = ctx.la.alloc_array<PipelineLayoutStorageAttachment>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<PipelineLayoutStorageAttachment>();
         }
@@ -1709,14 +2441,20 @@ inline void fill(pywgpu::PipelineLayoutPixelLocalStorage& obj, py::handle handle
 }
 
 inline void fill(pywgpu::PipelineLayoutStorageAttachment& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
@@ -1724,23 +2462,30 @@ inline void fill(pywgpu::PipelineLayoutStorageAttachment& obj, py::handle handle
 }
 
 inline void fill(pywgpu::ComputeState& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_module = handle.attr("module");
+    if (!py_module.is_none())
     {
         auto value = handle.attr("module").cast<ShaderModule>();
         obj.module = value;
     }
+    auto py_entry_point = handle.attr("entry_point");
+    if (!py_entry_point.is_none())
     {
         auto value = handle.attr("entry_point").cast<StringView>();
         obj.entryPoint = value;
     }
+    auto py_constants = handle.attr("constants");
+    if (!py_constants.is_none())
     {
         auto py_list = handle.attr("constants").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<ConstantEntry>(count);
+        auto* value = ctx.la.alloc_array<ConstantEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<ConstantEntry>();
         }
@@ -1751,18 +2496,26 @@ inline void fill(pywgpu::ComputeState& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::QuerySetDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_type = handle.attr("type");
+    if (!py_type.is_none())
     {
         auto value = handle.attr("type").cast<QueryType>();
         obj.type = value;
     }
+    auto py_count = handle.attr("count");
+    if (!py_count.is_none())
     {
         auto value = handle.attr("count").cast<uint32_t>();
         obj.count = value;
@@ -1770,10 +2523,14 @@ inline void fill(pywgpu::QuerySetDescriptor& obj, py::handle handle, BuildCtx ct
 }
 
 inline void fill(pywgpu::QueueDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -1781,10 +2538,14 @@ inline void fill(pywgpu::QueueDescriptor& obj, py::handle handle, BuildCtx ctx) 
 }
 
 inline void fill(pywgpu::RenderBundleDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -1792,19 +2553,24 @@ inline void fill(pywgpu::RenderBundleDescriptor& obj, py::handle handle, BuildCt
 }
 
 inline void fill(pywgpu::RenderBundleEncoderDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_color_formats = handle.attr("color_formats");
+    if (!py_color_formats.is_none())
     {
         auto py_list = handle.attr("color_formats").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<TextureFormat>(count);
+        auto* value = ctx.la.alloc_array<TextureFormat>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<TextureFormat>();
         }
@@ -1812,18 +2578,26 @@ inline void fill(pywgpu::RenderBundleEncoderDescriptor& obj, py::handle handle, 
         obj.colorFormats = value;
         obj.colorFormatCount = count;
     }
+    auto py_depth_stencil_format = handle.attr("depth_stencil_format");
+    if (!py_depth_stencil_format.is_none())
     {
         auto value = handle.attr("depth_stencil_format").cast<TextureFormat>();
         obj.depthStencilFormat = value;
     }
+    auto py_sample_count = handle.attr("sample_count");
+    if (!py_sample_count.is_none())
     {
         auto value = handle.attr("sample_count").cast<uint32_t>();
         obj.sampleCount = value;
     }
+    auto py_depth_read_only = handle.attr("depth_read_only");
+    if (!py_depth_read_only.is_none())
     {
         auto value = handle.attr("depth_read_only").cast<Bool>();
         obj.depthReadOnly = value;
     }
+    auto py_stencil_read_only = handle.attr("stencil_read_only");
+    if (!py_stencil_read_only.is_none())
     {
         auto value = handle.attr("stencil_read_only").cast<Bool>();
         obj.stencilReadOnly = value;
@@ -1831,40 +2605,58 @@ inline void fill(pywgpu::RenderBundleEncoderDescriptor& obj, py::handle handle, 
 }
 
 inline void fill(pywgpu::RenderPassColorAttachment& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_view = handle.attr("view");
+    if (!py_view.is_none())
     {
         auto value = handle.attr("view").cast<TextureView>();
         obj.view = value;
     }
+    auto py_depth_slice = handle.attr("depth_slice");
+    if (!py_depth_slice.is_none())
     {
         auto value = handle.attr("depth_slice").cast<uint32_t>();
         obj.depthSlice = value;
     }
+    auto py_resolve_target = handle.attr("resolve_target");
+    if (!py_resolve_target.is_none())
     {
         auto value = handle.attr("resolve_target").cast<TextureView>();
         obj.resolveTarget = value;
     }
+    auto py_load_op = handle.attr("load_op");
+    if (!py_load_op.is_none())
     {
         auto value = handle.attr("load_op").cast<LoadOp>();
         obj.loadOp = value;
     }
+    auto py_store_op = handle.attr("store_op");
+    if (!py_store_op.is_none())
     {
         auto value = handle.attr("store_op").cast<StoreOp>();
         obj.storeOp = value;
     }
+    auto py_clear_value = handle.attr("clear_value");
+    if (!py_clear_value.is_none())
     {
         Builder<Color>(ctx).fill(obj.clearValue, handle.attr("clear_value"));
     }
 }
 
 inline void fill(pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_implicit_sample_count = handle.attr("implicit_sample_count");
+    if (!py_implicit_sample_count.is_none())
     {
         auto value = handle.attr("implicit_sample_count").cast<uint32_t>();
         obj.implicitSampleCount = value;
@@ -1872,42 +2664,62 @@ inline void fill(pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled& obj
 }
 
 inline void fill(pywgpu::RenderPassDepthStencilAttachment& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_view = handle.attr("view");
+    if (!py_view.is_none())
     {
         auto value = handle.attr("view").cast<TextureView>();
         obj.view = value;
     }
+    auto py_depth_load_op = handle.attr("depth_load_op");
+    if (!py_depth_load_op.is_none())
     {
         auto value = handle.attr("depth_load_op").cast<LoadOp>();
         obj.depthLoadOp = value;
     }
+    auto py_depth_store_op = handle.attr("depth_store_op");
+    if (!py_depth_store_op.is_none())
     {
         auto value = handle.attr("depth_store_op").cast<StoreOp>();
         obj.depthStoreOp = value;
     }
+    auto py_depth_clear_value = handle.attr("depth_clear_value");
+    if (!py_depth_clear_value.is_none())
     {
         auto value = handle.attr("depth_clear_value").cast<float>();
         obj.depthClearValue = value;
     }
+    auto py_depth_read_only = handle.attr("depth_read_only");
+    if (!py_depth_read_only.is_none())
     {
         auto value = handle.attr("depth_read_only").cast<Bool>();
         obj.depthReadOnly = value;
     }
+    auto py_stencil_load_op = handle.attr("stencil_load_op");
+    if (!py_stencil_load_op.is_none())
     {
         auto value = handle.attr("stencil_load_op").cast<LoadOp>();
         obj.stencilLoadOp = value;
     }
+    auto py_stencil_store_op = handle.attr("stencil_store_op");
+    if (!py_stencil_store_op.is_none())
     {
         auto value = handle.attr("stencil_store_op").cast<StoreOp>();
         obj.stencilStoreOp = value;
     }
+    auto py_stencil_clear_value = handle.attr("stencil_clear_value");
+    if (!py_stencil_clear_value.is_none())
     {
         auto value = handle.attr("stencil_clear_value").cast<uint32_t>();
         obj.stencilClearValue = value;
     }
+    auto py_stencil_read_only = handle.attr("stencil_read_only");
+    if (!py_stencil_read_only.is_none())
     {
         auto value = handle.attr("stencil_read_only").cast<Bool>();
         obj.stencilReadOnly = value;
@@ -1915,19 +2727,24 @@ inline void fill(pywgpu::RenderPassDepthStencilAttachment& obj, py::handle handl
 }
 
 inline void fill(pywgpu::RenderPassDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_color_attachments = handle.attr("color_attachments");
+    if (!py_color_attachments.is_none())
     {
         auto py_list = handle.attr("color_attachments").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<RenderPassColorAttachment>(count);
+        auto* value = ctx.la.alloc_array<RenderPassColorAttachment>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<RenderPassColorAttachment>();
         }
@@ -1935,14 +2752,20 @@ inline void fill(pywgpu::RenderPassDescriptor& obj, py::handle handle, BuildCtx 
         obj.colorAttachments = value;
         obj.colorAttachmentCount = count;
     }
+    auto py_depth_stencil_attachment = handle.attr("depth_stencil_attachment");
+    if (!py_depth_stencil_attachment.is_none())
     {
         auto value = Builder<RenderPassDepthStencilAttachment>(ctx).build(handle.attr("depth_stencil_attachment"));
         obj.depthStencilAttachment = value;
     }
+    auto py_occlusion_query_set = handle.attr("occlusion_query_set");
+    if (!py_occlusion_query_set.is_none())
     {
         auto value = handle.attr("occlusion_query_set").cast<QuerySet>();
         obj.occlusionQuerySet = value;
     }
+    auto py_timestamp_writes = handle.attr("timestamp_writes");
+    if (!py_timestamp_writes.is_none())
     {
         auto value = Builder<PassTimestampWrites>(ctx).build(handle.attr("timestamp_writes"));
         obj.timestampWrites = value;
@@ -1950,10 +2773,14 @@ inline void fill(pywgpu::RenderPassDescriptor& obj, py::handle handle, BuildCtx 
 }
 
 inline void fill(pywgpu::RenderPassMaxDrawCount& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_max_draw_count = handle.attr("max_draw_count");
+    if (!py_max_draw_count.is_none())
     {
         auto value = handle.attr("max_draw_count").cast<uint64_t>();
         obj.maxDrawCount = value;
@@ -1961,22 +2788,32 @@ inline void fill(pywgpu::RenderPassMaxDrawCount& obj, py::handle handle, BuildCt
 }
 
 inline void fill(pywgpu::RenderPassDescriptorExpandResolveRect& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_x = handle.attr("x");
+    if (!py_x.is_none())
     {
         auto value = handle.attr("x").cast<uint32_t>();
         obj.x = value;
     }
+    auto py_y = handle.attr("y");
+    if (!py_y.is_none())
     {
         auto value = handle.attr("y").cast<uint32_t>();
         obj.y = value;
     }
+    auto py_width = handle.attr("width");
+    if (!py_width.is_none())
     {
         auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
+    auto py_height = handle.attr("height");
+    if (!py_height.is_none())
     {
         auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
@@ -1984,19 +2821,24 @@ inline void fill(pywgpu::RenderPassDescriptorExpandResolveRect& obj, py::handle 
 }
 
 inline void fill(pywgpu::RenderPassPixelLocalStorage& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_total_pixel_local_storage_size = handle.attr("total_pixel_local_storage_size");
+    if (!py_total_pixel_local_storage_size.is_none())
     {
         auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
         obj.totalPixelLocalStorageSize = value;
     }
+    auto py_storage_attachments = handle.attr("storage_attachments");
+    if (!py_storage_attachments.is_none())
     {
         auto py_list = handle.attr("storage_attachments").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<RenderPassStorageAttachment>(count);
+        auto* value = ctx.la.alloc_array<RenderPassStorageAttachment>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<RenderPassStorageAttachment>();
         }
@@ -2007,49 +2849,68 @@ inline void fill(pywgpu::RenderPassPixelLocalStorage& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::RenderPassStorageAttachment& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_offset = handle.attr("offset");
+    if (!py_offset.is_none())
     {
         auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
+    auto py_storage = handle.attr("storage");
+    if (!py_storage.is_none())
     {
         auto value = handle.attr("storage").cast<TextureView>();
         obj.storage = value;
     }
+    auto py_load_op = handle.attr("load_op");
+    if (!py_load_op.is_none())
     {
         auto value = handle.attr("load_op").cast<LoadOp>();
         obj.loadOp = value;
     }
+    auto py_store_op = handle.attr("store_op");
+    if (!py_store_op.is_none())
     {
         auto value = handle.attr("store_op").cast<StoreOp>();
         obj.storeOp = value;
     }
+    auto py_clear_value = handle.attr("clear_value");
+    if (!py_clear_value.is_none())
     {
         Builder<Color>(ctx).fill(obj.clearValue, handle.attr("clear_value"));
     }
 }
 
 inline void fill(pywgpu::VertexState& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_module = handle.attr("module");
+    if (!py_module.is_none())
     {
         auto value = handle.attr("module").cast<ShaderModule>();
         obj.module = value;
     }
+    auto py_entry_point = handle.attr("entry_point");
+    if (!py_entry_point.is_none())
     {
         auto value = handle.attr("entry_point").cast<StringView>();
         obj.entryPoint = value;
     }
+    auto py_constants = handle.attr("constants");
+    if (!py_constants.is_none())
     {
         auto py_list = handle.attr("constants").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<ConstantEntry>(count);
+        auto* value = ctx.la.alloc_array<ConstantEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<ConstantEntry>();
         }
@@ -2057,10 +2918,12 @@ inline void fill(pywgpu::VertexState& obj, py::handle handle, BuildCtx ctx) {
         obj.constants = value;
         obj.constantCount = count;
     }
+    auto py_buffers = handle.attr("buffers");
+    if (!py_buffers.is_none())
     {
         auto py_list = handle.attr("buffers").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<VertexBufferLayout>(count);
+        auto* value = ctx.la.alloc_array<VertexBufferLayout>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<VertexBufferLayout>();
         }
@@ -2071,26 +2934,38 @@ inline void fill(pywgpu::VertexState& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::PrimitiveState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_topology = handle.attr("topology");
+    if (!py_topology.is_none())
     {
         auto value = handle.attr("topology").cast<PrimitiveTopology>();
         obj.topology = value;
     }
+    auto py_strip_index_format = handle.attr("strip_index_format");
+    if (!py_strip_index_format.is_none())
     {
         auto value = handle.attr("strip_index_format").cast<IndexFormat>();
         obj.stripIndexFormat = value;
     }
+    auto py_front_face = handle.attr("front_face");
+    if (!py_front_face.is_none())
     {
         auto value = handle.attr("front_face").cast<FrontFace>();
         obj.frontFace = value;
     }
+    auto py_cull_mode = handle.attr("cull_mode");
+    if (!py_cull_mode.is_none())
     {
         auto value = handle.attr("cull_mode").cast<CullMode>();
         obj.cullMode = value;
     }
+    auto py_unclipped_depth = handle.attr("unclipped_depth");
+    if (!py_unclipped_depth.is_none())
     {
         auto value = handle.attr("unclipped_depth").cast<Bool>();
         obj.unclippedDepth = value;
@@ -2098,44 +2973,66 @@ inline void fill(pywgpu::PrimitiveState& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::DepthStencilState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
+    auto py_depth_write_enabled = handle.attr("depth_write_enabled");
+    if (!py_depth_write_enabled.is_none())
     {
         auto value = handle.attr("depth_write_enabled").cast<OptionalBool>();
         obj.depthWriteEnabled = value;
     }
+    auto py_depth_compare = handle.attr("depth_compare");
+    if (!py_depth_compare.is_none())
     {
         auto value = handle.attr("depth_compare").cast<CompareFunction>();
         obj.depthCompare = value;
     }
+    auto py_stencil_front = handle.attr("stencil_front");
+    if (!py_stencil_front.is_none())
     {
         Builder<StencilFaceState>(ctx).fill(obj.stencilFront, handle.attr("stencil_front"));
     }
+    auto py_stencil_back = handle.attr("stencil_back");
+    if (!py_stencil_back.is_none())
     {
         Builder<StencilFaceState>(ctx).fill(obj.stencilBack, handle.attr("stencil_back"));
     }
+    auto py_stencil_read_mask = handle.attr("stencil_read_mask");
+    if (!py_stencil_read_mask.is_none())
     {
         auto value = handle.attr("stencil_read_mask").cast<uint32_t>();
         obj.stencilReadMask = value;
     }
+    auto py_stencil_write_mask = handle.attr("stencil_write_mask");
+    if (!py_stencil_write_mask.is_none())
     {
         auto value = handle.attr("stencil_write_mask").cast<uint32_t>();
         obj.stencilWriteMask = value;
     }
+    auto py_depth_bias = handle.attr("depth_bias");
+    if (!py_depth_bias.is_none())
     {
         auto value = handle.attr("depth_bias").cast<int32_t>();
         obj.depthBias = value;
     }
+    auto py_depth_bias_slope_scale = handle.attr("depth_bias_slope_scale");
+    if (!py_depth_bias_slope_scale.is_none())
     {
         auto value = handle.attr("depth_bias_slope_scale").cast<float>();
         obj.depthBiasSlopeScale = value;
     }
+    auto py_depth_bias_clamp = handle.attr("depth_bias_clamp");
+    if (!py_depth_bias_clamp.is_none())
     {
         auto value = handle.attr("depth_bias_clamp").cast<float>();
         obj.depthBiasClamp = value;
@@ -2143,18 +3040,26 @@ inline void fill(pywgpu::DepthStencilState& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::MultisampleState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_count = handle.attr("count");
+    if (!py_count.is_none())
     {
         auto value = handle.attr("count").cast<uint32_t>();
         obj.count = value;
     }
+    auto py_mask = handle.attr("mask");
+    if (!py_mask.is_none())
     {
         auto value = handle.attr("mask").cast<uint32_t>();
         obj.mask = value;
     }
+    auto py_alpha_to_coverage_enabled = handle.attr("alpha_to_coverage_enabled");
+    if (!py_alpha_to_coverage_enabled.is_none())
     {
         auto value = handle.attr("alpha_to_coverage_enabled").cast<Bool>();
         obj.alphaToCoverageEnabled = value;
@@ -2162,23 +3067,30 @@ inline void fill(pywgpu::MultisampleState& obj, py::handle handle, BuildCtx ctx)
 }
 
 inline void fill(pywgpu::FragmentState& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_module = handle.attr("module");
+    if (!py_module.is_none())
     {
         auto value = handle.attr("module").cast<ShaderModule>();
         obj.module = value;
     }
+    auto py_entry_point = handle.attr("entry_point");
+    if (!py_entry_point.is_none())
     {
         auto value = handle.attr("entry_point").cast<StringView>();
         obj.entryPoint = value;
     }
+    auto py_constants = handle.attr("constants");
+    if (!py_constants.is_none())
     {
         auto py_list = handle.attr("constants").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<ConstantEntry>(count);
+        auto* value = ctx.la.alloc_array<ConstantEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<ConstantEntry>();
         }
@@ -2186,10 +3098,12 @@ inline void fill(pywgpu::FragmentState& obj, py::handle handle, BuildCtx ctx) {
         obj.constants = value;
         obj.constantCount = count;
     }
+    auto py_targets = handle.attr("targets");
+    if (!py_targets.is_none())
     {
         auto py_list = handle.attr("targets").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<ColorTargetState>(count);
+        auto* value = ctx.la.alloc_array<ColorTargetState>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<ColorTargetState>();
         }
@@ -2200,18 +3114,26 @@ inline void fill(pywgpu::FragmentState& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::ColorTargetState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
+    auto py_blend = handle.attr("blend");
+    if (!py_blend.is_none())
     {
         auto value = Builder<BlendState>(ctx).build(handle.attr("blend"));
         obj.blend = value;
     }
+    auto py_write_mask = handle.attr("write_mask");
+    if (!py_write_mask.is_none())
     {
         auto value = handle.attr("write_mask").cast<ColorWriteMask>();
         obj.writeMask = value;
@@ -2219,10 +3141,14 @@ inline void fill(pywgpu::ColorTargetState& obj, py::handle handle, BuildCtx ctx)
 }
 
 inline void fill(pywgpu::ColorTargetStateExpandResolveTextureDawn& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_enabled = handle.attr("enabled");
+    if (!py_enabled.is_none())
     {
         auto value = handle.attr("enabled").cast<Bool>();
         obj.enabled = value;
@@ -2230,40 +3156,60 @@ inline void fill(pywgpu::ColorTargetStateExpandResolveTextureDawn& obj, py::hand
 }
 
 inline void fill(pywgpu::BlendState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_color = handle.attr("color");
+    if (!py_color.is_none())
     {
         Builder<BlendComponent>(ctx).fill(obj.color, handle.attr("color"));
     }
+    auto py_alpha = handle.attr("alpha");
+    if (!py_alpha.is_none())
     {
         Builder<BlendComponent>(ctx).fill(obj.alpha, handle.attr("alpha"));
     }
 }
 
 inline void fill(pywgpu::RenderPipelineDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_layout = handle.attr("layout");
+    if (!py_layout.is_none())
     {
         auto value = handle.attr("layout").cast<PipelineLayout>();
         obj.layout = value;
     }
+    auto py_vertex = handle.attr("vertex");
+    if (!py_vertex.is_none())
     {
         Builder<VertexState>(ctx).fill(obj.vertex, handle.attr("vertex"));
     }
+    auto py_primitive = handle.attr("primitive");
+    if (!py_primitive.is_none())
     {
         Builder<PrimitiveState>(ctx).fill(obj.primitive, handle.attr("primitive"));
     }
+    auto py_depth_stencil = handle.attr("depth_stencil");
+    if (!py_depth_stencil.is_none())
     {
         auto value = Builder<DepthStencilState>(ctx).build(handle.attr("depth_stencil"));
         obj.depthStencil = value;
     }
+    auto py_multisample = handle.attr("multisample");
+    if (!py_multisample.is_none())
     {
         Builder<MultisampleState>(ctx).fill(obj.multisample, handle.attr("multisample"));
     }
+    auto py_fragment = handle.attr("fragment");
+    if (!py_fragment.is_none())
     {
         auto value = Builder<FragmentState>(ctx).build(handle.attr("fragment"));
         obj.fragment = value;
@@ -2271,50 +3217,74 @@ inline void fill(pywgpu::RenderPipelineDescriptor& obj, py::handle handle, Build
 }
 
 inline void fill(pywgpu::SamplerDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_address_mode_u = handle.attr("address_mode_u");
+    if (!py_address_mode_u.is_none())
     {
         auto value = handle.attr("address_mode_u").cast<AddressMode>();
         obj.addressModeU = value;
     }
+    auto py_address_mode_v = handle.attr("address_mode_v");
+    if (!py_address_mode_v.is_none())
     {
         auto value = handle.attr("address_mode_v").cast<AddressMode>();
         obj.addressModeV = value;
     }
+    auto py_address_mode_w = handle.attr("address_mode_w");
+    if (!py_address_mode_w.is_none())
     {
         auto value = handle.attr("address_mode_w").cast<AddressMode>();
         obj.addressModeW = value;
     }
+    auto py_mag_filter = handle.attr("mag_filter");
+    if (!py_mag_filter.is_none())
     {
         auto value = handle.attr("mag_filter").cast<FilterMode>();
         obj.magFilter = value;
     }
+    auto py_min_filter = handle.attr("min_filter");
+    if (!py_min_filter.is_none())
     {
         auto value = handle.attr("min_filter").cast<FilterMode>();
         obj.minFilter = value;
     }
+    auto py_mipmap_filter = handle.attr("mipmap_filter");
+    if (!py_mipmap_filter.is_none())
     {
         auto value = handle.attr("mipmap_filter").cast<MipmapFilterMode>();
         obj.mipmapFilter = value;
     }
+    auto py_lod_min_clamp = handle.attr("lod_min_clamp");
+    if (!py_lod_min_clamp.is_none())
     {
         auto value = handle.attr("lod_min_clamp").cast<float>();
         obj.lodMinClamp = value;
     }
+    auto py_lod_max_clamp = handle.attr("lod_max_clamp");
+    if (!py_lod_max_clamp.is_none())
     {
         auto value = handle.attr("lod_max_clamp").cast<float>();
         obj.lodMaxClamp = value;
     }
+    auto py_compare = handle.attr("compare");
+    if (!py_compare.is_none())
     {
         auto value = handle.attr("compare").cast<CompareFunction>();
         obj.compare = value;
     }
+    auto py_max_anisotropy = handle.attr("max_anisotropy");
+    if (!py_max_anisotropy.is_none())
     {
         auto value = handle.attr("max_anisotropy").cast<uint16_t>();
         obj.maxAnisotropy = value;
@@ -2322,10 +3292,14 @@ inline void fill(pywgpu::SamplerDescriptor& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::ShaderModuleDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -2333,15 +3307,18 @@ inline void fill(pywgpu::ShaderModuleDescriptor& obj, py::handle handle, BuildCt
 }
 
 inline void fill(pywgpu::ShaderSourceSPIRV& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_code = handle.attr("code");
+    if (!py_code.is_none())
     {
         auto py_list = handle.attr("code").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<uint32_t>(count);
+        auto* value = ctx.la.alloc_array<uint32_t>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<uint32_t>();
         }
@@ -2352,10 +3329,14 @@ inline void fill(pywgpu::ShaderSourceSPIRV& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::ShaderSourceWGSL& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_code = handle.attr("code");
+    if (!py_code.is_none())
     {
         auto value = handle.attr("code").cast<StringView>();
         obj.code = value;
@@ -2363,10 +3344,14 @@ inline void fill(pywgpu::ShaderSourceWGSL& obj, py::handle handle, BuildCtx ctx)
 }
 
 inline void fill(pywgpu::DawnShaderModuleSPIRVOptionsDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_allow_non_uniform_derivatives = handle.attr("allow_non_uniform_derivatives");
+    if (!py_allow_non_uniform_derivatives.is_none())
     {
         auto value = handle.attr("allow_non_uniform_derivatives").cast<Bool>();
         obj.allowNonUniformDerivatives = value;
@@ -2374,10 +3359,14 @@ inline void fill(pywgpu::DawnShaderModuleSPIRVOptionsDescriptor& obj, py::handle
 }
 
 inline void fill(pywgpu::ShaderModuleCompilationOptions& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_strict_math = handle.attr("strict_math");
+    if (!py_strict_math.is_none())
     {
         auto value = handle.attr("strict_math").cast<Bool>();
         obj.strictMath = value;
@@ -2385,18 +3374,26 @@ inline void fill(pywgpu::ShaderModuleCompilationOptions& obj, py::handle handle,
 }
 
 inline void fill(pywgpu::StencilFaceState& obj, py::handle handle, BuildCtx ctx) {
+    auto py_compare = handle.attr("compare");
+    if (!py_compare.is_none())
     {
         auto value = handle.attr("compare").cast<CompareFunction>();
         obj.compare = value;
     }
+    auto py_fail_op = handle.attr("fail_op");
+    if (!py_fail_op.is_none())
     {
         auto value = handle.attr("fail_op").cast<StencilOperation>();
         obj.failOp = value;
     }
+    auto py_depth_fail_op = handle.attr("depth_fail_op");
+    if (!py_depth_fail_op.is_none())
     {
         auto value = handle.attr("depth_fail_op").cast<StencilOperation>();
         obj.depthFailOp = value;
     }
+    auto py_pass_op = handle.attr("pass_op");
+    if (!py_pass_op.is_none())
     {
         auto value = handle.attr("pass_op").cast<StencilOperation>();
         obj.passOp = value;
@@ -2404,10 +3401,14 @@ inline void fill(pywgpu::StencilFaceState& obj, py::handle handle, BuildCtx ctx)
 }
 
 inline void fill(pywgpu::SurfaceDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
@@ -2415,10 +3416,14 @@ inline void fill(pywgpu::SurfaceDescriptor& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::SurfaceSourceAndroidNativeWindow& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_window = handle.attr("window");
+    if (!py_window.is_none())
     {
         auto value = handle.attr("window").cast<void *>();
         obj.window = value;
@@ -2426,10 +3431,14 @@ inline void fill(pywgpu::SurfaceSourceAndroidNativeWindow& obj, py::handle handl
 }
 
 inline void fill(pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_selector = handle.attr("selector");
+    if (!py_selector.is_none())
     {
         auto value = handle.attr("selector").cast<StringView>();
         obj.selector = value;
@@ -2437,10 +3446,14 @@ inline void fill(pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector& obj, py::han
 }
 
 inline void fill(pywgpu::SurfaceSourceMetalLayer& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_layer = handle.attr("layer");
+    if (!py_layer.is_none())
     {
         auto value = handle.attr("layer").cast<void *>();
         obj.layer = value;
@@ -2448,14 +3461,20 @@ inline void fill(pywgpu::SurfaceSourceMetalLayer& obj, py::handle handle, BuildC
 }
 
 inline void fill(pywgpu::SurfaceSourceWindowsHWND& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_hinstance = handle.attr("hinstance");
+    if (!py_hinstance.is_none())
     {
         auto value = handle.attr("hinstance").cast<void *>();
         obj.hinstance = value;
     }
+    auto py_hwnd = handle.attr("hwnd");
+    if (!py_hwnd.is_none())
     {
         auto value = handle.attr("hwnd").cast<void *>();
         obj.hwnd = value;
@@ -2463,14 +3482,20 @@ inline void fill(pywgpu::SurfaceSourceWindowsHWND& obj, py::handle handle, Build
 }
 
 inline void fill(pywgpu::SurfaceSourceXCBWindow& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_connection = handle.attr("connection");
+    if (!py_connection.is_none())
     {
         auto value = handle.attr("connection").cast<void *>();
         obj.connection = value;
     }
+    auto py_window = handle.attr("window");
+    if (!py_window.is_none())
     {
         auto value = handle.attr("window").cast<uint32_t>();
         obj.window = value;
@@ -2478,14 +3503,20 @@ inline void fill(pywgpu::SurfaceSourceXCBWindow& obj, py::handle handle, BuildCt
 }
 
 inline void fill(pywgpu::SurfaceSourceXlibWindow& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_display = handle.attr("display");
+    if (!py_display.is_none())
     {
         auto value = handle.attr("display").cast<void *>();
         obj.display = value;
     }
+    auto py_window = handle.attr("window");
+    if (!py_window.is_none())
     {
         auto value = handle.attr("window").cast<uint64_t>();
         obj.window = value;
@@ -2493,14 +3524,20 @@ inline void fill(pywgpu::SurfaceSourceXlibWindow& obj, py::handle handle, BuildC
 }
 
 inline void fill(pywgpu::SurfaceSourceWaylandSurface& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_display = handle.attr("display");
+    if (!py_display.is_none())
     {
         auto value = handle.attr("display").cast<void *>();
         obj.display = value;
     }
+    auto py_surface = handle.attr("surface");
+    if (!py_surface.is_none())
     {
         auto value = handle.attr("surface").cast<void *>();
         obj.surface = value;
@@ -2508,10 +3545,14 @@ inline void fill(pywgpu::SurfaceSourceWaylandSurface& obj, py::handle handle, Bu
 }
 
 inline void fill(pywgpu::SurfaceDescriptorFromWindowsCoreWindow& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_core_window = handle.attr("core_window");
+    if (!py_core_window.is_none())
     {
         auto value = handle.attr("core_window").cast<void *>();
         obj.coreWindow = value;
@@ -2519,10 +3560,14 @@ inline void fill(pywgpu::SurfaceDescriptorFromWindowsCoreWindow& obj, py::handle
 }
 
 inline void fill(pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_swap_chain_panel = handle.attr("swap_chain_panel");
+    if (!py_swap_chain_panel.is_none())
     {
         auto value = handle.attr("swap_chain_panel").cast<void *>();
         obj.swapChainPanel = value;
@@ -2530,10 +3575,14 @@ inline void fill(pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel& obj, py:
 }
 
 inline void fill(pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_swap_chain_panel = handle.attr("swap_chain_panel");
+    if (!py_swap_chain_panel.is_none())
     {
         auto value = handle.attr("swap_chain_panel").cast<void *>();
         obj.swapChainPanel = value;
@@ -2541,42 +3590,59 @@ inline void fill(pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel& obj, p
 }
 
 inline void fill(pywgpu::TextureDescriptor& obj, py::handle handle, BuildCtx ctx) {
-    LinearAlloc la;
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_usage = handle.attr("usage");
+    if (!py_usage.is_none())
     {
         auto value = handle.attr("usage").cast<TextureUsage>();
         obj.usage = value;
     }
+    auto py_dimension = handle.attr("dimension");
+    if (!py_dimension.is_none())
     {
         auto value = handle.attr("dimension").cast<TextureDimension>();
         obj.dimension = value;
     }
+    auto py_size = handle.attr("size");
+    if (!py_size.is_none())
     {
         Builder<Extent3D>(ctx).fill(obj.size, handle.attr("size"));
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
+    auto py_mip_level_count = handle.attr("mip_level_count");
+    if (!py_mip_level_count.is_none())
     {
         auto value = handle.attr("mip_level_count").cast<uint32_t>();
         obj.mipLevelCount = value;
     }
+    auto py_sample_count = handle.attr("sample_count");
+    if (!py_sample_count.is_none())
     {
         auto value = handle.attr("sample_count").cast<uint32_t>();
         obj.sampleCount = value;
     }
+    auto py_view_formats = handle.attr("view_formats");
+    if (!py_view_formats.is_none())
     {
         auto py_list = handle.attr("view_formats").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = la.alloc_array<TextureFormat>(count);
+        auto* value = ctx.la.alloc_array<TextureFormat>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<TextureFormat>();
         }
@@ -2587,10 +3653,14 @@ inline void fill(pywgpu::TextureDescriptor& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::TextureBindingViewDimensionDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_texture_binding_view_dimension = handle.attr("texture_binding_view_dimension");
+    if (!py_texture_binding_view_dimension.is_none())
     {
         auto value = handle.attr("texture_binding_view_dimension").cast<TextureViewDimension>();
         obj.textureBindingViewDimension = value;
@@ -2598,42 +3668,62 @@ inline void fill(pywgpu::TextureBindingViewDimensionDescriptor& obj, py::handle 
 }
 
 inline void fill(pywgpu::TextureViewDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_label = handle.attr("label");
+    if (!py_label.is_none())
     {
         auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
+    auto py_format = handle.attr("format");
+    if (!py_format.is_none())
     {
         auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
+    auto py_dimension = handle.attr("dimension");
+    if (!py_dimension.is_none())
     {
         auto value = handle.attr("dimension").cast<TextureViewDimension>();
         obj.dimension = value;
     }
+    auto py_base_mip_level = handle.attr("base_mip_level");
+    if (!py_base_mip_level.is_none())
     {
         auto value = handle.attr("base_mip_level").cast<uint32_t>();
         obj.baseMipLevel = value;
     }
+    auto py_mip_level_count = handle.attr("mip_level_count");
+    if (!py_mip_level_count.is_none())
     {
         auto value = handle.attr("mip_level_count").cast<uint32_t>();
         obj.mipLevelCount = value;
     }
+    auto py_base_array_layer = handle.attr("base_array_layer");
+    if (!py_base_array_layer.is_none())
     {
         auto value = handle.attr("base_array_layer").cast<uint32_t>();
         obj.baseArrayLayer = value;
     }
+    auto py_array_layer_count = handle.attr("array_layer_count");
+    if (!py_array_layer_count.is_none())
     {
         auto value = handle.attr("array_layer_count").cast<uint32_t>();
         obj.arrayLayerCount = value;
     }
+    auto py_aspect = handle.attr("aspect");
+    if (!py_aspect.is_none())
     {
         auto value = handle.attr("aspect").cast<TextureAspect>();
         obj.aspect = value;
     }
+    auto py_usage = handle.attr("usage");
+    if (!py_usage.is_none())
     {
         auto value = handle.attr("usage").cast<TextureUsage>();
         obj.usage = value;
@@ -2641,54 +3731,80 @@ inline void fill(pywgpu::TextureViewDescriptor& obj, py::handle handle, BuildCtx
 }
 
 inline void fill(pywgpu::YCbCrVkDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_vk_format = handle.attr("vk_format");
+    if (!py_vk_format.is_none())
     {
         auto value = handle.attr("vk_format").cast<uint32_t>();
         obj.vkFormat = value;
     }
+    auto py_vk_y_cb_cr_model = handle.attr("vk_y_cb_cr_model");
+    if (!py_vk_y_cb_cr_model.is_none())
     {
         auto value = handle.attr("vk_y_cb_cr_model").cast<uint32_t>();
         obj.vkYCbCrModel = value;
     }
+    auto py_vk_y_cb_cr_range = handle.attr("vk_y_cb_cr_range");
+    if (!py_vk_y_cb_cr_range.is_none())
     {
         auto value = handle.attr("vk_y_cb_cr_range").cast<uint32_t>();
         obj.vkYCbCrRange = value;
     }
+    auto py_vk_component_swizzle_red = handle.attr("vk_component_swizzle_red");
+    if (!py_vk_component_swizzle_red.is_none())
     {
         auto value = handle.attr("vk_component_swizzle_red").cast<uint32_t>();
         obj.vkComponentSwizzleRed = value;
     }
+    auto py_vk_component_swizzle_green = handle.attr("vk_component_swizzle_green");
+    if (!py_vk_component_swizzle_green.is_none())
     {
         auto value = handle.attr("vk_component_swizzle_green").cast<uint32_t>();
         obj.vkComponentSwizzleGreen = value;
     }
+    auto py_vk_component_swizzle_blue = handle.attr("vk_component_swizzle_blue");
+    if (!py_vk_component_swizzle_blue.is_none())
     {
         auto value = handle.attr("vk_component_swizzle_blue").cast<uint32_t>();
         obj.vkComponentSwizzleBlue = value;
     }
+    auto py_vk_component_swizzle_alpha = handle.attr("vk_component_swizzle_alpha");
+    if (!py_vk_component_swizzle_alpha.is_none())
     {
         auto value = handle.attr("vk_component_swizzle_alpha").cast<uint32_t>();
         obj.vkComponentSwizzleAlpha = value;
     }
+    auto py_vk_x_chroma_offset = handle.attr("vk_x_chroma_offset");
+    if (!py_vk_x_chroma_offset.is_none())
     {
         auto value = handle.attr("vk_x_chroma_offset").cast<uint32_t>();
         obj.vkXChromaOffset = value;
     }
+    auto py_vk_y_chroma_offset = handle.attr("vk_y_chroma_offset");
+    if (!py_vk_y_chroma_offset.is_none())
     {
         auto value = handle.attr("vk_y_chroma_offset").cast<uint32_t>();
         obj.vkYChromaOffset = value;
     }
+    auto py_vk_chroma_filter = handle.attr("vk_chroma_filter");
+    if (!py_vk_chroma_filter.is_none())
     {
         auto value = handle.attr("vk_chroma_filter").cast<FilterMode>();
         obj.vkChromaFilter = value;
     }
+    auto py_force_explicit_reconstruction = handle.attr("force_explicit_reconstruction");
+    if (!py_force_explicit_reconstruction.is_none())
     {
         auto value = handle.attr("force_explicit_reconstruction").cast<Bool>();
         obj.forceExplicitReconstruction = value;
     }
+    auto py_external_format = handle.attr("external_format");
+    if (!py_external_format.is_none())
     {
         auto value = handle.attr("external_format").cast<uint64_t>();
         obj.externalFormat = value;
@@ -2696,10 +3812,14 @@ inline void fill(pywgpu::YCbCrVkDescriptor& obj, py::handle handle, BuildCtx ctx
 }
 
 inline void fill(pywgpu::DawnTextureInternalUsageDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_internal_usage = handle.attr("internal_usage");
+    if (!py_internal_usage.is_none())
     {
         auto value = handle.attr("internal_usage").cast<TextureUsage>();
         obj.internalUsage = value;
@@ -2707,10 +3827,14 @@ inline void fill(pywgpu::DawnTextureInternalUsageDescriptor& obj, py::handle han
 }
 
 inline void fill(pywgpu::DawnEncoderInternalUsageDescriptor& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_use_internal_usages = handle.attr("use_internal_usages");
+    if (!py_use_internal_usages.is_none())
     {
         auto value = handle.attr("use_internal_usages").cast<Bool>();
         obj.useInternalUsages = value;
@@ -2718,10 +3842,14 @@ inline void fill(pywgpu::DawnEncoderInternalUsageDescriptor& obj, py::handle han
 }
 
 inline void fill(pywgpu::MemoryHeapInfo& obj, py::handle handle, BuildCtx ctx) {
+    auto py_properties = handle.attr("properties");
+    if (!py_properties.is_none())
     {
         auto value = handle.attr("properties").cast<HeapProperty>();
         obj.properties = value;
     }
+    auto py_size = handle.attr("size");
+    if (!py_size.is_none())
     {
         auto value = handle.attr("size").cast<uint64_t>();
         obj.size = value;
@@ -2729,10 +3857,14 @@ inline void fill(pywgpu::MemoryHeapInfo& obj, py::handle handle, BuildCtx ctx) {
 }
 
 inline void fill(pywgpu::DawnBufferDescriptorErrorInfoFromWireClient& obj, py::handle handle, BuildCtx ctx) {
+    auto py_next_in_chain = handle.attr("next_in_chain");
+    if (!py_next_in_chain.is_none())
     {
         auto value = Builder<ChainedStruct>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
+    auto py_out_of_memory = handle.attr("out_of_memory");
+    if (!py_out_of_memory.is_none())
     {
         auto value = handle.attr("out_of_memory").cast<Bool>();
         obj.outOfMemory = value;
@@ -2740,22 +3872,32 @@ inline void fill(pywgpu::DawnBufferDescriptorErrorInfoFromWireClient& obj, py::h
 }
 
 inline void fill(pywgpu::SubgroupMatrixConfig& obj, py::handle handle, BuildCtx ctx) {
+    auto py_component_type = handle.attr("component_type");
+    if (!py_component_type.is_none())
     {
         auto value = handle.attr("component_type").cast<SubgroupMatrixComponentType>();
         obj.componentType = value;
     }
+    auto py_result_component_type = handle.attr("result_component_type");
+    if (!py_result_component_type.is_none())
     {
         auto value = handle.attr("result_component_type").cast<SubgroupMatrixComponentType>();
         obj.resultComponentType = value;
     }
+    auto py_M = handle.attr("M");
+    if (!py_M.is_none())
     {
         auto value = handle.attr("M").cast<uint32_t>();
         obj.M = value;
     }
+    auto py_N = handle.attr("N");
+    if (!py_N.is_none())
     {
         auto value = handle.attr("N").cast<uint32_t>();
         obj.N = value;
     }
+    auto py_K = handle.attr("K");
+    if (!py_K.is_none())
     {
         auto value = handle.attr("K").cast<uint32_t>();
         obj.K = value;
@@ -3850,185 +4992,308 @@ py::class_<Adapter> _Adapter(m, "Adapter");
 registry.on(m, "Adapter", _Adapter);
 
 _Adapter
-    .def("get_instance",&pywgpu::Adapter::GetInstance
-        )
+.def("get_instance",&pywgpu::Adapter::GetInstance
+)
+
+.def("get_limits",[](pywgpu::Adapter& self, py::handle limits) {
+    try {
         
-    .def("get_limits",[](pywgpu::Adapter& self, py::handle limits) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::Limits * _limits = Builder<Limits>(ctx).build(limits);
         
         return self.GetLimits(_limits);
-    }
-    , py::arg("limits"))
     
-    .def("get_info",&pywgpu::Adapter::GetInfo
-        , py::arg("info"))
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("limits"))
+
+.def("get_info",&pywgpu::Adapter::GetInfo
+, py::arg("info"))
+
+.def("has_feature",&pywgpu::Adapter::HasFeature
+, py::arg("feature"))
+
+.def("get_features",[](pywgpu::Adapter& self, py::handle features) {
+    try {
         
-    .def("has_feature",&pywgpu::Adapter::HasFeature
-        , py::arg("feature"))
-        
-    .def("get_features",[](pywgpu::Adapter& self, py::handle features) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SupportedFeatures * _features = Builder<SupportedFeatures>(ctx).build(features);
         
         return self.GetFeatures(_features);
-    }
-    , py::arg("features"))
     
-    .def("_request_device",[](pywgpu::Adapter& self, py::handle options, RequestDeviceCallbackInfo callbackInfo) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("features"))
+
+.def("_request_device",[](pywgpu::Adapter& self, py::handle options, py::handle callbackInfo) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::DeviceDescriptor const* _options = Builder<DeviceDescriptor>(ctx).build(options);
         
-        return self.RequestDevice(_options, callbackInfo);
-    }
-    , py::arg("options"), py::arg("callback_info"))
-    
-    .def("create_device",[](pywgpu::Adapter& self, py::handle descriptor) {
+        pywgpu::RequestDeviceCallbackInfo  _callbackInfo{};
+        Builder<RequestDeviceCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
         
-        LinearAlloc la;
+        return self.RequestDevice(_options, _callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("options"), py::arg("callback_info"))
+
+.def("create_device",[](pywgpu::Adapter& self, py::handle descriptor) {
+    try {
+        
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::DeviceDescriptor const* _descriptor = Builder<DeviceDescriptor>(ctx).build(descriptor);
         
         return self.CreateDevice(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("get_format_capabilities",&pywgpu::Adapter::GetFormatCapabilities
-        , py::arg("format"), py::arg("capabilities"))
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("get_format_capabilities",&pywgpu::Adapter::GetFormatCapabilities
+, py::arg("format"), py::arg("capabilities"))
+
+;
 
 py::class_<BindGroup> _BindGroup(m, "BindGroup");
 registry.on(m, "BindGroup", _BindGroup);
 
 _BindGroup
-    .def("set_label",&pywgpu::BindGroup::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::BindGroup::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<BindGroupLayout> _BindGroupLayout(m, "BindGroupLayout");
 registry.on(m, "BindGroupLayout", _BindGroupLayout);
 
 _BindGroupLayout
-    .def("set_label",&pywgpu::BindGroupLayout::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::BindGroupLayout::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<Buffer> _Buffer(m, "Buffer");
 registry.on(m, "Buffer", _Buffer);
 
 _Buffer
-    .def("_map_async",&pywgpu::Buffer::MapAsync
-        , py::arg("mode"), py::arg("offset"), py::arg("size"), py::arg("callback_info"))
+.def("_map_async",[](pywgpu::Buffer& self, MapMode mode, size_t offset, size_t size, py::handle callbackInfo) {
+    try {
         
-    .def("get_mapped_range",&pywgpu::Buffer::GetMappedRange
-        , py::arg("offset") = 0, py::arg("size") = kWholeMapSize)
+        LinearAlloc la{};
+        BuildCtx ctx{la};
         
-    .def("get_const_mapped_range",&pywgpu::Buffer::GetConstMappedRange
-        , py::arg("offset") = 0, py::arg("size") = kWholeMapSize)
+        pywgpu::BufferMapCallbackInfo  _callbackInfo{};
+        Builder<BufferMapCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
         
-    .def("write_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data) {
+        return self.MapAsync(mode, offset, size, _callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("mode"), py::arg("offset"), py::arg("size"), py::arg("callback_info"))
+
+.def("get_mapped_range",&pywgpu::Buffer::GetMappedRange
+, py::arg("offset") = 0, py::arg("size") = kWholeMapSize)
+
+.def("get_const_mapped_range",&pywgpu::Buffer::GetConstMappedRange
+, py::arg("offset") = 0, py::arg("size") = kWholeMapSize)
+
+.def("write_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.WriteMappedRange(offset, _data, size);
-    }
-    , py::arg("offset"), py::arg("data"))
     
-    .def("read_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("offset"), py::arg("data"))
+
+.def("read_mapped_range",[](pywgpu::Buffer& self, size_t offset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         void * _data = (void *)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.ReadMappedRange(offset, _data, size);
-    }
-    , py::arg("offset"), py::arg("data"))
     
-    .def("set_label",&pywgpu::Buffer::SetLabel
-        , py::arg("label"))
-        
-    .def("get_usage",&pywgpu::Buffer::GetUsage
-        )
-        
-    .def("get_size",&pywgpu::Buffer::GetSize
-        )
-        
-    .def("get_map_state",&pywgpu::Buffer::GetMapState
-        )
-        
-    .def("unmap",&pywgpu::Buffer::Unmap
-        )
-        
-    .def("destroy",&pywgpu::Buffer::Destroy
-        )
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("offset"), py::arg("data"))
+
+.def("set_label",&pywgpu::Buffer::SetLabel
+, py::arg("label"))
+
+.def("get_usage",&pywgpu::Buffer::GetUsage
+)
+
+.def("get_size",&pywgpu::Buffer::GetSize
+)
+
+.def("get_map_state",&pywgpu::Buffer::GetMapState
+)
+
+.def("unmap",&pywgpu::Buffer::Unmap
+)
+
+.def("destroy",&pywgpu::Buffer::Destroy
+)
+
+;
 
 py::class_<CommandBuffer> _CommandBuffer(m, "CommandBuffer");
 registry.on(m, "CommandBuffer", _CommandBuffer);
 
 _CommandBuffer
-    .def("set_label",&pywgpu::CommandBuffer::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::CommandBuffer::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<CommandEncoder> _CommandEncoder(m, "CommandEncoder");
 registry.on(m, "CommandEncoder", _CommandEncoder);
 
 _CommandEncoder
-    .def("finish",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+.def("finish",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::CommandBufferDescriptor const* _descriptor = Builder<CommandBufferDescriptor>(ctx).build(descriptor);
         
         return self.Finish(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("begin_compute_pass",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("begin_compute_pass",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ComputePassDescriptor const* _descriptor = Builder<ComputePassDescriptor>(ctx).build(descriptor);
         
         return self.BeginComputePass(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("begin_render_pass",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("begin_render_pass",[](pywgpu::CommandEncoder& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::RenderPassDescriptor const* _descriptor = Builder<RenderPassDescriptor>(ctx).build(descriptor);
         
         return self.BeginRenderPass(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("copy_buffer_to_buffer",&pywgpu::CommandEncoder::CopyBufferToBuffer
-        , py::arg("source"), py::arg("source_offset"), py::arg("destination"), py::arg("destination_offset"), py::arg("size"))
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("copy_buffer_to_buffer",&pywgpu::CommandEncoder::CopyBufferToBuffer
+, py::arg("source"), py::arg("source_offset"), py::arg("destination"), py::arg("destination_offset"), py::arg("size"))
+
+.def("copy_buffer_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+    try {
         
-    .def("copy_buffer_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TexelCopyBufferInfo const* _source = Builder<TexelCopyBufferInfo>(ctx).build(source);
@@ -4038,12 +5303,23 @@ _CommandEncoder
         pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
         
         return self.CopyBufferToTexture(_source, _destination, _copySize);
-    }
-    , py::arg("source"), py::arg("destination"), py::arg("copy_size"))
     
-    .def("copy_texture_to_buffer",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("source"), py::arg("destination"), py::arg("copy_size"))
+
+.def("copy_texture_to_buffer",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TexelCopyTextureInfo const* _source = Builder<TexelCopyTextureInfo>(ctx).build(source);
@@ -4053,12 +5329,23 @@ _CommandEncoder
         pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
         
         return self.CopyTextureToBuffer(_source, _destination, _copySize);
-    }
-    , py::arg("source"), py::arg("destination"), py::arg("copy_size"))
     
-    .def("copy_texture_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("source"), py::arg("destination"), py::arg("copy_size"))
+
+.def("copy_texture_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TexelCopyTextureInfo const* _source = Builder<TexelCopyTextureInfo>(ctx).build(source);
@@ -4068,648 +5355,1146 @@ _CommandEncoder
         pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
         
         return self.CopyTextureToTexture(_source, _destination, _copySize);
-    }
-    , py::arg("source"), py::arg("destination"), py::arg("copy_size"))
     
-    .def("clear_buffer",&pywgpu::CommandEncoder::ClearBuffer
-        , py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
-        
-    .def("inject_validation_error",&pywgpu::CommandEncoder::InjectValidationError
-        , py::arg("message"))
-        
-    .def("insert_debug_marker",&pywgpu::CommandEncoder::InsertDebugMarker
-        , py::arg("marker_label"))
-        
-    .def("pop_debug_group",&pywgpu::CommandEncoder::PopDebugGroup
-        )
-        
-    .def("push_debug_group",&pywgpu::CommandEncoder::PushDebugGroup
-        , py::arg("group_label"))
-        
-    .def("resolve_query_set",&pywgpu::CommandEncoder::ResolveQuerySet
-        , py::arg("query_set"), py::arg("first_query"), py::arg("query_count"), py::arg("destination"), py::arg("destination_offset"))
-        
-    .def("write_buffer",[](pywgpu::CommandEncoder& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("source"), py::arg("destination"), py::arg("copy_size"))
+
+.def("clear_buffer",&pywgpu::CommandEncoder::ClearBuffer
+, py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
+
+.def("inject_validation_error",&pywgpu::CommandEncoder::InjectValidationError
+, py::arg("message"))
+
+.def("insert_debug_marker",&pywgpu::CommandEncoder::InsertDebugMarker
+, py::arg("marker_label"))
+
+.def("pop_debug_group",&pywgpu::CommandEncoder::PopDebugGroup
+)
+
+.def("push_debug_group",&pywgpu::CommandEncoder::PushDebugGroup
+, py::arg("group_label"))
+
+.def("resolve_query_set",&pywgpu::CommandEncoder::ResolveQuerySet
+, py::arg("query_set"), py::arg("first_query"), py::arg("query_count"), py::arg("destination"), py::arg("destination_offset"))
+
+.def("write_buffer",[](pywgpu::CommandEncoder& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         uint8_t const* _data = (uint8_t const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.WriteBuffer(buffer, bufferOffset, _data, size);
-    }
-    , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"))
     
-    .def("write_timestamp",&pywgpu::CommandEncoder::WriteTimestamp
-        , py::arg("query_set"), py::arg("query_index"))
-        
-    .def("set_label",&pywgpu::CommandEncoder::SetLabel
-        , py::arg("label"))
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"))
+
+.def("write_timestamp",&pywgpu::CommandEncoder::WriteTimestamp
+, py::arg("query_set"), py::arg("query_index"))
+
+.def("set_label",&pywgpu::CommandEncoder::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<ComputePassEncoder> _ComputePassEncoder(m, "ComputePassEncoder");
 registry.on(m, "ComputePassEncoder", _ComputePassEncoder);
 
 _ComputePassEncoder
-    .def("insert_debug_marker",&pywgpu::ComputePassEncoder::InsertDebugMarker
-        , py::arg("marker_label"))
-        
-    .def("pop_debug_group",&pywgpu::ComputePassEncoder::PopDebugGroup
-        )
-        
-    .def("push_debug_group",&pywgpu::ComputePassEncoder::PushDebugGroup
-        , py::arg("group_label"))
-        
-    .def("set_pipeline",&pywgpu::ComputePassEncoder::SetPipeline
-        , py::arg("pipeline"))
-        
-    .def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+.def("insert_debug_marker",&pywgpu::ComputePassEncoder::InsertDebugMarker
+, py::arg("marker_label"))
+
+.def("pop_debug_group",&pywgpu::ComputePassEncoder::PopDebugGroup
+)
+
+.def("push_debug_group",&pywgpu::ComputePassEncoder::PushDebugGroup
+, py::arg("group_label"))
+
+.def("set_pipeline",&pywgpu::ComputePassEncoder::SetPipeline
+, py::arg("pipeline"))
+
+.def("set_bind_group",[](pywgpu::ComputePassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+    try {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = ((dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
-    }
-    , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr)
     
-    .def("write_timestamp",&pywgpu::ComputePassEncoder::WriteTimestamp
-        , py::arg("query_set"), py::arg("query_index"))
-        
-    .def("dispatch_workgroups",&pywgpu::ComputePassEncoder::DispatchWorkgroups
-        , py::arg("workgroupCountX"), py::arg("workgroupCountY") = 1, py::arg("workgroupCountZ") = 1)
-        
-    .def("dispatch_workgroups_indirect",&pywgpu::ComputePassEncoder::DispatchWorkgroupsIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"))
-        
-    .def("end",&pywgpu::ComputePassEncoder::End
-        )
-        
-    .def("set_label",&pywgpu::ComputePassEncoder::SetLabel
-        , py::arg("label"))
-        
-    .def("set_immediate_data",[](pywgpu::ComputePassEncoder& self, uint32_t offset, py::buffer data) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr)
+
+.def("write_timestamp",&pywgpu::ComputePassEncoder::WriteTimestamp
+, py::arg("query_set"), py::arg("query_index"))
+
+.def("dispatch_workgroups",&pywgpu::ComputePassEncoder::DispatchWorkgroups
+, py::arg("workgroupCountX"), py::arg("workgroupCountY") = 1, py::arg("workgroupCountZ") = 1)
+
+.def("dispatch_workgroups_indirect",&pywgpu::ComputePassEncoder::DispatchWorkgroupsIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"))
+
+.def("end",&pywgpu::ComputePassEncoder::End
+)
+
+.def("set_label",&pywgpu::ComputePassEncoder::SetLabel
+, py::arg("label"))
+
+.def("set_immediate_data",[](pywgpu::ComputePassEncoder& self, uint32_t offset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetImmediateData(offset, _data, size);
-    }
-    , py::arg("offset"), py::arg("data"))
     
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("offset"), py::arg("data"))
+
+;
 
 py::class_<ComputePipeline> _ComputePipeline(m, "ComputePipeline");
 registry.on(m, "ComputePipeline", _ComputePipeline);
 
 _ComputePipeline
-    .def("get_bind_group_layout",&pywgpu::ComputePipeline::GetBindGroupLayout
-        , py::arg("group_index"))
-        
-    .def("set_label",&pywgpu::ComputePipeline::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("get_bind_group_layout",&pywgpu::ComputePipeline::GetBindGroupLayout
+, py::arg("group_index"))
+
+.def("set_label",&pywgpu::ComputePipeline::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<Device> _Device(m, "Device");
 registry.on(m, "Device", _Device);
 
 _Device
-    .def("create_bind_group",[](pywgpu::Device& self, py::handle descriptor) {
+.def("create_bind_group",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::BindGroupDescriptor const* _descriptor = Builder<BindGroupDescriptor>(ctx).build(descriptor);
         
         return self.CreateBindGroup(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_bind_group_layout",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_bind_group_layout",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::BindGroupLayoutDescriptor const* _descriptor = Builder<BindGroupLayoutDescriptor>(ctx).build(descriptor);
         
         return self.CreateBindGroupLayout(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_buffer",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_buffer",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::BufferDescriptor const* _descriptor = Builder<BufferDescriptor>(ctx).build(descriptor);
         
         return self.CreateBuffer(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_error_buffer",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_error_buffer",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::BufferDescriptor const* _descriptor = Builder<BufferDescriptor>(ctx).build(descriptor);
         
         return self.CreateErrorBuffer(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_command_encoder",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_command_encoder",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::CommandEncoderDescriptor const* _descriptor = Builder<CommandEncoderDescriptor>(ctx).build(descriptor);
         
         return self.CreateCommandEncoder(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("create_compute_pipeline",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("create_compute_pipeline",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ComputePipelineDescriptor const* _descriptor = Builder<ComputePipelineDescriptor>(ctx).build(descriptor);
         
         return self.CreateComputePipeline(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("_create_compute_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("_create_compute_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, py::handle callbackInfo) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ComputePipelineDescriptor const* _descriptor = Builder<ComputePipelineDescriptor>(ctx).build(descriptor);
         
-        return self.CreateComputePipelineAsync(_descriptor, callbackInfo);
-    }
-    , py::arg("descriptor"), py::arg("callback_info"))
-    
-    .def("create_external_texture",[](pywgpu::Device& self, py::handle externalTextureDescriptor) {
+        pywgpu::CreateComputePipelineAsyncCallbackInfo  _callbackInfo{};
+        Builder<CreateComputePipelineAsyncCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
         
-        LinearAlloc la;
+        return self.CreateComputePipelineAsync(_descriptor, _callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"), py::arg("callback_info"))
+
+.def("create_external_texture",[](pywgpu::Device& self, py::handle externalTextureDescriptor) {
+    try {
+        
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ExternalTextureDescriptor const* _externalTextureDescriptor = Builder<ExternalTextureDescriptor>(ctx).build(externalTextureDescriptor);
         
         return self.CreateExternalTexture(_externalTextureDescriptor);
-    }
-    , py::arg("external_texture_descriptor"))
     
-    .def("create_error_external_texture",&pywgpu::Device::CreateErrorExternalTexture
-        )
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("external_texture_descriptor"))
+
+.def("create_error_external_texture",&pywgpu::Device::CreateErrorExternalTexture
+)
+
+.def("create_pipeline_layout",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-    .def("create_pipeline_layout",[](pywgpu::Device& self, py::handle descriptor) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::PipelineLayoutDescriptor const* _descriptor = Builder<PipelineLayoutDescriptor>(ctx).build(descriptor);
         
         return self.CreatePipelineLayout(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_query_set",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_query_set",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::QuerySetDescriptor const* _descriptor = Builder<QuerySetDescriptor>(ctx).build(descriptor);
         
         return self.CreateQuerySet(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("_create_render_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("_create_render_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, py::handle callbackInfo) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::RenderPipelineDescriptor const* _descriptor = Builder<RenderPipelineDescriptor>(ctx).build(descriptor);
         
-        return self.CreateRenderPipelineAsync(_descriptor, callbackInfo);
-    }
-    , py::arg("descriptor"), py::arg("callback_info"))
-    
-    .def("create_render_bundle_encoder",[](pywgpu::Device& self, py::handle descriptor) {
+        pywgpu::CreateRenderPipelineAsyncCallbackInfo  _callbackInfo{};
+        Builder<CreateRenderPipelineAsyncCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
         
-        LinearAlloc la;
+        return self.CreateRenderPipelineAsync(_descriptor, _callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"), py::arg("callback_info"))
+
+.def("create_render_bundle_encoder",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
+        
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::RenderBundleEncoderDescriptor const* _descriptor = Builder<RenderBundleEncoderDescriptor>(ctx).build(descriptor);
         
         return self.CreateRenderBundleEncoder(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_render_pipeline",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_render_pipeline",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::RenderPipelineDescriptor const* _descriptor = Builder<RenderPipelineDescriptor>(ctx).build(descriptor);
         
         return self.CreateRenderPipeline(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_sampler",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_sampler",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SamplerDescriptor const* _descriptor = Builder<SamplerDescriptor>(ctx).build(descriptor);
         
         return self.CreateSampler(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("create_shader_module",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("create_shader_module",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ShaderModuleDescriptor const* _descriptor = Builder<ShaderModuleDescriptor>(ctx).build(descriptor);
         
         return self.CreateShaderModule(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_error_shader_module",[](pywgpu::Device& self, py::handle descriptor, StringView errorMessage) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_error_shader_module",[](pywgpu::Device& self, py::handle descriptor, StringView errorMessage) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ShaderModuleDescriptor const* _descriptor = Builder<ShaderModuleDescriptor>(ctx).build(descriptor);
         
         return self.CreateErrorShaderModule(_descriptor, errorMessage);
-    }
-    , py::arg("descriptor"), py::arg("error_message"))
     
-    .def("create_texture",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"), py::arg("error_message"))
+
+.def("create_texture",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TextureDescriptor const* _descriptor = Builder<TextureDescriptor>(ctx).build(descriptor);
         
         return self.CreateTexture(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("import_shared_buffer_memory",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("import_shared_buffer_memory",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SharedBufferMemoryDescriptor const* _descriptor = Builder<SharedBufferMemoryDescriptor>(ctx).build(descriptor);
         
         return self.ImportSharedBufferMemory(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("import_shared_texture_memory",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("import_shared_texture_memory",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SharedTextureMemoryDescriptor const* _descriptor = Builder<SharedTextureMemoryDescriptor>(ctx).build(descriptor);
         
         return self.ImportSharedTextureMemory(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("import_shared_fence",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("import_shared_fence",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SharedFenceDescriptor const* _descriptor = Builder<SharedFenceDescriptor>(ctx).build(descriptor);
         
         return self.ImportSharedFence(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("create_error_texture",[](pywgpu::Device& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("create_error_texture",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TextureDescriptor const* _descriptor = Builder<TextureDescriptor>(ctx).build(descriptor);
         
         return self.CreateErrorTexture(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("destroy",&pywgpu::Device::Destroy
-        )
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("destroy",&pywgpu::Device::Destroy
+)
+
+.def("get_a_hardware_buffer_properties",[](pywgpu::Device& self, void * handle, py::handle properties) {
+    try {
         
-    .def("get_a_hardware_buffer_properties",[](pywgpu::Device& self, void * handle, py::handle properties) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::AHardwareBufferProperties * _properties = Builder<AHardwareBufferProperties>(ctx).build(properties);
         
         return self.GetAHardwareBufferProperties(handle, _properties);
-    }
-    , py::arg("handle"), py::arg("properties"))
     
-    .def("get_limits",[](pywgpu::Device& self, py::handle limits) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("handle"), py::arg("properties"))
+
+.def("get_limits",[](pywgpu::Device& self, py::handle limits) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::Limits * _limits = Builder<Limits>(ctx).build(limits);
         
         return self.GetLimits(_limits);
-    }
-    , py::arg("limits"))
     
-    .def("_get_lost_future",&pywgpu::Device::GetLostFuture
-        )
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("limits"))
+
+.def("_get_lost_future",&pywgpu::Device::GetLostFuture
+)
+
+.def("has_feature",&pywgpu::Device::HasFeature
+, py::arg("feature"))
+
+.def("get_features",[](pywgpu::Device& self, py::handle features) {
+    try {
         
-    .def("has_feature",&pywgpu::Device::HasFeature
-        , py::arg("feature"))
-        
-    .def("get_features",[](pywgpu::Device& self, py::handle features) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SupportedFeatures * _features = Builder<SupportedFeatures>(ctx).build(features);
         
         return self.GetFeatures(_features);
-    }
-    , py::arg("features"))
     
-    .def("get_adapter_info",&pywgpu::Device::GetAdapterInfo
-        , py::arg("adapter_info"))
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("features"))
+
+.def("get_adapter_info",&pywgpu::Device::GetAdapterInfo
+, py::arg("adapter_info"))
+
+.def("get_adapter",&pywgpu::Device::GetAdapter
+)
+
+.def("get_queue",&pywgpu::Device::GetQueue
+)
+
+.def("inject_error",&pywgpu::Device::InjectError
+, py::arg("type"), py::arg("message"))
+
+.def("force_loss",&pywgpu::Device::ForceLoss
+, py::arg("type"), py::arg("message"))
+
+.def("tick",&pywgpu::Device::Tick
+)
+
+.def("set_logging_callback",[](pywgpu::Device& self, py::handle callbackInfo) {
+    try {
         
-    .def("get_adapter",&pywgpu::Device::GetAdapter
-        )
+        LinearAlloc la{};
+        BuildCtx ctx{la};
         
-    .def("get_queue",&pywgpu::Device::GetQueue
-        )
+        pywgpu::LoggingCallbackInfo  _callbackInfo{};
+        Builder<LoggingCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
         
-    .def("inject_error",&pywgpu::Device::InjectError
-        , py::arg("type"), py::arg("message"))
+        return self.SetLoggingCallback(_callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("callback_info"))
+
+.def("push_error_scope",&pywgpu::Device::PushErrorScope
+, py::arg("filter"))
+
+.def("_pop_error_scope",[](pywgpu::Device& self, py::handle callbackInfo) {
+    try {
         
-    .def("force_loss",&pywgpu::Device::ForceLoss
-        , py::arg("type"), py::arg("message"))
+        LinearAlloc la{};
+        BuildCtx ctx{la};
         
-    .def("tick",&pywgpu::Device::Tick
-        )
+        pywgpu::PopErrorScopeCallbackInfo  _callbackInfo{};
+        Builder<PopErrorScopeCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
         
-    .def("set_logging_callback",&pywgpu::Device::SetLoggingCallback
-        , py::arg("callback_info"))
+        return self.PopErrorScope(_callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("callback_info"))
+
+.def("set_label",&pywgpu::Device::SetLabel
+, py::arg("label"))
+
+.def("validate_texture_descriptor",[](pywgpu::Device& self, py::handle descriptor) {
+    try {
         
-    .def("push_error_scope",&pywgpu::Device::PushErrorScope
-        , py::arg("filter"))
-        
-    .def("_pop_error_scope",&pywgpu::Device::PopErrorScope
-        , py::arg("callback_info"))
-        
-    .def("set_label",&pywgpu::Device::SetLabel
-        , py::arg("label"))
-        
-    .def("validate_texture_descriptor",[](pywgpu::Device& self, py::handle descriptor) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TextureDescriptor const* _descriptor = Builder<TextureDescriptor>(ctx).build(descriptor);
         
         return self.ValidateTextureDescriptor(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+;
 
 py::class_<ExternalTexture> _ExternalTexture(m, "ExternalTexture");
 registry.on(m, "ExternalTexture", _ExternalTexture);
 
 _ExternalTexture
-    .def("set_label",&pywgpu::ExternalTexture::SetLabel
-        , py::arg("label"))
-        
-    .def("destroy",&pywgpu::ExternalTexture::Destroy
-        )
-        
-    .def("expire",&pywgpu::ExternalTexture::Expire
-        )
-        
-    .def("refresh",&pywgpu::ExternalTexture::Refresh
-        )
-        
-    ;
+.def("set_label",&pywgpu::ExternalTexture::SetLabel
+, py::arg("label"))
+
+.def("destroy",&pywgpu::ExternalTexture::Destroy
+)
+
+.def("expire",&pywgpu::ExternalTexture::Expire
+)
+
+.def("refresh",&pywgpu::ExternalTexture::Refresh
+)
+
+;
 
 py::class_<SharedBufferMemory> _SharedBufferMemory(m, "SharedBufferMemory");
 registry.on(m, "SharedBufferMemory", _SharedBufferMemory);
 
 _SharedBufferMemory
-    .def("set_label",&pywgpu::SharedBufferMemory::SetLabel
-        , py::arg("label"))
+.def("set_label",&pywgpu::SharedBufferMemory::SetLabel
+, py::arg("label"))
+
+.def("get_properties",&pywgpu::SharedBufferMemory::GetProperties
+, py::arg("properties"))
+
+.def("create_buffer",[](pywgpu::SharedBufferMemory& self, py::handle descriptor) {
+    try {
         
-    .def("get_properties",&pywgpu::SharedBufferMemory::GetProperties
-        , py::arg("properties"))
-        
-    .def("create_buffer",[](pywgpu::SharedBufferMemory& self, py::handle descriptor) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::BufferDescriptor const* _descriptor = Builder<BufferDescriptor>(ctx).build(descriptor);
         
         return self.CreateBuffer(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("begin_access",[](pywgpu::SharedBufferMemory& self, Buffer buffer, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("begin_access",[](pywgpu::SharedBufferMemory& self, Buffer buffer, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SharedBufferMemoryBeginAccessDescriptor const* _descriptor = Builder<SharedBufferMemoryBeginAccessDescriptor>(ctx).build(descriptor);
         
         return self.BeginAccess(buffer, _descriptor);
-    }
-    , py::arg("buffer"), py::arg("descriptor"))
     
-    .def("end_access",&pywgpu::SharedBufferMemory::EndAccess
-        , py::arg("buffer"), py::arg("descriptor"))
-        
-    .def("is_device_lost",&pywgpu::SharedBufferMemory::IsDeviceLost
-        )
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("buffer"), py::arg("descriptor"))
+
+.def("end_access",&pywgpu::SharedBufferMemory::EndAccess
+, py::arg("buffer"), py::arg("descriptor"))
+
+.def("is_device_lost",&pywgpu::SharedBufferMemory::IsDeviceLost
+)
+
+;
 
 py::class_<SharedTextureMemory> _SharedTextureMemory(m, "SharedTextureMemory");
 registry.on(m, "SharedTextureMemory", _SharedTextureMemory);
 
 _SharedTextureMemory
-    .def("set_label",&pywgpu::SharedTextureMemory::SetLabel
-        , py::arg("label"))
+.def("set_label",&pywgpu::SharedTextureMemory::SetLabel
+, py::arg("label"))
+
+.def("get_properties",&pywgpu::SharedTextureMemory::GetProperties
+, py::arg("properties"))
+
+.def("create_texture",[](pywgpu::SharedTextureMemory& self, py::handle descriptor) {
+    try {
         
-    .def("get_properties",&pywgpu::SharedTextureMemory::GetProperties
-        , py::arg("properties"))
-        
-    .def("create_texture",[](pywgpu::SharedTextureMemory& self, py::handle descriptor) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TextureDescriptor const* _descriptor = Builder<TextureDescriptor>(ctx).build(descriptor);
         
         return self.CreateTexture(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("begin_access",[](pywgpu::SharedTextureMemory& self, Texture texture, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("begin_access",[](pywgpu::SharedTextureMemory& self, Texture texture, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SharedTextureMemoryBeginAccessDescriptor const* _descriptor = Builder<SharedTextureMemoryBeginAccessDescriptor>(ctx).build(descriptor);
         
         return self.BeginAccess(texture, _descriptor);
-    }
-    , py::arg("texture"), py::arg("descriptor"))
     
-    .def("end_access",&pywgpu::SharedTextureMemory::EndAccess
-        , py::arg("texture"), py::arg("descriptor"))
-        
-    .def("is_device_lost",&pywgpu::SharedTextureMemory::IsDeviceLost
-        )
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("texture"), py::arg("descriptor"))
+
+.def("end_access",&pywgpu::SharedTextureMemory::EndAccess
+, py::arg("texture"), py::arg("descriptor"))
+
+.def("is_device_lost",&pywgpu::SharedTextureMemory::IsDeviceLost
+)
+
+;
 
 py::class_<SharedFence> _SharedFence(m, "SharedFence");
 registry.on(m, "SharedFence", _SharedFence);
 
 _SharedFence
-    .def("export_info",&pywgpu::SharedFence::ExportInfo
-        , py::arg("info"))
-        
-    ;
+.def("export_info",&pywgpu::SharedFence::ExportInfo
+, py::arg("info"))
+
+;
 
 py::class_<Instance> _Instance(m, "Instance");
 registry.on(m, "Instance", _Instance);
 
 _Instance
-    .def("create_surface",[](pywgpu::Instance& self, py::handle descriptor) {
+.def("create_surface",[](pywgpu::Instance& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SurfaceDescriptor const* _descriptor = Builder<SurfaceDescriptor>(ctx).build(descriptor);
         
         return self.CreateSurface(_descriptor);
-    }
-    , py::arg("descriptor"))
     
-    .def("process_events",&pywgpu::Instance::ProcessEvents
-        )
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor"))
+
+.def("process_events",&pywgpu::Instance::ProcessEvents
+)
+
+.def("wait_any",[](pywgpu::Instance& self, py::handle futures, uint64_t timeoutNS) {
+    try {
         
-    .def("wait_any",[](pywgpu::Instance& self, py::handle futures, uint64_t timeoutNS) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         uint32_t futureCount;
         pywgpu::FutureWaitInfo * _futures = Builder<FutureWaitInfo>(ctx).build_array(futures, &futureCount);
         
         return self.WaitAny(futureCount, _futures, timeoutNS);
-    }
-    , py::arg("futures"), py::arg("timeout_NS"))
     
-    .def("_request_adapter",[](pywgpu::Instance& self, py::handle options, RequestAdapterCallbackInfo callbackInfo) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("futures"), py::arg("timeout_NS"))
+
+.def("_request_adapter",[](pywgpu::Instance& self, py::handle options, py::handle callbackInfo) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::RequestAdapterOptions const* _options = Builder<RequestAdapterOptions>(ctx).build(options);
         
-        return self.RequestAdapter(_options, callbackInfo);
-    }
-    , py::arg("options"), py::arg("callback_info"))
+        pywgpu::RequestAdapterCallbackInfo  _callbackInfo{};
+        Builder<RequestAdapterCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
+        
+        return self.RequestAdapter(_options, _callbackInfo);
     
-    .def("has_WGSL_language_feature",&pywgpu::Instance::HasWGSLLanguageFeature
-        , py::arg("feature"))
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("options"), py::arg("callback_info"))
+
+.def("has_WGSL_language_feature",&pywgpu::Instance::HasWGSLLanguageFeature
+, py::arg("feature"))
+
+.def("get_WGSL_language_features",[](pywgpu::Instance& self, py::handle features) {
+    try {
         
-    .def("get_WGSL_language_features",[](pywgpu::Instance& self, py::handle features) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SupportedWGSLLanguageFeatures * _features = Builder<SupportedWGSLLanguageFeatures>(ctx).build(features);
         
         return self.GetWGSLLanguageFeatures(_features);
-    }
-    , py::arg("features"))
     
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("features"))
+
+;
 
 py::class_<PipelineLayout> _PipelineLayout(m, "PipelineLayout");
 registry.on(m, "PipelineLayout", _PipelineLayout);
 
 _PipelineLayout
-    .def("set_label",&pywgpu::PipelineLayout::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::PipelineLayout::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<QuerySet> _QuerySet(m, "QuerySet");
 registry.on(m, "QuerySet", _QuerySet);
 
 _QuerySet
-    .def("set_label",&pywgpu::QuerySet::SetLabel
-        , py::arg("label"))
-        
-    .def("get_type",&pywgpu::QuerySet::GetType
-        )
-        
-    .def("get_count",&pywgpu::QuerySet::GetCount
-        )
-        
-    .def("destroy",&pywgpu::QuerySet::Destroy
-        )
-        
-    ;
+.def("set_label",&pywgpu::QuerySet::SetLabel
+, py::arg("label"))
+
+.def("get_type",&pywgpu::QuerySet::GetType
+)
+
+.def("get_count",&pywgpu::QuerySet::GetCount
+)
+
+.def("destroy",&pywgpu::QuerySet::Destroy
+)
+
+;
 
 py::class_<Queue> _Queue(m, "Queue");
 registry.on(m, "Queue", _Queue);
 
 _Queue
-    .def("submit",[](pywgpu::Queue& self, std::vector<pywgpu::CommandBuffer> commands) {
+.def("submit",[](pywgpu::Queue& self, std::vector<pywgpu::CommandBuffer> commands) {
+    try {
         pywgpu::CommandBuffer const* _commands = (pywgpu::CommandBuffer const*)commands.data();
         auto commandCount = commands.size();
         
         return self.Submit(commandCount, _commands);
-    }
-    , py::arg("commands"))
     
-    .def("_on_submitted_work_done",&pywgpu::Queue::OnSubmittedWorkDone
-        , py::arg("callback_info"))
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("commands"))
+
+.def("_on_submitted_work_done",[](pywgpu::Queue& self, py::handle callbackInfo) {
+    try {
         
-    .def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+        LinearAlloc la{};
+        BuildCtx ctx{la};
+        
+        pywgpu::QueueWorkDoneCallbackInfo  _callbackInfo{};
+        Builder<QueueWorkDoneCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
+        
+        return self.OnSubmittedWorkDone(_callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("callback_info"))
+
+.def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.WriteBuffer(buffer, bufferOffset, _data, size);
-    }
-    , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"))
     
-    .def("write_texture",[](pywgpu::Queue& self, py::handle destination, py::buffer data, py::handle dataLayout, py::handle writeSize) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"))
+
+.def("write_texture",[](pywgpu::Queue& self, py::handle destination, py::buffer data, py::handle dataLayout, py::handle writeSize) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TexelCopyTextureInfo const* _destination = Builder<TexelCopyTextureInfo>(ctx).build(destination);
@@ -4723,12 +6508,23 @@ _Queue
         pywgpu::Extent3D const* _writeSize = Builder<Extent3D>(ctx).build(writeSize);
         
         return self.WriteTexture(_destination, _data, dataSize, _dataLayout, _writeSize);
-    }
-    , py::arg("destination"), py::arg("data"), py::arg("data_layout"), py::arg("write_size"))
     
-    .def("copy_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("destination"), py::arg("data"), py::arg("data_layout"), py::arg("write_size"))
+
+.def("copy_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TexelCopyTextureInfo const* _source = Builder<TexelCopyTextureInfo>(ctx).build(source);
@@ -4740,12 +6536,23 @@ _Queue
         pywgpu::CopyTextureForBrowserOptions const* _options = Builder<CopyTextureForBrowserOptions>(ctx).build(options);
         
         return self.CopyTextureForBrowser(_source, _destination, _copySize, _options);
-    }
-    , py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options"))
     
-    .def("copy_external_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options"))
+
+.def("copy_external_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::ImageCopyExternalTexture const* _source = Builder<ImageCopyExternalTexture>(ctx).build(source);
@@ -4757,350 +6564,512 @@ _Queue
         pywgpu::CopyTextureForBrowserOptions const* _options = Builder<CopyTextureForBrowserOptions>(ctx).build(options);
         
         return self.CopyExternalTextureForBrowser(_source, _destination, _copySize, _options);
-    }
-    , py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options"))
     
-    .def("set_label",&pywgpu::Queue::SetLabel
-        , py::arg("label"))
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options"))
+
+.def("set_label",&pywgpu::Queue::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<RenderBundle> _RenderBundle(m, "RenderBundle");
 registry.on(m, "RenderBundle", _RenderBundle);
 
 _RenderBundle
-    .def("set_label",&pywgpu::RenderBundle::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::RenderBundle::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<RenderBundleEncoder> _RenderBundleEncoder(m, "RenderBundleEncoder");
 registry.on(m, "RenderBundleEncoder", _RenderBundleEncoder);
 
 _RenderBundleEncoder
-    .def("set_pipeline",&pywgpu::RenderBundleEncoder::SetPipeline
-        , py::arg("pipeline"))
-        
-    .def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+.def("set_pipeline",&pywgpu::RenderBundleEncoder::SetPipeline
+, py::arg("pipeline"))
+
+.def("set_bind_group",[](pywgpu::RenderBundleEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+    try {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = ((dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
-    }
-    , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr)
     
-    .def("draw",&pywgpu::RenderBundleEncoder::Draw
-        , py::arg("vertex_count"), py::arg("instance_count") = 1, py::arg("first_vertex") = 0, py::arg("first_instance") = 0)
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr)
+
+.def("draw",&pywgpu::RenderBundleEncoder::Draw
+, py::arg("vertex_count"), py::arg("instance_count") = 1, py::arg("first_vertex") = 0, py::arg("first_instance") = 0)
+
+.def("draw_indexed",&pywgpu::RenderBundleEncoder::DrawIndexed
+, py::arg("index_count"), py::arg("instance_count") = 1, py::arg("first_index") = 0, py::arg("base_vertex") = 0, py::arg("first_instance") = 0)
+
+.def("draw_indirect",&pywgpu::RenderBundleEncoder::DrawIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"))
+
+.def("draw_indexed_indirect",&pywgpu::RenderBundleEncoder::DrawIndexedIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"))
+
+.def("insert_debug_marker",&pywgpu::RenderBundleEncoder::InsertDebugMarker
+, py::arg("marker_label"))
+
+.def("pop_debug_group",&pywgpu::RenderBundleEncoder::PopDebugGroup
+)
+
+.def("push_debug_group",&pywgpu::RenderBundleEncoder::PushDebugGroup
+, py::arg("group_label"))
+
+.def("set_vertex_buffer",&pywgpu::RenderBundleEncoder::SetVertexBuffer
+, py::arg("slot"), py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
+
+.def("set_index_buffer",&pywgpu::RenderBundleEncoder::SetIndexBuffer
+, py::arg("buffer"), py::arg("format"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
+
+.def("finish",[](pywgpu::RenderBundleEncoder& self, py::handle descriptor) {
+    try {
         
-    .def("draw_indexed",&pywgpu::RenderBundleEncoder::DrawIndexed
-        , py::arg("index_count"), py::arg("instance_count") = 1, py::arg("first_index") = 0, py::arg("base_vertex") = 0, py::arg("first_instance") = 0)
-        
-    .def("draw_indirect",&pywgpu::RenderBundleEncoder::DrawIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"))
-        
-    .def("draw_indexed_indirect",&pywgpu::RenderBundleEncoder::DrawIndexedIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"))
-        
-    .def("insert_debug_marker",&pywgpu::RenderBundleEncoder::InsertDebugMarker
-        , py::arg("marker_label"))
-        
-    .def("pop_debug_group",&pywgpu::RenderBundleEncoder::PopDebugGroup
-        )
-        
-    .def("push_debug_group",&pywgpu::RenderBundleEncoder::PushDebugGroup
-        , py::arg("group_label"))
-        
-    .def("set_vertex_buffer",&pywgpu::RenderBundleEncoder::SetVertexBuffer
-        , py::arg("slot"), py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
-        
-    .def("set_index_buffer",&pywgpu::RenderBundleEncoder::SetIndexBuffer
-        , py::arg("buffer"), py::arg("format"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
-        
-    .def("finish",[](pywgpu::RenderBundleEncoder& self, py::handle descriptor) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::RenderBundleDescriptor const* _descriptor = Builder<RenderBundleDescriptor>(ctx).build(descriptor);
         
         return self.Finish(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("set_label",&pywgpu::RenderBundleEncoder::SetLabel
-        , py::arg("label"))
-        
-    .def("set_immediate_data",[](pywgpu::RenderBundleEncoder& self, uint32_t offset, py::buffer data) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("set_label",&pywgpu::RenderBundleEncoder::SetLabel
+, py::arg("label"))
+
+.def("set_immediate_data",[](pywgpu::RenderBundleEncoder& self, uint32_t offset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetImmediateData(offset, _data, size);
-    }
-    , py::arg("offset"), py::arg("data"))
     
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("offset"), py::arg("data"))
+
+;
 
 py::class_<RenderPassEncoder> _RenderPassEncoder(m, "RenderPassEncoder");
 registry.on(m, "RenderPassEncoder", _RenderPassEncoder);
 
 _RenderPassEncoder
-    .def("set_pipeline",&pywgpu::RenderPassEncoder::SetPipeline
-        , py::arg("pipeline"))
-        
-    .def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+.def("set_pipeline",&pywgpu::RenderPassEncoder::SetPipeline
+, py::arg("pipeline"))
+
+.def("set_bind_group",[](pywgpu::RenderPassEncoder& self, uint32_t groupIndex, BindGroup group, std::optional<py::buffer> dynamicOffsets) {
+    try {
         py::buffer_info dynamicOffsetsInfo = dynamicOffsets.has_value() ? dynamicOffsets.value().request() : py::buffer_info();
         uint32_t const* _dynamicOffsets = (uint32_t const*)dynamicOffsetsInfo.ptr;
         auto dynamicOffsetCount = ((dynamicOffsetsInfo.size * dynamicOffsetsInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetBindGroup(groupIndex, group, dynamicOffsetCount, _dynamicOffsets);
-    }
-    , py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr)
     
-    .def("draw",&pywgpu::RenderPassEncoder::Draw
-        , py::arg("vertex_count"), py::arg("instance_count") = 1, py::arg("first_vertex") = 0, py::arg("first_instance") = 0)
-        
-    .def("draw_indexed",&pywgpu::RenderPassEncoder::DrawIndexed
-        , py::arg("index_count"), py::arg("instance_count") = 1, py::arg("first_index") = 0, py::arg("base_vertex") = 0, py::arg("first_instance") = 0)
-        
-    .def("draw_indirect",&pywgpu::RenderPassEncoder::DrawIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"))
-        
-    .def("draw_indexed_indirect",&pywgpu::RenderPassEncoder::DrawIndexedIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"))
-        
-    .def("multi_draw_indirect",&pywgpu::RenderPassEncoder::MultiDrawIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"), py::arg("max_draw_count"), py::arg("draw_count_buffer"), py::arg("draw_count_buffer_offset") = 0)
-        
-    .def("multi_draw_indexed_indirect",&pywgpu::RenderPassEncoder::MultiDrawIndexedIndirect
-        , py::arg("indirect_buffer"), py::arg("indirect_offset"), py::arg("max_draw_count"), py::arg("draw_count_buffer"), py::arg("draw_count_buffer_offset") = 0)
-        
-    .def("execute_bundles",[](pywgpu::RenderPassEncoder& self, std::vector<pywgpu::RenderBundle> bundles) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("group_index"), py::arg("group"), py::arg("dynamic_offsets") = nullptr)
+
+.def("draw",&pywgpu::RenderPassEncoder::Draw
+, py::arg("vertex_count"), py::arg("instance_count") = 1, py::arg("first_vertex") = 0, py::arg("first_instance") = 0)
+
+.def("draw_indexed",&pywgpu::RenderPassEncoder::DrawIndexed
+, py::arg("index_count"), py::arg("instance_count") = 1, py::arg("first_index") = 0, py::arg("base_vertex") = 0, py::arg("first_instance") = 0)
+
+.def("draw_indirect",&pywgpu::RenderPassEncoder::DrawIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"))
+
+.def("draw_indexed_indirect",&pywgpu::RenderPassEncoder::DrawIndexedIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"))
+
+.def("multi_draw_indirect",&pywgpu::RenderPassEncoder::MultiDrawIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"), py::arg("max_draw_count"), py::arg("draw_count_buffer"), py::arg("draw_count_buffer_offset") = 0)
+
+.def("multi_draw_indexed_indirect",&pywgpu::RenderPassEncoder::MultiDrawIndexedIndirect
+, py::arg("indirect_buffer"), py::arg("indirect_offset"), py::arg("max_draw_count"), py::arg("draw_count_buffer"), py::arg("draw_count_buffer_offset") = 0)
+
+.def("execute_bundles",[](pywgpu::RenderPassEncoder& self, std::vector<pywgpu::RenderBundle> bundles) {
+    try {
         pywgpu::RenderBundle const* _bundles = (pywgpu::RenderBundle const*)bundles.data();
         auto bundleCount = bundles.size();
         
         return self.ExecuteBundles(bundleCount, _bundles);
-    }
-    , py::arg("bundles"))
     
-    .def("insert_debug_marker",&pywgpu::RenderPassEncoder::InsertDebugMarker
-        , py::arg("marker_label"))
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("bundles"))
+
+.def("insert_debug_marker",&pywgpu::RenderPassEncoder::InsertDebugMarker
+, py::arg("marker_label"))
+
+.def("pop_debug_group",&pywgpu::RenderPassEncoder::PopDebugGroup
+)
+
+.def("push_debug_group",&pywgpu::RenderPassEncoder::PushDebugGroup
+, py::arg("group_label"))
+
+.def("set_stencil_reference",&pywgpu::RenderPassEncoder::SetStencilReference
+, py::arg("reference"))
+
+.def("set_blend_constant",[](pywgpu::RenderPassEncoder& self, py::handle color) {
+    try {
         
-    .def("pop_debug_group",&pywgpu::RenderPassEncoder::PopDebugGroup
-        )
-        
-    .def("push_debug_group",&pywgpu::RenderPassEncoder::PushDebugGroup
-        , py::arg("group_label"))
-        
-    .def("set_stencil_reference",&pywgpu::RenderPassEncoder::SetStencilReference
-        , py::arg("reference"))
-        
-    .def("set_blend_constant",[](pywgpu::RenderPassEncoder& self, py::handle color) {
-        
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::Color const* _color = Builder<Color>(ctx).build(color);
         
         return self.SetBlendConstant(_color);
-    }
-    , py::arg("color"))
     
-    .def("set_viewport",&pywgpu::RenderPassEncoder::SetViewport
-        , py::arg("x"), py::arg("y"), py::arg("width"), py::arg("height"), py::arg("min_depth"), py::arg("max_depth"))
-        
-    .def("set_scissor_rect",&pywgpu::RenderPassEncoder::SetScissorRect
-        , py::arg("x"), py::arg("y"), py::arg("width"), py::arg("height"))
-        
-    .def("set_vertex_buffer",&pywgpu::RenderPassEncoder::SetVertexBuffer
-        , py::arg("slot"), py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
-        
-    .def("set_index_buffer",&pywgpu::RenderPassEncoder::SetIndexBuffer
-        , py::arg("buffer"), py::arg("format"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
-        
-    .def("begin_occlusion_query",&pywgpu::RenderPassEncoder::BeginOcclusionQuery
-        , py::arg("query_index"))
-        
-    .def("end_occlusion_query",&pywgpu::RenderPassEncoder::EndOcclusionQuery
-        )
-        
-    .def("write_timestamp",&pywgpu::RenderPassEncoder::WriteTimestamp
-        , py::arg("query_set"), py::arg("query_index"))
-        
-    .def("pixel_local_storage_barrier",&pywgpu::RenderPassEncoder::PixelLocalStorageBarrier
-        )
-        
-    .def("end",&pywgpu::RenderPassEncoder::End
-        )
-        
-    .def("set_label",&pywgpu::RenderPassEncoder::SetLabel
-        , py::arg("label"))
-        
-    .def("set_immediate_data",[](pywgpu::RenderPassEncoder& self, uint32_t offset, py::buffer data) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("color"))
+
+.def("set_viewport",&pywgpu::RenderPassEncoder::SetViewport
+, py::arg("x"), py::arg("y"), py::arg("width"), py::arg("height"), py::arg("min_depth"), py::arg("max_depth"))
+
+.def("set_scissor_rect",&pywgpu::RenderPassEncoder::SetScissorRect
+, py::arg("x"), py::arg("y"), py::arg("width"), py::arg("height"))
+
+.def("set_vertex_buffer",&pywgpu::RenderPassEncoder::SetVertexBuffer
+, py::arg("slot"), py::arg("buffer"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
+
+.def("set_index_buffer",&pywgpu::RenderPassEncoder::SetIndexBuffer
+, py::arg("buffer"), py::arg("format"), py::arg("offset") = 0, py::arg("size") = kWholeSize)
+
+.def("begin_occlusion_query",&pywgpu::RenderPassEncoder::BeginOcclusionQuery
+, py::arg("query_index"))
+
+.def("end_occlusion_query",&pywgpu::RenderPassEncoder::EndOcclusionQuery
+)
+
+.def("write_timestamp",&pywgpu::RenderPassEncoder::WriteTimestamp
+, py::arg("query_set"), py::arg("query_index"))
+
+.def("pixel_local_storage_barrier",&pywgpu::RenderPassEncoder::PixelLocalStorageBarrier
+)
+
+.def("end",&pywgpu::RenderPassEncoder::End
+)
+
+.def("set_label",&pywgpu::RenderPassEncoder::SetLabel
+, py::arg("label"))
+
+.def("set_immediate_data",[](pywgpu::RenderPassEncoder& self, uint32_t offset, py::buffer data) {
+    try {
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto size = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
         return self.SetImmediateData(offset, _data, size);
-    }
-    , py::arg("offset"), py::arg("data"))
     
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("offset"), py::arg("data"))
+
+;
 
 py::class_<RenderPipeline> _RenderPipeline(m, "RenderPipeline");
 registry.on(m, "RenderPipeline", _RenderPipeline);
 
 _RenderPipeline
-    .def("get_bind_group_layout",&pywgpu::RenderPipeline::GetBindGroupLayout
-        , py::arg("group_index"))
-        
-    .def("set_label",&pywgpu::RenderPipeline::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("get_bind_group_layout",&pywgpu::RenderPipeline::GetBindGroupLayout
+, py::arg("group_index"))
+
+.def("set_label",&pywgpu::RenderPipeline::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<Sampler> _Sampler(m, "Sampler");
 registry.on(m, "Sampler", _Sampler);
 
 _Sampler
-    .def("set_label",&pywgpu::Sampler::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::Sampler::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<ShaderModule> _ShaderModule(m, "ShaderModule");
 registry.on(m, "ShaderModule", _ShaderModule);
 
 _ShaderModule
-    .def("_get_compilation_info",&pywgpu::ShaderModule::GetCompilationInfo
-        , py::arg("callback_info"))
+.def("_get_compilation_info",[](pywgpu::ShaderModule& self, py::handle callbackInfo) {
+    try {
         
-    .def("set_label",&pywgpu::ShaderModule::SetLabel
-        , py::arg("label"))
+        LinearAlloc la{};
+        BuildCtx ctx{la};
         
-    ;
+        pywgpu::CompilationInfoCallbackInfo  _callbackInfo{};
+        Builder<CompilationInfoCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
+        
+        return self.GetCompilationInfo(_callbackInfo);
+    
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("callback_info"))
+
+.def("set_label",&pywgpu::ShaderModule::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<Surface> _Surface(m, "Surface");
 registry.on(m, "Surface", _Surface);
 
 _Surface
-    .def("configure",[](pywgpu::Surface& self, py::handle config) {
+.def("configure",[](pywgpu::Surface& self, py::handle config) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::SurfaceConfiguration const* _config = Builder<SurfaceConfiguration>(ctx).build(config);
         
         return self.Configure(_config);
-    }
-    , py::arg("config"))
     
-    .def("get_capabilities",&pywgpu::Surface::GetCapabilities
-        , py::arg("adapter"), py::arg("capabilities"))
-        
-    .def("get_current_texture",&pywgpu::Surface::GetCurrentTexture
-        , py::arg("surface_texture"))
-        
-    .def("present",&pywgpu::Surface::Present
-        )
-        
-    .def("unconfigure",&pywgpu::Surface::Unconfigure
-        )
-        
-    .def("set_label",&pywgpu::Surface::SetLabel
-        , py::arg("label"))
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("config"))
+
+.def("get_capabilities",&pywgpu::Surface::GetCapabilities
+, py::arg("adapter"), py::arg("capabilities"))
+
+.def("get_current_texture",&pywgpu::Surface::GetCurrentTexture
+, py::arg("surface_texture"))
+
+.def("present",&pywgpu::Surface::Present
+)
+
+.def("unconfigure",&pywgpu::Surface::Unconfigure
+)
+
+.def("set_label",&pywgpu::Surface::SetLabel
+, py::arg("label"))
+
+;
 
 py::class_<Texture> _Texture(m, "Texture");
 registry.on(m, "Texture", _Texture);
 
 _Texture
-    .def("create_view",[](pywgpu::Texture& self, py::handle descriptor) {
+.def("create_view",[](pywgpu::Texture& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TextureViewDescriptor const* _descriptor = Builder<TextureViewDescriptor>(ctx).build(descriptor);
         
         return self.CreateView(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("create_error_view",[](pywgpu::Texture& self, py::handle descriptor) {
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("create_error_view",[](pywgpu::Texture& self, py::handle descriptor) {
+    try {
         
-        LinearAlloc la;
+        LinearAlloc la{};
         BuildCtx ctx{la};
         
         pywgpu::TextureViewDescriptor const* _descriptor = Builder<TextureViewDescriptor>(ctx).build(descriptor);
         
         return self.CreateErrorView(_descriptor);
-    }
-    , py::arg("descriptor") = nullptr)
     
-    .def("set_label",&pywgpu::Texture::SetLabel
-        , py::arg("label"))
-        
-    .def("get_width",&pywgpu::Texture::GetWidth
-        )
-        
-    .def("get_height",&pywgpu::Texture::GetHeight
-        )
-        
-    .def("get_depth_or_array_layers",&pywgpu::Texture::GetDepthOrArrayLayers
-        )
-        
-    .def("get_mip_level_count",&pywgpu::Texture::GetMipLevelCount
-        )
-        
-    .def("get_sample_count",&pywgpu::Texture::GetSampleCount
-        )
-        
-    .def("get_dimension",&pywgpu::Texture::GetDimension
-        )
-        
-    .def("get_format",&pywgpu::Texture::GetFormat
-        )
-        
-    .def("get_usage",&pywgpu::Texture::GetUsage
-        )
-        
-    .def("destroy",&pywgpu::Texture::Destroy
-        )
-        
-    ;
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
+    
+}
+, py::arg("descriptor") = nullptr)
+
+.def("set_label",&pywgpu::Texture::SetLabel
+, py::arg("label"))
+
+.def("get_width",&pywgpu::Texture::GetWidth
+)
+
+.def("get_height",&pywgpu::Texture::GetHeight
+)
+
+.def("get_depth_or_array_layers",&pywgpu::Texture::GetDepthOrArrayLayers
+)
+
+.def("get_mip_level_count",&pywgpu::Texture::GetMipLevelCount
+)
+
+.def("get_sample_count",&pywgpu::Texture::GetSampleCount
+)
+
+.def("get_dimension",&pywgpu::Texture::GetDimension
+)
+
+.def("get_format",&pywgpu::Texture::GetFormat
+)
+
+.def("get_usage",&pywgpu::Texture::GetUsage
+)
+
+.def("destroy",&pywgpu::Texture::Destroy
+)
+
+;
 
 py::class_<TextureView> _TextureView(m, "TextureView");
 registry.on(m, "TextureView", _TextureView);
 
 _TextureView
-    .def("set_label",&pywgpu::TextureView::SetLabel
-        , py::arg("label"))
-        
-    ;
+.def("set_label",&pywgpu::TextureView::SetLabel
+, py::arg("label"))
+
+;
 
 m.def("create_instance",[](py::handle descriptor) {
+    try {
+        
+        LinearAlloc la{};
+        BuildCtx ctx{la};
+        
+        pywgpu::InstanceDescriptor const* _descriptor = Builder<InstanceDescriptor>(ctx).build(descriptor);
+        
+        return CreateInstance(_descriptor);
     
-    LinearAlloc la;
-    BuildCtx ctx{la};
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
     
-    pywgpu::InstanceDescriptor const* _descriptor = Builder<InstanceDescriptor>(ctx).build(descriptor);
-    
-    return CreateInstance(_descriptor);
 }
 , py::arg("descriptor") = nullptr)
 
 ;
 
 m.def("get_instance_capabilities",[](py::handle capabilities) {
+    try {
+        
+        LinearAlloc la{};
+        BuildCtx ctx{la};
+        
+        pywgpu::InstanceCapabilities * _capabilities = Builder<InstanceCapabilities>(ctx).build(capabilities);
+        
+        return GetInstanceCapabilities(_capabilities);
     
-    LinearAlloc la;
-    BuildCtx ctx{la};
+    } catch (const py::error_already_set& e) {
+        // propagate Python-side exception with stack
+        throw;
+    } catch (const std::exception& e) {
+        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
+        PyErr_SetString(PyExc_RuntimeError, e.what());
+        throw py::error_already_set();
+    }
     
-    pywgpu::InstanceCapabilities * _capabilities = Builder<InstanceCapabilities>(ctx).build(capabilities);
-    
-    return GetInstanceCapabilities(_capabilities);
 }
 , py::arg("capabilities"))
 

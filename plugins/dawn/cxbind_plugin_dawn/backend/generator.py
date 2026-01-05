@@ -67,6 +67,10 @@ class Generator(Renderer):
         for object_type in self.backend.object_types:
             self.render_node(object_type)
 
+    def render_callback_info_types(self):
+        for callback_info_type in self.backend.callback_info_types:
+            self.render_node(callback_info_type)
+
     def render_function_declarations(self):
         #logger.debug("Rendering function declarations")
         for fn_decl in self.backend.function_declarations:
