@@ -157,159 +157,6 @@ namespace py = pybind11;
 
 using namespace pywgpu;
 
-inline void fill(pywgpu::RequestAdapterCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<RequestAdapterCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::BufferMapCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<BufferMapCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::CompilationInfoCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<CompilationInfoCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::CreateComputePipelineAsyncCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<CreateComputePipelineAsyncCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::CreateRenderPipelineAsyncCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<CreateRenderPipelineAsyncCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::DeviceLostCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<DeviceLostCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::UncapturedErrorCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<UncapturedErrorCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::PopErrorScopeCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<PopErrorScopeCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::LoggingCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<LoggingCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::QueueWorkDoneCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<QueueWorkDoneCallback>();
-        obj.callback = value;
-    }
-}
-
-inline void fill(pywgpu::RequestDeviceCallbackInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_mode = handle.attr("mode");
-    if (!py_mode.is_none())
-    {
-        auto value = static_cast<WGPUCallbackMode>(handle.attr("mode").cast<CallbackMode>());
-        obj.mode = value;
-    }
-    auto py_callback = handle.attr("callback");
-    if (!py_callback.is_none())
-    {
-        auto value = handle.attr("callback").cast<RequestDeviceCallback>();
-        obj.callback = value;
-    }
-}
-
 inline void fill(pywgpu::RequestAdapterOptions& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -389,12 +236,14 @@ inline void fill(pywgpu::DeviceDescriptor& obj, py::handle handle, BuildCtx ctx)
     auto py_device_lost_callback_info = handle.attr("device_lost_callback_info");
     if (!py_device_lost_callback_info.is_none())
     {
-        Builder<DeviceLostCallbackInfo>(ctx).fill(obj.deviceLostCallbackInfo, handle.attr("device_lost_callback_info"));
+        auto value = handle.attr("device_lost_callback_info").cast<DeviceLostCallbackInfo>();
+        obj.deviceLostCallbackInfo = value;
     }
     auto py_uncaptured_error_callback_info = handle.attr("uncaptured_error_callback_info");
     if (!py_uncaptured_error_callback_info.is_none())
     {
-        Builder<UncapturedErrorCallbackInfo>(ctx).fill(obj.uncapturedErrorCallbackInfo, handle.attr("uncaptured_error_callback_info"));
+        auto value = handle.attr("uncaptured_error_callback_info").cast<UncapturedErrorCallbackInfo>();
+        obj.uncapturedErrorCallbackInfo = value;
     }
 }
 
@@ -5045,7 +4894,7 @@ _Adapter
 }
 , py::arg("features"))
 
-.def("_request_device",[](pywgpu::Adapter& self, py::handle options, py::handle callbackInfo) {
+.def("_request_device",[](pywgpu::Adapter& self, py::handle options, RequestDeviceCallbackInfo callbackInfo) {
     try {
         
         LinearAlloc la{};
@@ -5053,10 +4902,7 @@ _Adapter
         
         pywgpu::DeviceDescriptor const* _options = Builder<DeviceDescriptor>(ctx).build(options);
         
-        pywgpu::RequestDeviceCallbackInfo  _callbackInfo{};
-        Builder<RequestDeviceCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.RequestDevice(_options, _callbackInfo);
+        return self.RequestDevice(_options, callbackInfo);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -5119,27 +4965,7 @@ py::class_<Buffer> _Buffer(m, "Buffer");
 registry.on(m, "Buffer", _Buffer);
 
 _Buffer
-.def("_map_async",[](pywgpu::Buffer& self, MapMode mode, size_t offset, size_t size, py::handle callbackInfo) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::BufferMapCallbackInfo  _callbackInfo{};
-        Builder<BufferMapCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.MapAsync(mode, offset, size, _callbackInfo);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("_map_async",&pywgpu::Buffer::MapAsync
 , py::arg("mode"), py::arg("offset"), py::arg("size"), py::arg("callback_info"))
 
 .def("get_mapped_range",&pywgpu::Buffer::GetMappedRange
@@ -5635,7 +5461,7 @@ _Device
 }
 , py::arg("descriptor"))
 
-.def("_create_compute_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, py::handle callbackInfo) {
+.def("_create_compute_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) {
     try {
         
         LinearAlloc la{};
@@ -5643,10 +5469,7 @@ _Device
         
         pywgpu::ComputePipelineDescriptor const* _descriptor = Builder<ComputePipelineDescriptor>(ctx).build(descriptor);
         
-        pywgpu::CreateComputePipelineAsyncCallbackInfo  _callbackInfo{};
-        Builder<CreateComputePipelineAsyncCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.CreateComputePipelineAsync(_descriptor, _callbackInfo);
+        return self.CreateComputePipelineAsync(_descriptor, callbackInfo);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -5729,7 +5552,7 @@ _Device
 }
 , py::arg("descriptor"))
 
-.def("_create_render_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, py::handle callbackInfo) {
+.def("_create_render_pipeline_async",[](pywgpu::Device& self, py::handle descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) {
     try {
         
         LinearAlloc la{};
@@ -5737,10 +5560,7 @@ _Device
         
         pywgpu::RenderPipelineDescriptor const* _descriptor = Builder<RenderPipelineDescriptor>(ctx).build(descriptor);
         
-        pywgpu::CreateRenderPipelineAsyncCallbackInfo  _callbackInfo{};
-        Builder<CreateRenderPipelineAsyncCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.CreateRenderPipelineAsync(_descriptor, _callbackInfo);
+        return self.CreateRenderPipelineAsync(_descriptor, callbackInfo);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -6067,53 +5887,13 @@ _Device
 .def("tick",&pywgpu::Device::Tick
 )
 
-.def("set_logging_callback",[](pywgpu::Device& self, py::handle callbackInfo) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::LoggingCallbackInfo  _callbackInfo{};
-        Builder<LoggingCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.SetLoggingCallback(_callbackInfo);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("set_logging_callback",&pywgpu::Device::SetLoggingCallback
 , py::arg("callback_info"))
 
 .def("push_error_scope",&pywgpu::Device::PushErrorScope
 , py::arg("filter"))
 
-.def("_pop_error_scope",[](pywgpu::Device& self, py::handle callbackInfo) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::PopErrorScopeCallbackInfo  _callbackInfo{};
-        Builder<PopErrorScopeCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.PopErrorScope(_callbackInfo);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("_pop_error_scope",&pywgpu::Device::PopErrorScope
 , py::arg("callback_info"))
 
 .def("set_label",&pywgpu::Device::SetLabel
@@ -6346,7 +6126,7 @@ _Instance
 }
 , py::arg("futures"), py::arg("timeout_NS"))
 
-.def("_request_adapter",[](pywgpu::Instance& self, py::handle options, py::handle callbackInfo) {
+.def("_request_adapter",[](pywgpu::Instance& self, py::handle options, RequestAdapterCallbackInfo callbackInfo) {
     try {
         
         LinearAlloc la{};
@@ -6354,10 +6134,7 @@ _Instance
         
         pywgpu::RequestAdapterOptions const* _options = Builder<RequestAdapterOptions>(ctx).build(options);
         
-        pywgpu::RequestAdapterCallbackInfo  _callbackInfo{};
-        Builder<RequestAdapterCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.RequestAdapter(_options, _callbackInfo);
+        return self.RequestAdapter(_options, callbackInfo);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -6448,27 +6225,7 @@ _Queue
 }
 , py::arg("commands"))
 
-.def("_on_submitted_work_done",[](pywgpu::Queue& self, py::handle callbackInfo) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::QueueWorkDoneCallbackInfo  _callbackInfo{};
-        Builder<QueueWorkDoneCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.OnSubmittedWorkDone(_callbackInfo);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("_on_submitted_work_done",&pywgpu::Queue::OnSubmittedWorkDone
 , py::arg("callback_info"))
 
 .def("write_buffer",[](pywgpu::Queue& self, Buffer buffer, uint64_t bufferOffset, py::buffer data) {
@@ -6867,27 +6624,7 @@ py::class_<ShaderModule> _ShaderModule(m, "ShaderModule");
 registry.on(m, "ShaderModule", _ShaderModule);
 
 _ShaderModule
-.def("_get_compilation_info",[](pywgpu::ShaderModule& self, py::handle callbackInfo) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::CompilationInfoCallbackInfo  _callbackInfo{};
-        Builder<CompilationInfoCallbackInfo>(ctx).fill(_callbackInfo, callbackInfo);
-        
-        return self.GetCompilationInfo(_callbackInfo);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("_get_compilation_info",&pywgpu::ShaderModule::GetCompilationInfo
 , py::arg("callback_info"))
 
 .def("set_label",&pywgpu::ShaderModule::SetLabel

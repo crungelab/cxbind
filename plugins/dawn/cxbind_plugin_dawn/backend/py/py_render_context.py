@@ -21,8 +21,8 @@ class PyRenderContext(RenderContext):
         from .function_declaration_py_renderer import FunctionDeclarationPyRenderer
 
         self.render_table = {
-            #CallbackInfoType: NullRenderer,
-            CallbackInfoType: StructureTypePyRenderer,
+            CallbackInfoType: NullRenderer,
+            #CallbackInfoType: StructureTypePyRenderer,
             ObjectType: ObjectTypePyRenderer,
             StructureType: StructureTypePyRenderer,
             EnumType: EnumTypePyRenderer,

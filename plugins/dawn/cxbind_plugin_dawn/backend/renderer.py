@@ -151,8 +151,8 @@ class Renderer(Generic[T_Node]):
         )
 
     def is_descriptor_node(self, node: Type) -> bool:
-        #if isinstance(node, StructureType) and not node.output and not node.name.get() in SpecialStructures:
-        if isinstance(node, Structural) and not node.output and not node.name.get() in SpecialStructures:
+        if isinstance(node, StructureType) and not node.output and not node.name.get() in SpecialStructures:
+        #if isinstance(node, Structural) and not node.output and not node.name.get() in SpecialStructures:
             return True
         return False
     

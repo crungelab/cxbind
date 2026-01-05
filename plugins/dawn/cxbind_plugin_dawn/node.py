@@ -185,11 +185,12 @@ class StructureType(Structural):
 
 class CallbackInfoType(Structural):
     category: Literal["callback info"]
+    '''
     output: Optional[bool] = False
     chained: Optional[str] = None
     extensible: Optional[Union[str, bool]] = None
     has_free_members_function: Optional[bool] = False
-
+    '''
 
 class NativeType(Type):
     category: Literal["native"]
