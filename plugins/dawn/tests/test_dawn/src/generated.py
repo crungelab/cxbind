@@ -20,7 +20,7 @@ class DeviceDescriptor:
     required_feature_count: Any = 0  # type: size_t , default: 0
     required_features: Any = None  # type: FeatureName const * , default: None
     required_limits: Optional[Any] = None  # type: Limits const * , default: None
-    default_queue: Any  # type: QueueDescriptor , default: None
+    default_queue: Optional[Any] = None  # type: QueueDescriptor , default: None
     device_lost_callback_info: Any  # type: DeviceLostCallbackInfo , default: None
     uncaptured_error_callback_info: Any  # type: UncapturedErrorCallbackInfo , default: None
 

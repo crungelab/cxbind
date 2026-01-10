@@ -6,6 +6,10 @@ from ...name import Name
 from ...node import FunctionPointerType, StructureType, EnumType, BitmaskType, RecordMember
 from ..structure_type_renderer import StructureTypeRenderer
 
+SEMANTIC_OPTIONAL_MEMBERS = {
+    "DeviceDescriptor.default_queue",
+}
+
 SpecialEnums = ["optional bool"]
 
 default_map = {
@@ -76,7 +80,7 @@ class StructureTypePyRenderer(StructureTypeRenderer):
             )
             # print(decoration)
             extra = ""
-            if member.optional:
+            if member.optional or f"{class_name}.{member_name}" in SEMANTIC_OPTIONAL_MEMBERS:
                 extra = "Optional[Any] = None"
             else:
                 extra = "Any"
