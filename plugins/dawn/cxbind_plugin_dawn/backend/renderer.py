@@ -21,8 +21,8 @@ class Renderer(Generic[T_Node]):
         node: Node = None,
     ) -> None:
         self.context = context
-        #self.out = context.out
         self.node = node
+        self.excluded_member_names: set[str] = set()
 
     @property
     def out(self):
@@ -42,6 +42,9 @@ class Renderer(Generic[T_Node]):
                 return True
         return False
 
+    def exclude_member(self, member: RecordMember) -> bool:
+        return self.exclude_node(member) or member.name in self.excluded_member_names
+    
     @staticmethod
     def as_varName(*names: Name) -> str:
         return names[0].camelCase() + "".join([name.CamelCase() for name in names[1:]])

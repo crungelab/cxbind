@@ -23,11 +23,12 @@ class PbBackend(Backend):
         context = PbGenerator(self).generate()
         prologue = context.get_text("prologue")
         py_code = context.get_text("default")
+        epilogue = context.get_text("epilogue")
 
         # Render the Python bindings
         # Render the source template
         source_template = self.jinja_env.get_template("wgpu_pb.cpp.j2")
-        output = source_template.render(prologue=prologue, py_code=py_code)
+        output = source_template.render(prologue=prologue, py_code=py_code, epilogue=epilogue)
         # logger.debug(output)
         # Write the C++ code to a file
         path = Path(self.program.unit.target)

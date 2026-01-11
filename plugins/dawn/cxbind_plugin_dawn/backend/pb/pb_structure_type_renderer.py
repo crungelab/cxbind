@@ -406,15 +406,22 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                     )
                     (
                         self.out
-                        / f"auto* value = ctx.la.alloc_array<{stripped_cppType}>(count);"
+                        / f"auto* value = ctx.la.make_array<{stripped_cppType}>(count);"
                         << "\n"
                     )
                     self.out / "for (uint32_t i = 0; i < count; ++i) {" << "\n"
                     self.out.indent()
-                    (
-                        self.out / f"value[i] = py_list[i].cast<{stripped_cppType}>();"
-                        << "\n"
-                    )
+                    if self.is_descriptor_member(member):
+                        (
+                            self.out
+                            / f'Builder<{member_type.name.CamelCase()}>(ctx).fill(value[i], py_list[i]);'
+                            << "\n"
+                        )
+                    else:
+                        (
+                            self.out / f"value[i] = py_list[i].cast<{stripped_cppType}>();"
+                            << "\n"
+                        )
                     self.out.dedent()
                     self.out / "}" << "\n" << "\n"
 
@@ -431,12 +438,14 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                         )
                         use_assignment = False
                     else:
-                
-                        (
-                            self.out
-                            / f'auto value = Builder<{member_type.name.CamelCase()}>(ctx).build(handle.attr("{member_name}"));'
-                            << "\n"
-                        )
+                        if member_type.name.get() == "chained struct":
+                            self.out / f'auto value = build_chained_struct(handle.attr("{member_name}"), ctx);' << "\n"
+                        else:                    
+                            (
+                                self.out
+                                / f'auto value = Builder<{member_type.name.CamelCase()}>(ctx).build(handle.attr("{member_name}"));'
+                                << "\n"
+                            )
                 else:
                     needs_cast = False
                     caster = ""

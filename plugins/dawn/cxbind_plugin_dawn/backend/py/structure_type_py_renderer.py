@@ -8,6 +8,11 @@ from ..structure_type_renderer import StructureTypeRenderer
 
 SEMANTIC_OPTIONAL_MEMBERS = {
     "DeviceDescriptor.default_queue",
+    "FragmentState.constants",
+    "DepthStencilState.stencil_front",
+    "DepthStencilState.stencil_back",
+    "VertexState.constants",
+    "VertexState.buffers",
 }
 
 SpecialEnums = ["optional bool"]
@@ -57,6 +62,15 @@ class StructureTypePyRenderer(StructureTypeRenderer):
         self.out / "@dataclass(frozen=True, kw_only=True)" << "\n"
         self.out / f"class {class_name}:" << "\n"
         self.out.indent()
+
+        if node.chained == "in":
+            self.out / f"s_type: SType = SType.{self.as_pyEnum(node.name)}" << "\n"
+
+        self.excluded_member_names = {
+            member.length_member.name
+            for member in node.members
+            if member.length_member is not None
+        }
 
         for member in node.members:
             if self.exclude_member(member):
