@@ -2900,15 +2900,31 @@ struct ExternalTextureDescriptor {
 };
 
 struct SupportedWGSLLanguageFeatures {
+    SupportedWGSLLanguageFeatures() = default;
+    ~SupportedWGSLLanguageFeatures();
+    SupportedWGSLLanguageFeatures(const SupportedWGSLLanguageFeatures&) = delete;
+    void FreeMembers();
+    SupportedWGSLLanguageFeatures& operator=(const SupportedWGSLLanguageFeatures&) = delete;
+    SupportedWGSLLanguageFeatures(SupportedWGSLLanguageFeatures&&);
+    SupportedWGSLLanguageFeatures& operator=(SupportedWGSLLanguageFeatures&&);
+    
     operator const WGPUSupportedWGSLLanguageFeatures&() const noexcept;
-    size_t featureCount;
-    WGSLLanguageFeatureName const * features;
+    size_t const featureCount = {};
+    WGSLLanguageFeatureName const * const features = {};
 };
 
 struct SupportedFeatures {
+    SupportedFeatures() = default;
+    ~SupportedFeatures();
+    SupportedFeatures(const SupportedFeatures&) = delete;
+    void FreeMembers();
+    SupportedFeatures& operator=(const SupportedFeatures&) = delete;
+    SupportedFeatures(SupportedFeatures&&);
+    SupportedFeatures& operator=(SupportedFeatures&&);
+    
     operator const WGPUSupportedFeatures&() const noexcept;
-    size_t featureCount;
-    FeatureName const * features;
+    size_t const featureCount = {};
+    FeatureName const * const features = {};
 };
 
 // Can be chained in Limits

@@ -163,37 +163,37 @@ inline void fill(pywgpu::RequestAdapterOptions& obj, py::handle handle, BuildCtx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_feature_level = handle.attr("feature_level");
     if (!py_feature_level.is_none())
     {
-        auto value = py_feature_level.cast<FeatureLevel>();
+        auto value = handle.attr("feature_level").cast<FeatureLevel>();
         obj.featureLevel = value;
     }
     auto py_power_preference = handle.attr("power_preference");
     if (!py_power_preference.is_none())
     {
-        auto value = py_power_preference.cast<PowerPreference>();
+        auto value = handle.attr("power_preference").cast<PowerPreference>();
         obj.powerPreference = value;
     }
     auto py_force_fallback_adapter = handle.attr("force_fallback_adapter");
     if (!py_force_fallback_adapter.is_none())
     {
-        auto value = py_force_fallback_adapter.cast<Bool>();
+        auto value = handle.attr("force_fallback_adapter").cast<Bool>();
         obj.forceFallbackAdapter = value;
     }
     auto py_backend_type = handle.attr("backend_type");
     if (!py_backend_type.is_none())
     {
-        auto value = py_backend_type.cast<BackendType>();
+        auto value = handle.attr("backend_type").cast<BackendType>();
         obj.backendType = value;
     }
     auto py_compatible_surface = handle.attr("compatible_surface");
     if (!py_compatible_surface.is_none())
     {
-        auto value = py_compatible_surface.cast<Surface>();
+        auto value = handle.attr("compatible_surface").cast<Surface>();
         obj.compatibleSurface = value;
     }
 }
@@ -202,21 +202,21 @@ inline void fill(pywgpu::DeviceDescriptor& obj, py::handle handle, BuildCtx ctx)
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_required_features = handle.attr("required_features");
     if (!py_required_features.is_none())
     {
-        auto py_list = py_required_features.cast<py::sequence>();
+        auto py_list = handle.attr("required_features").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<FeatureName>(count);
+        auto* value = ctx.la.make_array<FeatureName>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<FeatureName>();
         }
@@ -227,24 +227,24 @@ inline void fill(pywgpu::DeviceDescriptor& obj, py::handle handle, BuildCtx ctx)
     auto py_required_limits = handle.attr("required_limits");
     if (!py_required_limits.is_none())
     {
-        auto value = Builder<Limits>(ctx).build(py_required_limits);
+        auto value = Builder<Limits>(ctx).build(handle.attr("required_limits"));
         obj.requiredLimits = value;
     }
     auto py_default_queue = handle.attr("default_queue");
     if (!py_default_queue.is_none())
     {
-        Builder<QueueDescriptor>(ctx).fill(obj.defaultQueue, py_default_queue);
+        Builder<QueueDescriptor>(ctx).fill(obj.defaultQueue, handle.attr("default_queue"));
     }
     auto py_device_lost_callback_info = handle.attr("device_lost_callback_info");
     if (!py_device_lost_callback_info.is_none())
     {
-        auto value = py_device_lost_callback_info.cast<DeviceLostCallbackInfo>();
+        auto value = handle.attr("device_lost_callback_info").cast<DeviceLostCallbackInfo>();
         obj.deviceLostCallbackInfo = value;
     }
     auto py_uncaptured_error_callback_info = handle.attr("uncaptured_error_callback_info");
     if (!py_uncaptured_error_callback_info.is_none())
     {
-        auto value = py_uncaptured_error_callback_info.cast<UncapturedErrorCallbackInfo>();
+        auto value = handle.attr("uncaptured_error_callback_info").cast<UncapturedErrorCallbackInfo>();
         obj.uncapturedErrorCallbackInfo = value;
     }
 }
@@ -253,7 +253,7 @@ inline void fill(pywgpu::DawnTogglesDescriptor& obj, py::handle handle, BuildCtx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
 }
@@ -262,19 +262,19 @@ inline void fill(pywgpu::DawnCacheDeviceDescriptor& obj, py::handle handle, Buil
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_isolation_key = handle.attr("isolation_key");
     if (!py_isolation_key.is_none())
     {
-        auto value = py_isolation_key.cast<StringView>();
+        auto value = handle.attr("isolation_key").cast<StringView>();
         obj.isolationKey = value;
     }
     auto py_function_userdata = handle.attr("function_userdata");
     if (!py_function_userdata.is_none())
     {
-        auto value = py_function_userdata.cast<void *>();
+        auto value = handle.attr("function_userdata").cast<void *>();
         obj.functionUserdata = value;
     }
 }
@@ -283,7 +283,7 @@ inline void fill(pywgpu::DawnWGSLBlocklist& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
 }
@@ -292,43 +292,43 @@ inline void fill(pywgpu::BindGroupEntry& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_binding = handle.attr("binding");
     if (!py_binding.is_none())
     {
-        auto value = py_binding.cast<uint32_t>();
+        auto value = handle.attr("binding").cast<uint32_t>();
         obj.binding = value;
     }
     auto py_buffer = handle.attr("buffer");
     if (!py_buffer.is_none())
     {
-        auto value = py_buffer.cast<Buffer>();
+        auto value = handle.attr("buffer").cast<Buffer>();
         obj.buffer = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        auto value = py_size.cast<uint64_t>();
+        auto value = handle.attr("size").cast<uint64_t>();
         obj.size = value;
     }
     auto py_sampler = handle.attr("sampler");
     if (!py_sampler.is_none())
     {
-        auto value = py_sampler.cast<Sampler>();
+        auto value = handle.attr("sampler").cast<Sampler>();
         obj.sampler = value;
     }
     auto py_texture_view = handle.attr("texture_view");
     if (!py_texture_view.is_none())
     {
-        auto value = py_texture_view.cast<TextureView>();
+        auto value = handle.attr("texture_view").cast<TextureView>();
         obj.textureView = value;
     }
 }
@@ -337,29 +337,29 @@ inline void fill(pywgpu::BindGroupDescriptor& obj, py::handle handle, BuildCtx c
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_layout = handle.attr("layout");
     if (!py_layout.is_none())
     {
-        auto value = py_layout.cast<BindGroupLayout>();
+        auto value = handle.attr("layout").cast<BindGroupLayout>();
         obj.layout = value;
     }
     auto py_entries = handle.attr("entries");
     if (!py_entries.is_none())
     {
-        auto py_list = py_entries.cast<py::sequence>();
+        auto py_list = handle.attr("entries").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<BindGroupEntry>(count);
+        auto* value = ctx.la.make_array<BindGroupEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<BindGroupEntry>(ctx).build(py_list[i]);
+            Builder<BindGroupEntry>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.entries = value;
@@ -371,25 +371,25 @@ inline void fill(pywgpu::BufferBindingLayout& obj, py::handle handle, BuildCtx c
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_type = handle.attr("type");
     if (!py_type.is_none())
     {
-        auto value = py_type.cast<BufferBindingType>();
+        auto value = handle.attr("type").cast<BufferBindingType>();
         obj.type = value;
     }
     auto py_has_dynamic_offset = handle.attr("has_dynamic_offset");
     if (!py_has_dynamic_offset.is_none())
     {
-        auto value = py_has_dynamic_offset.cast<Bool>();
+        auto value = handle.attr("has_dynamic_offset").cast<Bool>();
         obj.hasDynamicOffset = value;
     }
     auto py_min_binding_size = handle.attr("min_binding_size");
     if (!py_min_binding_size.is_none())
     {
-        auto value = py_min_binding_size.cast<uint64_t>();
+        auto value = handle.attr("min_binding_size").cast<uint64_t>();
         obj.minBindingSize = value;
     }
 }
@@ -398,13 +398,13 @@ inline void fill(pywgpu::SamplerBindingLayout& obj, py::handle handle, BuildCtx 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_type = handle.attr("type");
     if (!py_type.is_none())
     {
-        auto value = py_type.cast<SamplerBindingType>();
+        auto value = handle.attr("type").cast<SamplerBindingType>();
         obj.type = value;
     }
 }
@@ -413,19 +413,19 @@ inline void fill(pywgpu::StaticSamplerBindingLayout& obj, py::handle handle, Bui
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_sampler = handle.attr("sampler");
     if (!py_sampler.is_none())
     {
-        auto value = py_sampler.cast<Sampler>();
+        auto value = handle.attr("sampler").cast<Sampler>();
         obj.sampler = value;
     }
     auto py_sampled_texture_binding = handle.attr("sampled_texture_binding");
     if (!py_sampled_texture_binding.is_none())
     {
-        auto value = py_sampled_texture_binding.cast<uint32_t>();
+        auto value = handle.attr("sampled_texture_binding").cast<uint32_t>();
         obj.sampledTextureBinding = value;
     }
 }
@@ -434,25 +434,25 @@ inline void fill(pywgpu::TextureBindingLayout& obj, py::handle handle, BuildCtx 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_sample_type = handle.attr("sample_type");
     if (!py_sample_type.is_none())
     {
-        auto value = py_sample_type.cast<TextureSampleType>();
+        auto value = handle.attr("sample_type").cast<TextureSampleType>();
         obj.sampleType = value;
     }
     auto py_view_dimension = handle.attr("view_dimension");
     if (!py_view_dimension.is_none())
     {
-        auto value = py_view_dimension.cast<TextureViewDimension>();
+        auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
         obj.viewDimension = value;
     }
     auto py_multisampled = handle.attr("multisampled");
     if (!py_multisampled.is_none())
     {
-        auto value = py_multisampled.cast<Bool>();
+        auto value = handle.attr("multisampled").cast<Bool>();
         obj.multisampled = value;
     }
 }
@@ -461,45 +461,45 @@ inline void fill(pywgpu::SurfaceConfiguration& obj, py::handle handle, BuildCtx 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_device = handle.attr("device");
     if (!py_device.is_none())
     {
-        auto value = py_device.cast<Device>();
+        auto value = handle.attr("device").cast<Device>();
         obj.device = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
     auto py_usage = handle.attr("usage");
     if (!py_usage.is_none())
     {
-        auto value = py_usage.cast<TextureUsage>();
+        auto value = handle.attr("usage").cast<TextureUsage>();
         obj.usage = value;
     }
     auto py_width = handle.attr("width");
     if (!py_width.is_none())
     {
-        auto value = py_width.cast<uint32_t>();
+        auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
     auto py_height = handle.attr("height");
     if (!py_height.is_none())
     {
-        auto value = py_height.cast<uint32_t>();
+        auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
     }
     auto py_view_formats = handle.attr("view_formats");
     if (!py_view_formats.is_none())
     {
-        auto py_list = py_view_formats.cast<py::sequence>();
+        auto py_list = handle.attr("view_formats").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<TextureFormat>(count);
+        auto* value = ctx.la.make_array<TextureFormat>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<TextureFormat>();
         }
@@ -510,13 +510,13 @@ inline void fill(pywgpu::SurfaceConfiguration& obj, py::handle handle, BuildCtx 
     auto py_alpha_mode = handle.attr("alpha_mode");
     if (!py_alpha_mode.is_none())
     {
-        auto value = py_alpha_mode.cast<CompositeAlphaMode>();
+        auto value = handle.attr("alpha_mode").cast<CompositeAlphaMode>();
         obj.alphaMode = value;
     }
     auto py_present_mode = handle.attr("present_mode");
     if (!py_present_mode.is_none())
     {
-        auto value = py_present_mode.cast<PresentMode>();
+        auto value = handle.attr("present_mode").cast<PresentMode>();
         obj.presentMode = value;
     }
 }
@@ -525,13 +525,13 @@ inline void fill(pywgpu::ExternalTextureBindingEntry& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_external_texture = handle.attr("external_texture");
     if (!py_external_texture.is_none())
     {
-        auto value = py_external_texture.cast<ExternalTexture>();
+        auto value = handle.attr("external_texture").cast<ExternalTexture>();
         obj.externalTexture = value;
     }
 }
@@ -540,7 +540,7 @@ inline void fill(pywgpu::ExternalTextureBindingLayout& obj, py::handle handle, B
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
 }
@@ -549,25 +549,25 @@ inline void fill(pywgpu::StorageTextureBindingLayout& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_access = handle.attr("access");
     if (!py_access.is_none())
     {
-        auto value = py_access.cast<StorageTextureAccess>();
+        auto value = handle.attr("access").cast<StorageTextureAccess>();
         obj.access = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
     auto py_view_dimension = handle.attr("view_dimension");
     if (!py_view_dimension.is_none())
     {
-        auto value = py_view_dimension.cast<TextureViewDimension>();
+        auto value = handle.attr("view_dimension").cast<TextureViewDimension>();
         obj.viewDimension = value;
     }
 }
@@ -576,40 +576,40 @@ inline void fill(pywgpu::BindGroupLayoutEntry& obj, py::handle handle, BuildCtx 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_binding = handle.attr("binding");
     if (!py_binding.is_none())
     {
-        auto value = py_binding.cast<uint32_t>();
+        auto value = handle.attr("binding").cast<uint32_t>();
         obj.binding = value;
     }
     auto py_visibility = handle.attr("visibility");
     if (!py_visibility.is_none())
     {
-        auto value = py_visibility.cast<ShaderStage>();
+        auto value = handle.attr("visibility").cast<ShaderStage>();
         obj.visibility = value;
     }
     auto py_buffer = handle.attr("buffer");
     if (!py_buffer.is_none())
     {
-        Builder<BufferBindingLayout>(ctx).fill(obj.buffer, py_buffer);
+        Builder<BufferBindingLayout>(ctx).fill(obj.buffer, handle.attr("buffer"));
     }
     auto py_sampler = handle.attr("sampler");
     if (!py_sampler.is_none())
     {
-        Builder<SamplerBindingLayout>(ctx).fill(obj.sampler, py_sampler);
+        Builder<SamplerBindingLayout>(ctx).fill(obj.sampler, handle.attr("sampler"));
     }
     auto py_texture = handle.attr("texture");
     if (!py_texture.is_none())
     {
-        Builder<TextureBindingLayout>(ctx).fill(obj.texture, py_texture);
+        Builder<TextureBindingLayout>(ctx).fill(obj.texture, handle.attr("texture"));
     }
     auto py_storage_texture = handle.attr("storage_texture");
     if (!py_storage_texture.is_none())
     {
-        Builder<StorageTextureBindingLayout>(ctx).fill(obj.storageTexture, py_storage_texture);
+        Builder<StorageTextureBindingLayout>(ctx).fill(obj.storageTexture, handle.attr("storage_texture"));
     }
 }
 
@@ -617,23 +617,23 @@ inline void fill(pywgpu::BindGroupLayoutDescriptor& obj, py::handle handle, Buil
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_entries = handle.attr("entries");
     if (!py_entries.is_none())
     {
-        auto py_list = py_entries.cast<py::sequence>();
+        auto py_list = handle.attr("entries").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<BindGroupLayoutEntry>(count);
+        auto* value = ctx.la.make_array<BindGroupLayoutEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<BindGroupLayoutEntry>(ctx).build(py_list[i]);
+            Builder<BindGroupLayoutEntry>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.entries = value;
@@ -645,19 +645,19 @@ inline void fill(pywgpu::BlendComponent& obj, py::handle handle, BuildCtx ctx) {
     auto py_operation = handle.attr("operation");
     if (!py_operation.is_none())
     {
-        auto value = py_operation.cast<BlendOperation>();
+        auto value = handle.attr("operation").cast<BlendOperation>();
         obj.operation = value;
     }
     auto py_src_factor = handle.attr("src_factor");
     if (!py_src_factor.is_none())
     {
-        auto value = py_src_factor.cast<BlendFactor>();
+        auto value = handle.attr("src_factor").cast<BlendFactor>();
         obj.srcFactor = value;
     }
     auto py_dst_factor = handle.attr("dst_factor");
     if (!py_dst_factor.is_none())
     {
-        auto value = py_dst_factor.cast<BlendFactor>();
+        auto value = handle.attr("dst_factor").cast<BlendFactor>();
         obj.dstFactor = value;
     }
 }
@@ -666,31 +666,31 @@ inline void fill(pywgpu::BufferDescriptor& obj, py::handle handle, BuildCtx ctx)
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_usage = handle.attr("usage");
     if (!py_usage.is_none())
     {
-        auto value = py_usage.cast<BufferUsage>();
+        auto value = handle.attr("usage").cast<BufferUsage>();
         obj.usage = value;
     }
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        auto value = py_size.cast<uint64_t>();
+        auto value = handle.attr("size").cast<uint64_t>();
         obj.size = value;
     }
     auto py_mapped_at_creation = handle.attr("mapped_at_creation");
     if (!py_mapped_at_creation.is_none())
     {
-        auto value = py_mapped_at_creation.cast<Bool>();
+        auto value = handle.attr("mapped_at_creation").cast<Bool>();
         obj.mappedAtCreation = value;
     }
 }
@@ -699,19 +699,19 @@ inline void fill(pywgpu::BufferHostMappedPointer& obj, py::handle handle, BuildC
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_pointer = handle.attr("pointer");
     if (!py_pointer.is_none())
     {
-        auto value = py_pointer.cast<void *>();
+        auto value = handle.attr("pointer").cast<void *>();
         obj.pointer = value;
     }
     auto py_userdata = handle.attr("userdata");
     if (!py_userdata.is_none())
     {
-        auto value = py_userdata.cast<void *>();
+        auto value = handle.attr("userdata").cast<void *>();
         obj.userdata = value;
     }
 }
@@ -720,25 +720,25 @@ inline void fill(pywgpu::Color& obj, py::handle handle, BuildCtx ctx) {
     auto py_r = handle.attr("r");
     if (!py_r.is_none())
     {
-        auto value = py_r.cast<double>();
+        auto value = handle.attr("r").cast<double>();
         obj.r = value;
     }
     auto py_g = handle.attr("g");
     if (!py_g.is_none())
     {
-        auto value = py_g.cast<double>();
+        auto value = handle.attr("g").cast<double>();
         obj.g = value;
     }
     auto py_b = handle.attr("b");
     if (!py_b.is_none())
     {
-        auto value = py_b.cast<double>();
+        auto value = handle.attr("b").cast<double>();
         obj.b = value;
     }
     auto py_a = handle.attr("a");
     if (!py_a.is_none())
     {
-        auto value = py_a.cast<double>();
+        auto value = handle.attr("a").cast<double>();
         obj.a = value;
     }
 }
@@ -747,19 +747,19 @@ inline void fill(pywgpu::ConstantEntry& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_key = handle.attr("key");
     if (!py_key.is_none())
     {
-        auto value = py_key.cast<StringView>();
+        auto value = handle.attr("key").cast<StringView>();
         obj.key = value;
     }
     auto py_value = handle.attr("value");
     if (!py_value.is_none())
     {
-        auto value = py_value.cast<double>();
+        auto value = handle.attr("value").cast<double>();
         obj.value = value;
     }
 }
@@ -768,13 +768,13 @@ inline void fill(pywgpu::CommandBufferDescriptor& obj, py::handle handle, BuildC
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -783,13 +783,13 @@ inline void fill(pywgpu::CommandEncoderDescriptor& obj, py::handle handle, Build
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -798,17 +798,17 @@ inline void fill(pywgpu::CompilationInfo& obj, py::handle handle, BuildCtx ctx) 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_messages = handle.attr("messages");
     if (!py_messages.is_none())
     {
-        auto py_list = py_messages.cast<py::sequence>();
+        auto py_list = handle.attr("messages").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<CompilationMessage>(count);
+        auto* value = ctx.la.make_array<CompilationMessage>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<CompilationMessage>(ctx).build(py_list[i]);
+            Builder<CompilationMessage>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.messages = value;
@@ -820,43 +820,43 @@ inline void fill(pywgpu::CompilationMessage& obj, py::handle handle, BuildCtx ct
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_message = handle.attr("message");
     if (!py_message.is_none())
     {
-        auto value = py_message.cast<StringView>();
+        auto value = handle.attr("message").cast<StringView>();
         obj.message = value;
     }
     auto py_type = handle.attr("type");
     if (!py_type.is_none())
     {
-        auto value = py_type.cast<CompilationMessageType>();
+        auto value = handle.attr("type").cast<CompilationMessageType>();
         obj.type = value;
     }
     auto py_line_num = handle.attr("line_num");
     if (!py_line_num.is_none())
     {
-        auto value = py_line_num.cast<uint64_t>();
+        auto value = handle.attr("line_num").cast<uint64_t>();
         obj.lineNum = value;
     }
     auto py_line_pos = handle.attr("line_pos");
     if (!py_line_pos.is_none())
     {
-        auto value = py_line_pos.cast<uint64_t>();
+        auto value = handle.attr("line_pos").cast<uint64_t>();
         obj.linePos = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_length = handle.attr("length");
     if (!py_length.is_none())
     {
-        auto value = py_length.cast<uint64_t>();
+        auto value = handle.attr("length").cast<uint64_t>();
         obj.length = value;
     }
 }
@@ -865,25 +865,25 @@ inline void fill(pywgpu::DawnCompilationMessageUtf16& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_line_pos = handle.attr("line_pos");
     if (!py_line_pos.is_none())
     {
-        auto value = py_line_pos.cast<uint64_t>();
+        auto value = handle.attr("line_pos").cast<uint64_t>();
         obj.linePos = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_length = handle.attr("length");
     if (!py_length.is_none())
     {
-        auto value = py_length.cast<uint64_t>();
+        auto value = handle.attr("length").cast<uint64_t>();
         obj.length = value;
     }
 }
@@ -892,19 +892,19 @@ inline void fill(pywgpu::ComputePassDescriptor& obj, py::handle handle, BuildCtx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_timestamp_writes = handle.attr("timestamp_writes");
     if (!py_timestamp_writes.is_none())
     {
-        auto value = Builder<PassTimestampWrites>(ctx).build(py_timestamp_writes);
+        auto value = Builder<PassTimestampWrites>(ctx).build(handle.attr("timestamp_writes"));
         obj.timestampWrites = value;
     }
 }
@@ -913,25 +913,25 @@ inline void fill(pywgpu::ComputePipelineDescriptor& obj, py::handle handle, Buil
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_layout = handle.attr("layout");
     if (!py_layout.is_none())
     {
-        auto value = py_layout.cast<PipelineLayout>();
+        auto value = handle.attr("layout").cast<PipelineLayout>();
         obj.layout = value;
     }
     auto py_compute = handle.attr("compute");
     if (!py_compute.is_none())
     {
-        Builder<ComputeState>(ctx).fill(obj.compute, py_compute);
+        Builder<ComputeState>(ctx).fill(obj.compute, handle.attr("compute"));
     }
 }
 
@@ -939,33 +939,33 @@ inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, B
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_flip_y = handle.attr("flip_y");
     if (!py_flip_y.is_none())
     {
-        auto value = py_flip_y.cast<Bool>();
+        auto value = handle.attr("flip_y").cast<Bool>();
         obj.flipY = value;
     }
     auto py_needs_color_space_conversion = handle.attr("needs_color_space_conversion");
     if (!py_needs_color_space_conversion.is_none())
     {
-        auto value = py_needs_color_space_conversion.cast<Bool>();
+        auto value = handle.attr("needs_color_space_conversion").cast<Bool>();
         obj.needsColorSpaceConversion = value;
     }
     auto py_src_alpha_mode = handle.attr("src_alpha_mode");
     if (!py_src_alpha_mode.is_none())
     {
-        auto value = py_src_alpha_mode.cast<AlphaMode>();
+        auto value = handle.attr("src_alpha_mode").cast<AlphaMode>();
         obj.srcAlphaMode = value;
     }
     auto py_src_transfer_function_parameters = handle.attr("src_transfer_function_parameters");
     if (!py_src_transfer_function_parameters.is_none())
     {
-        auto py_list = py_src_transfer_function_parameters.cast<py::sequence>();
+        auto py_list = handle.attr("src_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -975,9 +975,9 @@ inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, B
     auto py_conversion_matrix = handle.attr("conversion_matrix");
     if (!py_conversion_matrix.is_none())
     {
-        auto py_list = py_conversion_matrix.cast<py::sequence>();
+        auto py_list = handle.attr("conversion_matrix").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -987,9 +987,9 @@ inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, B
     auto py_dst_transfer_function_parameters = handle.attr("dst_transfer_function_parameters");
     if (!py_dst_transfer_function_parameters.is_none())
     {
-        auto py_list = py_dst_transfer_function_parameters.cast<py::sequence>();
+        auto py_list = handle.attr("dst_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -999,13 +999,13 @@ inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, B
     auto py_dst_alpha_mode = handle.attr("dst_alpha_mode");
     if (!py_dst_alpha_mode.is_none())
     {
-        auto value = py_dst_alpha_mode.cast<AlphaMode>();
+        auto value = handle.attr("dst_alpha_mode").cast<AlphaMode>();
         obj.dstAlphaMode = value;
     }
     auto py_internal_usage = handle.attr("internal_usage");
     if (!py_internal_usage.is_none())
     {
-        auto value = py_internal_usage.cast<Bool>();
+        auto value = handle.attr("internal_usage").cast<Bool>();
         obj.internalUsage = value;
     }
 }
@@ -1014,7 +1014,7 @@ inline void fill(pywgpu::AHardwareBufferProperties& obj, py::handle handle, Buil
     auto py_y_cb_cr_info = handle.attr("y_cb_cr_info");
     if (!py_y_cb_cr_info.is_none())
     {
-        Builder<YCbCrVkDescriptor>(ctx).fill(obj.yCbCrInfo, py_y_cb_cr_info);
+        Builder<YCbCrVkDescriptor>(ctx).fill(obj.yCbCrInfo, handle.attr("y_cb_cr_info"));
     }
 }
 
@@ -1022,250 +1022,218 @@ inline void fill(pywgpu::Limits& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = Builder<ChainedStructOut>(ctx).build(py_next_in_chain);
+        auto value = Builder<ChainedStructOut>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
     auto py_max_texture_dimension_1D = handle.attr("max_texture_dimension_1D");
     if (!py_max_texture_dimension_1D.is_none())
     {
-        auto value = py_max_texture_dimension_1D.cast<uint32_t>();
+        auto value = handle.attr("max_texture_dimension_1D").cast<uint32_t>();
         obj.maxTextureDimension1D = value;
     }
     auto py_max_texture_dimension_2D = handle.attr("max_texture_dimension_2D");
     if (!py_max_texture_dimension_2D.is_none())
     {
-        auto value = py_max_texture_dimension_2D.cast<uint32_t>();
+        auto value = handle.attr("max_texture_dimension_2D").cast<uint32_t>();
         obj.maxTextureDimension2D = value;
     }
     auto py_max_texture_dimension_3D = handle.attr("max_texture_dimension_3D");
     if (!py_max_texture_dimension_3D.is_none())
     {
-        auto value = py_max_texture_dimension_3D.cast<uint32_t>();
+        auto value = handle.attr("max_texture_dimension_3D").cast<uint32_t>();
         obj.maxTextureDimension3D = value;
     }
     auto py_max_texture_array_layers = handle.attr("max_texture_array_layers");
     if (!py_max_texture_array_layers.is_none())
     {
-        auto value = py_max_texture_array_layers.cast<uint32_t>();
+        auto value = handle.attr("max_texture_array_layers").cast<uint32_t>();
         obj.maxTextureArrayLayers = value;
     }
     auto py_max_bind_groups = handle.attr("max_bind_groups");
     if (!py_max_bind_groups.is_none())
     {
-        auto value = py_max_bind_groups.cast<uint32_t>();
+        auto value = handle.attr("max_bind_groups").cast<uint32_t>();
         obj.maxBindGroups = value;
     }
     auto py_max_bind_groups_plus_vertex_buffers = handle.attr("max_bind_groups_plus_vertex_buffers");
     if (!py_max_bind_groups_plus_vertex_buffers.is_none())
     {
-        auto value = py_max_bind_groups_plus_vertex_buffers.cast<uint32_t>();
+        auto value = handle.attr("max_bind_groups_plus_vertex_buffers").cast<uint32_t>();
         obj.maxBindGroupsPlusVertexBuffers = value;
     }
     auto py_max_bindings_per_bind_group = handle.attr("max_bindings_per_bind_group");
     if (!py_max_bindings_per_bind_group.is_none())
     {
-        auto value = py_max_bindings_per_bind_group.cast<uint32_t>();
+        auto value = handle.attr("max_bindings_per_bind_group").cast<uint32_t>();
         obj.maxBindingsPerBindGroup = value;
     }
     auto py_max_dynamic_uniform_buffers_per_pipeline_layout = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout");
     if (!py_max_dynamic_uniform_buffers_per_pipeline_layout.is_none())
     {
-        auto value = py_max_dynamic_uniform_buffers_per_pipeline_layout.cast<uint32_t>();
+        auto value = handle.attr("max_dynamic_uniform_buffers_per_pipeline_layout").cast<uint32_t>();
         obj.maxDynamicUniformBuffersPerPipelineLayout = value;
     }
     auto py_max_dynamic_storage_buffers_per_pipeline_layout = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout");
     if (!py_max_dynamic_storage_buffers_per_pipeline_layout.is_none())
     {
-        auto value = py_max_dynamic_storage_buffers_per_pipeline_layout.cast<uint32_t>();
+        auto value = handle.attr("max_dynamic_storage_buffers_per_pipeline_layout").cast<uint32_t>();
         obj.maxDynamicStorageBuffersPerPipelineLayout = value;
     }
     auto py_max_sampled_textures_per_shader_stage = handle.attr("max_sampled_textures_per_shader_stage");
     if (!py_max_sampled_textures_per_shader_stage.is_none())
     {
-        auto value = py_max_sampled_textures_per_shader_stage.cast<uint32_t>();
+        auto value = handle.attr("max_sampled_textures_per_shader_stage").cast<uint32_t>();
         obj.maxSampledTexturesPerShaderStage = value;
     }
     auto py_max_samplers_per_shader_stage = handle.attr("max_samplers_per_shader_stage");
     if (!py_max_samplers_per_shader_stage.is_none())
     {
-        auto value = py_max_samplers_per_shader_stage.cast<uint32_t>();
+        auto value = handle.attr("max_samplers_per_shader_stage").cast<uint32_t>();
         obj.maxSamplersPerShaderStage = value;
     }
     auto py_max_storage_buffers_per_shader_stage = handle.attr("max_storage_buffers_per_shader_stage");
     if (!py_max_storage_buffers_per_shader_stage.is_none())
     {
-        auto value = py_max_storage_buffers_per_shader_stage.cast<uint32_t>();
+        auto value = handle.attr("max_storage_buffers_per_shader_stage").cast<uint32_t>();
         obj.maxStorageBuffersPerShaderStage = value;
     }
     auto py_max_storage_textures_per_shader_stage = handle.attr("max_storage_textures_per_shader_stage");
     if (!py_max_storage_textures_per_shader_stage.is_none())
     {
-        auto value = py_max_storage_textures_per_shader_stage.cast<uint32_t>();
+        auto value = handle.attr("max_storage_textures_per_shader_stage").cast<uint32_t>();
         obj.maxStorageTexturesPerShaderStage = value;
     }
     auto py_max_uniform_buffers_per_shader_stage = handle.attr("max_uniform_buffers_per_shader_stage");
     if (!py_max_uniform_buffers_per_shader_stage.is_none())
     {
-        auto value = py_max_uniform_buffers_per_shader_stage.cast<uint32_t>();
+        auto value = handle.attr("max_uniform_buffers_per_shader_stage").cast<uint32_t>();
         obj.maxUniformBuffersPerShaderStage = value;
     }
     auto py_max_uniform_buffer_binding_size = handle.attr("max_uniform_buffer_binding_size");
     if (!py_max_uniform_buffer_binding_size.is_none())
     {
-        auto value = py_max_uniform_buffer_binding_size.cast<uint64_t>();
+        auto value = handle.attr("max_uniform_buffer_binding_size").cast<uint64_t>();
         obj.maxUniformBufferBindingSize = value;
     }
     auto py_max_storage_buffer_binding_size = handle.attr("max_storage_buffer_binding_size");
     if (!py_max_storage_buffer_binding_size.is_none())
     {
-        auto value = py_max_storage_buffer_binding_size.cast<uint64_t>();
+        auto value = handle.attr("max_storage_buffer_binding_size").cast<uint64_t>();
         obj.maxStorageBufferBindingSize = value;
     }
     auto py_min_uniform_buffer_offset_alignment = handle.attr("min_uniform_buffer_offset_alignment");
     if (!py_min_uniform_buffer_offset_alignment.is_none())
     {
-        auto value = py_min_uniform_buffer_offset_alignment.cast<uint32_t>();
+        auto value = handle.attr("min_uniform_buffer_offset_alignment").cast<uint32_t>();
         obj.minUniformBufferOffsetAlignment = value;
     }
     auto py_min_storage_buffer_offset_alignment = handle.attr("min_storage_buffer_offset_alignment");
     if (!py_min_storage_buffer_offset_alignment.is_none())
     {
-        auto value = py_min_storage_buffer_offset_alignment.cast<uint32_t>();
+        auto value = handle.attr("min_storage_buffer_offset_alignment").cast<uint32_t>();
         obj.minStorageBufferOffsetAlignment = value;
     }
     auto py_max_vertex_buffers = handle.attr("max_vertex_buffers");
     if (!py_max_vertex_buffers.is_none())
     {
-        auto value = py_max_vertex_buffers.cast<uint32_t>();
+        auto value = handle.attr("max_vertex_buffers").cast<uint32_t>();
         obj.maxVertexBuffers = value;
     }
     auto py_max_buffer_size = handle.attr("max_buffer_size");
     if (!py_max_buffer_size.is_none())
     {
-        auto value = py_max_buffer_size.cast<uint64_t>();
+        auto value = handle.attr("max_buffer_size").cast<uint64_t>();
         obj.maxBufferSize = value;
     }
     auto py_max_vertex_attributes = handle.attr("max_vertex_attributes");
     if (!py_max_vertex_attributes.is_none())
     {
-        auto value = py_max_vertex_attributes.cast<uint32_t>();
+        auto value = handle.attr("max_vertex_attributes").cast<uint32_t>();
         obj.maxVertexAttributes = value;
     }
     auto py_max_vertex_buffer_array_stride = handle.attr("max_vertex_buffer_array_stride");
     if (!py_max_vertex_buffer_array_stride.is_none())
     {
-        auto value = py_max_vertex_buffer_array_stride.cast<uint32_t>();
+        auto value = handle.attr("max_vertex_buffer_array_stride").cast<uint32_t>();
         obj.maxVertexBufferArrayStride = value;
     }
     auto py_max_inter_stage_shader_variables = handle.attr("max_inter_stage_shader_variables");
     if (!py_max_inter_stage_shader_variables.is_none())
     {
-        auto value = py_max_inter_stage_shader_variables.cast<uint32_t>();
+        auto value = handle.attr("max_inter_stage_shader_variables").cast<uint32_t>();
         obj.maxInterStageShaderVariables = value;
     }
     auto py_max_color_attachments = handle.attr("max_color_attachments");
     if (!py_max_color_attachments.is_none())
     {
-        auto value = py_max_color_attachments.cast<uint32_t>();
+        auto value = handle.attr("max_color_attachments").cast<uint32_t>();
         obj.maxColorAttachments = value;
     }
     auto py_max_color_attachment_bytes_per_sample = handle.attr("max_color_attachment_bytes_per_sample");
     if (!py_max_color_attachment_bytes_per_sample.is_none())
     {
-        auto value = py_max_color_attachment_bytes_per_sample.cast<uint32_t>();
+        auto value = handle.attr("max_color_attachment_bytes_per_sample").cast<uint32_t>();
         obj.maxColorAttachmentBytesPerSample = value;
     }
     auto py_max_compute_workgroup_storage_size = handle.attr("max_compute_workgroup_storage_size");
     if (!py_max_compute_workgroup_storage_size.is_none())
     {
-        auto value = py_max_compute_workgroup_storage_size.cast<uint32_t>();
+        auto value = handle.attr("max_compute_workgroup_storage_size").cast<uint32_t>();
         obj.maxComputeWorkgroupStorageSize = value;
     }
     auto py_max_compute_invocations_per_workgroup = handle.attr("max_compute_invocations_per_workgroup");
     if (!py_max_compute_invocations_per_workgroup.is_none())
     {
-        auto value = py_max_compute_invocations_per_workgroup.cast<uint32_t>();
+        auto value = handle.attr("max_compute_invocations_per_workgroup").cast<uint32_t>();
         obj.maxComputeInvocationsPerWorkgroup = value;
     }
     auto py_max_compute_workgroup_size_x = handle.attr("max_compute_workgroup_size_x");
     if (!py_max_compute_workgroup_size_x.is_none())
     {
-        auto value = py_max_compute_workgroup_size_x.cast<uint32_t>();
+        auto value = handle.attr("max_compute_workgroup_size_x").cast<uint32_t>();
         obj.maxComputeWorkgroupSizeX = value;
     }
     auto py_max_compute_workgroup_size_y = handle.attr("max_compute_workgroup_size_y");
     if (!py_max_compute_workgroup_size_y.is_none())
     {
-        auto value = py_max_compute_workgroup_size_y.cast<uint32_t>();
+        auto value = handle.attr("max_compute_workgroup_size_y").cast<uint32_t>();
         obj.maxComputeWorkgroupSizeY = value;
     }
     auto py_max_compute_workgroup_size_z = handle.attr("max_compute_workgroup_size_z");
     if (!py_max_compute_workgroup_size_z.is_none())
     {
-        auto value = py_max_compute_workgroup_size_z.cast<uint32_t>();
+        auto value = handle.attr("max_compute_workgroup_size_z").cast<uint32_t>();
         obj.maxComputeWorkgroupSizeZ = value;
     }
     auto py_max_compute_workgroups_per_dimension = handle.attr("max_compute_workgroups_per_dimension");
     if (!py_max_compute_workgroups_per_dimension.is_none())
     {
-        auto value = py_max_compute_workgroups_per_dimension.cast<uint32_t>();
+        auto value = handle.attr("max_compute_workgroups_per_dimension").cast<uint32_t>();
         obj.maxComputeWorkgroupsPerDimension = value;
     }
     auto py_max_storage_buffers_in_vertex_stage = handle.attr("max_storage_buffers_in_vertex_stage");
     if (!py_max_storage_buffers_in_vertex_stage.is_none())
     {
-        auto value = py_max_storage_buffers_in_vertex_stage.cast<uint32_t>();
+        auto value = handle.attr("max_storage_buffers_in_vertex_stage").cast<uint32_t>();
         obj.maxStorageBuffersInVertexStage = value;
     }
     auto py_max_storage_textures_in_vertex_stage = handle.attr("max_storage_textures_in_vertex_stage");
     if (!py_max_storage_textures_in_vertex_stage.is_none())
     {
-        auto value = py_max_storage_textures_in_vertex_stage.cast<uint32_t>();
+        auto value = handle.attr("max_storage_textures_in_vertex_stage").cast<uint32_t>();
         obj.maxStorageTexturesInVertexStage = value;
     }
     auto py_max_storage_buffers_in_fragment_stage = handle.attr("max_storage_buffers_in_fragment_stage");
     if (!py_max_storage_buffers_in_fragment_stage.is_none())
     {
-        auto value = py_max_storage_buffers_in_fragment_stage.cast<uint32_t>();
+        auto value = handle.attr("max_storage_buffers_in_fragment_stage").cast<uint32_t>();
         obj.maxStorageBuffersInFragmentStage = value;
     }
     auto py_max_storage_textures_in_fragment_stage = handle.attr("max_storage_textures_in_fragment_stage");
     if (!py_max_storage_textures_in_fragment_stage.is_none())
     {
-        auto value = py_max_storage_textures_in_fragment_stage.cast<uint32_t>();
+        auto value = handle.attr("max_storage_textures_in_fragment_stage").cast<uint32_t>();
         obj.maxStorageTexturesInFragmentStage = value;
-    }
-}
-
-inline void fill(pywgpu::SupportedFeatures& obj, py::handle handle, BuildCtx ctx) {
-    auto py_features = handle.attr("features");
-    if (!py_features.is_none())
-    {
-        auto py_list = py_features.cast<py::sequence>();
-        uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<FeatureName>(count);
-        for (uint32_t i = 0; i < count; ++i) {
-            value[i] = py_list[i].cast<FeatureName>();
-        }
-
-        obj.features = value;
-        obj.featureCount = count;
-    }
-}
-
-inline void fill(pywgpu::SupportedWGSLLanguageFeatures& obj, py::handle handle, BuildCtx ctx) {
-    auto py_features = handle.attr("features");
-    if (!py_features.is_none())
-    {
-        auto py_list = py_features.cast<py::sequence>();
-        uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<WGSLLanguageFeatureName>(count);
-        for (uint32_t i = 0; i < count; ++i) {
-            value[i] = py_list[i].cast<WGSLLanguageFeatureName>();
-        }
-
-        obj.features = value;
-        obj.featureCount = count;
     }
 }
 
@@ -1273,13 +1241,13 @@ inline void fill(pywgpu::Extent2D& obj, py::handle handle, BuildCtx ctx) {
     auto py_width = handle.attr("width");
     if (!py_width.is_none())
     {
-        auto value = py_width.cast<uint32_t>();
+        auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
     auto py_height = handle.attr("height");
     if (!py_height.is_none())
     {
-        auto value = py_height.cast<uint32_t>();
+        auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
     }
 }
@@ -1288,19 +1256,19 @@ inline void fill(pywgpu::Extent3D& obj, py::handle handle, BuildCtx ctx) {
     auto py_width = handle.attr("width");
     if (!py_width.is_none())
     {
-        auto value = py_width.cast<uint32_t>();
+        auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
     auto py_height = handle.attr("height");
     if (!py_height.is_none())
     {
-        auto value = py_height.cast<uint32_t>();
+        auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
     }
     auto py_depth_or_array_layers = handle.attr("depth_or_array_layers");
     if (!py_depth_or_array_layers.is_none())
     {
-        auto value = py_depth_or_array_layers.cast<uint32_t>();
+        auto value = handle.attr("depth_or_array_layers").cast<uint32_t>();
         obj.depthOrArrayLayers = value;
     }
 }
@@ -1309,54 +1277,54 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_plane_0 = handle.attr("plane_0");
     if (!py_plane_0.is_none())
     {
-        auto value = py_plane_0.cast<TextureView>();
+        auto value = handle.attr("plane_0").cast<TextureView>();
         obj.plane0 = value;
     }
     auto py_plane_1 = handle.attr("plane_1");
     if (!py_plane_1.is_none())
     {
-        auto value = py_plane_1.cast<TextureView>();
+        auto value = handle.attr("plane_1").cast<TextureView>();
         obj.plane1 = value;
     }
     auto py_crop_origin = handle.attr("crop_origin");
     if (!py_crop_origin.is_none())
     {
-        Builder<Origin2D>(ctx).fill(obj.cropOrigin, py_crop_origin);
+        Builder<Origin2D>(ctx).fill(obj.cropOrigin, handle.attr("crop_origin"));
     }
     auto py_crop_size = handle.attr("crop_size");
     if (!py_crop_size.is_none())
     {
-        Builder<Extent2D>(ctx).fill(obj.cropSize, py_crop_size);
+        Builder<Extent2D>(ctx).fill(obj.cropSize, handle.attr("crop_size"));
     }
     auto py_apparent_size = handle.attr("apparent_size");
     if (!py_apparent_size.is_none())
     {
-        Builder<Extent2D>(ctx).fill(obj.apparentSize, py_apparent_size);
+        Builder<Extent2D>(ctx).fill(obj.apparentSize, handle.attr("apparent_size"));
     }
     auto py_do_yuv_to_rgb_conversion_only = handle.attr("do_yuv_to_rgb_conversion_only");
     if (!py_do_yuv_to_rgb_conversion_only.is_none())
     {
-        auto value = py_do_yuv_to_rgb_conversion_only.cast<Bool>();
+        auto value = handle.attr("do_yuv_to_rgb_conversion_only").cast<Bool>();
         obj.doYuvToRgbConversionOnly = value;
     }
     auto py_yuv_to_rgb_conversion_matrix = handle.attr("yuv_to_rgb_conversion_matrix");
     if (!py_yuv_to_rgb_conversion_matrix.is_none())
     {
-        auto py_list = py_yuv_to_rgb_conversion_matrix.cast<py::sequence>();
+        auto py_list = handle.attr("yuv_to_rgb_conversion_matrix").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -1366,9 +1334,9 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
     auto py_src_transfer_function_parameters = handle.attr("src_transfer_function_parameters");
     if (!py_src_transfer_function_parameters.is_none())
     {
-        auto py_list = py_src_transfer_function_parameters.cast<py::sequence>();
+        auto py_list = handle.attr("src_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -1378,9 +1346,9 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
     auto py_dst_transfer_function_parameters = handle.attr("dst_transfer_function_parameters");
     if (!py_dst_transfer_function_parameters.is_none())
     {
-        auto py_list = py_dst_transfer_function_parameters.cast<py::sequence>();
+        auto py_list = handle.attr("dst_transfer_function_parameters").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -1390,9 +1358,9 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
     auto py_gamut_conversion_matrix = handle.attr("gamut_conversion_matrix");
     if (!py_gamut_conversion_matrix.is_none())
     {
-        auto py_list = py_gamut_conversion_matrix.cast<py::sequence>();
+        auto py_list = handle.attr("gamut_conversion_matrix").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<float>(count);
+        auto* value = ctx.la.make_array<float>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<float>();
         }
@@ -1402,13 +1370,13 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
     auto py_mirrored = handle.attr("mirrored");
     if (!py_mirrored.is_none())
     {
-        auto value = py_mirrored.cast<Bool>();
+        auto value = handle.attr("mirrored").cast<Bool>();
         obj.mirrored = value;
     }
     auto py_rotation = handle.attr("rotation");
     if (!py_rotation.is_none())
     {
-        auto value = py_rotation.cast<ExternalTextureRotation>();
+        auto value = handle.attr("rotation").cast<ExternalTextureRotation>();
         obj.rotation = value;
     }
 }
@@ -1417,13 +1385,13 @@ inline void fill(pywgpu::SharedBufferMemoryDescriptor& obj, py::handle handle, B
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -1432,13 +1400,13 @@ inline void fill(pywgpu::SharedTextureMemoryDescriptor& obj, py::handle handle, 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -1447,21 +1415,21 @@ inline void fill(pywgpu::SharedBufferMemoryBeginAccessDescriptor& obj, py::handl
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_initialized = handle.attr("initialized");
     if (!py_initialized.is_none())
     {
-        auto value = py_initialized.cast<Bool>();
+        auto value = handle.attr("initialized").cast<Bool>();
         obj.initialized = value;
     }
     auto py_fences = handle.attr("fences");
     if (!py_fences.is_none())
     {
-        auto py_list = py_fences.cast<py::sequence>();
+        auto py_list = handle.attr("fences").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<SharedFence>(count);
+        auto* value = ctx.la.make_array<SharedFence>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<SharedFence>();
         }
@@ -1472,9 +1440,9 @@ inline void fill(pywgpu::SharedBufferMemoryBeginAccessDescriptor& obj, py::handl
     auto py_signaled_values = handle.attr("signaled_values");
     if (!py_signaled_values.is_none())
     {
-        auto py_list = py_signaled_values.cast<py::sequence>();
+        auto py_list = handle.attr("signaled_values").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<uint64_t>(count);
+        auto* value = ctx.la.make_array<uint64_t>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<uint64_t>();
         }
@@ -1488,13 +1456,13 @@ inline void fill(pywgpu::SharedTextureMemoryVkDedicatedAllocationDescriptor& obj
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_dedicated_allocation = handle.attr("dedicated_allocation");
     if (!py_dedicated_allocation.is_none())
     {
-        auto value = py_dedicated_allocation.cast<Bool>();
+        auto value = handle.attr("dedicated_allocation").cast<Bool>();
         obj.dedicatedAllocation = value;
     }
 }
@@ -1503,19 +1471,19 @@ inline void fill(pywgpu::SharedTextureMemoryAHardwareBufferDescriptor& obj, py::
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_handle = handle.attr("handle");
     if (!py_handle.is_none())
     {
-        auto value = py_handle.cast<void *>();
+        auto value = handle.attr("handle").cast<void *>();
         obj.handle = value;
     }
     auto py_use_external_format = handle.attr("use_external_format");
     if (!py_use_external_format.is_none())
     {
-        auto value = py_use_external_format.cast<Bool>();
+        auto value = handle.attr("use_external_format").cast<Bool>();
         obj.useExternalFormat = value;
     }
 }
@@ -1524,19 +1492,19 @@ inline void fill(pywgpu::SharedTextureMemoryDmaBufPlane& obj, py::handle handle,
     auto py_fd = handle.attr("fd");
     if (!py_fd.is_none())
     {
-        auto value = py_fd.cast<int>();
+        auto value = handle.attr("fd").cast<int>();
         obj.fd = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_stride = handle.attr("stride");
     if (!py_stride.is_none())
     {
-        auto value = py_stride.cast<uint32_t>();
+        auto value = handle.attr("stride").cast<uint32_t>();
         obj.stride = value;
     }
 }
@@ -1545,34 +1513,34 @@ inline void fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle ha
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        Builder<Extent3D>(ctx).fill(obj.size, py_size);
+        Builder<Extent3D>(ctx).fill(obj.size, handle.attr("size"));
     }
     auto py_drm_format = handle.attr("drm_format");
     if (!py_drm_format.is_none())
     {
-        auto value = py_drm_format.cast<uint32_t>();
+        auto value = handle.attr("drm_format").cast<uint32_t>();
         obj.drmFormat = value;
     }
     auto py_drm_modifier = handle.attr("drm_modifier");
     if (!py_drm_modifier.is_none())
     {
-        auto value = py_drm_modifier.cast<uint64_t>();
+        auto value = handle.attr("drm_modifier").cast<uint64_t>();
         obj.drmModifier = value;
     }
     auto py_planes = handle.attr("planes");
     if (!py_planes.is_none())
     {
-        auto py_list = py_planes.cast<py::sequence>();
+        auto py_list = handle.attr("planes").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<SharedTextureMemoryDmaBufPlane>(count);
+        auto* value = ctx.la.make_array<SharedTextureMemoryDmaBufPlane>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<SharedTextureMemoryDmaBufPlane>(ctx).build(py_list[i]);
+            Builder<SharedTextureMemoryDmaBufPlane>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.planes = value;
@@ -1584,37 +1552,37 @@ inline void fill(pywgpu::SharedTextureMemoryOpaqueFDDescriptor& obj, py::handle 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_vk_image_create_info = handle.attr("vk_image_create_info");
     if (!py_vk_image_create_info.is_none())
     {
-        auto value = py_vk_image_create_info.cast<void const *>();
+        auto value = handle.attr("vk_image_create_info").cast<void const *>();
         obj.vkImageCreateInfo = value;
     }
     auto py_memory_FD = handle.attr("memory_FD");
     if (!py_memory_FD.is_none())
     {
-        auto value = py_memory_FD.cast<int>();
+        auto value = handle.attr("memory_FD").cast<int>();
         obj.memoryFD = value;
     }
     auto py_memory_type_index = handle.attr("memory_type_index");
     if (!py_memory_type_index.is_none())
     {
-        auto value = py_memory_type_index.cast<uint32_t>();
+        auto value = handle.attr("memory_type_index").cast<uint32_t>();
         obj.memoryTypeIndex = value;
     }
     auto py_allocation_size = handle.attr("allocation_size");
     if (!py_allocation_size.is_none())
     {
-        auto value = py_allocation_size.cast<uint64_t>();
+        auto value = handle.attr("allocation_size").cast<uint64_t>();
         obj.allocationSize = value;
     }
     auto py_dedicated_allocation = handle.attr("dedicated_allocation");
     if (!py_dedicated_allocation.is_none())
     {
-        auto value = py_dedicated_allocation.cast<Bool>();
+        auto value = handle.attr("dedicated_allocation").cast<Bool>();
         obj.dedicatedAllocation = value;
     }
 }
@@ -1623,19 +1591,19 @@ inline void fill(pywgpu::SharedTextureMemoryZirconHandleDescriptor& obj, py::han
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_memory_FD = handle.attr("memory_FD");
     if (!py_memory_FD.is_none())
     {
-        auto value = py_memory_FD.cast<uint32_t>();
+        auto value = handle.attr("memory_FD").cast<uint32_t>();
         obj.memoryFD = value;
     }
     auto py_allocation_size = handle.attr("allocation_size");
     if (!py_allocation_size.is_none())
     {
-        auto value = py_allocation_size.cast<uint64_t>();
+        auto value = handle.attr("allocation_size").cast<uint64_t>();
         obj.allocationSize = value;
     }
 }
@@ -1644,19 +1612,19 @@ inline void fill(pywgpu::SharedTextureMemoryDXGISharedHandleDescriptor& obj, py:
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_handle = handle.attr("handle");
     if (!py_handle.is_none())
     {
-        auto value = py_handle.cast<void *>();
+        auto value = handle.attr("handle").cast<void *>();
         obj.handle = value;
     }
     auto py_use_keyed_mutex = handle.attr("use_keyed_mutex");
     if (!py_use_keyed_mutex.is_none())
     {
-        auto value = py_use_keyed_mutex.cast<Bool>();
+        auto value = handle.attr("use_keyed_mutex").cast<Bool>();
         obj.useKeyedMutex = value;
     }
 }
@@ -1665,19 +1633,19 @@ inline void fill(pywgpu::SharedTextureMemoryIOSurfaceDescriptor& obj, py::handle
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_io_surface = handle.attr("io_surface");
     if (!py_io_surface.is_none())
     {
-        auto value = py_io_surface.cast<void *>();
+        auto value = handle.attr("io_surface").cast<void *>();
         obj.ioSurface = value;
     }
     auto py_allow_storage_binding = handle.attr("allow_storage_binding");
     if (!py_allow_storage_binding.is_none())
     {
-        auto value = py_allow_storage_binding.cast<Bool>();
+        auto value = handle.attr("allow_storage_binding").cast<Bool>();
         obj.allowStorageBinding = value;
     }
 }
@@ -1686,13 +1654,13 @@ inline void fill(pywgpu::SharedTextureMemoryEGLImageDescriptor& obj, py::handle 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_image = handle.attr("image");
     if (!py_image.is_none())
     {
-        auto value = py_image.cast<void *>();
+        auto value = handle.attr("image").cast<void *>();
         obj.image = value;
     }
 }
@@ -1701,27 +1669,27 @@ inline void fill(pywgpu::SharedTextureMemoryBeginAccessDescriptor& obj, py::hand
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_concurrent_read = handle.attr("concurrent_read");
     if (!py_concurrent_read.is_none())
     {
-        auto value = py_concurrent_read.cast<Bool>();
+        auto value = handle.attr("concurrent_read").cast<Bool>();
         obj.concurrentRead = value;
     }
     auto py_initialized = handle.attr("initialized");
     if (!py_initialized.is_none())
     {
-        auto value = py_initialized.cast<Bool>();
+        auto value = handle.attr("initialized").cast<Bool>();
         obj.initialized = value;
     }
     auto py_fences = handle.attr("fences");
     if (!py_fences.is_none())
     {
-        auto py_list = py_fences.cast<py::sequence>();
+        auto py_list = handle.attr("fences").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<SharedFence>(count);
+        auto* value = ctx.la.make_array<SharedFence>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<SharedFence>();
         }
@@ -1732,9 +1700,9 @@ inline void fill(pywgpu::SharedTextureMemoryBeginAccessDescriptor& obj, py::hand
     auto py_signaled_values = handle.attr("signaled_values");
     if (!py_signaled_values.is_none())
     {
-        auto py_list = py_signaled_values.cast<py::sequence>();
+        auto py_list = handle.attr("signaled_values").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<uint64_t>(count);
+        auto* value = ctx.la.make_array<uint64_t>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<uint64_t>();
         }
@@ -1748,19 +1716,19 @@ inline void fill(pywgpu::SharedTextureMemoryVkImageLayoutBeginState& obj, py::ha
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_old_layout = handle.attr("old_layout");
     if (!py_old_layout.is_none())
     {
-        auto value = py_old_layout.cast<int32_t>();
+        auto value = handle.attr("old_layout").cast<int32_t>();
         obj.oldLayout = value;
     }
     auto py_new_layout = handle.attr("new_layout");
     if (!py_new_layout.is_none())
     {
-        auto value = py_new_layout.cast<int32_t>();
+        auto value = handle.attr("new_layout").cast<int32_t>();
         obj.newLayout = value;
     }
 }
@@ -1769,13 +1737,13 @@ inline void fill(pywgpu::SharedTextureMemoryD3DSwapchainBeginState& obj, py::han
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_is_swapchain = handle.attr("is_swapchain");
     if (!py_is_swapchain.is_none())
     {
-        auto value = py_is_swapchain.cast<Bool>();
+        auto value = handle.attr("is_swapchain").cast<Bool>();
         obj.isSwapchain = value;
     }
 }
@@ -1784,13 +1752,13 @@ inline void fill(pywgpu::SharedFenceDescriptor& obj, py::handle handle, BuildCtx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -1799,13 +1767,13 @@ inline void fill(pywgpu::SharedFenceVkSemaphoreOpaqueFDDescriptor& obj, py::hand
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_handle = handle.attr("handle");
     if (!py_handle.is_none())
     {
-        auto value = py_handle.cast<int>();
+        auto value = handle.attr("handle").cast<int>();
         obj.handle = value;
     }
 }
@@ -1814,13 +1782,13 @@ inline void fill(pywgpu::SharedFenceSyncFDDescriptor& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_handle = handle.attr("handle");
     if (!py_handle.is_none())
     {
-        auto value = py_handle.cast<int>();
+        auto value = handle.attr("handle").cast<int>();
         obj.handle = value;
     }
 }
@@ -1829,13 +1797,13 @@ inline void fill(pywgpu::SharedFenceVkSemaphoreZirconHandleDescriptor& obj, py::
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_handle = handle.attr("handle");
     if (!py_handle.is_none())
     {
-        auto value = py_handle.cast<uint32_t>();
+        auto value = handle.attr("handle").cast<uint32_t>();
         obj.handle = value;
     }
 }
@@ -1844,13 +1812,13 @@ inline void fill(pywgpu::SharedFenceDXGISharedHandleDescriptor& obj, py::handle 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_handle = handle.attr("handle");
     if (!py_handle.is_none())
     {
-        auto value = py_handle.cast<void *>();
+        auto value = handle.attr("handle").cast<void *>();
         obj.handle = value;
     }
 }
@@ -1859,13 +1827,13 @@ inline void fill(pywgpu::SharedFenceMTLSharedEventDescriptor& obj, py::handle ha
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_shared_event = handle.attr("shared_event");
     if (!py_shared_event.is_none())
     {
-        auto value = py_shared_event.cast<void *>();
+        auto value = handle.attr("shared_event").cast<void *>();
         obj.sharedEvent = value;
     }
 }
@@ -1874,13 +1842,13 @@ inline void fill(pywgpu::SharedFenceEGLSyncDescriptor& obj, py::handle handle, B
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_sync = handle.attr("sync");
     if (!py_sync.is_none())
     {
-        auto value = py_sync.cast<void *>();
+        auto value = handle.attr("sync").cast<void *>();
         obj.sync = value;
     }
 }
@@ -1889,25 +1857,25 @@ inline void fill(pywgpu::DawnFakeBufferOOMForTesting& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_fake_OOM_at_wire_client_map = handle.attr("fake_OOM_at_wire_client_map");
     if (!py_fake_OOM_at_wire_client_map.is_none())
     {
-        auto value = py_fake_OOM_at_wire_client_map.cast<Bool>();
+        auto value = handle.attr("fake_OOM_at_wire_client_map").cast<Bool>();
         obj.fakeOOMAtWireClientMap = value;
     }
     auto py_fake_OOM_at_native_map = handle.attr("fake_OOM_at_native_map");
     if (!py_fake_OOM_at_native_map.is_none())
     {
-        auto value = py_fake_OOM_at_native_map.cast<Bool>();
+        auto value = handle.attr("fake_OOM_at_native_map").cast<Bool>();
         obj.fakeOOMAtNativeMap = value;
     }
     auto py_fake_OOM_at_device = handle.attr("fake_OOM_at_device");
     if (!py_fake_OOM_at_device.is_none())
     {
-        auto value = py_fake_OOM_at_device.cast<Bool>();
+        auto value = handle.attr("fake_OOM_at_device").cast<Bool>();
         obj.fakeOOMAtDevice = value;
     }
 }
@@ -1916,13 +1884,13 @@ inline void fill(pywgpu::DawnDrmFormatProperties& obj, py::handle handle, BuildC
     auto py_modifier = handle.attr("modifier");
     if (!py_modifier.is_none())
     {
-        auto value = py_modifier.cast<uint64_t>();
+        auto value = handle.attr("modifier").cast<uint64_t>();
         obj.modifier = value;
     }
     auto py_modifier_plane_count = handle.attr("modifier_plane_count");
     if (!py_modifier_plane_count.is_none())
     {
-        auto value = py_modifier_plane_count.cast<uint32_t>();
+        auto value = handle.attr("modifier_plane_count").cast<uint32_t>();
         obj.modifierPlaneCount = value;
     }
 }
@@ -1931,12 +1899,12 @@ inline void fill(pywgpu::TexelCopyBufferInfo& obj, py::handle handle, BuildCtx c
     auto py_layout = handle.attr("layout");
     if (!py_layout.is_none())
     {
-        Builder<TexelCopyBufferLayout>(ctx).fill(obj.layout, py_layout);
+        Builder<TexelCopyBufferLayout>(ctx).fill(obj.layout, handle.attr("layout"));
     }
     auto py_buffer = handle.attr("buffer");
     if (!py_buffer.is_none())
     {
-        auto value = py_buffer.cast<Buffer>();
+        auto value = handle.attr("buffer").cast<Buffer>();
         obj.buffer = value;
     }
 }
@@ -1945,19 +1913,19 @@ inline void fill(pywgpu::TexelCopyBufferLayout& obj, py::handle handle, BuildCtx
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_bytes_per_row = handle.attr("bytes_per_row");
     if (!py_bytes_per_row.is_none())
     {
-        auto value = py_bytes_per_row.cast<uint32_t>();
+        auto value = handle.attr("bytes_per_row").cast<uint32_t>();
         obj.bytesPerRow = value;
     }
     auto py_rows_per_image = handle.attr("rows_per_image");
     if (!py_rows_per_image.is_none())
     {
-        auto value = py_rows_per_image.cast<uint32_t>();
+        auto value = handle.attr("rows_per_image").cast<uint32_t>();
         obj.rowsPerImage = value;
     }
 }
@@ -1966,24 +1934,24 @@ inline void fill(pywgpu::TexelCopyTextureInfo& obj, py::handle handle, BuildCtx 
     auto py_texture = handle.attr("texture");
     if (!py_texture.is_none())
     {
-        auto value = py_texture.cast<Texture>();
+        auto value = handle.attr("texture").cast<Texture>();
         obj.texture = value;
     }
     auto py_mip_level = handle.attr("mip_level");
     if (!py_mip_level.is_none())
     {
-        auto value = py_mip_level.cast<uint32_t>();
+        auto value = handle.attr("mip_level").cast<uint32_t>();
         obj.mipLevel = value;
     }
     auto py_origin = handle.attr("origin");
     if (!py_origin.is_none())
     {
-        Builder<Origin3D>(ctx).fill(obj.origin, py_origin);
+        Builder<Origin3D>(ctx).fill(obj.origin, handle.attr("origin"));
     }
     auto py_aspect = handle.attr("aspect");
     if (!py_aspect.is_none())
     {
-        auto value = py_aspect.cast<TextureAspect>();
+        auto value = handle.attr("aspect").cast<TextureAspect>();
         obj.aspect = value;
     }
 }
@@ -1992,24 +1960,24 @@ inline void fill(pywgpu::ImageCopyExternalTexture& obj, py::handle handle, Build
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_external_texture = handle.attr("external_texture");
     if (!py_external_texture.is_none())
     {
-        auto value = py_external_texture.cast<ExternalTexture>();
+        auto value = handle.attr("external_texture").cast<ExternalTexture>();
         obj.externalTexture = value;
     }
     auto py_origin = handle.attr("origin");
     if (!py_origin.is_none())
     {
-        Builder<Origin3D>(ctx).fill(obj.origin, py_origin);
+        Builder<Origin3D>(ctx).fill(obj.origin, handle.attr("origin"));
     }
     auto py_natural_size = handle.attr("natural_size");
     if (!py_natural_size.is_none())
     {
-        Builder<Extent2D>(ctx).fill(obj.naturalSize, py_natural_size);
+        Builder<Extent2D>(ctx).fill(obj.naturalSize, handle.attr("natural_size"));
     }
 }
 
@@ -2017,13 +1985,13 @@ inline void fill(pywgpu::FutureWaitInfo& obj, py::handle handle, BuildCtx ctx) {
     auto py_future = handle.attr("future");
     if (!py_future.is_none())
     {
-        auto value = py_future.cast<Future>();
+        auto value = handle.attr("future").cast<Future>();
         obj.future = value;
     }
     auto py_completed = handle.attr("completed");
     if (!py_completed.is_none())
     {
-        auto value = py_completed.cast<Bool>();
+        auto value = handle.attr("completed").cast<Bool>();
         obj.completed = value;
     }
 }
@@ -2032,19 +2000,19 @@ inline void fill(pywgpu::InstanceCapabilities& obj, py::handle handle, BuildCtx 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = Builder<ChainedStructOut>(ctx).build(py_next_in_chain);
+        auto value = Builder<ChainedStructOut>(ctx).build(handle.attr("next_in_chain"));
         obj.nextInChain = value;
     }
     auto py_timed_wait_any_enable = handle.attr("timed_wait_any_enable");
     if (!py_timed_wait_any_enable.is_none())
     {
-        auto value = py_timed_wait_any_enable.cast<Bool>();
+        auto value = handle.attr("timed_wait_any_enable").cast<Bool>();
         obj.timedWaitAnyEnable = value;
     }
     auto py_timed_wait_any_max_count = handle.attr("timed_wait_any_max_count");
     if (!py_timed_wait_any_max_count.is_none())
     {
-        auto value = py_timed_wait_any_max_count.cast<size_t>();
+        auto value = handle.attr("timed_wait_any_max_count").cast<size_t>();
         obj.timedWaitAnyMaxCount = value;
     }
 }
@@ -2053,13 +2021,13 @@ inline void fill(pywgpu::InstanceDescriptor& obj, py::handle handle, BuildCtx ct
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_capabilities = handle.attr("capabilities");
     if (!py_capabilities.is_none())
     {
-        Builder<InstanceCapabilities>(ctx).fill(obj.capabilities, py_capabilities);
+        Builder<InstanceCapabilities>(ctx).fill(obj.capabilities, handle.attr("capabilities"));
     }
 }
 
@@ -2067,25 +2035,25 @@ inline void fill(pywgpu::DawnWireWGSLControl& obj, py::handle handle, BuildCtx c
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_enable_experimental = handle.attr("enable_experimental");
     if (!py_enable_experimental.is_none())
     {
-        auto value = py_enable_experimental.cast<Bool>();
+        auto value = handle.attr("enable_experimental").cast<Bool>();
         obj.enableExperimental = value;
     }
     auto py_enable_unsafe = handle.attr("enable_unsafe");
     if (!py_enable_unsafe.is_none())
     {
-        auto value = py_enable_unsafe.cast<Bool>();
+        auto value = handle.attr("enable_unsafe").cast<Bool>();
         obj.enableUnsafe = value;
     }
     auto py_enable_testing = handle.attr("enable_testing");
     if (!py_enable_testing.is_none())
     {
-        auto value = py_enable_testing.cast<Bool>();
+        auto value = handle.attr("enable_testing").cast<Bool>();
         obj.enableTesting = value;
     }
 }
@@ -2094,13 +2062,13 @@ inline void fill(pywgpu::DawnInjectedInvalidSType& obj, py::handle handle, Build
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_invalid_s_type = handle.attr("invalid_s_type");
     if (!py_invalid_s_type.is_none())
     {
-        auto value = py_invalid_s_type.cast<SType>();
+        auto value = handle.attr("invalid_s_type").cast<SType>();
         obj.invalidSType = value;
     }
 }
@@ -2109,25 +2077,25 @@ inline void fill(pywgpu::VertexAttribute& obj, py::handle handle, BuildCtx ctx) 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<VertexFormat>();
+        auto value = handle.attr("format").cast<VertexFormat>();
         obj.format = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_shader_location = handle.attr("shader_location");
     if (!py_shader_location.is_none())
     {
-        auto value = py_shader_location.cast<uint32_t>();
+        auto value = handle.attr("shader_location").cast<uint32_t>();
         obj.shaderLocation = value;
     }
 }
@@ -2136,29 +2104,29 @@ inline void fill(pywgpu::VertexBufferLayout& obj, py::handle handle, BuildCtx ct
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_step_mode = handle.attr("step_mode");
     if (!py_step_mode.is_none())
     {
-        auto value = py_step_mode.cast<VertexStepMode>();
+        auto value = handle.attr("step_mode").cast<VertexStepMode>();
         obj.stepMode = value;
     }
     auto py_array_stride = handle.attr("array_stride");
     if (!py_array_stride.is_none())
     {
-        auto value = py_array_stride.cast<uint64_t>();
+        auto value = handle.attr("array_stride").cast<uint64_t>();
         obj.arrayStride = value;
     }
     auto py_attributes = handle.attr("attributes");
     if (!py_attributes.is_none())
     {
-        auto py_list = py_attributes.cast<py::sequence>();
+        auto py_list = handle.attr("attributes").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<VertexAttribute>(count);
+        auto* value = ctx.la.make_array<VertexAttribute>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<VertexAttribute>(ctx).build(py_list[i]);
+            Builder<VertexAttribute>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.attributes = value;
@@ -2170,19 +2138,19 @@ inline void fill(pywgpu::Origin3D& obj, py::handle handle, BuildCtx ctx) {
     auto py_x = handle.attr("x");
     if (!py_x.is_none())
     {
-        auto value = py_x.cast<uint32_t>();
+        auto value = handle.attr("x").cast<uint32_t>();
         obj.x = value;
     }
     auto py_y = handle.attr("y");
     if (!py_y.is_none())
     {
-        auto value = py_y.cast<uint32_t>();
+        auto value = handle.attr("y").cast<uint32_t>();
         obj.y = value;
     }
     auto py_z = handle.attr("z");
     if (!py_z.is_none())
     {
-        auto value = py_z.cast<uint32_t>();
+        auto value = handle.attr("z").cast<uint32_t>();
         obj.z = value;
     }
 }
@@ -2191,13 +2159,13 @@ inline void fill(pywgpu::Origin2D& obj, py::handle handle, BuildCtx ctx) {
     auto py_x = handle.attr("x");
     if (!py_x.is_none())
     {
-        auto value = py_x.cast<uint32_t>();
+        auto value = handle.attr("x").cast<uint32_t>();
         obj.x = value;
     }
     auto py_y = handle.attr("y");
     if (!py_y.is_none())
     {
-        auto value = py_y.cast<uint32_t>();
+        auto value = handle.attr("y").cast<uint32_t>();
         obj.y = value;
     }
 }
@@ -2206,25 +2174,25 @@ inline void fill(pywgpu::PassTimestampWrites& obj, py::handle handle, BuildCtx c
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_query_set = handle.attr("query_set");
     if (!py_query_set.is_none())
     {
-        auto value = py_query_set.cast<QuerySet>();
+        auto value = handle.attr("query_set").cast<QuerySet>();
         obj.querySet = value;
     }
     auto py_beginning_of_pass_write_index = handle.attr("beginning_of_pass_write_index");
     if (!py_beginning_of_pass_write_index.is_none())
     {
-        auto value = py_beginning_of_pass_write_index.cast<uint32_t>();
+        auto value = handle.attr("beginning_of_pass_write_index").cast<uint32_t>();
         obj.beginningOfPassWriteIndex = value;
     }
     auto py_end_of_pass_write_index = handle.attr("end_of_pass_write_index");
     if (!py_end_of_pass_write_index.is_none())
     {
-        auto value = py_end_of_pass_write_index.cast<uint32_t>();
+        auto value = handle.attr("end_of_pass_write_index").cast<uint32_t>();
         obj.endOfPassWriteIndex = value;
     }
 }
@@ -2233,21 +2201,21 @@ inline void fill(pywgpu::PipelineLayoutDescriptor& obj, py::handle handle, Build
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_bind_group_layouts = handle.attr("bind_group_layouts");
     if (!py_bind_group_layouts.is_none())
     {
-        auto py_list = py_bind_group_layouts.cast<py::sequence>();
+        auto py_list = handle.attr("bind_group_layouts").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<BindGroupLayout>(count);
+        auto* value = ctx.la.make_array<BindGroupLayout>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<BindGroupLayout>();
         }
@@ -2258,7 +2226,7 @@ inline void fill(pywgpu::PipelineLayoutDescriptor& obj, py::handle handle, Build
     auto py_immediate_data_range_byte_size = handle.attr("immediate_data_range_byte_size");
     if (!py_immediate_data_range_byte_size.is_none())
     {
-        auto value = py_immediate_data_range_byte_size.cast<uint32_t>();
+        auto value = handle.attr("immediate_data_range_byte_size").cast<uint32_t>();
         obj.immediateDataRangeByteSize = value;
     }
 }
@@ -2267,23 +2235,23 @@ inline void fill(pywgpu::PipelineLayoutPixelLocalStorage& obj, py::handle handle
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_total_pixel_local_storage_size = handle.attr("total_pixel_local_storage_size");
     if (!py_total_pixel_local_storage_size.is_none())
     {
-        auto value = py_total_pixel_local_storage_size.cast<uint64_t>();
+        auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
         obj.totalPixelLocalStorageSize = value;
     }
     auto py_storage_attachments = handle.attr("storage_attachments");
     if (!py_storage_attachments.is_none())
     {
-        auto py_list = py_storage_attachments.cast<py::sequence>();
+        auto py_list = handle.attr("storage_attachments").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<PipelineLayoutStorageAttachment>(count);
+        auto* value = ctx.la.make_array<PipelineLayoutStorageAttachment>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<PipelineLayoutStorageAttachment>(ctx).build(py_list[i]);
+            Builder<PipelineLayoutStorageAttachment>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.storageAttachments = value;
@@ -2295,19 +2263,19 @@ inline void fill(pywgpu::PipelineLayoutStorageAttachment& obj, py::handle handle
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
 }
@@ -2316,29 +2284,29 @@ inline void fill(pywgpu::ComputeState& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_module = handle.attr("module");
     if (!py_module.is_none())
     {
-        auto value = py_module.cast<ShaderModule>();
+        auto value = handle.attr("module").cast<ShaderModule>();
         obj.module = value;
     }
     auto py_entry_point = handle.attr("entry_point");
     if (!py_entry_point.is_none())
     {
-        auto value = py_entry_point.cast<StringView>();
+        auto value = handle.attr("entry_point").cast<StringView>();
         obj.entryPoint = value;
     }
     auto py_constants = handle.attr("constants");
     if (!py_constants.is_none())
     {
-        auto py_list = py_constants.cast<py::sequence>();
+        auto py_list = handle.attr("constants").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<ConstantEntry>(count);
+        auto* value = ctx.la.make_array<ConstantEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<ConstantEntry>(ctx).build(py_list[i]);
+            Builder<ConstantEntry>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.constants = value;
@@ -2350,25 +2318,25 @@ inline void fill(pywgpu::QuerySetDescriptor& obj, py::handle handle, BuildCtx ct
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_type = handle.attr("type");
     if (!py_type.is_none())
     {
-        auto value = py_type.cast<QueryType>();
+        auto value = handle.attr("type").cast<QueryType>();
         obj.type = value;
     }
     auto py_count = handle.attr("count");
     if (!py_count.is_none())
     {
-        auto value = py_count.cast<uint32_t>();
+        auto value = handle.attr("count").cast<uint32_t>();
         obj.count = value;
     }
 }
@@ -2377,13 +2345,13 @@ inline void fill(pywgpu::QueueDescriptor& obj, py::handle handle, BuildCtx ctx) 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -2392,13 +2360,13 @@ inline void fill(pywgpu::RenderBundleDescriptor& obj, py::handle handle, BuildCt
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -2407,21 +2375,21 @@ inline void fill(pywgpu::RenderBundleEncoderDescriptor& obj, py::handle handle, 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_color_formats = handle.attr("color_formats");
     if (!py_color_formats.is_none())
     {
-        auto py_list = py_color_formats.cast<py::sequence>();
+        auto py_list = handle.attr("color_formats").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<TextureFormat>(count);
+        auto* value = ctx.la.make_array<TextureFormat>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<TextureFormat>();
         }
@@ -2432,25 +2400,25 @@ inline void fill(pywgpu::RenderBundleEncoderDescriptor& obj, py::handle handle, 
     auto py_depth_stencil_format = handle.attr("depth_stencil_format");
     if (!py_depth_stencil_format.is_none())
     {
-        auto value = py_depth_stencil_format.cast<TextureFormat>();
+        auto value = handle.attr("depth_stencil_format").cast<TextureFormat>();
         obj.depthStencilFormat = value;
     }
     auto py_sample_count = handle.attr("sample_count");
     if (!py_sample_count.is_none())
     {
-        auto value = py_sample_count.cast<uint32_t>();
+        auto value = handle.attr("sample_count").cast<uint32_t>();
         obj.sampleCount = value;
     }
     auto py_depth_read_only = handle.attr("depth_read_only");
     if (!py_depth_read_only.is_none())
     {
-        auto value = py_depth_read_only.cast<Bool>();
+        auto value = handle.attr("depth_read_only").cast<Bool>();
         obj.depthReadOnly = value;
     }
     auto py_stencil_read_only = handle.attr("stencil_read_only");
     if (!py_stencil_read_only.is_none())
     {
-        auto value = py_stencil_read_only.cast<Bool>();
+        auto value = handle.attr("stencil_read_only").cast<Bool>();
         obj.stencilReadOnly = value;
     }
 }
@@ -2459,43 +2427,43 @@ inline void fill(pywgpu::RenderPassColorAttachment& obj, py::handle handle, Buil
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_view = handle.attr("view");
     if (!py_view.is_none())
     {
-        auto value = py_view.cast<TextureView>();
+        auto value = handle.attr("view").cast<TextureView>();
         obj.view = value;
     }
     auto py_depth_slice = handle.attr("depth_slice");
     if (!py_depth_slice.is_none())
     {
-        auto value = py_depth_slice.cast<uint32_t>();
+        auto value = handle.attr("depth_slice").cast<uint32_t>();
         obj.depthSlice = value;
     }
     auto py_resolve_target = handle.attr("resolve_target");
     if (!py_resolve_target.is_none())
     {
-        auto value = py_resolve_target.cast<TextureView>();
+        auto value = handle.attr("resolve_target").cast<TextureView>();
         obj.resolveTarget = value;
     }
     auto py_load_op = handle.attr("load_op");
     if (!py_load_op.is_none())
     {
-        auto value = py_load_op.cast<LoadOp>();
+        auto value = handle.attr("load_op").cast<LoadOp>();
         obj.loadOp = value;
     }
     auto py_store_op = handle.attr("store_op");
     if (!py_store_op.is_none())
     {
-        auto value = py_store_op.cast<StoreOp>();
+        auto value = handle.attr("store_op").cast<StoreOp>();
         obj.storeOp = value;
     }
     auto py_clear_value = handle.attr("clear_value");
     if (!py_clear_value.is_none())
     {
-        Builder<Color>(ctx).fill(obj.clearValue, py_clear_value);
+        Builder<Color>(ctx).fill(obj.clearValue, handle.attr("clear_value"));
     }
 }
 
@@ -2503,13 +2471,13 @@ inline void fill(pywgpu::DawnRenderPassColorAttachmentRenderToSingleSampled& obj
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_implicit_sample_count = handle.attr("implicit_sample_count");
     if (!py_implicit_sample_count.is_none())
     {
-        auto value = py_implicit_sample_count.cast<uint32_t>();
+        auto value = handle.attr("implicit_sample_count").cast<uint32_t>();
         obj.implicitSampleCount = value;
     }
 }
@@ -2518,61 +2486,61 @@ inline void fill(pywgpu::RenderPassDepthStencilAttachment& obj, py::handle handl
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_view = handle.attr("view");
     if (!py_view.is_none())
     {
-        auto value = py_view.cast<TextureView>();
+        auto value = handle.attr("view").cast<TextureView>();
         obj.view = value;
     }
     auto py_depth_load_op = handle.attr("depth_load_op");
     if (!py_depth_load_op.is_none())
     {
-        auto value = py_depth_load_op.cast<LoadOp>();
+        auto value = handle.attr("depth_load_op").cast<LoadOp>();
         obj.depthLoadOp = value;
     }
     auto py_depth_store_op = handle.attr("depth_store_op");
     if (!py_depth_store_op.is_none())
     {
-        auto value = py_depth_store_op.cast<StoreOp>();
+        auto value = handle.attr("depth_store_op").cast<StoreOp>();
         obj.depthStoreOp = value;
     }
     auto py_depth_clear_value = handle.attr("depth_clear_value");
     if (!py_depth_clear_value.is_none())
     {
-        auto value = py_depth_clear_value.cast<float>();
+        auto value = handle.attr("depth_clear_value").cast<float>();
         obj.depthClearValue = value;
     }
     auto py_depth_read_only = handle.attr("depth_read_only");
     if (!py_depth_read_only.is_none())
     {
-        auto value = py_depth_read_only.cast<Bool>();
+        auto value = handle.attr("depth_read_only").cast<Bool>();
         obj.depthReadOnly = value;
     }
     auto py_stencil_load_op = handle.attr("stencil_load_op");
     if (!py_stencil_load_op.is_none())
     {
-        auto value = py_stencil_load_op.cast<LoadOp>();
+        auto value = handle.attr("stencil_load_op").cast<LoadOp>();
         obj.stencilLoadOp = value;
     }
     auto py_stencil_store_op = handle.attr("stencil_store_op");
     if (!py_stencil_store_op.is_none())
     {
-        auto value = py_stencil_store_op.cast<StoreOp>();
+        auto value = handle.attr("stencil_store_op").cast<StoreOp>();
         obj.stencilStoreOp = value;
     }
     auto py_stencil_clear_value = handle.attr("stencil_clear_value");
     if (!py_stencil_clear_value.is_none())
     {
-        auto value = py_stencil_clear_value.cast<uint32_t>();
+        auto value = handle.attr("stencil_clear_value").cast<uint32_t>();
         obj.stencilClearValue = value;
     }
     auto py_stencil_read_only = handle.attr("stencil_read_only");
     if (!py_stencil_read_only.is_none())
     {
-        auto value = py_stencil_read_only.cast<Bool>();
+        auto value = handle.attr("stencil_read_only").cast<Bool>();
         obj.stencilReadOnly = value;
     }
 }
@@ -2581,23 +2549,23 @@ inline void fill(pywgpu::RenderPassDescriptor& obj, py::handle handle, BuildCtx 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_color_attachments = handle.attr("color_attachments");
     if (!py_color_attachments.is_none())
     {
-        auto py_list = py_color_attachments.cast<py::sequence>();
+        auto py_list = handle.attr("color_attachments").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<RenderPassColorAttachment>(count);
+        auto* value = ctx.la.make_array<RenderPassColorAttachment>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<RenderPassColorAttachment>(ctx).build(py_list[i]);
+            Builder<RenderPassColorAttachment>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.colorAttachments = value;
@@ -2606,19 +2574,19 @@ inline void fill(pywgpu::RenderPassDescriptor& obj, py::handle handle, BuildCtx 
     auto py_depth_stencil_attachment = handle.attr("depth_stencil_attachment");
     if (!py_depth_stencil_attachment.is_none())
     {
-        auto value = Builder<RenderPassDepthStencilAttachment>(ctx).build(py_depth_stencil_attachment);
+        auto value = Builder<RenderPassDepthStencilAttachment>(ctx).build(handle.attr("depth_stencil_attachment"));
         obj.depthStencilAttachment = value;
     }
     auto py_occlusion_query_set = handle.attr("occlusion_query_set");
     if (!py_occlusion_query_set.is_none())
     {
-        auto value = py_occlusion_query_set.cast<QuerySet>();
+        auto value = handle.attr("occlusion_query_set").cast<QuerySet>();
         obj.occlusionQuerySet = value;
     }
     auto py_timestamp_writes = handle.attr("timestamp_writes");
     if (!py_timestamp_writes.is_none())
     {
-        auto value = Builder<PassTimestampWrites>(ctx).build(py_timestamp_writes);
+        auto value = Builder<PassTimestampWrites>(ctx).build(handle.attr("timestamp_writes"));
         obj.timestampWrites = value;
     }
 }
@@ -2627,13 +2595,13 @@ inline void fill(pywgpu::RenderPassMaxDrawCount& obj, py::handle handle, BuildCt
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_max_draw_count = handle.attr("max_draw_count");
     if (!py_max_draw_count.is_none())
     {
-        auto value = py_max_draw_count.cast<uint64_t>();
+        auto value = handle.attr("max_draw_count").cast<uint64_t>();
         obj.maxDrawCount = value;
     }
 }
@@ -2642,31 +2610,31 @@ inline void fill(pywgpu::RenderPassDescriptorExpandResolveRect& obj, py::handle 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_x = handle.attr("x");
     if (!py_x.is_none())
     {
-        auto value = py_x.cast<uint32_t>();
+        auto value = handle.attr("x").cast<uint32_t>();
         obj.x = value;
     }
     auto py_y = handle.attr("y");
     if (!py_y.is_none())
     {
-        auto value = py_y.cast<uint32_t>();
+        auto value = handle.attr("y").cast<uint32_t>();
         obj.y = value;
     }
     auto py_width = handle.attr("width");
     if (!py_width.is_none())
     {
-        auto value = py_width.cast<uint32_t>();
+        auto value = handle.attr("width").cast<uint32_t>();
         obj.width = value;
     }
     auto py_height = handle.attr("height");
     if (!py_height.is_none())
     {
-        auto value = py_height.cast<uint32_t>();
+        auto value = handle.attr("height").cast<uint32_t>();
         obj.height = value;
     }
 }
@@ -2675,23 +2643,23 @@ inline void fill(pywgpu::RenderPassPixelLocalStorage& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_total_pixel_local_storage_size = handle.attr("total_pixel_local_storage_size");
     if (!py_total_pixel_local_storage_size.is_none())
     {
-        auto value = py_total_pixel_local_storage_size.cast<uint64_t>();
+        auto value = handle.attr("total_pixel_local_storage_size").cast<uint64_t>();
         obj.totalPixelLocalStorageSize = value;
     }
     auto py_storage_attachments = handle.attr("storage_attachments");
     if (!py_storage_attachments.is_none())
     {
-        auto py_list = py_storage_attachments.cast<py::sequence>();
+        auto py_list = handle.attr("storage_attachments").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<RenderPassStorageAttachment>(count);
+        auto* value = ctx.la.make_array<RenderPassStorageAttachment>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<RenderPassStorageAttachment>(ctx).build(py_list[i]);
+            Builder<RenderPassStorageAttachment>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.storageAttachments = value;
@@ -2703,37 +2671,37 @@ inline void fill(pywgpu::RenderPassStorageAttachment& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_offset = handle.attr("offset");
     if (!py_offset.is_none())
     {
-        auto value = py_offset.cast<uint64_t>();
+        auto value = handle.attr("offset").cast<uint64_t>();
         obj.offset = value;
     }
     auto py_storage = handle.attr("storage");
     if (!py_storage.is_none())
     {
-        auto value = py_storage.cast<TextureView>();
+        auto value = handle.attr("storage").cast<TextureView>();
         obj.storage = value;
     }
     auto py_load_op = handle.attr("load_op");
     if (!py_load_op.is_none())
     {
-        auto value = py_load_op.cast<LoadOp>();
+        auto value = handle.attr("load_op").cast<LoadOp>();
         obj.loadOp = value;
     }
     auto py_store_op = handle.attr("store_op");
     if (!py_store_op.is_none())
     {
-        auto value = py_store_op.cast<StoreOp>();
+        auto value = handle.attr("store_op").cast<StoreOp>();
         obj.storeOp = value;
     }
     auto py_clear_value = handle.attr("clear_value");
     if (!py_clear_value.is_none())
     {
-        Builder<Color>(ctx).fill(obj.clearValue, py_clear_value);
+        Builder<Color>(ctx).fill(obj.clearValue, handle.attr("clear_value"));
     }
 }
 
@@ -2741,29 +2709,29 @@ inline void fill(pywgpu::VertexState& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_module = handle.attr("module");
     if (!py_module.is_none())
     {
-        auto value = py_module.cast<ShaderModule>();
+        auto value = handle.attr("module").cast<ShaderModule>();
         obj.module = value;
     }
     auto py_entry_point = handle.attr("entry_point");
     if (!py_entry_point.is_none())
     {
-        auto value = py_entry_point.cast<StringView>();
+        auto value = handle.attr("entry_point").cast<StringView>();
         obj.entryPoint = value;
     }
     auto py_constants = handle.attr("constants");
     if (!py_constants.is_none())
     {
-        auto py_list = py_constants.cast<py::sequence>();
+        auto py_list = handle.attr("constants").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<ConstantEntry>(count);
+        auto* value = ctx.la.make_array<ConstantEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<ConstantEntry>(ctx).build(py_list[i]);
+            Builder<ConstantEntry>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.constants = value;
@@ -2772,11 +2740,11 @@ inline void fill(pywgpu::VertexState& obj, py::handle handle, BuildCtx ctx) {
     auto py_buffers = handle.attr("buffers");
     if (!py_buffers.is_none())
     {
-        auto py_list = py_buffers.cast<py::sequence>();
+        auto py_list = handle.attr("buffers").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<VertexBufferLayout>(count);
+        auto* value = ctx.la.make_array<VertexBufferLayout>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<VertexBufferLayout>(ctx).build(py_list[i]);
+            Builder<VertexBufferLayout>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.buffers = value;
@@ -2788,37 +2756,37 @@ inline void fill(pywgpu::PrimitiveState& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_topology = handle.attr("topology");
     if (!py_topology.is_none())
     {
-        auto value = py_topology.cast<PrimitiveTopology>();
+        auto value = handle.attr("topology").cast<PrimitiveTopology>();
         obj.topology = value;
     }
     auto py_strip_index_format = handle.attr("strip_index_format");
     if (!py_strip_index_format.is_none())
     {
-        auto value = py_strip_index_format.cast<IndexFormat>();
+        auto value = handle.attr("strip_index_format").cast<IndexFormat>();
         obj.stripIndexFormat = value;
     }
     auto py_front_face = handle.attr("front_face");
     if (!py_front_face.is_none())
     {
-        auto value = py_front_face.cast<FrontFace>();
+        auto value = handle.attr("front_face").cast<FrontFace>();
         obj.frontFace = value;
     }
     auto py_cull_mode = handle.attr("cull_mode");
     if (!py_cull_mode.is_none())
     {
-        auto value = py_cull_mode.cast<CullMode>();
+        auto value = handle.attr("cull_mode").cast<CullMode>();
         obj.cullMode = value;
     }
     auto py_unclipped_depth = handle.attr("unclipped_depth");
     if (!py_unclipped_depth.is_none())
     {
-        auto value = py_unclipped_depth.cast<Bool>();
+        auto value = handle.attr("unclipped_depth").cast<Bool>();
         obj.unclippedDepth = value;
     }
 }
@@ -2827,65 +2795,65 @@ inline void fill(pywgpu::DepthStencilState& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
     auto py_depth_write_enabled = handle.attr("depth_write_enabled");
     if (!py_depth_write_enabled.is_none())
     {
-        auto value = py_depth_write_enabled.cast<OptionalBool>();
+        auto value = handle.attr("depth_write_enabled").cast<OptionalBool>();
         obj.depthWriteEnabled = value;
     }
     auto py_depth_compare = handle.attr("depth_compare");
     if (!py_depth_compare.is_none())
     {
-        auto value = py_depth_compare.cast<CompareFunction>();
+        auto value = handle.attr("depth_compare").cast<CompareFunction>();
         obj.depthCompare = value;
     }
     auto py_stencil_front = handle.attr("stencil_front");
     if (!py_stencil_front.is_none())
     {
-        Builder<StencilFaceState>(ctx).fill(obj.stencilFront, py_stencil_front);
+        Builder<StencilFaceState>(ctx).fill(obj.stencilFront, handle.attr("stencil_front"));
     }
     auto py_stencil_back = handle.attr("stencil_back");
     if (!py_stencil_back.is_none())
     {
-        Builder<StencilFaceState>(ctx).fill(obj.stencilBack, py_stencil_back);
+        Builder<StencilFaceState>(ctx).fill(obj.stencilBack, handle.attr("stencil_back"));
     }
     auto py_stencil_read_mask = handle.attr("stencil_read_mask");
     if (!py_stencil_read_mask.is_none())
     {
-        auto value = py_stencil_read_mask.cast<uint32_t>();
+        auto value = handle.attr("stencil_read_mask").cast<uint32_t>();
         obj.stencilReadMask = value;
     }
     auto py_stencil_write_mask = handle.attr("stencil_write_mask");
     if (!py_stencil_write_mask.is_none())
     {
-        auto value = py_stencil_write_mask.cast<uint32_t>();
+        auto value = handle.attr("stencil_write_mask").cast<uint32_t>();
         obj.stencilWriteMask = value;
     }
     auto py_depth_bias = handle.attr("depth_bias");
     if (!py_depth_bias.is_none())
     {
-        auto value = py_depth_bias.cast<int32_t>();
+        auto value = handle.attr("depth_bias").cast<int32_t>();
         obj.depthBias = value;
     }
     auto py_depth_bias_slope_scale = handle.attr("depth_bias_slope_scale");
     if (!py_depth_bias_slope_scale.is_none())
     {
-        auto value = py_depth_bias_slope_scale.cast<float>();
+        auto value = handle.attr("depth_bias_slope_scale").cast<float>();
         obj.depthBiasSlopeScale = value;
     }
     auto py_depth_bias_clamp = handle.attr("depth_bias_clamp");
     if (!py_depth_bias_clamp.is_none())
     {
-        auto value = py_depth_bias_clamp.cast<float>();
+        auto value = handle.attr("depth_bias_clamp").cast<float>();
         obj.depthBiasClamp = value;
     }
 }
@@ -2894,25 +2862,25 @@ inline void fill(pywgpu::MultisampleState& obj, py::handle handle, BuildCtx ctx)
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_count = handle.attr("count");
     if (!py_count.is_none())
     {
-        auto value = py_count.cast<uint32_t>();
+        auto value = handle.attr("count").cast<uint32_t>();
         obj.count = value;
     }
     auto py_mask = handle.attr("mask");
     if (!py_mask.is_none())
     {
-        auto value = py_mask.cast<uint32_t>();
+        auto value = handle.attr("mask").cast<uint32_t>();
         obj.mask = value;
     }
     auto py_alpha_to_coverage_enabled = handle.attr("alpha_to_coverage_enabled");
     if (!py_alpha_to_coverage_enabled.is_none())
     {
-        auto value = py_alpha_to_coverage_enabled.cast<Bool>();
+        auto value = handle.attr("alpha_to_coverage_enabled").cast<Bool>();
         obj.alphaToCoverageEnabled = value;
     }
 }
@@ -2921,29 +2889,29 @@ inline void fill(pywgpu::FragmentState& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_module = handle.attr("module");
     if (!py_module.is_none())
     {
-        auto value = py_module.cast<ShaderModule>();
+        auto value = handle.attr("module").cast<ShaderModule>();
         obj.module = value;
     }
     auto py_entry_point = handle.attr("entry_point");
     if (!py_entry_point.is_none())
     {
-        auto value = py_entry_point.cast<StringView>();
+        auto value = handle.attr("entry_point").cast<StringView>();
         obj.entryPoint = value;
     }
     auto py_constants = handle.attr("constants");
     if (!py_constants.is_none())
     {
-        auto py_list = py_constants.cast<py::sequence>();
+        auto py_list = handle.attr("constants").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<ConstantEntry>(count);
+        auto* value = ctx.la.make_array<ConstantEntry>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<ConstantEntry>(ctx).build(py_list[i]);
+            Builder<ConstantEntry>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.constants = value;
@@ -2952,11 +2920,11 @@ inline void fill(pywgpu::FragmentState& obj, py::handle handle, BuildCtx ctx) {
     auto py_targets = handle.attr("targets");
     if (!py_targets.is_none())
     {
-        auto py_list = py_targets.cast<py::sequence>();
+        auto py_list = handle.attr("targets").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<ColorTargetState>(count);
+        auto* value = ctx.la.make_array<ColorTargetState>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            value[i] = Builder<ColorTargetState>(ctx).build(py_list[i]);
+            Builder<ColorTargetState>(ctx).fill(value[i], py_list[i]);
         }
 
         obj.targets = value;
@@ -2968,25 +2936,25 @@ inline void fill(pywgpu::ColorTargetState& obj, py::handle handle, BuildCtx ctx)
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
     auto py_blend = handle.attr("blend");
     if (!py_blend.is_none())
     {
-        auto value = Builder<BlendState>(ctx).build(py_blend);
+        auto value = Builder<BlendState>(ctx).build(handle.attr("blend"));
         obj.blend = value;
     }
     auto py_write_mask = handle.attr("write_mask");
     if (!py_write_mask.is_none())
     {
-        auto value = py_write_mask.cast<ColorWriteMask>();
+        auto value = handle.attr("write_mask").cast<ColorWriteMask>();
         obj.writeMask = value;
     }
 }
@@ -2995,13 +2963,13 @@ inline void fill(pywgpu::ColorTargetStateExpandResolveTextureDawn& obj, py::hand
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_enabled = handle.attr("enabled");
     if (!py_enabled.is_none())
     {
-        auto value = py_enabled.cast<Bool>();
+        auto value = handle.attr("enabled").cast<Bool>();
         obj.enabled = value;
     }
 }
@@ -3010,12 +2978,12 @@ inline void fill(pywgpu::BlendState& obj, py::handle handle, BuildCtx ctx) {
     auto py_color = handle.attr("color");
     if (!py_color.is_none())
     {
-        Builder<BlendComponent>(ctx).fill(obj.color, py_color);
+        Builder<BlendComponent>(ctx).fill(obj.color, handle.attr("color"));
     }
     auto py_alpha = handle.attr("alpha");
     if (!py_alpha.is_none())
     {
-        Builder<BlendComponent>(ctx).fill(obj.alpha, py_alpha);
+        Builder<BlendComponent>(ctx).fill(obj.alpha, handle.attr("alpha"));
     }
 }
 
@@ -3023,46 +2991,46 @@ inline void fill(pywgpu::RenderPipelineDescriptor& obj, py::handle handle, Build
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_layout = handle.attr("layout");
     if (!py_layout.is_none())
     {
-        auto value = py_layout.cast<PipelineLayout>();
+        auto value = handle.attr("layout").cast<PipelineLayout>();
         obj.layout = value;
     }
     auto py_vertex = handle.attr("vertex");
     if (!py_vertex.is_none())
     {
-        Builder<VertexState>(ctx).fill(obj.vertex, py_vertex);
+        Builder<VertexState>(ctx).fill(obj.vertex, handle.attr("vertex"));
     }
     auto py_primitive = handle.attr("primitive");
     if (!py_primitive.is_none())
     {
-        Builder<PrimitiveState>(ctx).fill(obj.primitive, py_primitive);
+        Builder<PrimitiveState>(ctx).fill(obj.primitive, handle.attr("primitive"));
     }
     auto py_depth_stencil = handle.attr("depth_stencil");
     if (!py_depth_stencil.is_none())
     {
-        auto value = Builder<DepthStencilState>(ctx).build(py_depth_stencil);
+        auto value = Builder<DepthStencilState>(ctx).build(handle.attr("depth_stencil"));
         obj.depthStencil = value;
     }
     auto py_multisample = handle.attr("multisample");
     if (!py_multisample.is_none())
     {
-        Builder<MultisampleState>(ctx).fill(obj.multisample, py_multisample);
+        Builder<MultisampleState>(ctx).fill(obj.multisample, handle.attr("multisample"));
     }
     auto py_fragment = handle.attr("fragment");
     if (!py_fragment.is_none())
     {
-        auto value = Builder<FragmentState>(ctx).build(py_fragment);
+        auto value = Builder<FragmentState>(ctx).build(handle.attr("fragment"));
         obj.fragment = value;
     }
 }
@@ -3071,73 +3039,73 @@ inline void fill(pywgpu::SamplerDescriptor& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_address_mode_u = handle.attr("address_mode_u");
     if (!py_address_mode_u.is_none())
     {
-        auto value = py_address_mode_u.cast<AddressMode>();
+        auto value = handle.attr("address_mode_u").cast<AddressMode>();
         obj.addressModeU = value;
     }
     auto py_address_mode_v = handle.attr("address_mode_v");
     if (!py_address_mode_v.is_none())
     {
-        auto value = py_address_mode_v.cast<AddressMode>();
+        auto value = handle.attr("address_mode_v").cast<AddressMode>();
         obj.addressModeV = value;
     }
     auto py_address_mode_w = handle.attr("address_mode_w");
     if (!py_address_mode_w.is_none())
     {
-        auto value = py_address_mode_w.cast<AddressMode>();
+        auto value = handle.attr("address_mode_w").cast<AddressMode>();
         obj.addressModeW = value;
     }
     auto py_mag_filter = handle.attr("mag_filter");
     if (!py_mag_filter.is_none())
     {
-        auto value = py_mag_filter.cast<FilterMode>();
+        auto value = handle.attr("mag_filter").cast<FilterMode>();
         obj.magFilter = value;
     }
     auto py_min_filter = handle.attr("min_filter");
     if (!py_min_filter.is_none())
     {
-        auto value = py_min_filter.cast<FilterMode>();
+        auto value = handle.attr("min_filter").cast<FilterMode>();
         obj.minFilter = value;
     }
     auto py_mipmap_filter = handle.attr("mipmap_filter");
     if (!py_mipmap_filter.is_none())
     {
-        auto value = py_mipmap_filter.cast<MipmapFilterMode>();
+        auto value = handle.attr("mipmap_filter").cast<MipmapFilterMode>();
         obj.mipmapFilter = value;
     }
     auto py_lod_min_clamp = handle.attr("lod_min_clamp");
     if (!py_lod_min_clamp.is_none())
     {
-        auto value = py_lod_min_clamp.cast<float>();
+        auto value = handle.attr("lod_min_clamp").cast<float>();
         obj.lodMinClamp = value;
     }
     auto py_lod_max_clamp = handle.attr("lod_max_clamp");
     if (!py_lod_max_clamp.is_none())
     {
-        auto value = py_lod_max_clamp.cast<float>();
+        auto value = handle.attr("lod_max_clamp").cast<float>();
         obj.lodMaxClamp = value;
     }
     auto py_compare = handle.attr("compare");
     if (!py_compare.is_none())
     {
-        auto value = py_compare.cast<CompareFunction>();
+        auto value = handle.attr("compare").cast<CompareFunction>();
         obj.compare = value;
     }
     auto py_max_anisotropy = handle.attr("max_anisotropy");
     if (!py_max_anisotropy.is_none())
     {
-        auto value = py_max_anisotropy.cast<uint16_t>();
+        auto value = handle.attr("max_anisotropy").cast<uint16_t>();
         obj.maxAnisotropy = value;
     }
 }
@@ -3146,13 +3114,13 @@ inline void fill(pywgpu::ShaderModuleDescriptor& obj, py::handle handle, BuildCt
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -3161,15 +3129,15 @@ inline void fill(pywgpu::ShaderSourceSPIRV& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_code = handle.attr("code");
     if (!py_code.is_none())
     {
-        auto py_list = py_code.cast<py::sequence>();
+        auto py_list = handle.attr("code").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<uint32_t>(count);
+        auto* value = ctx.la.make_array<uint32_t>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<uint32_t>();
         }
@@ -3183,13 +3151,13 @@ inline void fill(pywgpu::ShaderSourceWGSL& obj, py::handle handle, BuildCtx ctx)
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_code = handle.attr("code");
     if (!py_code.is_none())
     {
-        auto value = py_code.cast<StringView>();
+        auto value = handle.attr("code").cast<StringView>();
         obj.code = value;
     }
 }
@@ -3198,13 +3166,13 @@ inline void fill(pywgpu::DawnShaderModuleSPIRVOptionsDescriptor& obj, py::handle
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_allow_non_uniform_derivatives = handle.attr("allow_non_uniform_derivatives");
     if (!py_allow_non_uniform_derivatives.is_none())
     {
-        auto value = py_allow_non_uniform_derivatives.cast<Bool>();
+        auto value = handle.attr("allow_non_uniform_derivatives").cast<Bool>();
         obj.allowNonUniformDerivatives = value;
     }
 }
@@ -3213,13 +3181,13 @@ inline void fill(pywgpu::ShaderModuleCompilationOptions& obj, py::handle handle,
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_strict_math = handle.attr("strict_math");
     if (!py_strict_math.is_none())
     {
-        auto value = py_strict_math.cast<Bool>();
+        auto value = handle.attr("strict_math").cast<Bool>();
         obj.strictMath = value;
     }
 }
@@ -3228,25 +3196,25 @@ inline void fill(pywgpu::StencilFaceState& obj, py::handle handle, BuildCtx ctx)
     auto py_compare = handle.attr("compare");
     if (!py_compare.is_none())
     {
-        auto value = py_compare.cast<CompareFunction>();
+        auto value = handle.attr("compare").cast<CompareFunction>();
         obj.compare = value;
     }
     auto py_fail_op = handle.attr("fail_op");
     if (!py_fail_op.is_none())
     {
-        auto value = py_fail_op.cast<StencilOperation>();
+        auto value = handle.attr("fail_op").cast<StencilOperation>();
         obj.failOp = value;
     }
     auto py_depth_fail_op = handle.attr("depth_fail_op");
     if (!py_depth_fail_op.is_none())
     {
-        auto value = py_depth_fail_op.cast<StencilOperation>();
+        auto value = handle.attr("depth_fail_op").cast<StencilOperation>();
         obj.depthFailOp = value;
     }
     auto py_pass_op = handle.attr("pass_op");
     if (!py_pass_op.is_none())
     {
-        auto value = py_pass_op.cast<StencilOperation>();
+        auto value = handle.attr("pass_op").cast<StencilOperation>();
         obj.passOp = value;
     }
 }
@@ -3255,13 +3223,13 @@ inline void fill(pywgpu::SurfaceDescriptor& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
 }
@@ -3270,13 +3238,13 @@ inline void fill(pywgpu::SurfaceSourceAndroidNativeWindow& obj, py::handle handl
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_window = handle.attr("window");
     if (!py_window.is_none())
     {
-        auto value = py_window.cast<void *>();
+        auto value = handle.attr("window").cast<void *>();
         obj.window = value;
     }
 }
@@ -3285,13 +3253,13 @@ inline void fill(pywgpu::EmscriptenSurfaceSourceCanvasHTMLSelector& obj, py::han
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_selector = handle.attr("selector");
     if (!py_selector.is_none())
     {
-        auto value = py_selector.cast<StringView>();
+        auto value = handle.attr("selector").cast<StringView>();
         obj.selector = value;
     }
 }
@@ -3300,13 +3268,13 @@ inline void fill(pywgpu::SurfaceSourceMetalLayer& obj, py::handle handle, BuildC
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_layer = handle.attr("layer");
     if (!py_layer.is_none())
     {
-        auto value = py_layer.cast<void *>();
+        auto value = handle.attr("layer").cast<void *>();
         obj.layer = value;
     }
 }
@@ -3315,19 +3283,19 @@ inline void fill(pywgpu::SurfaceSourceWindowsHWND& obj, py::handle handle, Build
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_hinstance = handle.attr("hinstance");
     if (!py_hinstance.is_none())
     {
-        auto value = py_hinstance.cast<void *>();
+        auto value = handle.attr("hinstance").cast<void *>();
         obj.hinstance = value;
     }
     auto py_hwnd = handle.attr("hwnd");
     if (!py_hwnd.is_none())
     {
-        auto value = py_hwnd.cast<void *>();
+        auto value = handle.attr("hwnd").cast<void *>();
         obj.hwnd = value;
     }
 }
@@ -3336,19 +3304,19 @@ inline void fill(pywgpu::SurfaceSourceXCBWindow& obj, py::handle handle, BuildCt
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_connection = handle.attr("connection");
     if (!py_connection.is_none())
     {
-        auto value = py_connection.cast<void *>();
+        auto value = handle.attr("connection").cast<void *>();
         obj.connection = value;
     }
     auto py_window = handle.attr("window");
     if (!py_window.is_none())
     {
-        auto value = py_window.cast<uint32_t>();
+        auto value = handle.attr("window").cast<uint32_t>();
         obj.window = value;
     }
 }
@@ -3357,19 +3325,19 @@ inline void fill(pywgpu::SurfaceSourceXlibWindow& obj, py::handle handle, BuildC
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_display = handle.attr("display");
     if (!py_display.is_none())
     {
-        auto value = py_display.cast<void *>();
+        auto value = handle.attr("display").cast<void *>();
         obj.display = value;
     }
     auto py_window = handle.attr("window");
     if (!py_window.is_none())
     {
-        auto value = py_window.cast<uint64_t>();
+        auto value = handle.attr("window").cast<uint64_t>();
         obj.window = value;
     }
 }
@@ -3378,19 +3346,19 @@ inline void fill(pywgpu::SurfaceSourceWaylandSurface& obj, py::handle handle, Bu
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_display = handle.attr("display");
     if (!py_display.is_none())
     {
-        auto value = py_display.cast<void *>();
+        auto value = handle.attr("display").cast<void *>();
         obj.display = value;
     }
     auto py_surface = handle.attr("surface");
     if (!py_surface.is_none())
     {
-        auto value = py_surface.cast<void *>();
+        auto value = handle.attr("surface").cast<void *>();
         obj.surface = value;
     }
 }
@@ -3399,13 +3367,13 @@ inline void fill(pywgpu::SurfaceDescriptorFromWindowsCoreWindow& obj, py::handle
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_core_window = handle.attr("core_window");
     if (!py_core_window.is_none())
     {
-        auto value = py_core_window.cast<void *>();
+        auto value = handle.attr("core_window").cast<void *>();
         obj.coreWindow = value;
     }
 }
@@ -3414,13 +3382,13 @@ inline void fill(pywgpu::SurfaceDescriptorFromWindowsUWPSwapChainPanel& obj, py:
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_swap_chain_panel = handle.attr("swap_chain_panel");
     if (!py_swap_chain_panel.is_none())
     {
-        auto value = py_swap_chain_panel.cast<void *>();
+        auto value = handle.attr("swap_chain_panel").cast<void *>();
         obj.swapChainPanel = value;
     }
 }
@@ -3429,13 +3397,13 @@ inline void fill(pywgpu::SurfaceDescriptorFromWindowsWinUISwapChainPanel& obj, p
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_swap_chain_panel = handle.attr("swap_chain_panel");
     if (!py_swap_chain_panel.is_none())
     {
-        auto value = py_swap_chain_panel.cast<void *>();
+        auto value = handle.attr("swap_chain_panel").cast<void *>();
         obj.swapChainPanel = value;
     }
 }
@@ -3444,56 +3412,56 @@ inline void fill(pywgpu::TextureDescriptor& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_usage = handle.attr("usage");
     if (!py_usage.is_none())
     {
-        auto value = py_usage.cast<TextureUsage>();
+        auto value = handle.attr("usage").cast<TextureUsage>();
         obj.usage = value;
     }
     auto py_dimension = handle.attr("dimension");
     if (!py_dimension.is_none())
     {
-        auto value = py_dimension.cast<TextureDimension>();
+        auto value = handle.attr("dimension").cast<TextureDimension>();
         obj.dimension = value;
     }
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        Builder<Extent3D>(ctx).fill(obj.size, py_size);
+        Builder<Extent3D>(ctx).fill(obj.size, handle.attr("size"));
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
     auto py_mip_level_count = handle.attr("mip_level_count");
     if (!py_mip_level_count.is_none())
     {
-        auto value = py_mip_level_count.cast<uint32_t>();
+        auto value = handle.attr("mip_level_count").cast<uint32_t>();
         obj.mipLevelCount = value;
     }
     auto py_sample_count = handle.attr("sample_count");
     if (!py_sample_count.is_none())
     {
-        auto value = py_sample_count.cast<uint32_t>();
+        auto value = handle.attr("sample_count").cast<uint32_t>();
         obj.sampleCount = value;
     }
     auto py_view_formats = handle.attr("view_formats");
     if (!py_view_formats.is_none())
     {
-        auto py_list = py_view_formats.cast<py::sequence>();
+        auto py_list = handle.attr("view_formats").cast<py::sequence>();
         uint32_t count = static_cast<uint32_t>(py_list.size());
-        auto* value = ctx.la.alloc_array<TextureFormat>(count);
+        auto* value = ctx.la.make_array<TextureFormat>(count);
         for (uint32_t i = 0; i < count; ++i) {
             value[i] = py_list[i].cast<TextureFormat>();
         }
@@ -3507,13 +3475,13 @@ inline void fill(pywgpu::TextureBindingViewDimensionDescriptor& obj, py::handle 
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_texture_binding_view_dimension = handle.attr("texture_binding_view_dimension");
     if (!py_texture_binding_view_dimension.is_none())
     {
-        auto value = py_texture_binding_view_dimension.cast<TextureViewDimension>();
+        auto value = handle.attr("texture_binding_view_dimension").cast<TextureViewDimension>();
         obj.textureBindingViewDimension = value;
     }
 }
@@ -3522,61 +3490,61 @@ inline void fill(pywgpu::TextureViewDescriptor& obj, py::handle handle, BuildCtx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_label = handle.attr("label");
     if (!py_label.is_none())
     {
-        auto value = py_label.cast<StringView>();
+        auto value = handle.attr("label").cast<StringView>();
         obj.label = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
     {
-        auto value = py_format.cast<TextureFormat>();
+        auto value = handle.attr("format").cast<TextureFormat>();
         obj.format = value;
     }
     auto py_dimension = handle.attr("dimension");
     if (!py_dimension.is_none())
     {
-        auto value = py_dimension.cast<TextureViewDimension>();
+        auto value = handle.attr("dimension").cast<TextureViewDimension>();
         obj.dimension = value;
     }
     auto py_base_mip_level = handle.attr("base_mip_level");
     if (!py_base_mip_level.is_none())
     {
-        auto value = py_base_mip_level.cast<uint32_t>();
+        auto value = handle.attr("base_mip_level").cast<uint32_t>();
         obj.baseMipLevel = value;
     }
     auto py_mip_level_count = handle.attr("mip_level_count");
     if (!py_mip_level_count.is_none())
     {
-        auto value = py_mip_level_count.cast<uint32_t>();
+        auto value = handle.attr("mip_level_count").cast<uint32_t>();
         obj.mipLevelCount = value;
     }
     auto py_base_array_layer = handle.attr("base_array_layer");
     if (!py_base_array_layer.is_none())
     {
-        auto value = py_base_array_layer.cast<uint32_t>();
+        auto value = handle.attr("base_array_layer").cast<uint32_t>();
         obj.baseArrayLayer = value;
     }
     auto py_array_layer_count = handle.attr("array_layer_count");
     if (!py_array_layer_count.is_none())
     {
-        auto value = py_array_layer_count.cast<uint32_t>();
+        auto value = handle.attr("array_layer_count").cast<uint32_t>();
         obj.arrayLayerCount = value;
     }
     auto py_aspect = handle.attr("aspect");
     if (!py_aspect.is_none())
     {
-        auto value = py_aspect.cast<TextureAspect>();
+        auto value = handle.attr("aspect").cast<TextureAspect>();
         obj.aspect = value;
     }
     auto py_usage = handle.attr("usage");
     if (!py_usage.is_none())
     {
-        auto value = py_usage.cast<TextureUsage>();
+        auto value = handle.attr("usage").cast<TextureUsage>();
         obj.usage = value;
     }
 }
@@ -3585,79 +3553,79 @@ inline void fill(pywgpu::YCbCrVkDescriptor& obj, py::handle handle, BuildCtx ctx
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_vk_format = handle.attr("vk_format");
     if (!py_vk_format.is_none())
     {
-        auto value = py_vk_format.cast<uint32_t>();
+        auto value = handle.attr("vk_format").cast<uint32_t>();
         obj.vkFormat = value;
     }
     auto py_vk_y_cb_cr_model = handle.attr("vk_y_cb_cr_model");
     if (!py_vk_y_cb_cr_model.is_none())
     {
-        auto value = py_vk_y_cb_cr_model.cast<uint32_t>();
+        auto value = handle.attr("vk_y_cb_cr_model").cast<uint32_t>();
         obj.vkYCbCrModel = value;
     }
     auto py_vk_y_cb_cr_range = handle.attr("vk_y_cb_cr_range");
     if (!py_vk_y_cb_cr_range.is_none())
     {
-        auto value = py_vk_y_cb_cr_range.cast<uint32_t>();
+        auto value = handle.attr("vk_y_cb_cr_range").cast<uint32_t>();
         obj.vkYCbCrRange = value;
     }
     auto py_vk_component_swizzle_red = handle.attr("vk_component_swizzle_red");
     if (!py_vk_component_swizzle_red.is_none())
     {
-        auto value = py_vk_component_swizzle_red.cast<uint32_t>();
+        auto value = handle.attr("vk_component_swizzle_red").cast<uint32_t>();
         obj.vkComponentSwizzleRed = value;
     }
     auto py_vk_component_swizzle_green = handle.attr("vk_component_swizzle_green");
     if (!py_vk_component_swizzle_green.is_none())
     {
-        auto value = py_vk_component_swizzle_green.cast<uint32_t>();
+        auto value = handle.attr("vk_component_swizzle_green").cast<uint32_t>();
         obj.vkComponentSwizzleGreen = value;
     }
     auto py_vk_component_swizzle_blue = handle.attr("vk_component_swizzle_blue");
     if (!py_vk_component_swizzle_blue.is_none())
     {
-        auto value = py_vk_component_swizzle_blue.cast<uint32_t>();
+        auto value = handle.attr("vk_component_swizzle_blue").cast<uint32_t>();
         obj.vkComponentSwizzleBlue = value;
     }
     auto py_vk_component_swizzle_alpha = handle.attr("vk_component_swizzle_alpha");
     if (!py_vk_component_swizzle_alpha.is_none())
     {
-        auto value = py_vk_component_swizzle_alpha.cast<uint32_t>();
+        auto value = handle.attr("vk_component_swizzle_alpha").cast<uint32_t>();
         obj.vkComponentSwizzleAlpha = value;
     }
     auto py_vk_x_chroma_offset = handle.attr("vk_x_chroma_offset");
     if (!py_vk_x_chroma_offset.is_none())
     {
-        auto value = py_vk_x_chroma_offset.cast<uint32_t>();
+        auto value = handle.attr("vk_x_chroma_offset").cast<uint32_t>();
         obj.vkXChromaOffset = value;
     }
     auto py_vk_y_chroma_offset = handle.attr("vk_y_chroma_offset");
     if (!py_vk_y_chroma_offset.is_none())
     {
-        auto value = py_vk_y_chroma_offset.cast<uint32_t>();
+        auto value = handle.attr("vk_y_chroma_offset").cast<uint32_t>();
         obj.vkYChromaOffset = value;
     }
     auto py_vk_chroma_filter = handle.attr("vk_chroma_filter");
     if (!py_vk_chroma_filter.is_none())
     {
-        auto value = py_vk_chroma_filter.cast<FilterMode>();
+        auto value = handle.attr("vk_chroma_filter").cast<FilterMode>();
         obj.vkChromaFilter = value;
     }
     auto py_force_explicit_reconstruction = handle.attr("force_explicit_reconstruction");
     if (!py_force_explicit_reconstruction.is_none())
     {
-        auto value = py_force_explicit_reconstruction.cast<Bool>();
+        auto value = handle.attr("force_explicit_reconstruction").cast<Bool>();
         obj.forceExplicitReconstruction = value;
     }
     auto py_external_format = handle.attr("external_format");
     if (!py_external_format.is_none())
     {
-        auto value = py_external_format.cast<uint64_t>();
+        auto value = handle.attr("external_format").cast<uint64_t>();
         obj.externalFormat = value;
     }
 }
@@ -3666,13 +3634,13 @@ inline void fill(pywgpu::DawnTextureInternalUsageDescriptor& obj, py::handle han
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_internal_usage = handle.attr("internal_usage");
     if (!py_internal_usage.is_none())
     {
-        auto value = py_internal_usage.cast<TextureUsage>();
+        auto value = handle.attr("internal_usage").cast<TextureUsage>();
         obj.internalUsage = value;
     }
 }
@@ -3681,13 +3649,13 @@ inline void fill(pywgpu::DawnEncoderInternalUsageDescriptor& obj, py::handle han
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_use_internal_usages = handle.attr("use_internal_usages");
     if (!py_use_internal_usages.is_none())
     {
-        auto value = py_use_internal_usages.cast<Bool>();
+        auto value = handle.attr("use_internal_usages").cast<Bool>();
         obj.useInternalUsages = value;
     }
 }
@@ -3696,13 +3664,13 @@ inline void fill(pywgpu::MemoryHeapInfo& obj, py::handle handle, BuildCtx ctx) {
     auto py_properties = handle.attr("properties");
     if (!py_properties.is_none())
     {
-        auto value = py_properties.cast<HeapProperty>();
+        auto value = handle.attr("properties").cast<HeapProperty>();
         obj.properties = value;
     }
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        auto value = py_size.cast<uint64_t>();
+        auto value = handle.attr("size").cast<uint64_t>();
         obj.size = value;
     }
 }
@@ -3711,13 +3679,13 @@ inline void fill(pywgpu::DawnBufferDescriptorErrorInfoFromWireClient& obj, py::h
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
     {
-        auto value = build_chained_struct(py_next_in_chain, ctx);
+        auto value = build_chained_struct(handle.attr("next_in_chain"), ctx);
         obj.nextInChain = value;
     }
     auto py_out_of_memory = handle.attr("out_of_memory");
     if (!py_out_of_memory.is_none())
     {
-        auto value = py_out_of_memory.cast<Bool>();
+        auto value = handle.attr("out_of_memory").cast<Bool>();
         obj.outOfMemory = value;
     }
 }
@@ -3726,31 +3694,31 @@ inline void fill(pywgpu::SubgroupMatrixConfig& obj, py::handle handle, BuildCtx 
     auto py_component_type = handle.attr("component_type");
     if (!py_component_type.is_none())
     {
-        auto value = py_component_type.cast<SubgroupMatrixComponentType>();
+        auto value = handle.attr("component_type").cast<SubgroupMatrixComponentType>();
         obj.componentType = value;
     }
     auto py_result_component_type = handle.attr("result_component_type");
     if (!py_result_component_type.is_none())
     {
-        auto value = py_result_component_type.cast<SubgroupMatrixComponentType>();
+        auto value = handle.attr("result_component_type").cast<SubgroupMatrixComponentType>();
         obj.resultComponentType = value;
     }
     auto py_M = handle.attr("M");
     if (!py_M.is_none())
     {
-        auto value = py_M.cast<uint32_t>();
+        auto value = handle.attr("M").cast<uint32_t>();
         obj.M = value;
     }
     auto py_N = handle.attr("N");
     if (!py_N.is_none())
     {
-        auto value = py_N.cast<uint32_t>();
+        auto value = handle.attr("N").cast<uint32_t>();
         obj.N = value;
     }
     auto py_K = handle.attr("K");
     if (!py_K.is_none())
     {
-        auto value = py_K.cast<uint32_t>();
+        auto value = handle.attr("K").cast<uint32_t>();
         obj.K = value;
     }
 }
@@ -4603,6 +4571,24 @@ _DawnTexelCopyBufferRowAlignmentLimits
     .def(py::init<>())
     ;
 
+py::class_<SupportedFeatures> _SupportedFeatures(m, "SupportedFeatures");
+registry.on(m, "SupportedFeatures", _SupportedFeatures);
+
+_SupportedFeatures
+    .def_readonly("feature_count", &pywgpu::SupportedFeatures::featureCount)
+    .def_readonly("features", &pywgpu::SupportedFeatures::features)
+    .def(py::init<>())
+    ;
+
+py::class_<SupportedWGSLLanguageFeatures> _SupportedWGSLLanguageFeatures(m, "SupportedWGSLLanguageFeatures");
+registry.on(m, "SupportedWGSLLanguageFeatures", _SupportedWGSLLanguageFeatures);
+
+_SupportedWGSLLanguageFeatures
+    .def_readonly("feature_count", &pywgpu::SupportedWGSLLanguageFeatures::featureCount)
+    .def_readonly("features", &pywgpu::SupportedWGSLLanguageFeatures::features)
+    .def(py::init<>())
+    ;
+
 py::class_<SharedBufferMemoryProperties> _SharedBufferMemoryProperties(m, "SharedBufferMemoryProperties");
 registry.on(m, "SharedBufferMemoryProperties", _SharedBufferMemoryProperties);
 
@@ -4874,26 +4860,7 @@ _Adapter
 .def("has_feature",&pywgpu::Adapter::HasFeature
 , py::arg("feature"))
 
-.def("get_features",[](pywgpu::Adapter& self, py::handle features) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::SupportedFeatures * _features = Builder<SupportedFeatures>(ctx).build(features);
-        
-        return self.GetFeatures(_features);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("get_features",&pywgpu::Adapter::GetFeatures
 , py::arg("features"))
 
 .def("_request_device",[](pywgpu::Adapter& self, py::handle options, RequestDeviceCallbackInfo callbackInfo) {
@@ -5849,26 +5816,7 @@ _Device
 .def("has_feature",&pywgpu::Device::HasFeature
 , py::arg("feature"))
 
-.def("get_features",[](pywgpu::Device& self, py::handle features) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::SupportedFeatures * _features = Builder<SupportedFeatures>(ctx).build(features);
-        
-        return self.GetFeatures(_features);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("get_features",&pywgpu::Device::GetFeatures
 , py::arg("features"))
 
 .def("get_adapter_info",&pywgpu::Device::GetAdapterInfo
@@ -6153,26 +6101,7 @@ _Instance
 .def("has_WGSL_language_feature",&pywgpu::Instance::HasWGSLLanguageFeature
 , py::arg("feature"))
 
-.def("get_WGSL_language_features",[](pywgpu::Instance& self, py::handle features) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::SupportedWGSLLanguageFeatures * _features = Builder<SupportedWGSLLanguageFeatures>(ctx).build(features);
-        
-        return self.GetWGSLLanguageFeatures(_features);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("get_WGSL_language_features",&pywgpu::Instance::GetWGSLLanguageFeatures
 , py::arg("features"))
 
 ;

@@ -109,12 +109,14 @@ class Structural(Type):
 
 class StructureType(Structural):
     category: Literal["structure"]
-    pass_style: PassStyle = PassStyle.POINTER
     extensible: Optional[Union[str, bool]] = None
     chained: Optional[str] = None
     chain_roots: Optional[List[str]] = Field(alias="chain roots", default=None)
     extensions: Optional[List[Any]] = Field(None, exclude=True, repr=False)
     out: Optional[bool] = False
+
+    pass_style: PassStyle = PassStyle.POINTER
+    atomic: bool = False
 
     def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
@@ -143,22 +145,18 @@ class StructureType(Structural):
             ),
         )
 
-    """
     @property
     def output(self):
         # self.out is a temporary way to express that this is an output structure
         # without also making it extensible. See
         # https://dawn-review.googlesource.com/c/dawn/+/212174/comment/2271690b_1fd82ea9/
-
-        if self.name and self.name.canonical_case() == "instance capabilities":
-            return False
-
         return self.chained == "out" or self.extensible == "out" or self.out
-    """
 
+    """
     @property
     def output(self):
         return self.chained == "out" or self.extensible == "out"
+    """
 
     """
     @property
@@ -185,12 +183,7 @@ class StructureType(Structural):
 
 class CallbackInfoType(Structural):
     category: Literal["callback info"]
-    '''
-    output: Optional[bool] = False
-    chained: Optional[str] = None
-    extensible: Optional[Union[str, bool]] = None
-    has_free_members_function: Optional[bool] = False
-    '''
+
 
 class NativeType(Type):
     category: Literal["native"]

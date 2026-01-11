@@ -296,16 +296,6 @@ class Limits:
 
 
 @dataclass(frozen=True, kw_only=True)
-class SupportedFeatures:
-    features: Any = FeatureName.DAWN_INTERNAL_USAGES  # type: FeatureName const * , default: FeatureName.DAWN_INTERNAL_USAGES
-
-
-@dataclass(frozen=True, kw_only=True)
-class SupportedWGSLLanguageFeatures:
-    features: Any = WGSLLanguageFeatureName.CHROMIUM_TESTING_UNIMPLEMENTED  # type: WGSLLanguageFeatureName const * , default: WGSLLanguageFeatureName.CHROMIUM_TESTING_UNIMPLEMENTED
-
-
-@dataclass(frozen=True, kw_only=True)
 class Extent2D:
     width: Any  # type: uint32_t , default: None
     height: Any  # type: uint32_t , default: None

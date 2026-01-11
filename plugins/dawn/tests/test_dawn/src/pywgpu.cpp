@@ -551,12 +551,60 @@ SupportedFeatures::operator const WGPUSupportedFeatures&() const noexcept {
     return *reinterpret_cast<const WGPUSupportedFeatures*>(this);
 }
 
+SupportedFeatures::~SupportedFeatures() {
+    FreeMembers();
+}
+
+void SupportedFeatures::FreeMembers() {
+    // Free members here
+}
+
+SupportedFeatures::SupportedFeatures(SupportedFeatures&& rhs) :
+    featureCount(rhs.featureCount),
+    features(rhs.features)
+{}
+
+SupportedFeatures& SupportedFeatures::operator=(SupportedFeatures&& rhs) {
+    if (&rhs == this) {
+        return *this;
+    }
+    FreeMembers();
+
+    ::pywgpu::detail::AsNonConstReference(this->featureCount) = std::move(rhs.featureCount);
+    ::pywgpu::detail::AsNonConstReference(this->features) = std::move(rhs.features);
+
+    return *this;
+}
 // SupportedWGSLLanguageFeatures implementation
 
 SupportedWGSLLanguageFeatures::operator const WGPUSupportedWGSLLanguageFeatures&() const noexcept {
     return *reinterpret_cast<const WGPUSupportedWGSLLanguageFeatures*>(this);
 }
 
+SupportedWGSLLanguageFeatures::~SupportedWGSLLanguageFeatures() {
+    FreeMembers();
+}
+
+void SupportedWGSLLanguageFeatures::FreeMembers() {
+    // Free members here
+}
+
+SupportedWGSLLanguageFeatures::SupportedWGSLLanguageFeatures(SupportedWGSLLanguageFeatures&& rhs) :
+    featureCount(rhs.featureCount),
+    features(rhs.features)
+{}
+
+SupportedWGSLLanguageFeatures& SupportedWGSLLanguageFeatures::operator=(SupportedWGSLLanguageFeatures&& rhs) {
+    if (&rhs == this) {
+        return *this;
+    }
+    FreeMembers();
+
+    ::pywgpu::detail::AsNonConstReference(this->featureCount) = std::move(rhs.featureCount);
+    ::pywgpu::detail::AsNonConstReference(this->features) = std::move(rhs.features);
+
+    return *this;
+}
 // Extent2D implementation
 
 Extent2D::operator const WGPUExtent2D&() const noexcept {

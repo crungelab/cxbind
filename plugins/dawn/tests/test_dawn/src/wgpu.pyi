@@ -741,6 +741,14 @@ class DawnTexelCopyBufferRowAlignmentLimits:
     next_in_chain: Optional[Any] = None  # type: ChainedStructOut * 
     min_texel_copy_buffer_row_alignment: Any  # type: uint32_t 
 
+class SupportedFeatures:
+    feature_count: Any  # type: size_t 
+    features: Any  # type: FeatureName const * 
+
+class SupportedWGSLLanguageFeatures:
+    feature_count: Any  # type: size_t 
+    features: Any  # type: WGSLLanguageFeatureName const * 
+
 class SharedBufferMemoryProperties:
     next_in_chain: Optional[Any] = None  # type: ChainedStructOut * 
     usage: Any  # type: BufferUsage 

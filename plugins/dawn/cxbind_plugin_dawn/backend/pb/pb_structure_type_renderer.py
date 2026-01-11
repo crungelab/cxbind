@@ -65,9 +65,12 @@ class PbStructureTypeRenderer(StructureTypeRenderer):
                 logger.debug(f"Skipping function pointer member {member_name}")
                 continue
 
+            '''
             readonly = (node.extensible is not None and node.extensible == "out") or (
                 node.chained is not None and node.chained == "out"
             )
+            '''
+            readonly = node.output
             # def_kind = "def_readonly" if node.extensible and node.extensible == "out" or node.chained and node.chained == "out" else "def_readwrite"
             def_kind = "def_readonly" if readonly else "def_readwrite"
             decoration = self.decorate_member(
