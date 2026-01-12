@@ -44,7 +44,7 @@ class Renderer(Generic[T_Node]):
 
     def exclude_member(self, member: RecordMember) -> bool:
         return self.exclude_node(member) or member.name in self.excluded_member_names
-    
+
     @staticmethod
     def as_varName(*names: Name) -> str:
         return names[0].camelCase() + "".join([name.CamelCase() for name in names[1:]])
@@ -154,19 +154,23 @@ class Renderer(Generic[T_Node]):
         )
 
     def is_descriptor_node(self, node: Type) -> bool:
-        if isinstance(node, StructureType) and not node.output and not node.name.get() in SpecialStructures:
-        #if isinstance(node, Structural) and not node.output and not node.name.get() in SpecialStructures:
+        # if isinstance(node, StructureType) and not node.output and not node.name.get() in SpecialStructures:
+        if (
+            isinstance(node, StructureType)
+            and (not node.output and not node.atomic)
+            and not node.name.get() in SpecialStructures
+        ):
             return True
         return False
-    
+
     def is_descriptor_member(self, arg: RecordMember) -> bool:
         arg_type = arg.type
         return self.is_descriptor_node(arg_type)
-        '''
+        """
         if isinstance(arg_type, StructureType) and not arg_type.output and not arg_type.name.get() in SpecialStructures:
             return True
         return False
-        '''
+        """
 
     def render_cpp_default_value(
         self,

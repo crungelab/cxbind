@@ -9,10 +9,14 @@ from ..structure_type_renderer import StructureTypeRenderer
 SEMANTIC_OPTIONAL_MEMBERS = {
     "DeviceDescriptor.default_queue",
     "FragmentState.constants",
+    "ComputeState.constants",
     "DepthStencilState.stencil_front",
     "DepthStencilState.stencil_back",
     "VertexState.constants",
     "VertexState.buffers",
+    "RenderPipelineDescriptor.multisample",
+    "RenderPipelineDescriptor.primitive",
+    "RenderPassColorAttachment.clear_value",
 }
 
 SpecialEnums = ["optional bool"]
@@ -21,7 +25,8 @@ default_map = {
     "nullptr": "None",
     "true": "True",
     "false": "False",
-    "zero": 0,
+    #"zero": 0,
+    "zero": None,
     "copy stride undefined": 0xFFFFFFFF,
     "limit u32 undefined": 0xFFFFFFFF,
     "limit u64 undefined": 0xFFFFFFFFFFFFFFFF,

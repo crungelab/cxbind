@@ -146,13 +146,6 @@ class BindGroupLayoutDescriptor:
 
 
 @dataclass(frozen=True, kw_only=True)
-class BlendComponent:
-    operation: Any = BlendOperation.ADD  # type: BlendOperation , default: BlendOperation.ADD
-    src_factor: Any = BlendFactor.ONE  # type: BlendFactor , default: BlendFactor.ONE
-    dst_factor: Any = 0  # type: BlendFactor , default: 0
-
-
-@dataclass(frozen=True, kw_only=True)
 class BufferDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
@@ -167,14 +160,6 @@ class BufferHostMappedPointer:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     pointer: Any  # type: void * , default: None
     userdata: Any  # type: void * , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class Color:
-    r: Any  # type: double , default: None
-    g: Any  # type: double , default: None
-    b: Any  # type: double , default: None
-    a: Any  # type: double , default: None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -251,11 +236,6 @@ class CopyTextureForBrowserOptions:
 
 
 @dataclass(frozen=True, kw_only=True)
-class AHardwareBufferProperties:
-    y_cb_cr_info: Any  # type: YCbCrVkDescriptor , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
 class Limits:
     next_in_chain: Optional[Any] = None  # type: ChainedStructOut * , default: None
     max_texture_dimension_1D: Any = 4294967295  # type: uint32_t , default: 4294967295
@@ -293,19 +273,6 @@ class Limits:
     max_storage_textures_in_vertex_stage: Any = 4294967295  # type: uint32_t , default: 4294967295
     max_storage_buffers_in_fragment_stage: Any = 4294967295  # type: uint32_t , default: 4294967295
     max_storage_textures_in_fragment_stage: Any = 4294967295  # type: uint32_t , default: 4294967295
-
-
-@dataclass(frozen=True, kw_only=True)
-class Extent2D:
-    width: Any  # type: uint32_t , default: None
-    height: Any  # type: uint32_t , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class Extent3D:
-    width: Any  # type: uint32_t , default: None
-    height: Any = 1  # type: uint32_t , default: 1
-    depth_or_array_layers: Any = 1  # type: uint32_t , default: 1
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -359,13 +326,6 @@ class SharedTextureMemoryAHardwareBufferDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     handle: Any  # type: void * , default: None
     use_external_format: Any  # type: Bool , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class SharedTextureMemoryDmaBufPlane:
-    fd: Any  # type: int , default: None
-    offset: Any  # type: uint64_t , default: None
-    stride: Any  # type: uint32_t , default: None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -502,44 +462,11 @@ class DawnFakeBufferOOMForTesting:
 
 
 @dataclass(frozen=True, kw_only=True)
-class DawnDrmFormatProperties:
-    modifier: Any  # type: uint64_t , default: None
-    modifier_plane_count: Any  # type: uint32_t , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class TexelCopyBufferInfo:
-    layout: Any  # type: TexelCopyBufferLayout , default: None
-    buffer: Any  # type: Buffer , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class TexelCopyBufferLayout:
-    offset: Any = 0  # type: uint64_t , default: 0
-    bytes_per_row: Any = 4294967295  # type: uint32_t , default: 4294967295
-    rows_per_image: Any = 4294967295  # type: uint32_t , default: 4294967295
-
-
-@dataclass(frozen=True, kw_only=True)
-class TexelCopyTextureInfo:
-    texture: Any  # type: Texture , default: None
-    mip_level: Any = 0  # type: uint32_t , default: 0
-    origin: Any  # type: Origin3D , default: None
-    aspect: Any = TextureAspect.ALL  # type: TextureAspect , default: TextureAspect.ALL
-
-
-@dataclass(frozen=True, kw_only=True)
 class ImageCopyExternalTexture:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     external_texture: Any  # type: ExternalTexture , default: None
     origin: Any  # type: Origin3D , default: None
     natural_size: Any  # type: Extent2D , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class FutureWaitInfo:
-    future: Any  # type: Future , default: None
-    completed: Any = False  # type: Bool , default: False
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -585,19 +512,6 @@ class VertexBufferLayout:
     step_mode: Any = VertexStepMode.UNDEFINED  # type: VertexStepMode , default: VertexStepMode.UNDEFINED
     array_stride: Any  # type: uint64_t , default: None
     attributes: Any  # type: VertexAttribute const * , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class Origin3D:
-    x: Any = 0  # type: uint32_t , default: 0
-    y: Any = 0  # type: uint32_t , default: 0
-    z: Any = 0  # type: uint32_t , default: 0
-
-
-@dataclass(frozen=True, kw_only=True)
-class Origin2D:
-    x: Any = 0  # type: uint32_t , default: 0
-    y: Any = 0  # type: uint32_t , default: 0
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -814,12 +728,6 @@ class ColorTargetStateExpandResolveTextureDawn:
 
 
 @dataclass(frozen=True, kw_only=True)
-class BlendState:
-    color: Any  # type: BlendComponent , default: None
-    alpha: Any  # type: BlendComponent , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
 class RenderPipelineDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     label: Optional[Any] = None  # type: StringView , default: None
@@ -827,7 +735,7 @@ class RenderPipelineDescriptor:
     vertex: Any  # type: VertexState , default: None
     primitive: Any  # type: PrimitiveState , default: None
     depth_stencil: Optional[Any] = None  # type: DepthStencilState const * , default: None
-    multisample: Any  # type: MultisampleState , default: None
+    multisample: Optional[Any] = None  # type: MultisampleState , default: None
     fragment: Optional[Any] = None  # type: FragmentState const * , default: None
 
 
@@ -879,14 +787,6 @@ class ShaderModuleCompilationOptions:
     s_type: SType = SType.SHADER_MODULE_COMPILATION_OPTIONS
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     strict_math: Any  # type: Bool , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
-class StencilFaceState:
-    compare: Any = CompareFunction.ALWAYS  # type: CompareFunction , default: CompareFunction.ALWAYS
-    fail_op: Any = StencilOperation.KEEP  # type: StencilOperation , default: StencilOperation.KEEP
-    depth_fail_op: Any = StencilOperation.KEEP  # type: StencilOperation , default: StencilOperation.KEEP
-    pass_op: Any = StencilOperation.KEEP  # type: StencilOperation , default: StencilOperation.KEEP
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -1036,24 +936,9 @@ class DawnEncoderInternalUsageDescriptor:
 
 
 @dataclass(frozen=True, kw_only=True)
-class MemoryHeapInfo:
-    properties: Any = HeapProperty.NONE  # type: HeapProperty , default: HeapProperty.NONE
-    size: Any  # type: uint64_t , default: None
-
-
-@dataclass(frozen=True, kw_only=True)
 class DawnBufferDescriptorErrorInfoFromWireClient:
     s_type: SType = SType.DAWN_BUFFER_DESCRIPTOR_ERROR_INFO_FROM_WIRE_CLIENT
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     out_of_memory: Any = False  # type: Bool , default: False
-
-
-@dataclass(frozen=True, kw_only=True)
-class SubgroupMatrixConfig:
-    component_type: Any  # type: SubgroupMatrixComponentType , default: None
-    result_component_type: Any  # type: SubgroupMatrixComponentType , default: None
-    M: Any  # type: uint32_t , default: None
-    N: Any  # type: uint32_t , default: None
-    K: Any  # type: uint32_t , default: None
 
 

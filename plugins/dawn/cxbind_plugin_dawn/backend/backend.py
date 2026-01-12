@@ -112,6 +112,8 @@ class Backend(Processor):
             member.type = self.program.lookup(member.type_ref)
             if member.length is not None and isinstance(member.length, str):
                 member.length_member = members_by_name[Name.intern(member.length)]
+            if member.annotation is not None:
+                structure.atomic = False
 
         self.structure_types.append(structure)
 

@@ -116,7 +116,7 @@ class StructureType(Structural):
     out: Optional[bool] = False
 
     pass_style: PassStyle = PassStyle.POINTER
-    atomic: bool = False
+    atomic: bool = True
 
     def model_post_init(self, __context: Any) -> None:
         super().model_post_init(__context)
@@ -151,12 +151,6 @@ class StructureType(Structural):
         # without also making it extensible. See
         # https://dawn-review.googlesource.com/c/dawn/+/212174/comment/2271690b_1fd82ea9/
         return self.chained == "out" or self.extensible == "out" or self.out
-
-    """
-    @property
-    def output(self):
-        return self.chained == "out" or self.extensible == "out"
-    """
 
     """
     @property

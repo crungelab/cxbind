@@ -641,27 +641,6 @@ inline void fill(pywgpu::BindGroupLayoutDescriptor& obj, py::handle handle, Buil
     }
 }
 
-inline void fill(pywgpu::BlendComponent& obj, py::handle handle, BuildCtx ctx) {
-    auto py_operation = handle.attr("operation");
-    if (!py_operation.is_none())
-    {
-        auto value = handle.attr("operation").cast<BlendOperation>();
-        obj.operation = value;
-    }
-    auto py_src_factor = handle.attr("src_factor");
-    if (!py_src_factor.is_none())
-    {
-        auto value = handle.attr("src_factor").cast<BlendFactor>();
-        obj.srcFactor = value;
-    }
-    auto py_dst_factor = handle.attr("dst_factor");
-    if (!py_dst_factor.is_none())
-    {
-        auto value = handle.attr("dst_factor").cast<BlendFactor>();
-        obj.dstFactor = value;
-    }
-}
-
 inline void fill(pywgpu::BufferDescriptor& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -713,33 +692,6 @@ inline void fill(pywgpu::BufferHostMappedPointer& obj, py::handle handle, BuildC
     {
         auto value = handle.attr("userdata").cast<void *>();
         obj.userdata = value;
-    }
-}
-
-inline void fill(pywgpu::Color& obj, py::handle handle, BuildCtx ctx) {
-    auto py_r = handle.attr("r");
-    if (!py_r.is_none())
-    {
-        auto value = handle.attr("r").cast<double>();
-        obj.r = value;
-    }
-    auto py_g = handle.attr("g");
-    if (!py_g.is_none())
-    {
-        auto value = handle.attr("g").cast<double>();
-        obj.g = value;
-    }
-    auto py_b = handle.attr("b");
-    if (!py_b.is_none())
-    {
-        auto value = handle.attr("b").cast<double>();
-        obj.b = value;
-    }
-    auto py_a = handle.attr("a");
-    if (!py_a.is_none())
-    {
-        auto value = handle.attr("a").cast<double>();
-        obj.a = value;
     }
 }
 
@@ -1010,14 +962,6 @@ inline void fill(pywgpu::CopyTextureForBrowserOptions& obj, py::handle handle, B
     }
 }
 
-inline void fill(pywgpu::AHardwareBufferProperties& obj, py::handle handle, BuildCtx ctx) {
-    auto py_y_cb_cr_info = handle.attr("y_cb_cr_info");
-    if (!py_y_cb_cr_info.is_none())
-    {
-        Builder<YCbCrVkDescriptor>(ctx).fill(obj.yCbCrInfo, handle.attr("y_cb_cr_info"));
-    }
-}
-
 inline void fill(pywgpu::Limits& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -1237,42 +1181,6 @@ inline void fill(pywgpu::Limits& obj, py::handle handle, BuildCtx ctx) {
     }
 }
 
-inline void fill(pywgpu::Extent2D& obj, py::handle handle, BuildCtx ctx) {
-    auto py_width = handle.attr("width");
-    if (!py_width.is_none())
-    {
-        auto value = handle.attr("width").cast<uint32_t>();
-        obj.width = value;
-    }
-    auto py_height = handle.attr("height");
-    if (!py_height.is_none())
-    {
-        auto value = handle.attr("height").cast<uint32_t>();
-        obj.height = value;
-    }
-}
-
-inline void fill(pywgpu::Extent3D& obj, py::handle handle, BuildCtx ctx) {
-    auto py_width = handle.attr("width");
-    if (!py_width.is_none())
-    {
-        auto value = handle.attr("width").cast<uint32_t>();
-        obj.width = value;
-    }
-    auto py_height = handle.attr("height");
-    if (!py_height.is_none())
-    {
-        auto value = handle.attr("height").cast<uint32_t>();
-        obj.height = value;
-    }
-    auto py_depth_or_array_layers = handle.attr("depth_or_array_layers");
-    if (!py_depth_or_array_layers.is_none())
-    {
-        auto value = handle.attr("depth_or_array_layers").cast<uint32_t>();
-        obj.depthOrArrayLayers = value;
-    }
-}
-
 inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -1301,17 +1209,20 @@ inline void fill(pywgpu::ExternalTextureDescriptor& obj, py::handle handle, Buil
     auto py_crop_origin = handle.attr("crop_origin");
     if (!py_crop_origin.is_none())
     {
-        Builder<Origin2D>(ctx).fill(obj.cropOrigin, handle.attr("crop_origin"));
+        auto value = handle.attr("crop_origin").cast<Origin2D>();
+        obj.cropOrigin = value;
     }
     auto py_crop_size = handle.attr("crop_size");
     if (!py_crop_size.is_none())
     {
-        Builder<Extent2D>(ctx).fill(obj.cropSize, handle.attr("crop_size"));
+        auto value = handle.attr("crop_size").cast<Extent2D>();
+        obj.cropSize = value;
     }
     auto py_apparent_size = handle.attr("apparent_size");
     if (!py_apparent_size.is_none())
     {
-        Builder<Extent2D>(ctx).fill(obj.apparentSize, handle.attr("apparent_size"));
+        auto value = handle.attr("apparent_size").cast<Extent2D>();
+        obj.apparentSize = value;
     }
     auto py_do_yuv_to_rgb_conversion_only = handle.attr("do_yuv_to_rgb_conversion_only");
     if (!py_do_yuv_to_rgb_conversion_only.is_none())
@@ -1488,27 +1399,6 @@ inline void fill(pywgpu::SharedTextureMemoryAHardwareBufferDescriptor& obj, py::
     }
 }
 
-inline void fill(pywgpu::SharedTextureMemoryDmaBufPlane& obj, py::handle handle, BuildCtx ctx) {
-    auto py_fd = handle.attr("fd");
-    if (!py_fd.is_none())
-    {
-        auto value = handle.attr("fd").cast<int>();
-        obj.fd = value;
-    }
-    auto py_offset = handle.attr("offset");
-    if (!py_offset.is_none())
-    {
-        auto value = handle.attr("offset").cast<uint64_t>();
-        obj.offset = value;
-    }
-    auto py_stride = handle.attr("stride");
-    if (!py_stride.is_none())
-    {
-        auto value = handle.attr("stride").cast<uint32_t>();
-        obj.stride = value;
-    }
-}
-
 inline void fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -1519,7 +1409,8 @@ inline void fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle ha
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        Builder<Extent3D>(ctx).fill(obj.size, handle.attr("size"));
+        auto value = handle.attr("size").cast<Extent3D>();
+        obj.size = value;
     }
     auto py_drm_format = handle.attr("drm_format");
     if (!py_drm_format.is_none())
@@ -1540,7 +1431,7 @@ inline void fill(pywgpu::SharedTextureMemoryDmaBufDescriptor& obj, py::handle ha
         uint32_t count = static_cast<uint32_t>(py_list.size());
         auto* value = ctx.la.make_array<SharedTextureMemoryDmaBufPlane>(count);
         for (uint32_t i = 0; i < count; ++i) {
-            Builder<SharedTextureMemoryDmaBufPlane>(ctx).fill(value[i], py_list[i]);
+            value[i] = py_list[i].cast<SharedTextureMemoryDmaBufPlane>();
         }
 
         obj.planes = value;
@@ -1880,82 +1771,6 @@ inline void fill(pywgpu::DawnFakeBufferOOMForTesting& obj, py::handle handle, Bu
     }
 }
 
-inline void fill(pywgpu::DawnDrmFormatProperties& obj, py::handle handle, BuildCtx ctx) {
-    auto py_modifier = handle.attr("modifier");
-    if (!py_modifier.is_none())
-    {
-        auto value = handle.attr("modifier").cast<uint64_t>();
-        obj.modifier = value;
-    }
-    auto py_modifier_plane_count = handle.attr("modifier_plane_count");
-    if (!py_modifier_plane_count.is_none())
-    {
-        auto value = handle.attr("modifier_plane_count").cast<uint32_t>();
-        obj.modifierPlaneCount = value;
-    }
-}
-
-inline void fill(pywgpu::TexelCopyBufferInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_layout = handle.attr("layout");
-    if (!py_layout.is_none())
-    {
-        Builder<TexelCopyBufferLayout>(ctx).fill(obj.layout, handle.attr("layout"));
-    }
-    auto py_buffer = handle.attr("buffer");
-    if (!py_buffer.is_none())
-    {
-        auto value = handle.attr("buffer").cast<Buffer>();
-        obj.buffer = value;
-    }
-}
-
-inline void fill(pywgpu::TexelCopyBufferLayout& obj, py::handle handle, BuildCtx ctx) {
-    auto py_offset = handle.attr("offset");
-    if (!py_offset.is_none())
-    {
-        auto value = handle.attr("offset").cast<uint64_t>();
-        obj.offset = value;
-    }
-    auto py_bytes_per_row = handle.attr("bytes_per_row");
-    if (!py_bytes_per_row.is_none())
-    {
-        auto value = handle.attr("bytes_per_row").cast<uint32_t>();
-        obj.bytesPerRow = value;
-    }
-    auto py_rows_per_image = handle.attr("rows_per_image");
-    if (!py_rows_per_image.is_none())
-    {
-        auto value = handle.attr("rows_per_image").cast<uint32_t>();
-        obj.rowsPerImage = value;
-    }
-}
-
-inline void fill(pywgpu::TexelCopyTextureInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_texture = handle.attr("texture");
-    if (!py_texture.is_none())
-    {
-        auto value = handle.attr("texture").cast<Texture>();
-        obj.texture = value;
-    }
-    auto py_mip_level = handle.attr("mip_level");
-    if (!py_mip_level.is_none())
-    {
-        auto value = handle.attr("mip_level").cast<uint32_t>();
-        obj.mipLevel = value;
-    }
-    auto py_origin = handle.attr("origin");
-    if (!py_origin.is_none())
-    {
-        Builder<Origin3D>(ctx).fill(obj.origin, handle.attr("origin"));
-    }
-    auto py_aspect = handle.attr("aspect");
-    if (!py_aspect.is_none())
-    {
-        auto value = handle.attr("aspect").cast<TextureAspect>();
-        obj.aspect = value;
-    }
-}
-
 inline void fill(pywgpu::ImageCopyExternalTexture& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -1972,27 +1787,14 @@ inline void fill(pywgpu::ImageCopyExternalTexture& obj, py::handle handle, Build
     auto py_origin = handle.attr("origin");
     if (!py_origin.is_none())
     {
-        Builder<Origin3D>(ctx).fill(obj.origin, handle.attr("origin"));
+        auto value = handle.attr("origin").cast<Origin3D>();
+        obj.origin = value;
     }
     auto py_natural_size = handle.attr("natural_size");
     if (!py_natural_size.is_none())
     {
-        Builder<Extent2D>(ctx).fill(obj.naturalSize, handle.attr("natural_size"));
-    }
-}
-
-inline void fill(pywgpu::FutureWaitInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_future = handle.attr("future");
-    if (!py_future.is_none())
-    {
-        auto value = handle.attr("future").cast<Future>();
-        obj.future = value;
-    }
-    auto py_completed = handle.attr("completed");
-    if (!py_completed.is_none())
-    {
-        auto value = handle.attr("completed").cast<Bool>();
-        obj.completed = value;
+        auto value = handle.attr("natural_size").cast<Extent2D>();
+        obj.naturalSize = value;
     }
 }
 
@@ -2131,42 +1933,6 @@ inline void fill(pywgpu::VertexBufferLayout& obj, py::handle handle, BuildCtx ct
 
         obj.attributes = value;
         obj.attributeCount = count;
-    }
-}
-
-inline void fill(pywgpu::Origin3D& obj, py::handle handle, BuildCtx ctx) {
-    auto py_x = handle.attr("x");
-    if (!py_x.is_none())
-    {
-        auto value = handle.attr("x").cast<uint32_t>();
-        obj.x = value;
-    }
-    auto py_y = handle.attr("y");
-    if (!py_y.is_none())
-    {
-        auto value = handle.attr("y").cast<uint32_t>();
-        obj.y = value;
-    }
-    auto py_z = handle.attr("z");
-    if (!py_z.is_none())
-    {
-        auto value = handle.attr("z").cast<uint32_t>();
-        obj.z = value;
-    }
-}
-
-inline void fill(pywgpu::Origin2D& obj, py::handle handle, BuildCtx ctx) {
-    auto py_x = handle.attr("x");
-    if (!py_x.is_none())
-    {
-        auto value = handle.attr("x").cast<uint32_t>();
-        obj.x = value;
-    }
-    auto py_y = handle.attr("y");
-    if (!py_y.is_none())
-    {
-        auto value = handle.attr("y").cast<uint32_t>();
-        obj.y = value;
     }
 }
 
@@ -2463,7 +2229,8 @@ inline void fill(pywgpu::RenderPassColorAttachment& obj, py::handle handle, Buil
     auto py_clear_value = handle.attr("clear_value");
     if (!py_clear_value.is_none())
     {
-        Builder<Color>(ctx).fill(obj.clearValue, handle.attr("clear_value"));
+        auto value = handle.attr("clear_value").cast<Color>();
+        obj.clearValue = value;
     }
 }
 
@@ -2701,7 +2468,8 @@ inline void fill(pywgpu::RenderPassStorageAttachment& obj, py::handle handle, Bu
     auto py_clear_value = handle.attr("clear_value");
     if (!py_clear_value.is_none())
     {
-        Builder<Color>(ctx).fill(obj.clearValue, handle.attr("clear_value"));
+        auto value = handle.attr("clear_value").cast<Color>();
+        obj.clearValue = value;
     }
 }
 
@@ -2819,12 +2587,14 @@ inline void fill(pywgpu::DepthStencilState& obj, py::handle handle, BuildCtx ctx
     auto py_stencil_front = handle.attr("stencil_front");
     if (!py_stencil_front.is_none())
     {
-        Builder<StencilFaceState>(ctx).fill(obj.stencilFront, handle.attr("stencil_front"));
+        auto value = handle.attr("stencil_front").cast<StencilFaceState>();
+        obj.stencilFront = value;
     }
     auto py_stencil_back = handle.attr("stencil_back");
     if (!py_stencil_back.is_none())
     {
-        Builder<StencilFaceState>(ctx).fill(obj.stencilBack, handle.attr("stencil_back"));
+        auto value = handle.attr("stencil_back").cast<StencilFaceState>();
+        obj.stencilBack = value;
     }
     auto py_stencil_read_mask = handle.attr("stencil_read_mask");
     if (!py_stencil_read_mask.is_none())
@@ -2948,7 +2718,7 @@ inline void fill(pywgpu::ColorTargetState& obj, py::handle handle, BuildCtx ctx)
     auto py_blend = handle.attr("blend");
     if (!py_blend.is_none())
     {
-        auto value = Builder<BlendState>(ctx).build(handle.attr("blend"));
+        auto value = handle.attr("blend").cast<BlendState const *>();
         obj.blend = value;
     }
     auto py_write_mask = handle.attr("write_mask");
@@ -2971,19 +2741,6 @@ inline void fill(pywgpu::ColorTargetStateExpandResolveTextureDawn& obj, py::hand
     {
         auto value = handle.attr("enabled").cast<Bool>();
         obj.enabled = value;
-    }
-}
-
-inline void fill(pywgpu::BlendState& obj, py::handle handle, BuildCtx ctx) {
-    auto py_color = handle.attr("color");
-    if (!py_color.is_none())
-    {
-        Builder<BlendComponent>(ctx).fill(obj.color, handle.attr("color"));
-    }
-    auto py_alpha = handle.attr("alpha");
-    if (!py_alpha.is_none())
-    {
-        Builder<BlendComponent>(ctx).fill(obj.alpha, handle.attr("alpha"));
     }
 }
 
@@ -3189,33 +2946,6 @@ inline void fill(pywgpu::ShaderModuleCompilationOptions& obj, py::handle handle,
     {
         auto value = handle.attr("strict_math").cast<Bool>();
         obj.strictMath = value;
-    }
-}
-
-inline void fill(pywgpu::StencilFaceState& obj, py::handle handle, BuildCtx ctx) {
-    auto py_compare = handle.attr("compare");
-    if (!py_compare.is_none())
-    {
-        auto value = handle.attr("compare").cast<CompareFunction>();
-        obj.compare = value;
-    }
-    auto py_fail_op = handle.attr("fail_op");
-    if (!py_fail_op.is_none())
-    {
-        auto value = handle.attr("fail_op").cast<StencilOperation>();
-        obj.failOp = value;
-    }
-    auto py_depth_fail_op = handle.attr("depth_fail_op");
-    if (!py_depth_fail_op.is_none())
-    {
-        auto value = handle.attr("depth_fail_op").cast<StencilOperation>();
-        obj.depthFailOp = value;
-    }
-    auto py_pass_op = handle.attr("pass_op");
-    if (!py_pass_op.is_none())
-    {
-        auto value = handle.attr("pass_op").cast<StencilOperation>();
-        obj.passOp = value;
     }
 }
 
@@ -3436,7 +3166,8 @@ inline void fill(pywgpu::TextureDescriptor& obj, py::handle handle, BuildCtx ctx
     auto py_size = handle.attr("size");
     if (!py_size.is_none())
     {
-        Builder<Extent3D>(ctx).fill(obj.size, handle.attr("size"));
+        auto value = handle.attr("size").cast<Extent3D>();
+        obj.size = value;
     }
     auto py_format = handle.attr("format");
     if (!py_format.is_none())
@@ -3660,21 +3391,6 @@ inline void fill(pywgpu::DawnEncoderInternalUsageDescriptor& obj, py::handle han
     }
 }
 
-inline void fill(pywgpu::MemoryHeapInfo& obj, py::handle handle, BuildCtx ctx) {
-    auto py_properties = handle.attr("properties");
-    if (!py_properties.is_none())
-    {
-        auto value = handle.attr("properties").cast<HeapProperty>();
-        obj.properties = value;
-    }
-    auto py_size = handle.attr("size");
-    if (!py_size.is_none())
-    {
-        auto value = handle.attr("size").cast<uint64_t>();
-        obj.size = value;
-    }
-}
-
 inline void fill(pywgpu::DawnBufferDescriptorErrorInfoFromWireClient& obj, py::handle handle, BuildCtx ctx) {
     auto py_next_in_chain = handle.attr("next_in_chain");
     if (!py_next_in_chain.is_none())
@@ -3687,39 +3403,6 @@ inline void fill(pywgpu::DawnBufferDescriptorErrorInfoFromWireClient& obj, py::h
     {
         auto value = handle.attr("out_of_memory").cast<Bool>();
         obj.outOfMemory = value;
-    }
-}
-
-inline void fill(pywgpu::SubgroupMatrixConfig& obj, py::handle handle, BuildCtx ctx) {
-    auto py_component_type = handle.attr("component_type");
-    if (!py_component_type.is_none())
-    {
-        auto value = handle.attr("component_type").cast<SubgroupMatrixComponentType>();
-        obj.componentType = value;
-    }
-    auto py_result_component_type = handle.attr("result_component_type");
-    if (!py_result_component_type.is_none())
-    {
-        auto value = handle.attr("result_component_type").cast<SubgroupMatrixComponentType>();
-        obj.resultComponentType = value;
-    }
-    auto py_M = handle.attr("M");
-    if (!py_M.is_none())
-    {
-        auto value = handle.attr("M").cast<uint32_t>();
-        obj.M = value;
-    }
-    auto py_N = handle.attr("N");
-    if (!py_N.is_none())
-    {
-        auto value = handle.attr("N").cast<uint32_t>();
-        obj.N = value;
-    }
-    auto py_K = handle.attr("K");
-    if (!py_K.is_none())
-    {
-        auto value = handle.attr("K").cast<uint32_t>();
-        obj.K = value;
     }
 }
 
@@ -4543,6 +4226,138 @@ _SurfaceCapabilities
     .def(py::init<>())
     ;
 
+py::class_<BlendComponent> _BlendComponent(m, "BlendComponent");
+registry.on(m, "BlendComponent", _BlendComponent);
+
+_BlendComponent
+    .def_readwrite("operation", &pywgpu::BlendComponent::operation)
+    .def_readwrite("src_factor", &pywgpu::BlendComponent::srcFactor)
+    .def_readwrite("dst_factor", &pywgpu::BlendComponent::dstFactor)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::BlendComponent obj{};
+        static const std::set<std::string> allowed = {"operation", "src_factor", "dst_factor"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("operation"))
+        {
+            auto value = kwargs["operation"].cast<BlendOperation>();
+            obj.operation = value;
+        }
+        if (kwargs.contains("src_factor"))
+        {
+            auto value = kwargs["src_factor"].cast<BlendFactor>();
+            obj.srcFactor = value;
+        }
+        if (kwargs.contains("dst_factor"))
+        {
+            auto value = kwargs["dst_factor"].cast<BlendFactor>();
+            obj.dstFactor = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<Color> _Color(m, "Color");
+registry.on(m, "Color", _Color);
+
+_Color
+    .def_readwrite("r", &pywgpu::Color::r)
+    .def_readwrite("g", &pywgpu::Color::g)
+    .def_readwrite("b", &pywgpu::Color::b)
+    .def_readwrite("a", &pywgpu::Color::a)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::Color obj{};
+        static const std::set<std::string> allowed = {"r", "g", "b", "a"};
+        static const std::set<std::string> required = {"r", "g", "b", "a"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("r"))
+        {
+            auto value = kwargs["r"].cast<double>();
+            obj.r = value;
+        }
+        if (kwargs.contains("g"))
+        {
+            auto value = kwargs["g"].cast<double>();
+            obj.g = value;
+        }
+        if (kwargs.contains("b"))
+        {
+            auto value = kwargs["b"].cast<double>();
+            obj.b = value;
+        }
+        if (kwargs.contains("a"))
+        {
+            auto value = kwargs["a"].cast<double>();
+            obj.a = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<AHardwareBufferProperties> _AHardwareBufferProperties(m, "AHardwareBufferProperties");
+registry.on(m, "AHardwareBufferProperties", _AHardwareBufferProperties);
+
+_AHardwareBufferProperties
+    .def_readwrite("y_cb_cr_info", &pywgpu::AHardwareBufferProperties::yCbCrInfo)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::AHardwareBufferProperties obj{};
+        static const std::set<std::string> allowed = {"y_cb_cr_info"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("y_cb_cr_info"))
+        {
+            auto value = kwargs["y_cb_cr_info"].cast<YCbCrVkDescriptor>();
+            obj.yCbCrInfo = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
 py::class_<AdapterPropertiesSubgroups, ChainedStructOut> _AdapterPropertiesSubgroups(m, "AdapterPropertiesSubgroups");
 registry.on(m, "AdapterPropertiesSubgroups", _AdapterPropertiesSubgroups);
 
@@ -4589,6 +4404,92 @@ _SupportedWGSLLanguageFeatures
     .def(py::init<>())
     ;
 
+py::class_<Extent2D> _Extent2D(m, "Extent2D");
+registry.on(m, "Extent2D", _Extent2D);
+
+_Extent2D
+    .def_readwrite("width", &pywgpu::Extent2D::width)
+    .def_readwrite("height", &pywgpu::Extent2D::height)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::Extent2D obj{};
+        static const std::set<std::string> allowed = {"width", "height"};
+        static const std::set<std::string> required = {"width", "height"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("width"))
+        {
+            auto value = kwargs["width"].cast<uint32_t>();
+            obj.width = value;
+        }
+        if (kwargs.contains("height"))
+        {
+            auto value = kwargs["height"].cast<uint32_t>();
+            obj.height = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<Extent3D> _Extent3D(m, "Extent3D");
+registry.on(m, "Extent3D", _Extent3D);
+
+_Extent3D
+    .def_readwrite("width", &pywgpu::Extent3D::width)
+    .def_readwrite("height", &pywgpu::Extent3D::height)
+    .def_readwrite("depth_or_array_layers", &pywgpu::Extent3D::depthOrArrayLayers)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::Extent3D obj{};
+        static const std::set<std::string> allowed = {"width", "height", "depth_or_array_layers"};
+        static const std::set<std::string> required = {"width"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("width"))
+        {
+            auto value = kwargs["width"].cast<uint32_t>();
+            obj.width = value;
+        }
+        if (kwargs.contains("height"))
+        {
+            auto value = kwargs["height"].cast<uint32_t>();
+            obj.height = value;
+        }
+        if (kwargs.contains("depth_or_array_layers"))
+        {
+            auto value = kwargs["depth_or_array_layers"].cast<uint32_t>();
+            obj.depthOrArrayLayers = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
 py::class_<SharedBufferMemoryProperties> _SharedBufferMemoryProperties(m, "SharedBufferMemoryProperties");
 registry.on(m, "SharedBufferMemoryProperties", _SharedBufferMemoryProperties);
 
@@ -4629,6 +4530,52 @@ _SharedBufferMemoryEndAccessState
     .def_readonly("fences", &pywgpu::SharedBufferMemoryEndAccessState::fences)
     .def_readonly("signaled_values", &pywgpu::SharedBufferMemoryEndAccessState::signaledValues)
     .def(py::init<>())
+    ;
+
+py::class_<SharedTextureMemoryDmaBufPlane> _SharedTextureMemoryDmaBufPlane(m, "SharedTextureMemoryDmaBufPlane");
+registry.on(m, "SharedTextureMemoryDmaBufPlane", _SharedTextureMemoryDmaBufPlane);
+
+_SharedTextureMemoryDmaBufPlane
+    .def_readwrite("fd", &pywgpu::SharedTextureMemoryDmaBufPlane::fd)
+    .def_readwrite("offset", &pywgpu::SharedTextureMemoryDmaBufPlane::offset)
+    .def_readwrite("stride", &pywgpu::SharedTextureMemoryDmaBufPlane::stride)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::SharedTextureMemoryDmaBufPlane obj{};
+        static const std::set<std::string> allowed = {"fd", "offset", "stride"};
+        static const std::set<std::string> required = {"fd", "offset", "stride"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("fd"))
+        {
+            auto value = kwargs["fd"].cast<int>();
+            obj.fd = value;
+        }
+        if (kwargs.contains("offset"))
+        {
+            auto value = kwargs["offset"].cast<uint64_t>();
+            obj.offset = value;
+        }
+        if (kwargs.contains("stride"))
+        {
+            auto value = kwargs["stride"].cast<uint32_t>();
+            obj.stride = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
     ;
 
 py::class_<SharedTextureMemoryEndAccessState> _SharedTextureMemoryEndAccessState(m, "SharedTextureMemoryEndAccessState");
@@ -4734,6 +4681,184 @@ _DawnDrmFormatCapabilities
     .def(py::init<>())
     ;
 
+py::class_<DawnDrmFormatProperties> _DawnDrmFormatProperties(m, "DawnDrmFormatProperties");
+registry.on(m, "DawnDrmFormatProperties", _DawnDrmFormatProperties);
+
+_DawnDrmFormatProperties
+    .def_readwrite("modifier", &pywgpu::DawnDrmFormatProperties::modifier)
+    .def_readwrite("modifier_plane_count", &pywgpu::DawnDrmFormatProperties::modifierPlaneCount)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::DawnDrmFormatProperties obj{};
+        static const std::set<std::string> allowed = {"modifier", "modifier_plane_count"};
+        static const std::set<std::string> required = {"modifier", "modifier_plane_count"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("modifier"))
+        {
+            auto value = kwargs["modifier"].cast<uint64_t>();
+            obj.modifier = value;
+        }
+        if (kwargs.contains("modifier_plane_count"))
+        {
+            auto value = kwargs["modifier_plane_count"].cast<uint32_t>();
+            obj.modifierPlaneCount = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<TexelCopyBufferInfo> _TexelCopyBufferInfo(m, "TexelCopyBufferInfo");
+registry.on(m, "TexelCopyBufferInfo", _TexelCopyBufferInfo);
+
+_TexelCopyBufferInfo
+    .def_readwrite("layout", &pywgpu::TexelCopyBufferInfo::layout)
+    .def_readwrite("buffer", &pywgpu::TexelCopyBufferInfo::buffer)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::TexelCopyBufferInfo obj{};
+        static const std::set<std::string> allowed = {"layout", "buffer"};
+        static const std::set<std::string> required = {"buffer"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("layout"))
+        {
+            auto value = kwargs["layout"].cast<TexelCopyBufferLayout>();
+            obj.layout = value;
+        }
+        if (kwargs.contains("buffer"))
+        {
+            auto value = kwargs["buffer"].cast<Buffer>();
+            obj.buffer = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<TexelCopyBufferLayout> _TexelCopyBufferLayout(m, "TexelCopyBufferLayout");
+registry.on(m, "TexelCopyBufferLayout", _TexelCopyBufferLayout);
+
+_TexelCopyBufferLayout
+    .def_readwrite("offset", &pywgpu::TexelCopyBufferLayout::offset)
+    .def_readwrite("bytes_per_row", &pywgpu::TexelCopyBufferLayout::bytesPerRow)
+    .def_readwrite("rows_per_image", &pywgpu::TexelCopyBufferLayout::rowsPerImage)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::TexelCopyBufferLayout obj{};
+        static const std::set<std::string> allowed = {"offset", "bytes_per_row", "rows_per_image"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("offset"))
+        {
+            auto value = kwargs["offset"].cast<uint64_t>();
+            obj.offset = value;
+        }
+        if (kwargs.contains("bytes_per_row"))
+        {
+            auto value = kwargs["bytes_per_row"].cast<uint32_t>();
+            obj.bytesPerRow = value;
+        }
+        if (kwargs.contains("rows_per_image"))
+        {
+            auto value = kwargs["rows_per_image"].cast<uint32_t>();
+            obj.rowsPerImage = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<TexelCopyTextureInfo> _TexelCopyTextureInfo(m, "TexelCopyTextureInfo");
+registry.on(m, "TexelCopyTextureInfo", _TexelCopyTextureInfo);
+
+_TexelCopyTextureInfo
+    .def_readwrite("texture", &pywgpu::TexelCopyTextureInfo::texture)
+    .def_readwrite("mip_level", &pywgpu::TexelCopyTextureInfo::mipLevel)
+    .def_readwrite("origin", &pywgpu::TexelCopyTextureInfo::origin)
+    .def_readwrite("aspect", &pywgpu::TexelCopyTextureInfo::aspect)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::TexelCopyTextureInfo obj{};
+        static const std::set<std::string> allowed = {"texture", "mip_level", "origin", "aspect"};
+        static const std::set<std::string> required = {"texture"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("texture"))
+        {
+            auto value = kwargs["texture"].cast<Texture>();
+            obj.texture = value;
+        }
+        if (kwargs.contains("mip_level"))
+        {
+            auto value = kwargs["mip_level"].cast<uint32_t>();
+            obj.mipLevel = value;
+        }
+        if (kwargs.contains("origin"))
+        {
+            auto value = kwargs["origin"].cast<Origin3D>();
+            obj.origin = value;
+        }
+        if (kwargs.contains("aspect"))
+        {
+            auto value = kwargs["aspect"].cast<TextureAspect>();
+            obj.aspect = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
 py::class_<Future> _Future(m, "Future");
 registry.on(m, "Future", _Future);
 
@@ -4768,6 +4893,224 @@ _Future
     }), py::return_value_policy::automatic_reference)
     ;
 
+py::class_<FutureWaitInfo> _FutureWaitInfo(m, "FutureWaitInfo");
+registry.on(m, "FutureWaitInfo", _FutureWaitInfo);
+
+_FutureWaitInfo
+    .def_readwrite("future", &pywgpu::FutureWaitInfo::future)
+    .def_readwrite("completed", &pywgpu::FutureWaitInfo::completed)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::FutureWaitInfo obj{};
+        static const std::set<std::string> allowed = {"future", "completed"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("future"))
+        {
+            auto value = kwargs["future"].cast<Future>();
+            obj.future = value;
+        }
+        if (kwargs.contains("completed"))
+        {
+            auto value = kwargs["completed"].cast<Bool>();
+            obj.completed = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<Origin3D> _Origin3D(m, "Origin3D");
+registry.on(m, "Origin3D", _Origin3D);
+
+_Origin3D
+    .def_readwrite("x", &pywgpu::Origin3D::x)
+    .def_readwrite("y", &pywgpu::Origin3D::y)
+    .def_readwrite("z", &pywgpu::Origin3D::z)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::Origin3D obj{};
+        static const std::set<std::string> allowed = {"x", "y", "z"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("x"))
+        {
+            auto value = kwargs["x"].cast<uint32_t>();
+            obj.x = value;
+        }
+        if (kwargs.contains("y"))
+        {
+            auto value = kwargs["y"].cast<uint32_t>();
+            obj.y = value;
+        }
+        if (kwargs.contains("z"))
+        {
+            auto value = kwargs["z"].cast<uint32_t>();
+            obj.z = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<Origin2D> _Origin2D(m, "Origin2D");
+registry.on(m, "Origin2D", _Origin2D);
+
+_Origin2D
+    .def_readwrite("x", &pywgpu::Origin2D::x)
+    .def_readwrite("y", &pywgpu::Origin2D::y)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::Origin2D obj{};
+        static const std::set<std::string> allowed = {"x", "y"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("x"))
+        {
+            auto value = kwargs["x"].cast<uint32_t>();
+            obj.x = value;
+        }
+        if (kwargs.contains("y"))
+        {
+            auto value = kwargs["y"].cast<uint32_t>();
+            obj.y = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<BlendState> _BlendState(m, "BlendState");
+registry.on(m, "BlendState", _BlendState);
+
+_BlendState
+    .def_readwrite("color", &pywgpu::BlendState::color)
+    .def_readwrite("alpha", &pywgpu::BlendState::alpha)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::BlendState obj{};
+        static const std::set<std::string> allowed = {"color", "alpha"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("color"))
+        {
+            auto value = kwargs["color"].cast<BlendComponent>();
+            obj.color = value;
+        }
+        if (kwargs.contains("alpha"))
+        {
+            auto value = kwargs["alpha"].cast<BlendComponent>();
+            obj.alpha = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
+py::class_<StencilFaceState> _StencilFaceState(m, "StencilFaceState");
+registry.on(m, "StencilFaceState", _StencilFaceState);
+
+_StencilFaceState
+    .def_readwrite("compare", &pywgpu::StencilFaceState::compare)
+    .def_readwrite("fail_op", &pywgpu::StencilFaceState::failOp)
+    .def_readwrite("depth_fail_op", &pywgpu::StencilFaceState::depthFailOp)
+    .def_readwrite("pass_op", &pywgpu::StencilFaceState::passOp)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::StencilFaceState obj{};
+        static const std::set<std::string> allowed = {"compare", "fail_op", "depth_fail_op", "pass_op"};
+        static const std::set<std::string> required = {};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("compare"))
+        {
+            auto value = kwargs["compare"].cast<CompareFunction>();
+            obj.compare = value;
+        }
+        if (kwargs.contains("fail_op"))
+        {
+            auto value = kwargs["fail_op"].cast<StencilOperation>();
+            obj.failOp = value;
+        }
+        if (kwargs.contains("depth_fail_op"))
+        {
+            auto value = kwargs["depth_fail_op"].cast<StencilOperation>();
+            obj.depthFailOp = value;
+        }
+        if (kwargs.contains("pass_op"))
+        {
+            auto value = kwargs["pass_op"].cast<StencilOperation>();
+            obj.passOp = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
+    ;
+
 py::class_<SurfaceTexture> _SurfaceTexture(m, "SurfaceTexture");
 registry.on(m, "SurfaceTexture", _SurfaceTexture);
 
@@ -4785,6 +5128,46 @@ _DawnAdapterPropertiesPowerPreference
     .def_readonly("next_in_chain", &pywgpu::DawnAdapterPropertiesPowerPreference::nextInChain)
     .def_readonly("power_preference", &pywgpu::DawnAdapterPropertiesPowerPreference::powerPreference)
     .def(py::init<>())
+    ;
+
+py::class_<MemoryHeapInfo> _MemoryHeapInfo(m, "MemoryHeapInfo");
+registry.on(m, "MemoryHeapInfo", _MemoryHeapInfo);
+
+_MemoryHeapInfo
+    .def_readwrite("properties", &pywgpu::MemoryHeapInfo::properties)
+    .def_readwrite("size", &pywgpu::MemoryHeapInfo::size)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::MemoryHeapInfo obj{};
+        static const std::set<std::string> allowed = {"properties", "size"};
+        static const std::set<std::string> required = {"size"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("properties"))
+        {
+            auto value = kwargs["properties"].cast<HeapProperty>();
+            obj.properties = value;
+        }
+        if (kwargs.contains("size"))
+        {
+            auto value = kwargs["size"].cast<uint64_t>();
+            obj.size = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
     ;
 
 py::class_<AdapterPropertiesMemoryHeaps, ChainedStructOut> _AdapterPropertiesMemoryHeaps(m, "AdapterPropertiesMemoryHeaps");
@@ -4813,6 +5196,64 @@ _AdapterPropertiesVk
     .def_readonly("next_in_chain", &pywgpu::AdapterPropertiesVk::nextInChain)
     .def_readonly("driver_version", &pywgpu::AdapterPropertiesVk::driverVersion)
     .def(py::init<>())
+    ;
+
+py::class_<SubgroupMatrixConfig> _SubgroupMatrixConfig(m, "SubgroupMatrixConfig");
+registry.on(m, "SubgroupMatrixConfig", _SubgroupMatrixConfig);
+
+_SubgroupMatrixConfig
+    .def_readwrite("component_type", &pywgpu::SubgroupMatrixConfig::componentType)
+    .def_readwrite("result_component_type", &pywgpu::SubgroupMatrixConfig::resultComponentType)
+    .def_readwrite("M", &pywgpu::SubgroupMatrixConfig::M)
+    .def_readwrite("N", &pywgpu::SubgroupMatrixConfig::N)
+    .def_readwrite("K", &pywgpu::SubgroupMatrixConfig::K)
+    .def(py::init([](const py::kwargs& kwargs) {
+        pywgpu::SubgroupMatrixConfig obj{};
+        static const std::set<std::string> allowed = {"component_type", "result_component_type", "M", "N", "K"};
+        static const std::set<std::string> required = {"M", "N", "K"};
+        
+        // Check for unknown keys
+        for (auto& item : kwargs) {
+            std::string key = py::cast<std::string>(item.first);
+            if (!allowed.count(key)) {
+                throw py::key_error("Unknown keyword argument: '" + key + "'");
+            }
+        }
+
+        // Check for required keys
+        for (const auto& key : required) {
+            if (!kwargs.contains(key.c_str())) {
+                throw py::key_error("Missing required keyword argument: '" + key + "'");
+            }
+        }
+        
+        if (kwargs.contains("component_type"))
+        {
+            auto value = kwargs["component_type"].cast<SubgroupMatrixComponentType>();
+            obj.componentType = value;
+        }
+        if (kwargs.contains("result_component_type"))
+        {
+            auto value = kwargs["result_component_type"].cast<SubgroupMatrixComponentType>();
+            obj.resultComponentType = value;
+        }
+        if (kwargs.contains("M"))
+        {
+            auto value = kwargs["M"].cast<uint32_t>();
+            obj.M = value;
+        }
+        if (kwargs.contains("N"))
+        {
+            auto value = kwargs["N"].cast<uint32_t>();
+            obj.N = value;
+        }
+        if (kwargs.contains("K"))
+        {
+            auto value = kwargs["K"].cast<uint32_t>();
+            obj.K = value;
+        }
+        return obj;
+    }), py::return_value_policy::automatic_reference)
     ;
 
 py::class_<AdapterPropertiesSubgroupMatrixConfigs, ChainedStructOut> _AdapterPropertiesSubgroupMatrixConfigs(m, "AdapterPropertiesSubgroupMatrixConfigs");
@@ -5085,82 +5526,13 @@ _CommandEncoder
 .def("copy_buffer_to_buffer",&pywgpu::CommandEncoder::CopyBufferToBuffer
 , py::arg("source"), py::arg("source_offset"), py::arg("destination"), py::arg("destination_offset"), py::arg("size"))
 
-.def("copy_buffer_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::TexelCopyBufferInfo const* _source = Builder<TexelCopyBufferInfo>(ctx).build(source);
-        
-        pywgpu::TexelCopyTextureInfo const* _destination = Builder<TexelCopyTextureInfo>(ctx).build(destination);
-        
-        pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
-        
-        return self.CopyBufferToTexture(_source, _destination, _copySize);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("copy_buffer_to_texture",&pywgpu::CommandEncoder::CopyBufferToTexture
 , py::arg("source"), py::arg("destination"), py::arg("copy_size"))
 
-.def("copy_texture_to_buffer",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::TexelCopyTextureInfo const* _source = Builder<TexelCopyTextureInfo>(ctx).build(source);
-        
-        pywgpu::TexelCopyBufferInfo const* _destination = Builder<TexelCopyBufferInfo>(ctx).build(destination);
-        
-        pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
-        
-        return self.CopyTextureToBuffer(_source, _destination, _copySize);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("copy_texture_to_buffer",&pywgpu::CommandEncoder::CopyTextureToBuffer
 , py::arg("source"), py::arg("destination"), py::arg("copy_size"))
 
-.def("copy_texture_to_texture",[](pywgpu::CommandEncoder& self, py::handle source, py::handle destination, py::handle copySize) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::TexelCopyTextureInfo const* _source = Builder<TexelCopyTextureInfo>(ctx).build(source);
-        
-        pywgpu::TexelCopyTextureInfo const* _destination = Builder<TexelCopyTextureInfo>(ctx).build(destination);
-        
-        pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
-        
-        return self.CopyTextureToTexture(_source, _destination, _copySize);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("copy_texture_to_texture",&pywgpu::CommandEncoder::CopyTextureToTexture
 , py::arg("source"), py::arg("destination"), py::arg("copy_size"))
 
 .def("clear_buffer",&pywgpu::CommandEncoder::ClearBuffer
@@ -5766,26 +6138,7 @@ _Device
 .def("destroy",&pywgpu::Device::Destroy
 )
 
-.def("get_a_hardware_buffer_properties",[](pywgpu::Device& self, void * handle, py::handle properties) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::AHardwareBufferProperties * _properties = Builder<AHardwareBufferProperties>(ctx).build(properties);
-        
-        return self.GetAHardwareBufferProperties(handle, _properties);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("get_a_hardware_buffer_properties",&pywgpu::Device::GetAHardwareBufferProperties
 , py::arg("handle"), py::arg("properties"))
 
 .def("get_limits",[](pywgpu::Device& self, py::handle limits) {
@@ -6053,14 +6406,10 @@ _Instance
 .def("process_events",&pywgpu::Instance::ProcessEvents
 )
 
-.def("wait_any",[](pywgpu::Instance& self, py::handle futures, uint64_t timeoutNS) {
+.def("wait_any",[](pywgpu::Instance& self, std::vector<pywgpu::FutureWaitInfo> futures, uint64_t timeoutNS) {
     try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        uint32_t futureCount;
-        pywgpu::FutureWaitInfo * _futures = Builder<FutureWaitInfo>(ctx).build_array(futures, &futureCount);
+        pywgpu::FutureWaitInfo * _futures = (pywgpu::FutureWaitInfo *)futures.data();
+        auto futureCount = futures.size();
         
         return self.WaitAny(futureCount, _futures, timeoutNS);
     
@@ -6179,23 +6528,13 @@ _Queue
 }
 , py::arg("buffer"), py::arg("buffer_offset"), py::arg("data"))
 
-.def("write_texture",[](pywgpu::Queue& self, py::handle destination, py::buffer data, py::handle dataLayout, py::handle writeSize) {
+.def("write_texture",[](pywgpu::Queue& self, TexelCopyTextureInfo const * destination, py::buffer data, TexelCopyBufferLayout const * dataLayout, Extent3D const * writeSize) {
     try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::TexelCopyTextureInfo const* _destination = Builder<TexelCopyTextureInfo>(ctx).build(destination);
-        
         py::buffer_info dataInfo = data.request();
         void const* _data = (void const*)dataInfo.ptr;
         auto dataSize = ((dataInfo.size * dataInfo.itemsize) + 3) & ~size_t(3);
         
-        pywgpu::TexelCopyBufferLayout const* _dataLayout = Builder<TexelCopyBufferLayout>(ctx).build(dataLayout);
-        
-        pywgpu::Extent3D const* _writeSize = Builder<Extent3D>(ctx).build(writeSize);
-        
-        return self.WriteTexture(_destination, _data, dataSize, _dataLayout, _writeSize);
+        return self.WriteTexture(destination, _data, dataSize, dataLayout, writeSize);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -6209,21 +6548,15 @@ _Queue
 }
 , py::arg("destination"), py::arg("data"), py::arg("data_layout"), py::arg("write_size"))
 
-.def("copy_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+.def("copy_texture_for_browser",[](pywgpu::Queue& self, TexelCopyTextureInfo const * source, TexelCopyTextureInfo const * destination, Extent3D const * copySize, py::handle options) {
     try {
         
         LinearAlloc la{};
         BuildCtx ctx{la};
         
-        pywgpu::TexelCopyTextureInfo const* _source = Builder<TexelCopyTextureInfo>(ctx).build(source);
-        
-        pywgpu::TexelCopyTextureInfo const* _destination = Builder<TexelCopyTextureInfo>(ctx).build(destination);
-        
-        pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
-        
         pywgpu::CopyTextureForBrowserOptions const* _options = Builder<CopyTextureForBrowserOptions>(ctx).build(options);
         
-        return self.CopyTextureForBrowser(_source, _destination, _copySize, _options);
+        return self.CopyTextureForBrowser(source, destination, copySize, _options);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -6237,7 +6570,7 @@ _Queue
 }
 , py::arg("source"), py::arg("destination"), py::arg("copy_size"), py::arg("options"))
 
-.def("copy_external_texture_for_browser",[](pywgpu::Queue& self, py::handle source, py::handle destination, py::handle copySize, py::handle options) {
+.def("copy_external_texture_for_browser",[](pywgpu::Queue& self, py::handle source, TexelCopyTextureInfo const * destination, Extent3D const * copySize, py::handle options) {
     try {
         
         LinearAlloc la{};
@@ -6245,13 +6578,9 @@ _Queue
         
         pywgpu::ImageCopyExternalTexture const* _source = Builder<ImageCopyExternalTexture>(ctx).build(source);
         
-        pywgpu::TexelCopyTextureInfo const* _destination = Builder<TexelCopyTextureInfo>(ctx).build(destination);
-        
-        pywgpu::Extent3D const* _copySize = Builder<Extent3D>(ctx).build(copySize);
-        
         pywgpu::CopyTextureForBrowserOptions const* _options = Builder<CopyTextureForBrowserOptions>(ctx).build(options);
         
-        return self.CopyExternalTextureForBrowser(_source, _destination, _copySize, _options);
+        return self.CopyExternalTextureForBrowser(_source, destination, copySize, _options);
     
     } catch (const py::error_already_set& e) {
         // propagate Python-side exception with stack
@@ -6456,26 +6785,7 @@ _RenderPassEncoder
 .def("set_stencil_reference",&pywgpu::RenderPassEncoder::SetStencilReference
 , py::arg("reference"))
 
-.def("set_blend_constant",[](pywgpu::RenderPassEncoder& self, py::handle color) {
-    try {
-        
-        LinearAlloc la{};
-        BuildCtx ctx{la};
-        
-        pywgpu::Color const* _color = Builder<Color>(ctx).build(color);
-        
-        return self.SetBlendConstant(_color);
-    
-    } catch (const py::error_already_set& e) {
-        // propagate Python-side exception with stack
-        throw;
-    } catch (const std::exception& e) {
-        fprintf(stderr, "C++ exception what(): '%s'\n", e.what());
-        PyErr_SetString(PyExc_RuntimeError, e.what());
-        throw py::error_already_set();
-    }
-    
-}
+.def("set_blend_constant",&pywgpu::RenderPassEncoder::SetBlendConstant
 , py::arg("color"))
 
 .def("set_viewport",&pywgpu::RenderPassEncoder::SetViewport
