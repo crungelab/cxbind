@@ -25,7 +25,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-    "clang ==17.0.6",
+    #"clang ==17.0.6",
+    "clang ==21.1.7"
 ]
 
 

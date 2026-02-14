@@ -160,154 +160,9 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
             logger.debug(f"Function pointer: {argument.spelling}")
             return arg_type.get_canonical().get_pointee().spelling
 
-        canonical = arg_type.get_canonical()
-        canonical_spelling = canonical.spelling
-        logger.debug(f"Canonical spelling: {canonical_spelling}")
-
-        printing_policy = cindex.PrintingPolicy.create(argument)
-        fq_spelling = arg_type.get_fully_qualified_name(printing_policy)
-        logger.debug(f"Fully qualified spelling: {fq_spelling}")
-
-        specialization_node = self.top_node  # used whenever we need template args
-
-        # -----------------------
-        # Helpers (local)
-        # -----------------------
-        def _find_matching_angle(s: str, lt: int) -> int:
-            depth = 0
-            for i in range(lt, len(s)):
-                c = s[i]
-                if c == "<":
-                    depth += 1
-                elif c == ">":
-                    depth -= 1
-                    if depth == 0:
-                        return i
-            return -1
-
-        def _split_template_args(arg_str: str) -> list[str]:
-            args: list[str] = []
-            depth = 0
-            start = 0
-            for i, c in enumerate(arg_str):
-                if c == "<":
-                    depth += 1
-                elif c == ">":
-                    depth -= 1
-                elif c == "," and depth == 0:
-                    args.append(arg_str[start:i].strip())
-                    start = i + 1
-            tail = arg_str[start:].strip()
-            if tail:
-                args.append(tail)
-            return args
-
-        def _outer_template_args(spelling: str) -> list[str] | None:
-            """Return outer template args for 'Foo<A,B<C>>', else None."""
-            lt = spelling.find("<")
-            if lt == -1:
-                return None
-            gt = _find_matching_angle(spelling, lt)
-            if gt == -1:
-                return None
-            inside = spelling[lt + 1 : gt]
-            return _split_template_args(inside)
-
-        def replace_fully_qualified_template_args(fq: str, resolved_args: list[str]) -> str:
-            """
-            Replace outermost template args of fq with resolved_args by position.
-            fq: 'tmx::Vector2<T>' + ['int'] -> 'tmx::Vector2<int>'
-            """
-            lt = fq.find("<")
-            if lt == -1:
-                return fq
-            gt = _find_matching_angle(fq, lt)
-            if gt == -1:
-                return fq
-
-            before = fq[:lt]
-            inside = fq[lt + 1 : gt]
-            after = fq[gt + 1 :]
-
-            fq_args = _split_template_args(inside)
-            out_args = fq_args[:]
-            for i in range(min(len(out_args), len(resolved_args))):
-                out_args[i] = resolved_args[i]
-
-            return f"{before}<{', '.join(out_args)}>{after}"
-
-        def maybe_resolve_template_spelling(spelling: str) -> str:
-            """
-            Resolve any 'type-parameter-*' placeholders that appear anywhere in the type spelling,
-            including nested template arguments (e.g., Vector<type-parameter-0-0>).
-            """
-            if "type-parameter" in spelling:
-                resolved = self.resolve_template_type(spelling, specialization_node.spec.args)
-                logger.debug(f"Resolved template spelling: {spelling} -> {resolved}")
-                return resolved
-            return spelling
-
-        def prefer_fq_with_resolved_templates(canon_spelling: str, fq: str) -> str:
-            """
-            If canon_spelling had placeholders, resolve them and splice the resolved outer template
-            args into fq. Otherwise return fq.
-            """
-            resolved_canon = maybe_resolve_template_spelling(canon_spelling)
-            if resolved_canon != canon_spelling:
-                resolved_args = _outer_template_args(resolved_canon) or []
-                if resolved_args:
-                    patched = replace_fully_qualified_template_args(fq, resolved_args)
-                    logger.debug(f"Patched fq spelling: {fq} -> {patched}")
-                    return patched
-                # If we resolved but couldn't parse args, fall back to resolved canonical.
-                return resolved_canon
-            return fq
-
-        # 2) Constant array: convert to std::array<elem, N>&, resolving elem placeholders
-        if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
-            logger.debug(f"Constant array: {argument.spelling}")
-
-            element_type = arg_type.get_array_element_type()
-            element_canon = element_type.get_canonical()
-            element_canon_spelling = element_canon.spelling
-
-            # Prefer fully qualified element spelling, but splice in any resolved template args
-            element_fq_spelling = element_type.get_fully_qualified_name(printing_policy)
-            element_type_name = prefer_fq_with_resolved_templates(element_canon_spelling, element_fq_spelling)
-
-            logger.debug(f"Element type (canon): {element_canon_spelling}")
-            logger.debug(f"Element type (fq): {element_fq_spelling}")
-            logger.debug(f"Element type (final): {element_type_name}")
-            logger.debug(f"Element type kind: {element_type.kind}")
-
-            return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
-
-        # 3) Wrapper mapping: do this early, but keep your existing semantics
-        #    (uses base type from canonical; adjust if your wrapper keys are fully-qualified)
-        type_name = cu.get_base_type_name(canonical)
-        if type_name in self.wrapped:
-            wrapper = self.wrapped[type_name].wrapper
-            return f"const {wrapper}&"
-
-        # 4) Default: return fully-qualified spelling, with resolved template args spliced in
-        return prefer_fq_with_resolved_templates(canonical_spelling, fq_spelling)
-
-    '''
-    def resolve_argument_type(self, argument: cindex.Cursor) -> str:
-        arg_type = argument.type
-
-        # 1) Function pointer case
-        if self.is_function_pointer(argument):
-            logger.debug(f"Function pointer: {argument.spelling}")
-            return arg_type.get_canonical().get_pointee().spelling
-
         # We’ll use canonical spelling as the source of truth for template placeholders.
         canonical = arg_type.get_canonical()
         canonical_spelling = canonical.spelling
-        logger.debug(f"Canonical spelling: {canonical_spelling}")
-        printing_policy = cindex.PrintingPolicy.create(argument)
-        fq_spelling = arg_type.get_fully_qualified_name(printing_policy)
-        logger.debug(f"Fully qualified spelling: {fq_spelling}")
 
         specialization_node = self.top_node  # used whenever we need template args
 
@@ -355,7 +210,6 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         # 5) Default: return resolved (or original) canonical spelling
         return resolved_canonical_spelling
-    '''
 
     """
     def resolve_argument_type(self, argument: cindex.Cursor):
