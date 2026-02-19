@@ -25,6 +25,8 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
 
             if node.spec.gen_init:
                 self.render_init()
+            elif node.spec.gen_args_init:
+                self.render_args_init()
             elif node.spec.gen_kw_init:
                 self.render_kw_init()
 
@@ -35,6 +37,35 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
     def render_init(self):
         self.begin_chain()
         self.out(f".def(py::init<>())")
+
+    def render_args_init(self):
+        logger.debug("renderering args_init for: {self.node}")
+        self.begin_chain()
+        node = self.top_node
+        args = []
+        values = []
+        for child in node.children:
+            cursor = child.cursor
+            typename = None
+            is_char_ptr = self.is_char_ptr(cursor)
+            if is_char_ptr:
+                typename = "std::string"
+            else:
+                # typename = cursor.type.spelling
+                typename = cursor.type.get_canonical().spelling
+
+            arg_name = child.name.split("::")[-1]
+            args.append(f"{typename} {arg_name}")
+            values.append(f"{arg_name}")
+
+        self.out(f".def(py::init([]({', '.join(args)})")
+        self.out("{")
+        with self.out:
+            self.out(f"{node.name} obj{{}};")
+            for value in values:
+                self.out(f"obj.{value} = {value};")
+            self.out("return obj;")
+        self.out("}), py::return_value_policy::automatic_reference);")
 
     def render_kw_init(self):
         logger.debug("renderering kw_init for: {self.node}")

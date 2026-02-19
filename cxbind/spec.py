@@ -100,6 +100,7 @@ class Property(BaseModel):
 class StructBaseSpec(Spec):
     extends: Optional[List[str]] = None
     gen_init: bool = False
+    gen_args_init: bool = False
     gen_kw_init: bool = False
     wrapper: str = None
     holder: Optional[str] = None
