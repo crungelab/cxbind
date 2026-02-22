@@ -1,7 +1,10 @@
 from loguru import logger
 
-from .node_renderer import NodeRenderer, T_Node
+from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraProperty
+
 from ...node import StructBaseNode, FieldNode
+
+from .node_renderer import NodeRenderer, T_Node
 
 
 class StructBaseRenderer(NodeRenderer[T_Node]):
@@ -23,28 +26,44 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
         with self.enter(node):
             super().render()
 
+            """
             if node.spec.gen_init:
                 self.render_init()
             elif node.spec.gen_args_init:
                 self.render_args_init()
             elif node.spec.gen_kw_init:
                 self.render_kw_init()
+            """
+            self.render_extra_methods()
 
-            self.render_properties()
+            self.render_extra_properties()
 
         self.end_chain()
 
-    def render_init(self):
+    def render_extra_methods(self):
+        node = self.node
+        for method in node.spec.methods:
+            if method.name == "__init__":
+                if method.gen_kwargs:
+                    self.render_kwargs_init(method)
+                elif method.gen_args:
+                    self.render_args_init(method)
+                else:
+                    self.render_init(method)
+
+    def render_init(self, method: ExtraInitMethod):
         self.begin_chain()
         self.out(f".def(py::init<>())")
 
-    def render_args_init(self):
+    def render_args_init(self, method: ExtraInitMethod):
         logger.debug("renderering args_init for: {self.node}")
         self.begin_chain()
         node = self.top_node
         args = []
         values = []
         for child in node.children:
+            if not isinstance(child, FieldNode):
+                continue
             cursor = child.cursor
             typename = None
             is_char_ptr = self.is_char_ptr(cursor)
@@ -67,14 +86,17 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             self.out("return obj;")
         self.out("}), py::return_value_policy::automatic_reference);")
 
-    def render_kw_init(self):
-        logger.debug("renderering kw_init for: {self.node}")
+    def render_kwargs_init(self, method: ExtraInitMethod):
+        logger.debug("renderering kwargs_init for: {self.node}")
         self.begin_chain()
         node = self.top_node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")
         self.out("{")
         with self.out:
-            self.out(f"{node.name} obj{{}};")
+            if method.use is not None:
+                self.out(f"{node.name} obj = {method.use}();")
+            else:
+                self.out(f"{node.name} obj{{}};")
             for child in node.children:
                 cursor = child.cursor
                 typename = None
@@ -98,12 +120,12 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
                             self.out(
                                 f'auto value = kwargs["{child.pyname}"].cast<{typename}>();'
                             )
-                        self.out(f"obj.{child.name} = value;")
+                        self.out(f"obj.{child.first_name} = value;")
                     self.out("}")
             self.out("return obj;")
         self.out("}), py::return_value_policy::automatic_reference);")
 
-    def render_properties(self):
+    def render_extra_properties(self):
         node = self.node
         for prop in node.spec.properties:
             getter = prop.getter

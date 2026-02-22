@@ -1,4 +1,4 @@
-//namespace test_inits {
+// namespace test_inits {
 
 struct Inits
 {
@@ -22,5 +22,37 @@ struct KwInits
     int a = 0;
     int b = 0;
 };
+
+struct KwInitsUse
+{
+    int add()
+    {
+        return a + b;
+    }
+
+    int a = 0;
+    int b = 0;
+    int c = 0;
+};
+
+KwInitsUse InitKwInitsUse() {
+    KwInitsUse obj;
+    obj.a = 1;
+    obj.b = 2;
+    obj.c = 3;
+    return obj;
+}
+
+struct ArgsInits
+{
+    int add()
+    {
+        return a + b;
+    }
+
+    int a = 0;
+    int b = 0;
+};
+
 
 //} // namespace test_inits

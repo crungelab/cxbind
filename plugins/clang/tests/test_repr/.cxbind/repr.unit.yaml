@@ -1,0 +1,8 @@
+source: 'src/repr.h'
+target: 'src/repr_py_auto.cpp'
+
+specs:
+  'struct@TestRepr':
+    methods:
+      __repr__:
+        auto: true

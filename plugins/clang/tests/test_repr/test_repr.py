@@ -6,7 +6,7 @@ sys.path.insert(0, str(build_dir))
 
 import unittest
 
-from cxbind_tests.test_inits import Inits, KwInits, KwInitsUse, ArgsInits
+from cxbind_tests.test_inits import Inits, KwInits, KwInitsUse
 
 
 class Test(unittest.TestCase):
@@ -28,12 +28,6 @@ class Test(unittest.TestCase):
         print(result)
         self.assertEqual(result, 5)
         self.assertEqual(kw_inits.c, 3)
-
-    def test_args_init(self):
-        args_inits = ArgsInits(2, 3)
-        result = args_inits.add()
-        print(result)
-        self.assertEqual(result, 5)
 
 if __name__ == '__main__':
     unittest.main()

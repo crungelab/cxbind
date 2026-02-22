@@ -23,6 +23,7 @@ void register_bitfields_py_auto(py::module &, Registry &registry);
 void register_unit_1_py_auto(py::module &, Registry &registry);
 void register_unit_2_py_auto(py::module &, Registry &registry);
 
+void register_repr_py_auto(py::module &, Registry &registry);
 
 PYBIND11_MODULE(cxbind_tests, m)
 {
@@ -76,4 +77,7 @@ PYBIND11_MODULE(cxbind_tests, m)
 
     auto _bitfields = m.def_submodule("test_bitfields");
     register_bitfields_py_auto(_bitfields, r);
+
+    auto _repr = m.def_submodule("test_repr");
+    register_repr_py_auto(_repr, r);
 }

@@ -11,16 +11,7 @@ from pydantic import (
 )
 from loguru import logger
 
-
-class ExtraProperty(BaseModel):
-    name: str
-    getter: str | None = None
-    setter: str | None = None
-
-
-class ExtraMethod(BaseModel):
-    name: str
-    use: str | None = None
+from .extra import special_methods, ExtraMethod, ExtraProperty
 
 
 class Spec(BaseModel):
@@ -108,12 +99,13 @@ class FieldSpec(Spec):
 
 class StructBaseSpec(Spec):
     extends: list[str] | None = None
-    gen_init: bool = False
-    gen_args_init: bool = False
-    gen_kw_init: bool = False
+    # gen_init: bool = False
+    # gen_args_init: bool = False
+    # gen_kw_init: bool = False
     wrapper: str | None = None
     holder: str | None = None
     properties: list[ExtraProperty] = Field(default_factory=list)
+    methods: list[ExtraMethod] = Field(default_factory=list)
 
     @field_validator("properties", mode="before")
     @classmethod
@@ -126,6 +118,25 @@ class StructBaseSpec(Spec):
             if isinstance(item, dict):
                 if "name" not in item:
                     item = {"name": key, **item}
+                normalized.append(item)
+
+        return normalized
+
+    @field_validator("methods", mode="before")
+    @classmethod
+    def _normalize_methods(cls, v: Any) -> Any:
+        if not isinstance(v, dict):
+            return v
+
+        normalized = []
+        for key, item in v.items():
+            if isinstance(item, dict):
+                if "name" not in item:
+                    item = {"name": key, **item}
+                if item["name"] in special_methods and "kind" not in item:
+                    item["kind"] = item["name"]
+                else:
+                    item["kind"] = "standard"
                 normalized.append(item)
 
         return normalized
