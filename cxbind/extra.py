@@ -39,6 +39,7 @@ class ExtraInitMethod(ExtraSpecialMethod):
 
 class ExtraReprMethod(ExtraSpecialMethod):
     kind: Literal["__repr__"] = "__repr__"
+    auto: bool = False
 
 
 ExtraMethodUnion = Annotated[

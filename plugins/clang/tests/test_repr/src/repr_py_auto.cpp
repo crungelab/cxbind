@@ -1,4 +1,5 @@
 #include <limits>
+#include <sstream>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
@@ -20,6 +21,13 @@ void register_repr_py_auto(py::module &_tests, Registry &registry) {
             , py::arg("i")
             , py::return_value_policy::automatic_reference)
         .def_readwrite("value", &Repr::value)
+        .def("__repr__", [](const Repr &self) {
+            std::stringstream ss;
+            ss << "Repr(";
+            ss << "value=" << py::repr(py::cast(self.value)).cast<std::string>();
+            ss << ")";
+            return ss.str();
+        })
     ;
 
 

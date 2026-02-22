@@ -11,7 +11,7 @@ from pydantic import (
 )
 from loguru import logger
 
-from .extra import special_methods, ExtraMethod, ExtraProperty
+from .extra import special_methods, ExtraMethod, ExtraProperty, ExtraMethodUnion
 
 
 class Spec(BaseModel):
@@ -105,7 +105,8 @@ class StructBaseSpec(Spec):
     wrapper: str | None = None
     holder: str | None = None
     properties: list[ExtraProperty] = Field(default_factory=list)
-    methods: list[ExtraMethod] = Field(default_factory=list)
+    #methods: list[ExtraMethod] = Field(default_factory=list)
+    methods: list[ExtraMethodUnion] = Field(default_factory=list)
 
     @field_validator("properties", mode="before")
     @classmethod
@@ -125,6 +126,7 @@ class StructBaseSpec(Spec):
     @field_validator("methods", mode="before")
     @classmethod
     def _normalize_methods(cls, v: Any) -> Any:
+        logger.debug(f"Normalizing methods: {v}")
         if not isinstance(v, dict):
             return v
 
@@ -139,6 +141,7 @@ class StructBaseSpec(Spec):
                     item["kind"] = "standard"
                 normalized.append(item)
 
+        logger.debug(f"Normalized methods: {normalized}")
         return normalized
 
 

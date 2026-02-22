@@ -1,6 +1,6 @@
 from loguru import logger
 
-from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraProperty
+from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraProperty
 
 from ...node import StructBaseNode, FieldNode
 
@@ -42,7 +42,10 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
 
     def render_extra_methods(self):
         node = self.node
-        for method in node.spec.methods:
+        spec = node.spec
+        logger.debug(f"spec: {spec}")
+        for method in spec.methods:
+            logger.debug(f"rendering extra method: {method.name} for node: {node.name}")
             if method.name == "__init__":
                 if method.gen_kwargs:
                     self.render_kwargs_init(method)
@@ -50,6 +53,12 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
                     self.render_args_init(method)
                 else:
                     self.render_init(method)
+            elif method.name == "__repr__":
+                self.render_repr(method)
+            else:
+                logger.warning(
+                    f"Unsupported extra method '{method.name}' for node {node.name}"
+                )
 
     def render_init(self, method: ExtraInitMethod):
         self.begin_chain()
@@ -58,7 +67,8 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
     def render_args_init(self, method: ExtraInitMethod):
         logger.debug("renderering args_init for: {self.node}")
         self.begin_chain()
-        node = self.top_node
+        #node = self.top_node
+        node = self.node
         args = []
         values = []
         for child in node.children:
@@ -73,7 +83,8 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
                 # typename = cursor.type.spelling
                 typename = cursor.type.get_canonical().spelling
 
-            arg_name = child.name.split("::")[-1]
+            # arg_name = child.name.split("::")[-1]
+            arg_name = child.first_name
             args.append(f"{typename} {arg_name}")
             values.append(f"{arg_name}")
 
@@ -84,12 +95,15 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             for value in values:
                 self.out(f"obj.{value} = {value};")
             self.out("return obj;")
-        self.out("}), py::return_value_policy::automatic_reference);")
+        # self.out("}), py::return_value_policy::automatic_reference);")
+        #self.out("}));")
+        self.out("}))")
 
     def render_kwargs_init(self, method: ExtraInitMethod):
         logger.debug("renderering kwargs_init for: {self.node}")
         self.begin_chain()
-        node = self.top_node
+        #node = self.top_node
+        node = self.node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")
         self.out("{")
         with self.out:
@@ -123,7 +137,93 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
                         self.out(f"obj.{child.first_name} = value;")
                     self.out("}")
             self.out("return obj;")
-        self.out("}), py::return_value_policy::automatic_reference);")
+        # self.out("}), py::return_value_policy::automatic_reference);")
+        #self.out("}));")
+        self.out("}))")
+
+    def render_repr(self, method: ExtraReprMethod):
+        node = self.node
+        spec = node.spec
+        logger.debug(f"rendering __repr__ for: {node.name}")
+        self.begin_chain()
+        
+        # 1. Determine which members to include
+        fields_to_render = []
+        
+        if method.auto == True:
+            # Automatically grab all FieldNodes (public members)
+            fields_to_render = [c for c in node.children if isinstance(c, FieldNode)]
+        else:
+            # Manual opt-in: Filter children by the names provided in the spec
+            for m_name in spec.members:
+                child = next((c for c in node.children if isinstance(c, FieldNode) and c.first_name == m_name), None)
+                if child:
+                    fields_to_render.append(child)
+                else:
+                    logger.warning(f"Field {m_name} not found in {node.name}")
+
+        # 2. Generate the pybind11 binding code
+        self.out(f'.def("__repr__", [](const {node.name} &self) {{')
+        with self.out:
+            self.out("std::stringstream ss;")
+            self.out(f'ss << "{node.name}(";')
+            
+            for i, field in enumerate(fields_to_render):
+                if i > 0:
+                    self.out('ss << ", ";')
+                
+                # Use field.first_name for the label and the C++ access
+                self.out(f'ss << "{field.first_name}=" << py::repr(py::cast(self.{field.first_name})).cast<std::string>();')
+                
+            self.out('ss << ")";')
+            self.out("return ss.str();")
+        self.out("})")
+
+    """
+    def render_repr(self, method: ExtraReprMethod):
+        node = self.node
+        logger.debug(f"rendering __repr__ for: {node.name}")
+
+        # Header of the lambda
+        self.out(f'.def("__repr__", [](const {node.name} &self) {{')
+
+        with self.out:
+            self.out("std::stringstream ss;")
+            self.out(f'ss << "{node.name}(";')
+
+            for i, m_name in enumerate(method.member_names):
+                # Find the specific child node that matches the name in your YAML spec
+                child = next(
+                    (
+                        c
+                        for c in node.children
+                        if isinstance(c, FieldNode) and c.first_name == m_name
+                    ),
+                    None,
+                )
+
+                if not child:
+                    logger.warning(f"Field {m_name} not found in {node.name}")
+                    continue
+
+                # Add comma separator for all but the first element
+                if i > 0:
+                    self.out('ss << ", ";')
+
+                # Format: field_name=value
+                self.out(f'ss << "{m_name}=";')
+
+                # Use pybind11's repr(cast()) trick to ensure nested objects format correctly
+                # This handles strings, ints, and other custom classes automatically.
+                self.out(
+                    f"ss << py::repr(py::cast(self.{m_name})).cast<std::string>();"
+                )
+
+            self.out('ss << ")";')
+            self.out("return ss.str();")
+
+        self.out("})")
+    """
 
     def render_extra_properties(self):
         node = self.node

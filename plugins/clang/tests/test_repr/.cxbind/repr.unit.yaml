@@ -2,7 +2,7 @@ source: 'src/repr.h'
 target: 'src/repr_py_auto.cpp'
 
 specs:
-  'struct@TestRepr':
+  'struct@Repr':
     methods:
       __repr__:
         auto: true
