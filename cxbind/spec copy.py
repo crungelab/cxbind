@@ -1,5 +1,5 @@
-from typing import Any, Literal, Union
 from typing_extensions import Annotated
+from typing import List, Dict, Optional, Any, Literal, Union
 
 from pydantic import (
     BaseModel,
@@ -9,19 +9,14 @@ from pydantic import (
     field_validator,
     model_validator,
 )
+
 from loguru import logger
 
 
-class ExtraProperty(BaseModel):
+class SpecProperty(BaseModel):
     name: str
     getter: str | None = None
     setter: str | None = None
-
-
-class ExtraMethod(BaseModel):
-    name: str
-    use: str | None = None
-
 
 class Spec(BaseModel):
     kind: str
@@ -29,9 +24,9 @@ class Spec(BaseModel):
     alias: str | None = None
     signature: str | None = None
     pyname: str | None = None
-    exclude: bool = False
-    overload: bool = False
-    readonly: bool = False
+    exclude: bool | None = False
+    overload: bool | None = False
+    readonly: bool | None = False
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -54,25 +49,22 @@ class TemplateSpec(Spec):
 
 
 class Argument(BaseModel):
-    default: Any | None = None
+    default: Optional[Any] = None
 
 
 class FunctionBaseSpec(Spec):
-    args: dict[str, Argument] = Field(default_factory=dict)
+    arguments: dict[str, Argument] | None = {}
     return_type: str | None = None
-    omit_ret: bool = False
-    check_result: bool = False
+    omit_ret: bool | None = False
+    check_result: bool | None = (
+        False  # TODO: Not used yet.  Idea is to check if return value indicates error.
+    )
 
-    @field_validator("args", mode="before")
-    @classmethod
-    def _parse_arguments(cls, v: Any) -> Any:
-        if not isinstance(v, dict):
-            return v
-
-        # Coerce raw values into a format Pydantic can parse into an Argument model
-        return {
-            k: val if isinstance(val, (dict, Argument)) else {"default": val}
-            for k, val in v.items()
+    def model_post_init(self, __context: Any) -> None:
+        super().model_post_init(__context)
+        self.arguments = {
+            k: Argument(**v) if isinstance(v, dict) else v
+            for k, v in self.arguments.items()
         }
 
 
@@ -84,14 +76,12 @@ class FunctionTemplateSpecializationSpec(FunctionSpec):
     kind: Literal["function_template_specialization"] = (
         "function_template_specialization"
     )
-    args: list[str]
+    args: List[str]
 
 
 class FunctionTemplateSpec(TemplateSpec):
     kind: Literal["function_template"]
-    specializations: list[FunctionTemplateSpecializationSpec] = Field(
-        default_factory=list
-    )
+    specializations: List[FunctionTemplateSpecializationSpec] = []
 
 
 class MethodSpec(FunctionBaseSpec):
@@ -113,23 +103,30 @@ class StructBaseSpec(Spec):
     gen_kw_init: bool = False
     wrapper: str | None = None
     holder: str | None = None
-    properties: list[ExtraProperty] = Field(default_factory=list)
+    properties: list[SpecProperty] | None = []
 
-    @field_validator("properties", mode="before")
+    @model_validator(mode="before")
     @classmethod
-    def _normalize_properties(cls, v: Any) -> Any:
-        if not isinstance(v, dict):
-            return v
+    def _normalize_properties(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+
+        specs = data.get("properties")
+        
+        # Check if specs is already a list (already normalized) 
+        # or not a dict (nothing to normalize)
+        if specs is None or not isinstance(specs, dict):
+            return data
 
         normalized = []
-        for key, item in v.items():
+        for key, item in specs.items():
             if isinstance(item, dict):
                 if "name" not in item:
                     item = {"name": key, **item}
                 normalized.append(item)
-
-        return normalized
-
+                
+        data["properties"] = normalized
+        return data
 
 class StructSpec(StructBaseSpec):
     kind: Literal["struct"]
@@ -141,32 +138,41 @@ class ClassSpec(StructBaseSpec):
 
 class ClassTemplateSpecializationSpec(ClassSpec):
     kind: Literal["class_template_specialization"] = "class_template_specialization"
-    args: list[str]
+    args: List[str]
 
 
 class ClassTemplateSpec(TemplateSpec):
     kind: Literal["class_template"]
-    specializations: list[ClassTemplateSpecializationSpec] = Field(default_factory=list)
+    specializations: List[ClassTemplateSpecializationSpec] = []
 
     @model_validator(mode="before")
     @classmethod
     def _normalize_specializations(cls, data: Any) -> Any:
+        # If it's not a dict (e.g., already a model), just return it
         if not isinstance(data, dict):
             return data
 
         specs = data.get("specializations")
-        if not specs:
+        if specs is None:
             return data
 
         normalized = []
         for item in specs:
             if isinstance(item, dict):
+                # If a specialization dict is missing a name, inherit the parent name if available
                 if "name" not in item and "name" in data:
                     item = {"name": data["name"], **item}
                 normalized.append(item)
             elif isinstance(item, (list, tuple)):
-                normalized.append({"name": data.get("name"), "args": list(item)})
+                # Optional shorthand: treat list/tuple as args with inherited name
+                normalized.append(
+                    {
+                        "name": data.get("name"),
+                        "args": list(item),
+                    }
+                )
             else:
+                # Fallback shorthand: treat as a name-like value
                 normalized.append({"name": str(item)})
 
         data["specializations"] = normalized
@@ -177,45 +183,38 @@ class EnumSpec(Spec):
     kind: Literal["enum"]
 
 
-# Discriminated Union ensures Pydantic parses the correct subclass instantly based on 'kind'
-SpecUnion = Annotated[
-    Union[
-        StructSpec,
-        ClassSpec,
-        ClassTemplateSpec,
-        FieldSpec,
-        FunctionSpec,
-        FunctionTemplateSpec,
-        MethodSpec,
-        CtorSpec,
-        EnumSpec,
-    ],
-    Field(discriminator="kind"),
+SpecUnion = Union[
+    StructSpec,
+    ClassSpec,
+    ClassTemplateSpec,
+    FieldSpec,
+    FunctionSpec,
+    FunctionTemplateSpec,
+    MethodSpec,
+    CtorSpec,
+    EnumSpec,
 ]
 
 
-def validate_spec_dict(v: Any) -> Any:
-    """Pre-processor to unpack @ syntax in dictionary keys before Pydantic validates."""
-    if not isinstance(v, dict):
-        return v
-
+def validate_spec_dict(v: dict[str, Spec]) -> dict[str, Spec]:
+    # logger.debug(f"validate_spec_dict: {v}")
     data = {}
     for key, value in v.items():
-        if "@" in key and isinstance(value, dict):
-            # Work on a copy to avoid mutating the user's original dictionary
-            val_copy = value.copy()
+        if "@" in key:
+            kind, name, signature = None, None, None
             parts = key.split("@")
+            if len(parts) == 2:
+                kind, name = parts
+            elif len(parts) == 3:
+                kind, name, signature = parts
 
-            if len(parts) >= 2:
-                val_copy["kind"] = parts[0]
-                val_copy["name"] = parts[1]
-            if len(parts) == 3:
-                val_copy["signature"] = parts[2]
-
-            data[key] = val_copy
+            value["kind"] = kind
+            value["name"] = name
+            value["signature"] = signature
+            # data[name] = value
+            data[key] = value
         else:
             data[key] = value
-
     return data
 
 
@@ -223,11 +222,10 @@ SpecDict = Annotated[dict[str, SpecUnion], BeforeValidator(validate_spec_dict)]
 
 
 def create_spec(key: str, **kwargs: Any) -> SpecUnion:
+    kind, name, signature = None, None, None
     parts = key.split("@")
-
     if len(parts) == 2:
         kind, name = parts
-        signature = None
     elif len(parts) == 3:
         kind, name, signature = parts
     else:

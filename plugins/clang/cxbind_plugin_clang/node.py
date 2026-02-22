@@ -1,5 +1,5 @@
 from typing_extensions import Annotated
-from typing import List, Dict, Optional, Any, Literal, Union
+from typing import Optional, Literal, Union
 
 from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 
@@ -14,14 +14,13 @@ from . import cu
 class Node(BaseModel):
     kind: str
     name: str
-    signature: Optional[str] = None
-    # first_name: Optional[str] = None
-    pyname: Optional[str] = None
-    children: List["Node"] = []
+    signature: str | None = None
+    pyname: str | None = None
+    children: list["Node"] = []
     parent: Optional["Node"] = None
 
-    cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
-    spec: Optional[Spec] = Field(None, exclude=True, repr=False)
+    cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
+    spec: Spec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -92,7 +91,7 @@ class Node(BaseModel):
         return key
 
     """
-    def model_post_init(self, __context: Any) -> None:
+    def model_post_init(self, __context: object) -> None:
         self.first_name = self.name.split("::")[-1]
     """
 
@@ -119,16 +118,16 @@ class RootNode(Node):
 class Argument(BaseModel):
     name: str
     type: str
-    default: Optional[Any] = None
+    default: object | None = None
 
-    cursor: Optional[cindex.Cursor] = Field(None, exclude=True, repr=False)
-    spec: Optional[Spec] = Field(None, exclude=True, repr=False)
+    cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
+    spec: Spec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class FunctionBaseNode(TypeNode):
-    args: Optional[List[Argument]] = []
+    args: list[Argument] | None = []
 
 
 class FunctionNode(FunctionBaseNode):

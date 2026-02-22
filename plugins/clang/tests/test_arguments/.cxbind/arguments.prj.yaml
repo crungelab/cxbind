@@ -15,6 +15,6 @@ units:
       'method@Arguments::ignore_me': {exclude: true}
 
       'method@Arguments::add':
-        arguments:
+        args:
           i: { default: 0}
           j: { default: 0}

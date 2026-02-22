@@ -62,8 +62,8 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
                 default = self.default_from_tokens(child.get_tokens())
 
         spec = node.spec
-        if spec.arguments and argument.spelling in spec.arguments:
-            spec_argument = spec.arguments[argument.spelling]
+        if spec.args and argument.spelling in spec.args:
+            spec_argument = spec.args[argument.spelling]
             # logger.debug(f"node_argument: {node_argument}")
             default = str(spec_argument.default)
 
