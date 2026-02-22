@@ -56,9 +56,7 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             elif method.name == "__repr__":
                 self.render_repr(method)
             else:
-                logger.warning(
-                    f"Unsupported extra method '{method.name}' for node {node.name}"
-                )
+                self.render_standard_method(method)
 
     def render_init(self, method: ExtraInitMethod):
         self.begin_chain()
@@ -188,6 +186,18 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             self.out('ss << ")";')
             self.out("return ss.str();")
         self.out("})")
+
+    def render_standard_method(self, method: ExtraMethod):
+        node = self.node
+        self.begin_chain()
+        if method.use is not None:
+            self.out(
+                f'.def("{method.name}", &{method.use})'
+            )
+        else:
+            logger.warning(
+                f"Unsupported extra method '{method.name}' for node {node.name}: no function provided"
+            )
 
     def render_extra_properties(self):
         node = self.node

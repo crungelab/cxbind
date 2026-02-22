@@ -24,6 +24,7 @@ void register_unit_1_py_auto(py::module &, Registry &registry);
 void register_unit_2_py_auto(py::module &, Registry &registry);
 
 void register_repr_py_auto(py::module &, Registry &registry);
+void register_handles_py_auto(py::module &, Registry &registry);
 
 PYBIND11_MODULE(cxbind_tests, m)
 {
@@ -80,4 +81,7 @@ PYBIND11_MODULE(cxbind_tests, m)
 
     auto _repr = m.def_submodule("test_repr");
     register_repr_py_auto(_repr, r);
+
+    auto _handles = m.def_submodule("test_handles");
+    register_handles_py_auto(_handles, r);
 }

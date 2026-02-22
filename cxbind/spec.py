@@ -107,6 +107,7 @@ class StructBaseSpec(Spec):
     properties: list[ExtraProperty] = Field(default_factory=list)
     #methods: list[ExtraMethod] = Field(default_factory=list)
     methods: list[ExtraMethodUnion] = Field(default_factory=list)
+    is_handle: bool = False
 
     @field_validator("properties", mode="before")
     @classmethod
