@@ -5,7 +5,7 @@ from clang import cindex
 from cxbind import CxBind
 from cxbind.plugin import Plugin
 
-from .program import Program
+from .compiler import Compiler
 
 from .transform import HandleTransform
 from .transformer import HandleTransformer
@@ -25,5 +25,5 @@ class ClangPlugin(Plugin):
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
         logger.debug("Installing Clang Plugin")
-        app.register_program("clang", Program)
+        app.register_tool("clang", Compiler)
         app.register_transformer(HandleTransform, HandleTransformer)

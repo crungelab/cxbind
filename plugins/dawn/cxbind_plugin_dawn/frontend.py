@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .program import Program
+    from .compiler import Compiler
 
 from pathlib import Path
 import json
@@ -25,11 +25,11 @@ def filter_dawn_data(data: dict) -> dict:
 
 
 class Frontend(Processor):
-    def __init__(self, program: "Program") -> None:
-        super().__init__(program)
+    def __init__(self, compiler: "Compiler") -> None:
+        super().__init__(compiler)
 
     def run(self):
-        path = Path(self.program.unit.source)
+        path = Path(self.compiler.unit.source)
         try:
             with open(path, "r") as f:
                 dawn_data = json.load(f)
@@ -45,7 +45,7 @@ class Frontend(Processor):
             root = Root.model_validate(filtered_data)
             # print(root["buffer"])
             # exit()
-            self.program.root = root
+            self.compiler.root = root
 
         except json.JSONDecodeError:
             print("Error decoding JSON")

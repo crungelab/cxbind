@@ -1,4 +1,4 @@
-from cxbind.program_base import ProgramBase
+from cxbind.tool import Tool
 from cxbind.unit import Unit
 
 from ..frontend import Frontend
@@ -6,7 +6,7 @@ from ..backend import Backend
 from ..node import Root, Type
 
 
-class Program(ProgramBase):
+class Compiler(Tool):
     def __init__(self, unit: Unit) -> None:
         super().__init__(unit)
         self.root: Root = None  # Set by Frontend

@@ -132,10 +132,10 @@ class BindGroupLayoutEntry:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     binding: Any  # type: uint32_t , default: None
     visibility: Any = ShaderStage.NONE  # type: ShaderStage , default: ShaderStage.NONE
-    buffer: Any = 0  # type: BufferBindingLayout , default: 0
-    sampler: Any = 0  # type: SamplerBindingLayout , default: 0
-    texture: Any = 0  # type: TextureBindingLayout , default: 0
-    storage_texture: Any = 0  # type: StorageTextureBindingLayout , default: 0
+    buffer: Any = None  # type: BufferBindingLayout , default: None
+    sampler: Any = None  # type: SamplerBindingLayout , default: None
+    texture: Any = None  # type: TextureBindingLayout , default: None
+    storage_texture: Any = None  # type: StorageTextureBindingLayout , default: None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -550,7 +550,7 @@ class ComputeState:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     module: Any  # type: ShaderModule , default: None
     entry_point: Optional[Any] = None  # type: StringView , default: None
-    constants: Any  # type: ConstantEntry const * , default: None
+    constants: Optional[Any] = None  # type: ConstantEntry const * , default: None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -592,7 +592,7 @@ class RenderPassColorAttachment:
     resolve_target: Optional[Any] = None  # type: TextureView , default: None
     load_op: Any = LoadOp.UNDEFINED  # type: LoadOp , default: LoadOp.UNDEFINED
     store_op: Any = StoreOp.UNDEFINED  # type: StoreOp , default: StoreOp.UNDEFINED
-    clear_value: Any  # type: Color , default: None
+    clear_value: Optional[Any] = None  # type: Color , default: None
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -733,7 +733,7 @@ class RenderPipelineDescriptor:
     label: Optional[Any] = None  # type: StringView , default: None
     layout: Optional[Any] = None  # type: PipelineLayout , default: None
     vertex: Any  # type: VertexState , default: None
-    primitive: Any  # type: PrimitiveState , default: None
+    primitive: Optional[Any] = None  # type: PrimitiveState , default: None
     depth_stencil: Optional[Any] = None  # type: DepthStencilState const * , default: None
     multisample: Optional[Any] = None  # type: MultisampleState , default: None
     fragment: Optional[Any] = None  # type: FragmentState const * , default: None

@@ -1,4 +1,4 @@
-class ProgramFactory:
+class ToolFactory:
     def __init__(self, cls):
         self.cls = cls
 

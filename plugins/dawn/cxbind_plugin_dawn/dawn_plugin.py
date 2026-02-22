@@ -4,7 +4,7 @@ from loguru import logger
 from cxbind import CxBind
 from cxbind.plugin import Plugin
 
-from .program import Program, HppProgram, CppProgram, PbProgram, PyProgram, PyiProgram
+from .compiler import Compiler, HppCompiler, CppCompiler, PbCompiler, PyCompiler, PyiCompiler
 
 
 class DawnPlugin(Plugin):
@@ -13,8 +13,8 @@ class DawnPlugin(Plugin):
 
     def install(self, app: CxBind):
         logger.debug("Installing Dawn Plugin")
-        app.register_program("dawn_hpp", HppProgram)
-        app.register_program("dawn_cpp", CppProgram)
-        app.register_program("dawn_pb", PbProgram)
-        app.register_program("dawn_py", PyProgram)
-        app.register_program("dawn_pyi", PyiProgram)
+        app.register_tool("dawn_hpp", HppCompiler)
+        app.register_tool("dawn_cpp", CppCompiler)
+        app.register_tool("dawn_pb", PbCompiler)
+        app.register_tool("dawn_py", PyCompiler)
+        app.register_tool("dawn_pyi", PyiCompiler)

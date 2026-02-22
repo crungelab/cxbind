@@ -5,7 +5,7 @@ from loguru import logger
 import jinja2
 from rich import print
 
-from cxbind.program_base import ProgramBase
+from cxbind.tool import Tool
 from cxbind.unit import Unit
 from cxbind.transform import Transform
 from cxbind.transformer import Transformer, _registry as transformer_registry
@@ -22,7 +22,7 @@ class BuildResult:
         self.session = session
         self.node = node
 
-class Program(ProgramBase):
+class Compiler(Tool):
     def __init__(self, unit: Unit) -> None:
         super().__init__(unit)
 
@@ -59,7 +59,7 @@ class Program(ProgramBase):
 
     def run(self):
         """
-        Run the program.
+        Run the compiler.
         """
         sources = self.unit.sources
         if self.unit.source is not None:

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from typing import List
 
 if TYPE_CHECKING:
-    from ...program import Program
+    from ...compiler import Compiler
 
 from pathlib import Path
 
@@ -16,8 +16,8 @@ from .pyi_generator import PyiGenerator
 
 
 class PyiBackend(Backend):
-    def __init__(self, program: "Program") -> None:
-        super().__init__(program)
+    def __init__(self, compiler: "Compiler") -> None:
+        super().__init__(compiler)
 
     def render(self):
         context = PyiGenerator(self).generate()
@@ -28,9 +28,9 @@ class PyiBackend(Backend):
         source_template = self.jinja_env.get_template("wgpu_pyi.pyi.j2")
         output = source_template.render(py_code=py_code)
         # logger.debug(output)
-        # Write the C++ code to a file
-        path = Path(self.program.unit.target)
+        # Write the stub code to a file
+        path = Path(self.compiler.unit.target)
         with open(path, "w") as f:
             f.write(output)
 
-        logger.debug(f"Python code generated in {path}")
+        logger.debug(f"Python stub generated in {path}")

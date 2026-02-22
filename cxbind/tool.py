@@ -4,7 +4,7 @@ from cxbind.unit import Unit
 from .transform import Transform
 from .transformer import Transformer, _registry as transformer_registry
 
-class ProgramBase():
+class Tool():
     def __init__(self, unit: Unit) -> None:
         self.unit = unit
 

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from typing import List
 
 if TYPE_CHECKING:
-    from ...program import Program
+    from ...compiler import Compiler
 
 from pathlib import Path
 
@@ -16,8 +16,8 @@ from .pb_generator import PbGenerator
 
 
 class PbBackend(Backend):
-    def __init__(self, program: "Program") -> None:
-        super().__init__(program)
+    def __init__(self, compiler: "Compiler") -> None:
+        super().__init__(compiler)
 
     def render(self):
         context = PbGenerator(self).generate()
@@ -31,7 +31,7 @@ class PbBackend(Backend):
         output = source_template.render(prologue=prologue, py_code=py_code, epilogue=epilogue)
         # logger.debug(output)
         # Write the C++ code to a file
-        path = Path(self.program.unit.target)
+        path = Path(self.compiler.unit.target)
         with open(path, "w") as f:
             f.write(output)
 

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from typing import List
 
 if TYPE_CHECKING:
-    from ..program import Program
+    from ..compiler import Compiler
 
 from pathlib import Path
 
@@ -25,8 +25,8 @@ from ..node import (
 from ..name import Name
 
 class Backend(Processor):
-    def __init__(self, program: "Program") -> None:
-        super().__init__(program)
+    def __init__(self, compiler: "Compiler") -> None:
+        super().__init__(compiler)
         self.native_types: List[NativeType] = []
         self.object_types: List[ObjectType] = []
         self.enum_types: List[EnumType] = []
@@ -56,7 +56,7 @@ class Backend(Processor):
         pass
 
     def process(self):
-        for key, entry in self.program.root:
+        for key, entry in self.compiler.root:
             # logger.debug(f"Backend: Processing '{key}': {entry.__class__.__name__}")
             if isinstance(entry, ObjectType):
                 self.process_object_type(entry)
@@ -88,10 +88,10 @@ class Backend(Processor):
     def process_object_type(self, obj: ObjectType):
         # logger.debug(f"Backend: Processing object type '{obj.name.CamelCase()}'")
         for method in obj.methods:
-            method.return_type = self.program.lookup(method.return_type_ref) or self.program.lookup("void")
+            method.return_type = self.compiler.lookup(method.return_type_ref) or self.compiler.lookup("void")
             args_by_name = {arg.name: arg for arg in method.args}
             for arg in method.args:
-                arg.type = self.program.lookup(arg.type_ref)
+                arg.type = self.compiler.lookup(arg.type_ref)
                 if arg.length is not None and isinstance(arg.length, str):
                     arg.length_member = args_by_name[Name.intern(arg.length)]
 
@@ -109,7 +109,7 @@ class Backend(Processor):
         # logger.debug(f"Backend: Processing structure type '{structure.name.CamelCase()}'")
         members_by_name = {member.name: member for member in structure.members}
         for member in structure.members:
-            member.type = self.program.lookup(member.type_ref)
+            member.type = self.compiler.lookup(member.type_ref)
             if member.length is not None and isinstance(member.length, str):
                 member.length_member = members_by_name[Name.intern(member.length)]
             if member.annotation is not None:
@@ -125,15 +125,15 @@ class Backend(Processor):
 
     def process_constant_definition(self, constant: ConstantDefinition):
         # logger.debug(f"Backend: Processing constant definition '{constant.name.CamelCase()}'")
-        constant.type = self.program.lookup(constant.type_ref)
+        constant.type = self.compiler.lookup(constant.type_ref)
         self.constant_definitions.append(constant)
 
     def process_function_declaration(self, fn_decl: FunctionDeclaration):
         # logger.debug(f"Backend: Processing function declaration '{fn_decl.name.CamelCase()}'")
-        fn_decl.return_type = self.program.lookup(fn_decl.return_type_ref) or self.program.lookup("void")
+        fn_decl.return_type = self.compiler.lookup(fn_decl.return_type_ref) or self.compiler.lookup("void")
         args_by_name = {arg.name: arg for arg in fn_decl.args}
         for arg in fn_decl.args:
-            arg.type = self.program.lookup(arg.type_ref)
+            arg.type = self.compiler.lookup(arg.type_ref)
             if arg.length is not None and isinstance(arg.length, str):
                 arg.length_member = args_by_name[Name.intern(arg.length)]
 
@@ -143,7 +143,7 @@ class Backend(Processor):
         # logger.debug(f"Backend: Processing callback info type '{callback_info.name.CamelCase()}'")
         members_by_name = {member.name: member for member in callback_info.members}
         for member in callback_info.members:
-            member.type = self.program.lookup(member.type_ref)
+            member.type = self.compiler.lookup(member.type_ref)
             if member.length is not None and isinstance(member.length, str):
                 member.length_member = members_by_name[Name.intern(member.length)]
 

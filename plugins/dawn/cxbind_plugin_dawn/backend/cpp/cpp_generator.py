@@ -9,7 +9,7 @@ from .cpp_render_context import CppRenderContext
 
 class CppGenerator(Generator):
     def __init__(self, backend: "Backend") -> None:
-        context = CppRenderContext(backend.program.unit, backend.program.root, backend.jinja_env)
+        context = CppRenderContext(backend.compiler.unit, backend.compiler.root, backend.jinja_env)
         super().__init__(context, backend)
     
     def render(self):

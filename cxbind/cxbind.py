@@ -13,15 +13,15 @@ from loguru import logger
 from .project import Project
 from .unit import Unit
 from .factory.project_factory import ProjectFactory
-from .factory.program_factory import ProgramFactory
-from .program_base import ProgramBase
+from .factory.tool_factory import ToolFactory
+from .tool import Tool
 from .transform import Transform
 from .transformer import Transformer, _registry as TRANSFORMER_REGISTRY
 
 
 class CxBind:
     def __init__(self):
-        self.program_factories: dict[str, ProgramFactory] = {}
+        self.tool_factories: dict[str, ToolFactory] = {}
         self.prj_dir = Path(os.getcwd(), ".cxbind")
 
         log_level = "DEBUG"
@@ -59,13 +59,13 @@ class CxBind:
             logger.warning(f"Transformer for {transform_type} already registered. Overwriting.")
         TRANSFORMER_REGISTRY[transform_type] = cls
 
-    def register_program(self, name: str, cls):
+    def register_tool(self, name: str, cls):
         """
-        Register a program class with a name.
+        Register a tool class with a name.
         """
-        if name in self.program_factories:
-            logger.warning(f"Generator {name} already registered. Overwriting.")
-        self.program_factories[name] = ProgramFactory(cls)
+        if name in self.tool_factories:
+            logger.warning(f"Tool {name} already registered. Overwriting.")
+        self.tool_factories[name] = ToolFactory(cls)
 
     def load_project(self) -> Project:
         path = next(self.prj_dir.glob("*.prj.yaml"), None)
@@ -80,20 +80,20 @@ class CxBind:
 
         return project
 
-    def create_program(self, unit: Unit) -> ProgramBase:
-        program_name = unit.program
-        if program_name is None:
-            program_name = "clang"
+    def create_tool(self, unit: Unit) -> Tool:
+        tool_name = unit.tool
+        if tool_name is None:
+            tool_name = "clang"
 
-        program = self.program_factories[program_name].produce(unit)
-        return program
+        tool = self.tool_factories[tool_name].produce(unit)
+        return tool
 
     def gen(self, name):
         logger.debug(f"gen: {name}")
         project = self.load_project()
         unit = project.get_unit(name)
-        program = self.create_program(unit)
-        program.run()
+        tool = self.create_tool(unit)
+        tool.run()
 
     def gen_all(self):
         path = Path(os.getcwd(), ".cxbind")
@@ -104,7 +104,7 @@ class CxBind:
         project = self.load_project()
 
         for unit in project.units.values():
-            program = self.create_program(unit)
+            program = self.create_tool(unit)
             logger.debug(f"Generating {unit.name} with {program.__class__.__name__}")
             logger.debug(f"unit: {unit}")
             program.run()
