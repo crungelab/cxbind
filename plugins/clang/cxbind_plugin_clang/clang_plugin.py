@@ -7,6 +7,9 @@ from cxbind.plugin import Plugin
 
 from .program import Program
 
+from .transform import HandleTransform
+from .transformer import HandleTransformer
+
 class ClangPlugin(Plugin):
     def __init__(self):
         super().__init__()
@@ -23,3 +26,4 @@ class ClangPlugin(Plugin):
 
         logger.debug("Installing Clang Plugin")
         app.register_program("clang", Program)
+        app.register_transformer(HandleTransform, HandleTransformer)

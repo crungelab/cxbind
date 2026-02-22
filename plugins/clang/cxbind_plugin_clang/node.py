@@ -34,6 +34,9 @@ class Node(BaseModel):
     def first_name(self) -> str:
         return self.name.split("::")[-1]
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
+
     @classmethod
     def spell(cls, cursor: cindex.Cursor) -> str:
         if cursor is None:
@@ -95,12 +98,14 @@ class Node(BaseModel):
         self.first_name = self.name.split("::")[-1]
     """
 
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
-
     def add_child(self, child: "Node"):
         child.parent = self
         self.children.append(child)
+
+    def traverse(self):
+        yield self
+        for child in self.children:
+            yield from child.traverse()
 
 
 class TypeNode(Node):
@@ -112,7 +117,7 @@ class TemplateNode(Node):
 
 
 class RootNode(Node):
-    kind: Literal["root"]
+    kind: Literal["root"] = "root"
 
 
 class Argument(BaseModel):

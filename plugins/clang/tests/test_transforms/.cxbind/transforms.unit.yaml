@@ -1,0 +1,17 @@
+source: 'src/transforms.h'
+target: 'src/transforms_py_auto.cpp'
+
+specs:
+  'struct@Handle':
+    methods:
+      create_dummy:
+        use: handleCreateDummy
+
+  'struct@Dummy':
+    methods:
+      __repr__:
+        auto: true
+
+transforms:
+  - name: handle
+    target: struct@Handle

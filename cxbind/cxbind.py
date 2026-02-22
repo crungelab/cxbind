@@ -15,6 +15,8 @@ from .unit import Unit
 from .factory.project_factory import ProjectFactory
 from .factory.program_factory import ProgramFactory
 from .program_base import ProgramBase
+from .transform import Transform
+from .transformer import Transformer, _registry as TRANSFORMER_REGISTRY
 
 
 class CxBind:
@@ -48,6 +50,14 @@ class CxBind:
             plugin: Plugin = ep.load()()
             logger.debug(f"plugin: {plugin}")
             plugin.install(self)
+
+    def register_transformer(self, transform_type: type[Transform], cls: type[Transformer]):
+        """
+        Register a transformer class with a transform type.
+        """
+        if transform_type in TRANSFORMER_REGISTRY:
+            logger.warning(f"Transformer for {transform_type} already registered. Overwriting.")
+        TRANSFORMER_REGISTRY[transform_type] = cls
 
     def register_program(self, name: str, cls):
         """

@@ -1,0 +1,11 @@
+module: tests
+
+flags: [
+  '-x', 'c++',
+  '-std=c++17',
+  '-I./src'
+]
+
+unit_files:
+  - path: transforms.unit.yaml
+  - path: transforms_2.unit.yaml

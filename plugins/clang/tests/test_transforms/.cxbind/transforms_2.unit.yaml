@@ -1,0 +1,2 @@
+source: 'src/transforms_2.h'
+target: 'src/transforms_2_py_auto.cpp'
