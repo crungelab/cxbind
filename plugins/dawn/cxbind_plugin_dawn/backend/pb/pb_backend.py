@@ -1,5 +1,4 @@
 from typing import TYPE_CHECKING
-from typing import List
 
 if TYPE_CHECKING:
     from ...compiler import Compiler
@@ -7,8 +6,7 @@ if TYPE_CHECKING:
 from pathlib import Path
 
 from loguru import logger
-import jinja2
-import os
+from rich import print
 
 from .. import Backend
 
@@ -28,11 +26,16 @@ class PbBackend(Backend):
         # Render the Python bindings
         # Render the source template
         source_template = self.jinja_env.get_template("wgpu_pb.cpp.j2")
-        output = source_template.render(prologue=prologue, py_code=py_code, epilogue=epilogue)
+        output = source_template.render(
+            prologue=prologue, py_code=py_code, epilogue=epilogue
+        )
         # logger.debug(output)
         # Write the C++ code to a file
         path = Path(self.compiler.unit.target)
         with open(path, "w") as f:
             f.write(output)
 
-        logger.debug(f"C++ bindings generated in {path}")
+        # logger.debug(f"C++ bindings generated in {path}")
+        print(
+            f"[bold green]Generated C++ bindings in[/bold green]: {path}", ":thumbs_up:"
+        )

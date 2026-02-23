@@ -59,11 +59,13 @@ class Compiler(Tool):
     def build_unit(self, source: str) -> None:
         session = Session(self.unit)
         frontend = Frontend(source, session)
-        node = frontend.build()
+        root = frontend.build()
         runner = ClangRunner.get_current()
         runner.update_specs(session.specs)
-        runner.root.add_child(node)
-        self.build_results.append(BuildResult(source, session, node))
+        #runner.root.add_child(node)
+        for node in root.traverse():
+            runner.add_node(node)
+        self.build_results.append(BuildResult(source, session, root))
 
     def generate(self) -> None:
         text_list = []

@@ -102,6 +102,12 @@ class StructBaseExtra(Extra):
     properties: list[ExtraProperty] = Field(default_factory=list)
     methods: list[ExtraMethodUnion] = Field(default_factory=list)
 
+    def add_property(self, propery: ExtraProperty) -> None:
+        self.properties.append(property)
+
+    def add_method(self, method: ExtraMethodUnion) -> None:
+        self.methods.append(method)
+
     @field_validator("properties", mode="before")
     @classmethod
     def _normalize_properties(cls, v: Any) -> Any:

@@ -2,7 +2,11 @@ source: 'src/transforms.h'
 target: 'src/transforms_py_auto.cpp'
 
 specs:
-  'struct@Handle': {}
+  'struct@Handle':
+    extra:
+      methods:
+        create_dummy:
+          use: handleCreateDummy
 
   'struct@Dummy':
     extra:

@@ -7,9 +7,7 @@ if TYPE_CHECKING:
 from pathlib import Path
 
 from loguru import logger
-import jinja2
-import os
-
+from rich import print
 
 from .. import Backend
 
@@ -33,4 +31,5 @@ class HppBackend(Backend):
         with open(path, "w") as f:
             f.write(output)
 
-        logger.debug(f"C++ header generated in {path}")
+        #logger.debug(f"C++ header generated in {path}")
+        print(f"[bold green]Generated C++ header in[/bold green]: {path}", ":thumbs_up:")
