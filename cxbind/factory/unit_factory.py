@@ -4,11 +4,10 @@ from pathlib import Path
 
 from loguru import logger
 
-from .unit_base_factory import UnitBaseFactory
 from ..unit import Unit
 from ..loader.unit_loader import UnitLoader
 
-class UnitFactory(UnitBaseFactory):
+class UnitFactory:
     def __init__(self) -> None:
         self.unit: Optional[Unit] = None
 

@@ -3,6 +3,7 @@ from loguru import logger
 
 from cxbind import CxBind
 from cxbind.plugin import Plugin
+from cxbind.runner import RunnerFactory, Runner
 
 from .compiler import Compiler, HppCompiler, CppCompiler, PbCompiler, PyCompiler, PyiCompiler
 
@@ -18,3 +19,4 @@ class DawnPlugin(Plugin):
         app.register_tool("dawn_pb", PbCompiler)
         app.register_tool("dawn_py", PyCompiler)
         app.register_tool("dawn_pyi", PyiCompiler)
+        app.runner_factory = RunnerFactory(Runner)

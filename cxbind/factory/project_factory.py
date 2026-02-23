@@ -4,7 +4,6 @@ from pathlib import Path
 
 from loguru import logger
 
-from .unit_base_factory import UnitBaseFactory
 from .unit_factory import UnitFactory
 
 from ..project import Project
@@ -14,7 +13,7 @@ from ..loader.project_loader import ProjectLoader
 from ..configurator.project_configurator import ProjectConfigurator
 
 
-class ProjectFactory(UnitBaseFactory):
+class ProjectFactory(UnitFactory):
     def __init__(self) -> None:
         self.project: Optional[Project] = None
 

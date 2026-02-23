@@ -4,11 +4,15 @@ from clang import cindex
 
 from cxbind import CxBind
 from cxbind.plugin import Plugin
+from cxbind.runner import RunnerFactory
 
 from .compiler import Compiler
 
 from .transform import HandleTransform
 from .transformer import HandleTransformer
+
+from .clang_runner import ClangRunner
+
 
 class ClangPlugin(Plugin):
     def __init__(self):
@@ -27,3 +31,4 @@ class ClangPlugin(Plugin):
         logger.debug("Installing Clang Plugin")
         app.register_tool("clang", Compiler)
         app.register_transformer(HandleTransform, HandleTransformer)
+        app.runner_factory = RunnerFactory(ClangRunner)

@@ -15,14 +15,21 @@ from .unit import Unit
 from .factory.project_factory import ProjectFactory
 from .factory.tool_factory import ToolFactory
 from .tool import Tool
+
+# TODO: Move this somewhere else
 from .transform import Transform
 from .transformer import Transformer, _registry as TRANSFORMER_REGISTRY
+
+from .runner.runner_factory import RunnerFactory
+from .runner.runner import Runner
 
 
 class CxBind:
     def __init__(self):
         self.tool_factories: dict[str, ToolFactory] = {}
         self.prj_dir = Path(os.getcwd(), ".cxbind")
+        self._runner_factory: RunnerFactory = None
+        self.runner: Runner = None
 
         log_level = "DEBUG"
         log_format = "<level>{level: <8}</level> | {file}:{line: >4} - {message}"
@@ -40,6 +47,19 @@ class CxBind:
         # logger.add("cxbind.log", level=log_level, colorize=False, backtrace=True, diagnose=True)
 
         self.install_plugins()
+
+    @property
+    def runner_factory(self) -> RunnerFactory:
+        if self._runner_factory is None:
+            logger.error("Runner factory not set. Make sure a plugin has been installed that registers a runner factory.")
+            sys.exit(1)
+        return self._runner_factory
+    
+    @runner_factory.setter
+    def runner_factory(self, factory: RunnerFactory):
+        if self._runner_factory is not None:
+            raise Exception("Runner factory already set. Overwriting is not allowed.")
+        self._runner_factory = factory
 
     def install_plugins(self):
         plugin_eps = entry_points(group="cxbind.plugins")
@@ -93,6 +113,35 @@ class CxBind:
         project = self.load_project()
         unit = project.get_unit(name)
         tool = self.create_tool(unit)
+        #tool.run()
+        runner_factory = self.runner_factory(tool)
+        runner = runner_factory()
+        runner.run([tool])
+
+    def gen_all(self):
+        path = Path(os.getcwd(), ".cxbind")
+        if not path.exists():
+            print("No .cxbind directory found.")
+            return
+
+        project = self.load_project()
+
+        tools: list[Tool] = []
+        for unit in project.units.values():
+            tool = self.create_tool(unit)
+            logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
+            logger.debug(f"unit: {unit}")
+            tools.append(tool)
+
+        runner = self.runner_factory()
+        runner.run(tools)
+
+    """
+    def gen(self, name):
+        logger.debug(f"gen: {name}")
+        project = self.load_project()
+        unit = project.get_unit(name)
+        tool = self.create_tool(unit)
         tool.run()
 
     def gen_all(self):
@@ -104,7 +153,8 @@ class CxBind:
         project = self.load_project()
 
         for unit in project.units.values():
-            program = self.create_tool(unit)
-            logger.debug(f"Generating {unit.name} with {program.__class__.__name__}")
+            tool = self.create_tool(unit)
+            logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
             logger.debug(f"unit: {unit}")
-            program.run()
+            tool.run()
+    """
