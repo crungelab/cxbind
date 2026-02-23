@@ -3,6 +3,7 @@ target: 'src/repr_py_auto.cpp'
 
 specs:
   'struct@Repr':
-    methods:
-      __repr__:
-        auto: true
+    extra:
+      methods:
+        __repr__:
+          auto: true

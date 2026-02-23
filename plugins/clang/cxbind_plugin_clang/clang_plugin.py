@@ -19,6 +19,8 @@ class ClangPlugin(Plugin):
         super().__init__()
 
     def install(self, app: CxBind):
+        logger.debug("Installing Clang Plugin")
+
         if sys.platform == 'darwin':
             cindex.Config.set_library_path('/usr/local/opt/llvm@6/lib')
         elif sys.platform == 'linux':
@@ -28,7 +30,7 @@ class ClangPlugin(Plugin):
         else:
             cindex.Config.set_library_path('C:/Program Files/LLVM/bin')
 
-        logger.debug("Installing Clang Plugin")
+        app.runner_factory = RunnerFactory(ClangRunner)
+
         app.register_tool("clang", Compiler)
         app.register_transformer(HandleTransform, HandleTransformer)
-        app.runner_factory = RunnerFactory(ClangRunner)

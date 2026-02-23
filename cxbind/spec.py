@@ -11,7 +11,7 @@ from pydantic import (
 )
 from loguru import logger
 
-from .extra import special_methods, ExtraMethod, ExtraProperty, ExtraMethodUnion
+from .extra import special_methods, Extra, ExtraMethod, ExtraProperty, ExtraMethodUnion
 
 
 class Spec(BaseModel):
@@ -24,7 +24,8 @@ class Spec(BaseModel):
     overload: bool = False
     readonly: bool = False
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    # model_config = ConfigDict(arbitrary_types_allowed=True)
+    model_config = ConfigDict(extra="forbid")
 
     @property
     def key(self) -> str:
@@ -97,15 +98,61 @@ class FieldSpec(Spec):
     kind: Literal["field"]
 
 
+class StructBaseExtra(Extra):
+    properties: list[ExtraProperty] = Field(default_factory=list)
+    methods: list[ExtraMethodUnion] = Field(default_factory=list)
+
+    @field_validator("properties", mode="before")
+    @classmethod
+    def _normalize_properties(cls, v: Any) -> Any:
+        if not isinstance(v, dict):
+            return v
+
+        normalized = []
+        for key, item in v.items():
+            if isinstance(item, dict):
+                if "name" not in item:
+                    item = {"name": key, **item}
+                normalized.append(item)
+
+        return normalized
+
+    @field_validator("methods", mode="before")
+    @classmethod
+    def _normalize_methods(cls, v: Any) -> Any:
+        logger.debug(f"Normalizing methods: {v}")
+        if not isinstance(v, dict):
+            return v
+
+        normalized = []
+        for key, item in v.items():
+            if isinstance(item, dict):
+                if "name" not in item:
+                    item = {"name": key, **item}
+                if item["name"] in special_methods and "kind" not in item:
+                    item["kind"] = item["name"]
+                else:
+                    item["kind"] = "standard"
+                normalized.append(item)
+
+        logger.debug(f"Normalized methods: {normalized}")
+        return normalized
+
+
 class StructBaseSpec(Spec):
     extends: list[str] | None = None
-    # gen_init: bool = False
-    # gen_args_init: bool = False
-    # gen_kw_init: bool = False
+    wrapper: str | None = None
+    holder: str | None = None
+    is_handle: bool = False
+    extra: StructBaseExtra = Field(default_factory=StructBaseExtra)
+
+
+"""
+class StructBaseSpec(Spec):
+    extends: list[str] | None = None
     wrapper: str | None = None
     holder: str | None = None
     properties: list[ExtraProperty] = Field(default_factory=list)
-    #methods: list[ExtraMethod] = Field(default_factory=list)
     methods: list[ExtraMethodUnion] = Field(default_factory=list)
     is_handle: bool = False
 
@@ -144,6 +191,7 @@ class StructBaseSpec(Spec):
 
         logger.debug(f"Normalized methods: {normalized}")
         return normalized
+"""
 
 
 class StructSpec(StructBaseSpec):

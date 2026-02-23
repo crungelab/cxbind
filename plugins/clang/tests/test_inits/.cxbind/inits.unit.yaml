@@ -4,17 +4,20 @@ target: 'src/inits_py_auto.cpp'
 specs:
   #'struct@KwInits': {gen_kw_init: true}
   'struct@KwInits':
-    methods:
-      __init__:
-        gen_kwargs: true
+    extra:
+      methods:
+        __init__:
+          gen_kwargs: true
 
   'struct@KwInitsUse':
-    methods:
-      __init__:
-        gen_kwargs: true
-        use: InitKwInitsUse
+    extra:
+      methods:
+        __init__:
+          gen_kwargs: true
+          use: InitKwInitsUse
 
   'struct@ArgsInits':
-    methods:
-      __init__:
-        gen_args: true
+    extra:
+      methods:
+        __init__:
+          gen_args: true

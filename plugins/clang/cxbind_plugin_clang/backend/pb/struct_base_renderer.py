@@ -44,7 +44,7 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
         node = self.node
         spec = node.spec
         logger.debug(f"spec: {spec}")
-        for method in spec.methods:
+        for method in spec.extra.methods:
             logger.debug(f"rendering extra method: {method.name} for node: {node.name}")
             if method.name == "__init__":
                 if method.gen_kwargs:
@@ -201,7 +201,7 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
 
     def render_extra_properties(self):
         node = self.node
-        for prop in node.spec.properties:
+        for prop in node.spec.extra.properties:
             getter = prop.getter
             setter = prop.setter
             self.begin_chain()

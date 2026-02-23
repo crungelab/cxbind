@@ -43,7 +43,7 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
                 obj.b = value;
             }
             return obj;
-        }));
+        }))
     ;
 
     py::class_<KwInitsUse> _KwInitsUse(_tests, "KwInitsUse");
@@ -73,7 +73,7 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
                 obj.c = value;
             }
             return obj;
-        }));
+        }))
     ;
 
     _tests
@@ -94,7 +94,7 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
             obj.a = a;
             obj.b = b;
             return obj;
-        }));
+        }))
     ;
 
 

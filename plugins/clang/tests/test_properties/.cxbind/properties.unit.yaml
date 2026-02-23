@@ -3,10 +3,11 @@ target: 'src/properties_py_auto.cpp'
 
 specs:
   'struct@Properties':
-    properties:
-      x:
-        getter: "getX"
-        setter: "setX"
+    extra:
+      properties:
+        x:
+          getter: "getX"
+          setter: "setX"
 
-      y:
-        getter: "getY"
+        y:
+          getter: "getY"

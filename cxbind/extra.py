@@ -13,6 +13,11 @@ from loguru import logger
 
 special_methods = {"__init__", "__repr__"}
 
+
+class Extra(BaseModel):
+    pass
+
+
 class ExtraProperty(BaseModel):
     name: str
     getter: str | None = None
@@ -30,8 +35,10 @@ class ExtraMethod(BaseModel):
 class ExtraStandardMethod(ExtraMethod):
     kind: Literal["standard"] = "standard"
 
+
 class ExtraSpecialMethod(ExtraMethod):
     pass
+
 
 class ExtraInitMethod(ExtraSpecialMethod):
     kind: Literal["__init__"] = "__init__"

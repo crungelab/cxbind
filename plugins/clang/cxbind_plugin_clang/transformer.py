@@ -24,16 +24,3 @@ class HandleTransformer:
             if not isinstance(node, FunctionNode):
                 continue
             logger.debug(f"Checking function node: {node.name}")
-
-    """
-    def transform(self, transform: HandleTransform):
-        logger.debug(f"Transforming spec: {transform.target}")
-        spec = self.unit.specs[transform.target]
-        logger.debug(f"Spec: {spec}")
-        name = spec.name
-
-        for node in self.root.traverse():
-            logger.debug(f"Checking node: {node}")
-            if node.name == name:
-                logger.debug(f"Found target node: {node}")
-    """
