@@ -5,7 +5,7 @@ from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraPro
 from ...node import StructBaseNode, FieldNode
 
 from .node_renderer import NodeRenderer, T_Node
-
+from .method_renderer import MethodRenderer
 
 class StructBaseRenderer(NodeRenderer[T_Node]):
     def render(self):
@@ -26,14 +26,6 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
         with self.enter(node):
             super().render()
 
-            """
-            if node.spec.gen_init:
-                self.render_init()
-            elif node.spec.gen_args_init:
-                self.render_args_init()
-            elif node.spec.gen_kw_init:
-                self.render_kw_init()
-            """
             self.render_extra_methods()
 
             self.render_extra_properties()
@@ -58,9 +50,23 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             else:
                 self.render_standard_method(method)
 
+
+    def render_init(self, method: ExtraInitMethod):
+        self.begin_chain()
+        if method.use is not None:
+            self.out(
+                #f'.def("{method.name}", &{method.use})'
+                #.def(py::init([](const py::kwargs& kwargs)
+                f'.def(py::init(&{method.use}))'
+            )
+        else:
+            self.out(f".def(py::init<>())")
+
+    """
     def render_init(self, method: ExtraInitMethod):
         self.begin_chain()
         self.out(f".def(py::init<>())")
+    """
 
     def render_args_init(self, method: ExtraInitMethod):
         logger.debug("renderering args_init for: {self.node}")

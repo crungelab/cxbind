@@ -8,8 +8,8 @@ from cxbind.runner import RunnerFactory
 
 from .compiler import Compiler
 
-from .transform import HandleTransform
-from .transformer import HandleTransformer
+from .transform import Mogrify
+from .transformer import MogrifyTransformer
 
 from .clang_runner import ClangRunner
 
@@ -33,4 +33,4 @@ class ClangPlugin(Plugin):
         app.runner_factory = RunnerFactory(ClangRunner)
 
         app.register_tool("clang", Compiler)
-        app.register_transformer(HandleTransform, HandleTransformer)
+        app.register_transformer(Mogrify, MogrifyTransformer)

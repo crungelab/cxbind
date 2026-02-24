@@ -11,5 +11,5 @@ specs:
           auto: true
 
 transforms:
-  - name: handle
+  - name: mogrify
     target: struct@Handle

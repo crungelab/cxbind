@@ -2,15 +2,15 @@ from loguru import logger
 
 from cxbind.unit import Unit
 from cxbind.extra import ExtraStandardMethod
-from .transform import HandleTransform
+from .transform import Mogrify
 from .node import Node, FunctionNode
 from .clang_runner import ClangRunner
 
-class HandleTransformer:
+class MogrifyTransformer:
     def __init__(self, unit: Unit):
         self.unit = unit
 
-    def transform(self, transform: HandleTransform):
+    def transform(self, transform: Mogrify):
         runner = ClangRunner.get_current()
         logger.debug(f"Transforming spec: {transform.target}")
 
