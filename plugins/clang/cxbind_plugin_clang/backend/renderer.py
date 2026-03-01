@@ -1,5 +1,4 @@
 from typing import List, Dict, Tuple, Optional, Union, Any, Callable, Generator
-from contextlib import contextmanager
 
 from loguru import logger
 
@@ -10,7 +9,7 @@ from ..worker import Worker
 
 
 class Renderer(Worker[RenderContext]):
-    actions: Dict[cindex.CursorKind, Callable] = {}
+    actions: dict[cindex.CursorKind, Callable] = {}
 
     def __init__(self, context: RenderContext):
         super().__init__(context)
@@ -43,15 +42,5 @@ class Renderer(Worker[RenderContext]):
     def text(self) -> str:
         return self.out.text
 
-    @contextmanager
-    def enter(self, node) -> Generator[Any, Any, Any]:
-        self.session.push_node(node)
-        self.out.indent()
-        yield node
-        self.out.dedent()
-        self.session.pop_node()
-
     def render(self):
-        for child in self.node.children:
-            renderer = self.context.create_renderer(child)
-            renderer.render()
+        pass

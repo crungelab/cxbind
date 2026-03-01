@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec
+from cxbind.spec import Spec, ArgSpec
 
 from . import cu
 
@@ -123,10 +123,10 @@ class RootNode(Node):
 class Argument(BaseModel):
     name: str
     type: str
-    default: object | None = None
+    default: str | None = None
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
-    spec: Spec | None = Field(None, exclude=True, repr=False)
+    spec: ArgSpec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

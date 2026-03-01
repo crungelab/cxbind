@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING, Type, Dict, List, Any, Callable
-
+from typing import TYPE_CHECKING, Optional, Type, Dict, List, Any, Callable
 import re
+import contextlib
+from contextvars import ContextVar
 
 from clang import cindex
 from loguru import logger
@@ -11,6 +12,7 @@ from cxbind.unit import Unit
 
 from .node import Node, StructuralNode
 
+current_session: ContextVar[Optional["Session"]] = ContextVar("current_session", default=None)
 
 # TODO: Use pydantic settings
 class Options:
@@ -67,6 +69,13 @@ class Session:
         self.options = Options(self.options)
         self.excluded = set(self.excludes)
         self.overloaded = Overloaded(self.overloads)
+
+    def make_current(self):
+        current_session.set(self)
+
+    @classmethod
+    def get_current(cls) -> Optional["Session"]:
+        return current_session.get()
 
     def push_node(self, node) -> None:
         self.node_stack.append(node)

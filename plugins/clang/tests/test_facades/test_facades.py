@@ -6,20 +6,14 @@ sys.path.insert(0, str(build_dir))
 
 import unittest
 
-from cxbind_tests.test_aliases import alias_function_i, AliasClassI
+from cxbind_tests.test_facades import facade_function
 
 
 class Test(unittest.TestCase):
-    def test_alias_function(self):
-        result = alias_function_i(1, 2)
+    def test_facade_function(self):
+        result = facade_function([1, 2, 3])
         print(result)
-        self.assertEqual(result, 3)
-
-    def test_alias_class(self):
-        myclass = AliasClassI(1)
-        result = myclass.get_value()
-        print(result)
-        self.assertEqual(result, 1)
+        self.assertEqual(result, 6)
 
 if __name__ == '__main__':
     unittest.main()

@@ -5,10 +5,10 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
-#include "aliases.h"
+#include "facades.h"
 
 namespace py = pybind11;
 
-void register_aliases_py_auto(py::module &_tests, Registry &registry) {
+void register_facades_py_auto(py::module &_tests, Registry &registry) {
 {{body}}
 }

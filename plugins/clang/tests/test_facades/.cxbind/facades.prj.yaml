@@ -3,10 +3,19 @@ module: tests
 flags: [
     '-x', 'c++',
     '-std=c++17',
-    '-I./src'
+    '-I./src',
+    #'-I/usr/include'
 ]
 
 units:
   facades:
     source: 'src/facades.h'
     target: 'src/facades_py_auto.cpp'
+
+specs:
+  'function@facadeFunction':
+    args:
+      a:
+        facade:
+          kind: vector
+          length_arg: count

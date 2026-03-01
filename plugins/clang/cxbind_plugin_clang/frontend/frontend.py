@@ -43,6 +43,10 @@ class Frontend(Builder):
             options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
         )
 
+        #print(tu.diagnostics)
+        for diag in tu.diagnostics:
+            logger.warning(f"Diagnostic: {diag}")
+
         self.visit_overloads(tu.cursor)
         self.visit_children(tu.cursor)
 

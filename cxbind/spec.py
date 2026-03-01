@@ -12,7 +12,7 @@ from pydantic import (
 from loguru import logger
 
 from .extra import special_methods, Extra, ExtraMethod, ExtraProperty, ExtraMethodUnion
-
+from .facade import ArgFacadeUnion
 
 class Spec(BaseModel):
     kind: str
@@ -45,12 +45,14 @@ class TemplateSpec(Spec):
     pass
 
 
-class Argument(BaseModel):
+class ArgSpec(BaseModel):
+    optional: bool = False
     default: Any | None = None
+    facade: ArgFacadeUnion | None = None
 
 
 class FunctionalSpec(Spec):
-    args: dict[str, Argument] = Field(default_factory=dict)
+    args: dict[str, ArgSpec] = Field(default_factory=dict)
     return_type: str | None = None
     omit_ret: bool = False
     check_result: bool = False
@@ -63,7 +65,7 @@ class FunctionalSpec(Spec):
 
         # Coerce raw values into a format Pydantic can parse into an Argument model
         return {
-            k: val if isinstance(val, (dict, Argument)) else {"default": val}
+            k: val if isinstance(val, (dict, ArgSpec)) else {"default": val}
             for k, val in v.items()
         }
 

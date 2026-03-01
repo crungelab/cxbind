@@ -3,7 +3,7 @@
 
 ```yaml
 transforms:
-    -name: handle
+    -name: mogrify
     target: 'struct@b2WorldId'
 
 ```

@@ -1,18 +1,73 @@
 import re
-
 from typing import Generic, List, TypeVar
 
 from clang import cindex
 from loguru import logger
 
 from cxbind.spec import Spec, create_spec
-
 from ..node import FunctionalNode, Argument
 from .. import cu
-
 from .node_builder import NodeBuilder
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
+
+
+def _find_matching_angle(s: str, lt: int) -> int:
+    depth = 0
+    for i in range(lt, len(s)):
+        if s[i] == "<":
+            depth += 1
+        elif s[i] == ">":
+            depth -= 1
+            if depth == 0:
+                return i
+    return -1
+
+
+def _split_template_args(arg_str: str) -> list[str]:
+    args: list[str] = []
+    depth = 0
+    start = 0
+    for i, c in enumerate(arg_str):
+        if c == "<":
+            depth += 1
+        elif c == ">":
+            depth -= 1
+        elif c == "," and depth == 0:
+            args.append(arg_str[start:i].strip())
+            start = i + 1
+    tail = arg_str[start:].strip()
+    if tail:
+        args.append(tail)
+    return args
+
+
+def _outer_template_args(spelling: str) -> list[str] | None:
+    """Return the outermost template arguments for a spelling like 'Foo<A, B<C>>', or None."""
+    lt = spelling.find("<")
+    if lt == -1:
+        return None
+    gt = _find_matching_angle(spelling, lt)
+    if gt == -1:
+        return None
+    return _split_template_args(spelling[lt + 1 : gt])
+
+
+def _replace_outer_template_args(fq: str, resolved_args: list[str]) -> str:
+    """Replace the outermost template args of `fq` with `resolved_args` by position."""
+    lt = fq.find("<")
+    if lt == -1:
+        return fq
+    gt = _find_matching_angle(fq, lt)
+    if gt == -1:
+        return fq
+
+    fq_args = _split_template_args(fq[lt + 1 : gt])
+    out_args = fq_args[:]
+    for i in range(min(len(out_args), len(resolved_args))):
+        out_args[i] = resolved_args[i]
+
+    return f"{fq[:lt]}<{', '.join(out_args)}>{fq[gt + 1:]}"
 
 
 class FunctionalBuilder(NodeBuilder[T_Node]):
@@ -27,99 +82,75 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             arg_spelling = self.arg_spelling(a)
 
             if arg_type.endswith("[]"):
-                # Remove the array brackets for the argument type
                 arg_type = arg_type[:-2]
-                # Add the array brackets to the argument spelling
                 arg_spelling = f"{arg_spelling}[]"
 
-            # self.node.args.append(f"{arg_type} {arg_spelling}")
             default = self.get_arg_default(a, self.node)
+            spec = self.node.spec.args.get(arg_spelling)
             argument = Argument(
-                type=arg_type, name=arg_spelling, default=default, cursor=a
+                name=arg_spelling, type=arg_type, default=default, cursor=a, spec=spec
             )
             self.node.args.append(argument)
 
         logger.debug(f"args: {self.node.args}")
 
-    def get_arg_default(self, argument: cindex.Cursor, node: FunctionalNode = None):
-        # logger.debug(f"Getting default for argument: {argument.spelling}")
+    def get_arg_default(self, argument: cindex.Cursor, node: FunctionalNode = None) -> str:
         default = self.default_from_tokens(argument.get_tokens())
-        # default = self.defaults.get(argument.spelling, default)
+        logger.debug(f"Initial default value for argument {argument.spelling}: {default}")
         default = str(self.defaults.get(argument.spelling, default))
-        for child in argument.get_children():
-            # logger.debug(f"child: {child.spelling}, {child.kind}, {child.type.spelling}, {child.type.kind}")
+        logger.debug(f"Updated default value for argument {argument.spelling}: {default}")
 
+        for child in argument.get_children():
             if child.type.kind in [cindex.TypeKind.POINTER]:
                 default = "nullptr"
             elif (
                 child.referenced is not None
                 and child.referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL
             ):
-                referenced = child.referenced
-                # logger.debug(f"referenced: {referenced.spelling}, {referenced.kind}, {referenced.type.spelling}, {referenced.type.kind}")
-                default = f"{referenced.type.spelling}::{referenced.spelling}"
-            elif not len(default):
+                ref = child.referenced
+                default = f"{ref.type.spelling}::{ref.spelling}"
+            elif not default:
                 default = self.default_from_tokens(child.get_tokens())
 
-        spec = node.spec
-        if spec.args and argument.spelling in spec.args:
-            spec_argument = spec.args[argument.spelling]
-            # logger.debug(f"node_argument: {node_argument}")
-            default = str(spec_argument.default)
+        if node.spec.args and argument.spelling in node.spec.args:
+            default = node.spec.args[argument.spelling].default
+            logger.debug(f"Default value for argument {argument.spelling} after processing children: {default}")
 
-        # Handle complex default values like initializer lists
-        if default.startswith("{") and default.endswith("}"):
-            # Example: {0, 0} -> SkPoint{0, 0}
+        if default is not None and default.startswith("{") and default.endswith("}"):
             default = f"{cu.get_base_type_name(argument.type)}{default}"
 
-        # logger.debug(f"Default for {argument.spelling}: {default}")
-        # logger.debug(f"defaults: {self.defaults}")
+        logger.debug(f"Default value for argument {argument.spelling}: {default}")
 
         return default
 
     def default_from_tokens(self, tokens) -> str:
-        joined = "".join([t.spelling for t in tokens])
-        # logger.debug(f"joined: {joined}")
-        parts = joined.split("=")
-        if len(parts) == 2:
-            return parts[1]
-        return ""
+        parts = "".join(t.spelling for t in tokens).split("=")
+        return parts[1] if len(parts) == 2 else ""
 
-    def create_pyname(self, name):
-        pyname = self.format_function(name)
-        return pyname
+    def create_pyname(self, name: str) -> str:
+        return self.format_function(name)
 
-    def should_cancel(self):
+    def should_cancel(self) -> bool:
         return super().should_cancel() or not self.is_function_bindable(self.cursor)
 
     def find_spec(self) -> Spec:
-        key = None
-        if self.is_overloaded(self.cursor):
-            key = FunctionalNode.make_key(self.cursor, True)
-        else:
-            key = FunctionalNode.make_key(self.cursor)
-        spec = self.lookup_spec(key)
-        if spec is None:
-            spec = create_spec(key)
-
+        key = FunctionalNode.make_key(self.cursor, self.is_overloaded(self.cursor))
+        spec = self.lookup_spec(key) or create_spec(key)
         logger.debug(f"FunctionBaseBuilder: find_spec: {spec}")
         return spec
 
-    def process_function_decl(self, decl):
+    def process_function_decl(self, decl: cindex.Cursor) -> bool:
         for param in decl.get_children():
-            if param.kind == cindex.CursorKind.PARM_DECL:
-                param_type = param.type
-                if self.is_rvalue_ref(param_type):
-                    logger.debug(f"Found rvalue reference in function {decl.spelling}")
-                    return False
+            if (
+                param.kind == cindex.CursorKind.PARM_DECL
+                and self.is_rvalue_ref(param.type)
+            ):
+                logger.debug(f"Found rvalue reference in function {decl.spelling}")
+                return False
         return True
 
     def is_inlined(self, cursor: cindex.Cursor) -> bool:
-        tokens = list(cursor.get_tokens())
-        if any(tok.spelling == "inline" for tok in tokens):
-            # logger.debug(f"{cursor.spelling} is explicitly inline")
-            return True
-        return False
+        return any(tok.spelling == "inline" for tok in cursor.get_tokens())
 
     def is_function_bindable(self, cursor: cindex.Cursor) -> bool:
         if self.is_inlined(cursor):
@@ -141,21 +172,16 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
                 return False
         return True
 
-    def is_function_void_return(self, cursor: cindex.Cursor):
-        result = cursor.type.get_result()
-        return result.kind == cindex.TypeKind.VOID
+    def is_function_void_return(self, cursor: cindex.Cursor) -> bool:
+        return cursor.type.get_result().kind == cindex.TypeKind.VOID
 
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
-        type_name = cu.get_base_type_name(cursor)
-        # logger.debug(f"type_name: {result_type_name}")
-        if type_name in self.wrapped:
-            return True
-        return False
+        return cu.get_base_type_name(cursor) in self.wrapped
 
     def resolve_argument_type(self, argument: cindex.Cursor) -> str:
         arg_type = argument.type
+        logger.debug(f"Spelling: {arg_type.spelling}")
 
-        # 1) Function pointer case
         if self.is_function_pointer(argument):
             logger.debug(f"Function pointer: {argument.spelling}")
             return arg_type.get_canonical().get_pointee().spelling
@@ -168,280 +194,59 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         fq_spelling = arg_type.get_fully_qualified_name(printing_policy)
         logger.debug(f"Fully qualified spelling: {fq_spelling}")
 
-        specialization_node = self.top_node  # used whenever we need template args
+        specialization_node = self.top_node
 
-        # -----------------------
-        # Helpers (local)
-        # -----------------------
-        def _find_matching_angle(s: str, lt: int) -> int:
-            depth = 0
-            for i in range(lt, len(s)):
-                c = s[i]
-                if c == "<":
-                    depth += 1
-                elif c == ">":
-                    depth -= 1
-                    if depth == 0:
-                        return i
-            return -1
+        def _resolve_templates(spelling: str) -> str:
+            if "type-parameter" not in spelling:
+                return spelling
+            resolved = self.resolve_template_type(spelling, specialization_node.spec.args)
+            logger.debug(f"Resolved template spelling: {spelling} -> {resolved}")
+            return resolved
 
-        def _split_template_args(arg_str: str) -> list[str]:
-            args: list[str] = []
-            depth = 0
-            start = 0
-            for i, c in enumerate(arg_str):
-                if c == "<":
-                    depth += 1
-                elif c == ">":
-                    depth -= 1
-                elif c == "," and depth == 0:
-                    args.append(arg_str[start:i].strip())
-                    start = i + 1
-            tail = arg_str[start:].strip()
-            if tail:
-                args.append(tail)
-            return args
-
-        def _outer_template_args(spelling: str) -> list[str] | None:
-            """Return outer template args for 'Foo<A,B<C>>', else None."""
-            lt = spelling.find("<")
-            if lt == -1:
-                return None
-            gt = _find_matching_angle(spelling, lt)
-            if gt == -1:
-                return None
-            inside = spelling[lt + 1 : gt]
-            return _split_template_args(inside)
-
-        def replace_fully_qualified_template_args(fq: str, resolved_args: list[str]) -> str:
-            """
-            Replace outermost template args of fq with resolved_args by position.
-            fq: 'tmx::Vector2<T>' + ['int'] -> 'tmx::Vector2<int>'
-            """
-            lt = fq.find("<")
-            if lt == -1:
+        def _prefer_fq(canon: str, fq: str) -> str:
+            """Use fq spelling, but splice in resolved template args from canonical if needed."""
+            resolved = _resolve_templates(canon)
+            if resolved == canon:
                 return fq
-            gt = _find_matching_angle(fq, lt)
-            if gt == -1:
-                return fq
+            resolved_args = _outer_template_args(resolved) or []
+            if resolved_args:
+                patched = _replace_outer_template_args(fq, resolved_args)
+                logger.debug(f"Patched fq spelling: {fq} -> {patched}")
+                return patched
+            return resolved
 
-            before = fq[:lt]
-            inside = fq[lt + 1 : gt]
-            after = fq[gt + 1 :]
-
-            fq_args = _split_template_args(inside)
-            out_args = fq_args[:]
-            for i in range(min(len(out_args), len(resolved_args))):
-                out_args[i] = resolved_args[i]
-
-            return f"{before}<{', '.join(out_args)}>{after}"
-
-        def maybe_resolve_template_spelling(spelling: str) -> str:
-            """
-            Resolve any 'type-parameter-*' placeholders that appear anywhere in the type spelling,
-            including nested template arguments (e.g., Vector<type-parameter-0-0>).
-            """
-            if "type-parameter" in spelling:
-                resolved = self.resolve_template_type(spelling, specialization_node.spec.args)
-                logger.debug(f"Resolved template spelling: {spelling} -> {resolved}")
-                return resolved
-            return spelling
-
-        def prefer_fq_with_resolved_templates(canon_spelling: str, fq: str) -> str:
-            """
-            If canon_spelling had placeholders, resolve them and splice the resolved outer template
-            args into fq. Otherwise return fq.
-            """
-            resolved_canon = maybe_resolve_template_spelling(canon_spelling)
-            if resolved_canon != canon_spelling:
-                resolved_args = _outer_template_args(resolved_canon) or []
-                if resolved_args:
-                    patched = replace_fully_qualified_template_args(fq, resolved_args)
-                    logger.debug(f"Patched fq spelling: {fq} -> {patched}")
-                    return patched
-                # If we resolved but couldn't parse args, fall back to resolved canonical.
-                return resolved_canon
-            return fq
-
-        # 2) Constant array: convert to std::array<elem, N>&, resolving elem placeholders
         if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
             logger.debug(f"Constant array: {argument.spelling}")
-
             element_type = arg_type.get_array_element_type()
-            element_canon = element_type.get_canonical()
-            element_canon_spelling = element_canon.spelling
-
-            # Prefer fully qualified element spelling, but splice in any resolved template args
+            element_canon_spelling = element_type.get_canonical().spelling
             element_fq_spelling = element_type.get_fully_qualified_name(printing_policy)
-            element_type_name = prefer_fq_with_resolved_templates(element_canon_spelling, element_fq_spelling)
-
+            element_type_name = _prefer_fq(element_canon_spelling, element_fq_spelling)
             logger.debug(f"Element type (canon): {element_canon_spelling}")
             logger.debug(f"Element type (fq): {element_fq_spelling}")
             logger.debug(f"Element type (final): {element_type_name}")
-            logger.debug(f"Element type kind: {element_type.kind}")
-
             return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
 
-        # 3) Wrapper mapping: do this early, but keep your existing semantics
-        #    (uses base type from canonical; adjust if your wrapper keys are fully-qualified)
         type_name = cu.get_base_type_name(canonical)
         if type_name in self.wrapped:
             wrapper = self.wrapped[type_name].wrapper
             return f"const {wrapper}&"
 
-        # 4) Default: return fully-qualified spelling, with resolved template args spliced in
-        return prefer_fq_with_resolved_templates(canonical_spelling, fq_spelling)
+        typedef_name = self.typedef_spelling(arg_type)
+        if typedef_name is not None:
+            return typedef_name
 
-    '''
-    def resolve_argument_type(self, argument: cindex.Cursor) -> str:
-        arg_type = argument.type
+        return _prefer_fq(canonical_spelling, fq_spelling)
 
-        # 1) Function pointer case
-        if self.is_function_pointer(argument):
-            logger.debug(f"Function pointer: {argument.spelling}")
-            return arg_type.get_canonical().get_pointee().spelling
-
-        # We’ll use canonical spelling as the source of truth for template placeholders.
-        canonical = arg_type.get_canonical()
-        canonical_spelling = canonical.spelling
-        logger.debug(f"Canonical spelling: {canonical_spelling}")
-        printing_policy = cindex.PrintingPolicy.create(argument)
-        fq_spelling = arg_type.get_fully_qualified_name(printing_policy)
-        logger.debug(f"Fully qualified spelling: {fq_spelling}")
-
-        specialization_node = self.top_node  # used whenever we need template args
-
-        def maybe_resolve_template_spelling(spelling: str) -> str:
-            """
-            Resolve any 'type-parameter-*' placeholders that appear anywhere in the type spelling,
-            including nested template arguments (e.g., Vector<type-parameter-0-0>).
-            """
-            if "type-parameter" in spelling:
-                resolved = self.resolve_template_type(spelling, specialization_node.spec.args)
-                logger.debug(f"Resolved template spelling: {spelling} -> {resolved}")
-                return resolved
-            return spelling
-
-        # 2) Constant array: convert to std::array<elem, N>&, resolving elem placeholders
-        if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
-            logger.debug(f"Constant array: {argument.spelling}")
-            element_type = arg_type.get_array_element_type()
-            element_canon = element_type.get_canonical()
-            element_spelling = element_canon.spelling
-
-            element_type_name = cu.get_base_type_name(element_canon)
-            # If the element spelling contains placeholders, resolve and use that.
-            element_resolved = maybe_resolve_template_spelling(element_spelling)
-            if element_resolved != element_spelling:
-                element_type_name = element_resolved
-
-            logger.debug(f"Element type: {element_type.spelling}")
-            logger.debug(f"Element type kind: {element_type.kind}")
-            return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
-
-        # 3) Resolve template placeholders ANYWHERE in the canonical spelling
-        #    This is what fixes Vector<T> and similar cases.
-        resolved_canonical_spelling = maybe_resolve_template_spelling(canonical_spelling)
-
-        # 4) Wrapper mapping (apply after template resolution so Vector<int> etc can be handled
-        #    if your get_base_type_name() returns the unqualified base name).
-        #
-        #    NOTE: If your wrapper map keys include qualifiers or full specializations,
-        #    you might want to base this on resolved_canonical_spelling instead.
-        type_name = cu.get_base_type_name(canonical)
-        if type_name in self.wrapped:
-            wrapper = self.wrapped[type_name].wrapper
-            return f"const {wrapper}&"
-
-        # 5) Default: return resolved (or original) canonical spelling
-        return resolved_canonical_spelling
-    '''
-
-    """
-    def resolve_argument_type(self, argument: cindex.Cursor):
-        arg_kind = argument.kind
-        # logger.debug(f"arg_kind: {arg_kind}")
-        arg_type = argument.type
-        # logger.debug(arg_type.spelling)
-        arg_type_kind = arg_type.kind
-        # logger.debug(arg_type_kind)
-        if self.is_function_pointer(argument):
-            logger.debug(f"Function pointer: {argument.spelling}")
-            return argument.type.get_canonical().get_pointee().spelling
-
-        if argument.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            logger.debug(f"Constant array: {argument.spelling}")
-            element_type = argument.type.get_array_element_type()
-            element_type_name = cu.get_base_type_name(
-                argument.type.get_array_element_type()
-            )
-            logger.debug(f"Element type: {element_type.spelling}")
-            logger.debug(f"Element type kind: {element_type.kind}")
-            if element_type.kind == cindex.TypeKind.UNEXPOSED:
-                resolved_type = element_type.get_canonical()
-                specialization_node = self.top_node
-                resolved_type_name = self.resolve_template_type(
-                    resolved_type.spelling, specialization_node.spec.args
-                )
-                logger.debug(f"Resolved type: {resolved_type_name}")
-                element_type_name = resolved_type_name
-
-            return f"std::array<{element_type_name}, {argument.type.get_array_size()}>&"
-
-        # Handle template parameters (placeholders)
-        if arg_type_kind == cindex.TypeKind.UNEXPOSED:
-            specialization_node = self.top_node
-            logger.debug(f"specialization_node: {specialization_node}")
-            logger.debug(f"specialization_node.spec: {specialization_node.spec}")
-            # Attempt to get the canonical type spelling for the template argument
-            resolved_type = argument.type.get_canonical()
-            resolved_type_name = self.resolve_template_type(
-                resolved_type.spelling, specialization_node.spec.args
-            )
-            logger.debug(f"Resolved template parameter: {resolved_type}")
-            logger.debug(f"Resolved template parameter: {resolved_type_name}")
-            return resolved_type_name
-
-        type_name = cu.get_base_type_name(argument.type)
-        # logger.debug(f"arg_type: {type_name}")
-
-        if "type-parameter" in type_name:
-            logger.debug(f"arg_type: {type_name}")
-            specialization_node = self.top_node
-            logger.debug(f"specialization_node: {specialization_node}")
-            logger.debug(f"specialization_node.spec: {specialization_node.spec}")
-            # Attempt to get the canonical type spelling for the template argument
-            resolved_type = argument.type.get_canonical()
-            resolved_type_name = self.resolve_template_type(
-                resolved_type.spelling, specialization_node.spec.args
-            )
-            logger.debug(f"Resolved template parameter: {resolved_type}")
-            logger.debug(f"Resolved template parameter: {resolved_type_name}")
-            return resolved_type_name
-
-        if type_name in self.wrapped:
-            wrapper = self.wrapped[type_name].wrapper
-            return f"const {wrapper}&"
-
-        return argument.type.get_canonical().spelling
-    """
-
-    def resolve_template_type(self, template_param: str, template_mapping):
+    def resolve_template_type(self, template_param: str, template_mapping) -> str:
         """
         Replace clang-style placeholders like 'type-parameter-0-0' in `template_param`
-        using `template_mapping`.
-
-        - If `template_mapping` is a list/tuple, the replacement uses the second index
-        in the placeholder (the position), e.g. 'type-parameter-0-0' -> mapping[0].
-        - If it's a dict, it tries keys `idx` (int) or `str(idx)`.
-        - Works when the placeholder is embedded in larger strings.
+        using `template_mapping` (a dict or sequence).
         """
         logger.debug(
             f"Resolving template parameter: {template_param} with mapping: {template_mapping}"
         )
 
-        def _to_str(x):
-            # Gracefully stringify mapped objects (e.g., clang types with .spelling/.name)
+        def _to_str(x) -> str:
             for attr in ("spelling", "name"):
                 if hasattr(x, attr):
                     return getattr(x, attr)
@@ -450,18 +255,13 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         def _lookup(idx: int):
             if isinstance(template_mapping, dict):
                 return template_mapping.get(idx, template_mapping.get(str(idx)))
-            # assume sequence
             if 0 <= idx < len(template_mapping):
                 return template_mapping[idx]
             return None
 
-        # Replace all occurrences of type-parameter-<depth>-<index>
-        pattern = re.compile(r"\btype-parameter-(\d+)-(\d+)\b")
-
-        def _repl(m: re.Match):
-            # depth = int(m.group(1))  # currently unused; depth==0 in most common cases
+        def _repl(m: re.Match) -> str:
             idx = int(m.group(2))
             repl = _lookup(idx)
             return _to_str(repl) if repl is not None else m.group(0)
 
-        return pattern.sub(_repl, template_param)
+        return re.sub(r"\btype-parameter-(\d+)-(\d+)\b", _repl, template_param)
