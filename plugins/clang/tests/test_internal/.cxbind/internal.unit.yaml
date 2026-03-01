@@ -1,0 +1,4 @@
+source: 'src/internal.h'
+#target: 'src/transforms_2_py_auto.cpp'
+
+internal: true

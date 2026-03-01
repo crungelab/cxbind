@@ -1,7 +1,7 @@
 from typing_extensions import Annotated
 from typing import List, Dict, Optional, Any, Literal, Union
 
-from pydantic import BaseModel, Field, BeforeValidator, field_validator
+from pydantic import BaseModel, Field, BeforeValidator, model_validator, field_validator
 
 
 from loguru import logger
@@ -14,10 +14,25 @@ from .transform import Transform, _registry as TRANSFORM_REGISTRY
 class Unit(UnitBase):
     source: Optional[str] = None
     sources: Optional[List[str]] = []
-    target: str
+    #target: str
+    target: Optional[str] = None
     template: Optional[str] = None
     mapped: Optional[List[str]] = []
     transforms: list[Transform] = []
+    generate: bool = True
+    internal: bool = False
+
+    # Copilot suggested fields, but they are not used in the current implementation. They can be added later if needed.
+    #overwrite: bool = False
+    #rename: Optional[str] = None
+    #doc: Optional[str] = None
+    #extra: Optional[dict[str, Any]] = None
+
+    @model_validator(mode='after')
+    def handle_internal_logic(self) -> 'Unit':
+        if self.internal:
+            self.generate = False
+        return self
 
     @field_validator("transforms", mode="before")
     @classmethod

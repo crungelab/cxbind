@@ -149,7 +149,6 @@ class StructBaseSpec(Spec):
     extends: list[str] | None = None
     wrapper: str | None = None
     holder: str | None = None
-    is_handle: bool = False
     extra: StructBaseExtra = Field(default_factory=StructBaseExtra)
 
 
@@ -160,7 +159,6 @@ class StructBaseSpec(Spec):
     holder: str | None = None
     properties: list[ExtraProperty] = Field(default_factory=list)
     methods: list[ExtraMethodUnion] = Field(default_factory=list)
-    is_handle: bool = False
 
     @field_validator("properties", mode="before")
     @classmethod

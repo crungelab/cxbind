@@ -1,0 +1,15 @@
+source: 'src/external.h'
+target: 'src/external_py_auto.cpp'
+
+specs:
+  'struct@Handle': {}
+
+  'struct@Dummy':
+    extra:
+      methods:
+        __repr__:
+          auto: true
+
+transforms:
+  - name: mogrify
+    target: struct@Handle

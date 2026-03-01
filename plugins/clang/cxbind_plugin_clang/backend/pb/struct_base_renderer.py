@@ -213,9 +213,11 @@ class StructBaseRenderer(NodeRenderer[T_Node]):
             self.begin_chain()
             if setter is not None:
                 self.out(
-                    f'.def_property("{prop.name}", &{node.name}::{getter}, &{node.name}::{setter})'
+                    #f'.def_property("{prop.name}", &{node.name}::{getter}, &{node.name}::{setter})'
+                    f'.def_property("{prop.name}", &{getter}, &{setter})'
                 )
             else:
                 self.out(
-                    f'.def_property_readonly("{prop.name}", &{node.name}::{getter})'
+                    #f'.def_property_readonly("{prop.name}", &{node.name}::{getter})'
+                    f'.def_property_readonly("{prop.name}", &{getter})'
                 )

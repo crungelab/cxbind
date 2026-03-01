@@ -100,7 +100,9 @@ class Compiler(Tool):
 
         plan.get_phase(BuildPhase).add_task(LambdaTask(self.build))
         plan.get_phase(TransformPhase).add_task(LambdaTask(self.transform))
-        plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
+
+        if self.unit.generate:
+            plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
 
     """
     def run(self):
