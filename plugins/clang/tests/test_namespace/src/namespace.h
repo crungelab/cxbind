@@ -10,7 +10,7 @@ struct Ns1
     }
 };
 
-}
+} // namespace ns1
 
 namespace ns2 {
 
@@ -28,4 +28,4 @@ struct Ns2
     }
 };
 
-} // namespace test
+} // namespace ns2

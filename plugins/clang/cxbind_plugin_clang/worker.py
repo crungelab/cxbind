@@ -8,7 +8,7 @@ from clang import cindex
 
 from . import cu
 from .worker_context import WorkerContext
-from .node import Node, StructBaseNode
+from .node import Node, StructuralNode
 
 T_Context = TypeVar("T_Context", bound=WorkerContext)
 
@@ -29,7 +29,7 @@ class Worker(Generic[T_Context]):
         return self.session.prefixes
 
     @property
-    def wrapped(self) -> dict[str, StructBaseNode]:
+    def wrapped(self) -> dict[str, StructuralNode]:
         return self.session.wrapped
 
     @property

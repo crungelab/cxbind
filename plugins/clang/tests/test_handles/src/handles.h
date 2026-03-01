@@ -1,4 +1,4 @@
-// namespace test_inits {
+//namespace test_handles {
 
 struct Handle
 {
@@ -20,4 +20,4 @@ Dummy handleCreateDummy(const Handle* handle, int value)
 }
 
 
-//} // namespace test_inits
+//} // namespace test_handles

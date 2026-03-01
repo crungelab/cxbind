@@ -9,7 +9,7 @@ from cxbind import UserSet
 from cxbind.spec import Spec
 from cxbind.unit import Unit
 
-from .node import Node, StructBaseNode
+from .node import Node, StructuralNode
 
 
 # TODO: Use pydantic settings
@@ -36,7 +36,7 @@ class Session:
         self.unit = unit
 
         self.options = {"save": True}
-        self.wrapped: Dict[StructBaseNode] = {}
+        self.wrapped: Dict[StructuralNode] = {}
         self.visited: Dict[Node] = {}
 
         self.module = unit.module

@@ -2,9 +2,9 @@ source: 'src/external.h'
 target: 'src/external_py_auto.cpp'
 
 specs:
-  'struct@Handle': {}
+  'struct@Internal': {}
 
-  'struct@Dummy':
+  'struct@InternalDummy':
     extra:
       methods:
         __repr__:
@@ -12,4 +12,4 @@ specs:
 
 transforms:
   - name: mogrify
-    target: struct@Handle
+    target: struct@Internal

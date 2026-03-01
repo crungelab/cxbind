@@ -1,12 +1,12 @@
 from clang import cindex
 
-from . import StructBaseBuilder
+from . import StructuralBuilder
 from ..node import StructNode
 
 from cxbind.types import Handled
 
 
-class StructBuilder(StructBaseBuilder[StructNode]):
+class StructBuilder(StructuralBuilder[StructNode]):
     def create_node(self):
         self.node = StructNode(kind="struct", name=self.name, cursor=self.cursor)
 

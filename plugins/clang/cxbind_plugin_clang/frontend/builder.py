@@ -8,7 +8,7 @@ from clang import cindex
 
 from .. import cu
 from .builder_context import BuilderContext
-from ..node import Node, StructBaseNode
+from ..node import Node, StructuralNode
 from ..worker import Worker
 
 

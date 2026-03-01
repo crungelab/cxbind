@@ -12,7 +12,7 @@ from .node_renderer import NodeRenderer
 
 T_Node = TypeVar("T_Node", bound=FunctionNode)
 
-class FunctionBaseRenderer(NodeRenderer[T_Node]):
+class FunctionalRenderer(NodeRenderer[T_Node]):
     def render(self):
         out = self.out
         node = self.node
@@ -188,21 +188,3 @@ class FunctionBaseRenderer(NodeRenderer[T_Node]):
             # logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
             default = f" = {argument.default}" if argument.default else ""
             self.out(f', py::arg("{self.format_field(argument.name)}"){default}')
-
-    '''
-    def render_pyargs(self, arguments, node: FunctionNode = None):
-        for argument in arguments:
-            # logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
-            default = self.get_default(argument, node)
-            self.out(f', py::arg("{self.format_field(argument.spelling)}"){default}')
-    '''
-
-    '''
-    def default_from_tokens(self, tokens) -> str:
-        joined = "".join([t.spelling for t in tokens])
-        # logger.debug(f"joined: {joined}")
-        parts = joined.split("=")
-        if len(parts) == 2:
-            return parts[1]
-        return ""
-    '''

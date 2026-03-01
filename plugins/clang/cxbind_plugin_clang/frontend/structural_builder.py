@@ -3,14 +3,14 @@ from typing import TypeVar, Generic
 from loguru import logger
 
 from .node_builder import NodeBuilder
-from ..node import StructBaseNode
+from ..node import StructuralNode
 
-T_Node = TypeVar("T_Node", bound=StructBaseNode)
+T_Node = TypeVar("T_Node", bound=StructuralNode)
 
-class StructBaseBuilder(NodeBuilder[T_Node]):
+class StructuralBuilder(NodeBuilder[T_Node]):
     def create_pyname(self, name):
         pyname = super().create_pyname(name)
-        if isinstance(self.top_node, StructBaseNode):
+        if isinstance(self.top_node, StructuralNode):
             return f"{self.top_node.pyname}{pyname}"
         return pyname
 

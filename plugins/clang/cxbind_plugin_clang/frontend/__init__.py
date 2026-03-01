@@ -1,4 +1,4 @@
-from .struct_base_builder import StructBaseBuilder
+from .structural_builder import StructuralBuilder
 from .class_builder import ClassBuilder
 from .template_builder import TemplateBuilder
 from .class_template_specialization_builder import ClassTemplateSpecializationBuilder

@@ -1,8 +1,8 @@
-from . import StructBaseBuilder
+from . import StructuralBuilder
 from ..node import ClassNode
 
 
-class ClassBuilder(StructBaseBuilder[ClassNode]):
+class ClassBuilder(StructuralBuilder[ClassNode]):
     def create_node(self):
         self.node = ClassNode(kind='class', name=self.name, cursor=self.cursor)
 

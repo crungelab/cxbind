@@ -12,26 +12,26 @@
 namespace py = pybind11;
 
 void register_internal_py_auto(py::module &_tests, Registry &registry) {
-    py::class_<Handle> _Handle(_tests, "Handle");
-    registry.on(_tests, "Handle", _Handle);
-        _Handle
+    py::class_<Internal> _Internal(_tests, "Internal");
+    registry.on(_tests, "Internal", _Internal);
+        _Internal
         .def(py::init<int>()
         , py::arg("value") = 0
         )
-        .def_readwrite("value", &Handle::value)
+        .def_readwrite("value", &Internal::value)
         .def("create_dummy", &CreateDummy)
     ;
 
-    py::class_<Dummy> _Dummy(_tests, "Dummy");
-    registry.on(_tests, "Dummy", _Dummy);
-        _Dummy
+    py::class_<InternalDummy> _InternalDummy(_tests, "InternalDummy");
+    registry.on(_tests, "InternalDummy", _InternalDummy);
+        _InternalDummy
         .def(py::init<int>()
         , py::arg("value") = 0
         )
-        .def_readwrite("value", &Dummy::value)
-        .def("__repr__", [](const Dummy &self) {
+        .def_readwrite("value", &InternalDummy::value)
+        .def("__repr__", [](const InternalDummy &self) {
             std::stringstream ss;
-            ss << "Dummy(";
+            ss << "InternalDummy(";
             ss << "value=" << py::repr(py::cast(self.value)).cast<std::string>();
             ss << ")";
             return ss.str();

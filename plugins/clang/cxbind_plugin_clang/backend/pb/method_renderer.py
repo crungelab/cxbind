@@ -1,6 +1,6 @@
-from .function_base_renderer import FunctionBaseRenderer
+from .functional_renderer import FunctionalRenderer
 from ...node import MethodNode
 
 
-class MethodRenderer(FunctionBaseRenderer[MethodNode]):
+class MethodRenderer(FunctionalRenderer[MethodNode]):
     pass

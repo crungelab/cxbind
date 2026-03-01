@@ -1,6 +1,6 @@
 #include "external.h"
 
-Dummy CreateDummy(const Handle* handle, int value)
+InternalDummy CreateDummy(const Internal* handle, int value)
 {
-    return Dummy(value);
+    return InternalDummy(value);
 }

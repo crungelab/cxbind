@@ -2,12 +2,12 @@ from loguru import logger
 
 from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraProperty
 
-from ...node import StructBaseNode, FieldNode
+from ...node import StructuralNode, FieldNode
 
 from .node_renderer import NodeRenderer, T_Node
 from .method_renderer import MethodRenderer
 
-class StructBaseRenderer(NodeRenderer[T_Node]):
+class StructuralRenderer(NodeRenderer[T_Node]):
     def render(self):
         node = self.node
         pyname = node.pyname

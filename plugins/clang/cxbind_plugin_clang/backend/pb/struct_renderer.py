@@ -1,8 +1,8 @@
 from clang import cindex
 
-from . import StructBaseRenderer
+from . import StructuralRenderer
 from ...node import StructNode, FieldNode
 
 
-class StructRenderer(StructBaseRenderer[StructNode]):
+class StructRenderer(StructuralRenderer[StructNode]):
     pass

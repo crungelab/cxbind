@@ -14,7 +14,6 @@ from .transform import Transform, _registry as TRANSFORM_REGISTRY
 class Unit(UnitBase):
     source: Optional[str] = None
     sources: Optional[List[str]] = []
-    #target: str
     target: Optional[str] = None
     template: Optional[str] = None
     mapped: Optional[List[str]] = []
@@ -22,14 +21,8 @@ class Unit(UnitBase):
     generate: bool = True
     internal: bool = False
 
-    # Copilot suggested fields, but they are not used in the current implementation. They can be added later if needed.
-    #overwrite: bool = False
-    #rename: Optional[str] = None
-    #doc: Optional[str] = None
-    #extra: Optional[dict[str, Any]] = None
-
-    @model_validator(mode='after')
-    def handle_internal_logic(self) -> 'Unit':
+    @model_validator(mode="after")
+    def handle_internal_logic(self) -> "Unit":
         if self.internal:
             self.generate = False
         return self
@@ -59,10 +52,12 @@ class Unit(UnitBase):
             out.append(model_cls.model_validate(raw))
         return out
 
+
 def validate_unit_dict(v: dict[str, Unit]) -> dict[str, Unit]:
-    #logger.debug(f"validate_unit_dict: {v}")
+    # logger.debug(f"validate_unit_dict: {v}")
     for key, value in v.items():
-        value['name'] = key
+        value["name"] = key
     return v
+
 
 UnitDict = Annotated[dict[str, Unit], BeforeValidator(validate_unit_dict)]

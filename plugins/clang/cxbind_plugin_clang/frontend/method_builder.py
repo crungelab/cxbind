@@ -1,8 +1,8 @@
-from .function_base_builder import FunctionBaseBuilder
+from .functional_builder import FunctionalBuilder
 from ..node import MethodNode
 
 
-class MethodBuilder(FunctionBaseBuilder[MethodNode]):
+class MethodBuilder(FunctionalBuilder[MethodNode]):
     def should_cancel(self):
         if self.top_node is None:
             return True

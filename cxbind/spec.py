@@ -49,7 +49,7 @@ class Argument(BaseModel):
     default: Any | None = None
 
 
-class FunctionBaseSpec(Spec):
+class FunctionalSpec(Spec):
     args: dict[str, Argument] = Field(default_factory=dict)
     return_type: str | None = None
     omit_ret: bool = False
@@ -68,7 +68,7 @@ class FunctionBaseSpec(Spec):
         }
 
 
-class FunctionSpec(FunctionBaseSpec):
+class FunctionSpec(FunctionalSpec):
     kind: Literal["function"]
 
 
@@ -86,11 +86,11 @@ class FunctionTemplateSpec(TemplateSpec):
     )
 
 
-class MethodSpec(FunctionBaseSpec):
+class MethodSpec(FunctionalSpec):
     kind: Literal["method"]
 
 
-class CtorSpec(FunctionBaseSpec):
+class CtorSpec(FunctionalSpec):
     kind: Literal["ctor"]
 
 
@@ -98,7 +98,7 @@ class FieldSpec(Spec):
     kind: Literal["field"]
 
 
-class StructBaseExtra(Extra):
+class StructuralExtra(Extra):
     properties: list[ExtraProperty] = Field(default_factory=list)
     methods: list[ExtraMethodUnion] = Field(default_factory=list)
 
@@ -145,11 +145,11 @@ class StructBaseExtra(Extra):
         return normalized
 
 
-class StructBaseSpec(Spec):
+class StructuralSpec(Spec):
     extends: list[str] | None = None
     wrapper: str | None = None
     holder: str | None = None
-    extra: StructBaseExtra = Field(default_factory=StructBaseExtra)
+    extra: StructuralExtra = Field(default_factory=StructuralExtra)
 
 
 """
@@ -198,11 +198,11 @@ class StructBaseSpec(Spec):
 """
 
 
-class StructSpec(StructBaseSpec):
+class StructSpec(StructuralSpec):
     kind: Literal["struct"]
 
 
-class ClassSpec(StructBaseSpec):
+class ClassSpec(StructuralSpec):
     kind: Literal["class"]
 
 

@@ -7,15 +7,15 @@ from loguru import logger
 
 from cxbind.spec import Spec, create_spec
 
-from ..node import FunctionBaseNode, Argument
+from ..node import FunctionalNode, Argument
 from .. import cu
 
 from .node_builder import NodeBuilder
 
-T_Node = TypeVar("T_Node", bound=FunctionBaseNode)
+T_Node = TypeVar("T_Node", bound=FunctionalNode)
 
 
-class FunctionBaseBuilder(NodeBuilder[T_Node]):
+class FunctionalBuilder(NodeBuilder[T_Node]):
     def build_node(self):
         super().build_node()
         self.build_args()
@@ -41,7 +41,7 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
 
         logger.debug(f"args: {self.node.args}")
 
-    def get_arg_default(self, argument: cindex.Cursor, node: FunctionBaseNode = None):
+    def get_arg_default(self, argument: cindex.Cursor, node: FunctionalNode = None):
         # logger.debug(f"Getting default for argument: {argument.spelling}")
         default = self.default_from_tokens(argument.get_tokens())
         # default = self.defaults.get(argument.spelling, default)
@@ -95,9 +95,9 @@ class FunctionBaseBuilder(NodeBuilder[T_Node]):
     def find_spec(self) -> Spec:
         key = None
         if self.is_overloaded(self.cursor):
-            key = FunctionBaseNode.make_key(self.cursor, True)
+            key = FunctionalNode.make_key(self.cursor, True)
         else:
-            key = FunctionBaseNode.make_key(self.cursor)
+            key = FunctionalNode.make_key(self.cursor)
         spec = self.lookup_spec(key)
         if spec is None:
             spec = create_spec(key)

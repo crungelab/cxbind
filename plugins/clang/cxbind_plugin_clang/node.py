@@ -131,11 +131,11 @@ class Argument(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class FunctionBaseNode(TypeNode):
+class FunctionalNode(TypeNode):
     args: list[Argument] | None = []
 
 
-class FunctionNode(FunctionBaseNode):
+class FunctionNode(FunctionalNode):
     kind: Literal["function"]
 
 
@@ -147,11 +147,11 @@ class FunctionTemplateNode(TemplateNode):
     kind: Literal["function_template"]
 
 
-class MethodNode(FunctionBaseNode):
+class MethodNode(FunctionalNode):
     kind: Literal["method"]
 
 
-class CtorNode(FunctionBaseNode):
+class CtorNode(FunctionalNode):
     kind: Literal["ctor"]
 
 
@@ -159,16 +159,16 @@ class FieldNode(Node):
     kind: Literal["field"]
 
 
-class StructBaseNode(TypeNode):
+class StructuralNode(TypeNode):
     constructible: bool = True
     has_constructor: bool = False
 
 
-class StructNode(StructBaseNode):
+class StructNode(StructuralNode):
     kind: Literal["struct"]
 
 
-class ClassNode(StructBaseNode):
+class ClassNode(StructuralNode):
     kind: Literal["class"]
 
 

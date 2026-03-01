@@ -1,4 +1,4 @@
-from .struct_base_renderer import StructBaseRenderer
+from .structural_renderer import StructuralRenderer
 from .class_renderer import ClassRenderer
 from .class_template_specialization_renderer import ClassTemplateSpecializationRenderer
 from .class_template_specialization_renderer import ClassTemplateSpecializationRenderer

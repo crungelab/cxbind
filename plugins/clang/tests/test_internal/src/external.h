@@ -1,22 +1,15 @@
 #pragma once
 
-struct Handle
+struct Internal
 {
-    Handle(int value = 0) : value(value) {}
+    Internal(int value = 0) : value(value) {}
 
     int value = 0;
 };
 
-struct Dummy
+struct InternalDummy
 {
-    Dummy(int value = 0) : value(value) {}
+    InternalDummy(int value = 0) : value(value) {}
 
     int value = 0;
 };
-
-/*
-Dummy handleCreateDummy(const Handle* handle, int value)
-{
-    return Dummy(value);
-}
-*/
