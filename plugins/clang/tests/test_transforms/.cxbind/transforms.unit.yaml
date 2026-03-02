@@ -2,9 +2,9 @@ source: 'src/transforms.h'
 target: 'src/transforms_py_auto.cpp'
 
 specs:
-  'struct@Handle': {}
+  'struct@Transforms': {}
 
-  'struct@Dummy':
+  'struct@TransformsDummy':
     extra:
       methods:
         __repr__:
@@ -12,4 +12,4 @@ specs:
 
 transforms:
   - name: mogrify
-    target: struct@Handle
+    target: struct@Transforms

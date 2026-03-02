@@ -16,8 +16,11 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
             const uint32_t * _a = (const uint32_t *)a.data();
             auto count = a.size();
             
-            bool (*)(int, void *) _callback = (bool (*)(int, void *))callback.data();
-            auto context = callback.size();
+            auto _callback = +[](b2ShapeId shapeId, void* ctx) -> bool {
+                auto* st = static_cast<OverlapThunkState*>(ctx);
+                // ... use st, acquire GIL, call Python, etc ...
+                return true;
+            };
             
             functionWithCallback(_a, count, _callback, context);
             return ;

@@ -6,31 +6,32 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
-#include "handles.h"
+#include "transforms.h"
+#include "transforms_2.h"
 
 namespace py = pybind11;
 
-void register_handles_py_auto(py::module &_tests, Registry &registry) {
-    py::class_<Handle> _Handle(_tests, "Handle");
-    registry.on(_tests, "Handle", _Handle);
-        _Handle
+void register_transforms_py_auto(py::module &_tests, Registry &registry) {
+    py::class_<Transforms> _Transforms(_tests, "Transforms");
+    registry.on(_tests, "Transforms", _Transforms);
+        _Transforms
         .def(py::init<int>()
         , py::arg("value") = 0
         )
-        .def_readwrite("value", &Handle::value)
-        .def("create_dummy", &handleCreateDummy)
+        .def_readwrite("value", &Transforms::value)
+        .def("create_dummy", &transformsCreateDummy)
     ;
 
-    py::class_<Dummy> _Dummy(_tests, "Dummy");
-    registry.on(_tests, "Dummy", _Dummy);
-        _Dummy
+    py::class_<TransformsDummy> _TransformsDummy(_tests, "TransformsDummy");
+    registry.on(_tests, "TransformsDummy", _TransformsDummy);
+        _TransformsDummy
         .def(py::init<int>()
         , py::arg("value") = 0
         )
-        .def_readwrite("value", &Dummy::value)
-        .def("__repr__", [](const Dummy &self) {
+        .def_readwrite("value", &TransformsDummy::value)
+        .def("__repr__", [](const TransformsDummy &self) {
             std::stringstream ss;
-            ss << "Dummy(";
+            ss << "TransformsDummy(";
             ss << "value=" << py::repr(py::cast(self.value)).cast<std::string>();
             ss << ")";
             return ss.str();

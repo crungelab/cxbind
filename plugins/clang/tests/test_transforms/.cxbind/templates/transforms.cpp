@@ -6,10 +6,11 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
-#include "handles.h"
+#include "transforms.h"
+#include "transforms_2.h"
 
 namespace py = pybind11;
 
-void register_handles_py_auto(py::module &_tests, Registry &registry) {
+void register_transforms_py_auto(py::module &_tests, Registry &registry) {
 {{body}}
 }

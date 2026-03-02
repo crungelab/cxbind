@@ -140,8 +140,11 @@ class CallbackArgRenderer(ArgFacadeRenderer[CallbackArgFacade]):
         arg_name = self.arg.name
         arg_type = self.arg.type
         value = f"""\
-        {arg_type} _{arg_name} = ({arg_type}){arg_name}.data();
-        auto {self.context_arg} = {arg_name}.size();
+        auto _{arg_name} = +[](b2ShapeId shapeId, void* ctx) -> bool {{
+            auto* st = static_cast<OverlapThunkState*>(ctx);
+            // ... use st, acquire GIL, call Python, etc ...
+            return true;
+        }};
         """
         out(value)
 

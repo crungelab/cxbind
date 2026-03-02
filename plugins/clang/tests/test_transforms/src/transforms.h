@@ -1,22 +1,15 @@
 #pragma once
 
-struct Handle
+struct Transforms
 {
-    Handle(int value = 0) : value(value) {}
+    Transforms(int value = 0) : value(value) {}
 
     int value = 0;
 };
 
-struct Dummy
+struct TransformsDummy
 {
-    Dummy(int value = 0) : value(value) {}
+    TransformsDummy(int value = 0) : value(value) {}
 
     int value = 0;
 };
-
-/*
-Dummy handleCreateDummy(const Handle* handle, int value)
-{
-    return Dummy(value);
-}
-*/

@@ -68,7 +68,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 if is_non_static_method
                 else f"{self.spell(cursor)}"
             )
-            #out(f'{def_call}("{pyname}", []({self_arg}{self.arg_string(arguments)})')
             out(f'{def_call}("{pyname}", []({self_arg}{self.arg_string()})')
             with out:
                 out("{")
@@ -172,7 +171,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def get_function_result(self) -> str:
         node = self.node
         returned = [a.name for a in node.args if self.should_return_argument(a)]
-        # if not self.is_function_void_return(cursor) and not node.spec.omit_ret:
         if not self.is_function_void_return() and not node.spec.omit_ret:
             returned.insert(0, "ret")
         if len(returned) > 1:
@@ -198,8 +196,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         return arg_spelling
 
     def arg_names(self, arguments: List[Argument]):
-        # return ", ".join([a.name for a in arguments])
-        #return ", ".join([self.arg_name(a) for a in arguments])
         return ", ".join([arg_renderer.make_pass_string() for arg_renderer in self.arg_renderers])
 
     def arg_string(self):
@@ -211,11 +207,3 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def render_pyargs(self, arguments: List[Argument]):
         for arg_renderer in self.in_arg_renderers:
             arg_renderer.make_pyarg_string()
-
-    """
-    def render_pyargs(self, arguments: List[Argument]):
-        for argument in arguments:
-            # logger.debug(f"argument: {argument.spelling}, {argument.kind}, {argument.type.spelling}, {argument.type.kind}")
-            default = f" = {argument.default}" if argument.default else ""
-            self.out(f', py::arg("{self.format_field(argument.name)}"){default}')
-    """

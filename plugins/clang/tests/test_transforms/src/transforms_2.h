@@ -1,6 +1,6 @@
 #include "transforms.h"
 
-Dummy handleCreateDummy(const Handle* handle, int value)
+TransformsDummy transformsCreateDummy(const Transforms* handle, int value)
 {
-    return Dummy(value);
+    return TransformsDummy(value);
 }
