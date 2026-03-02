@@ -7,12 +7,12 @@ flags: [
 ]
 
 units:
-  facades:
-    source: 'src/facades.h'
-    target: 'src/facades_py_auto.cpp'
+  callbacks:
+    source: 'src/callbacks.h'
+    target: 'src/callbacks_py_auto.cpp'
 
 specs:
-  'function@facadeFunction':
+  'function@functionWithCallback':
     args:
       a:
         facade:

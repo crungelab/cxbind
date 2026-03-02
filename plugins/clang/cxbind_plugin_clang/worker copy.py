@@ -121,22 +121,6 @@ class Worker(Generic[T_Context]):
         else:
             return node.pyname
 
-    """
-    @property
-    def scope(self) -> str:
-        node = self.top_node
-        if node is None:
-            return self.module
-        else:
-            return node.pyname
-
-    def module_(self, node: Node):
-        if node is None:
-            return self.module
-        else:
-            return node.pyname
-    """
-
     def is_overloaded(self, cursor: cindex.Cursor) -> bool:
         return self.spell(cursor) in self.overloaded
 
@@ -166,7 +150,7 @@ class Worker(Generic[T_Context]):
             node_path = Path(cursor.location.file.name)
             mappable = node_path.name in self.mapped
             if not mappable:
-                # logger.debug(f"Not mappable: {node_path.name}")
+                logger.warning(f"Not mappable: {node_path.name}")
                 return False
 
         return True

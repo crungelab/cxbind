@@ -1,7 +1,7 @@
 import textwrap
 
 
-class Emission:
+class RenderStream:
     def __init__(self) -> None:
         self.indentation = 0
         self.text = ""

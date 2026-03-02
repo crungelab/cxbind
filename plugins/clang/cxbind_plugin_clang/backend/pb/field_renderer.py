@@ -1,10 +1,9 @@
 from clang import cindex
 from loguru import logger
 
-from cxbind.types import EmitFn
+from cxbind.types import RenderFn
 
 from ...node import FieldNode
-from ... import cu
 
 from .node_renderer import NodeRenderer
 
@@ -15,7 +14,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         pyname = node.pyname
         cursor = node.cursor
 
-        field_type_name = cu.get_base_type_name(cursor.type)
+        field_type_name = self.get_base_type_name(cursor.type)
 
         #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
         
@@ -41,7 +40,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
     def render_wrapped_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
         name = cursor.spelling
-        field_type_name = cu.get_base_type_name(cursor.type)
+        field_type_name = self.get_base_type_name(cursor.type)
 
         wrapper = self.wrapped[field_type_name].wrapper
         extra = ""

@@ -1,7 +1,7 @@
 from typing import Callable, Optional
 
-from .emission import Emission
+from .render_stream import RenderStream
 
 Handled = Optional[bool]
 
-EmitFn = Callable[[Emission], None]
+RenderFn = Callable[[RenderStream], None]

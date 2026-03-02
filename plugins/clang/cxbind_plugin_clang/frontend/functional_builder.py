@@ -6,7 +6,6 @@ from loguru import logger
 
 from cxbind.spec import Spec, create_spec
 from ..node import FunctionalNode, Argument
-from .. import cu
 from .node_builder import NodeBuilder
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
@@ -117,7 +116,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             logger.debug(f"Default value for argument {argument.spelling} after processing children: {default}")
 
         if default is not None and default.startswith("{") and default.endswith("}"):
-            default = f"{cu.get_base_type_name(argument.type)}{default}"
+            default = f"{self.get_base_type_name(argument.type)}{default}"
 
         logger.debug(f"Default value for argument {argument.spelling}: {default}")
 
@@ -166,8 +165,10 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         if not self.process_function_decl(cursor):
             return False
         for argument in cursor.get_arguments():
+            """
             if self.is_function_pointer(argument):
                 return False
+            """
             if argument.type.spelling == "va_list":
                 return False
         return True
@@ -176,7 +177,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         return cursor.type.get_result().kind == cindex.TypeKind.VOID
 
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
-        return cu.get_base_type_name(cursor) in self.wrapped
+        return self.get_base_type_name(cursor) in self.wrapped
 
     def resolve_argument_type(self, argument: cindex.Cursor) -> str:
         arg_type = argument.type
@@ -226,7 +227,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             logger.debug(f"Element type (final): {element_type_name}")
             return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
 
-        type_name = cu.get_base_type_name(canonical)
+        type_name = self.get_base_type_name(canonical)
         if type_name in self.wrapped:
             wrapper = self.wrapped[type_name].wrapper
             return f"const {wrapper}&"
