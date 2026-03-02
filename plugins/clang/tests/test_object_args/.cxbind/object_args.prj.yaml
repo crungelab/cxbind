@@ -1,0 +1,19 @@
+module: tests
+
+flags: [
+    '-x', 'c++',
+    '-std=c++17',
+    '-I./src'
+]
+
+units:
+  object_args:
+    source: 'src/object_args.h'
+    target: 'src/object_args_py_auto.cpp'
+
+specs:
+  'function@functionWithVoidArg':
+    args:
+      obj:
+        facade:
+          kind: object

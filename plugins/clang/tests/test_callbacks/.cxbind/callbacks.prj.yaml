@@ -18,3 +18,7 @@ specs:
         facade:
           kind: vector
           length_arg: count
+      callback:
+        facade:
+          kind: callback
+          context_arg: context

@@ -1,0 +1,3 @@
+void functionWithVoidArg(void *obj)
+{
+}

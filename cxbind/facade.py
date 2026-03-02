@@ -22,6 +22,10 @@ class ArgFacade(Facade):
     pass
 
 
+class ObjectArgFacade(ArgFacade):
+    kind: Literal["object"] = "object"
+
+
 class VectorArgFacade(ArgFacade):
     kind: Literal["vector"] = "vector"
     length_arg: str
@@ -32,10 +36,17 @@ class BufferArgFacade(ArgFacade):
     length_arg: str
 
 
+class CallbackArgFacade(ArgFacade):
+    kind: Literal["callback"] = "callback"
+    context_arg: str | None = None
+
+
 ArgFacadeUnion = Annotated[
     Union[
+        ObjectArgFacade,
         VectorArgFacade,
         BufferArgFacade,
+        CallbackArgFacade,
     ],
     Field(discriminator="kind"),
 ]

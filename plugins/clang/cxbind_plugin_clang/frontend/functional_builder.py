@@ -185,7 +185,8 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
         if self.is_function_pointer(argument):
             logger.debug(f"Function pointer: {argument.spelling}")
-            return arg_type.get_canonical().get_pointee().spelling
+            #return arg_type.get_canonical().get_pointee().spelling
+            return arg_type.get_canonical().spelling
 
         canonical = arg_type.get_canonical()
         canonical_spelling = canonical.spelling

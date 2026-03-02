@@ -11,19 +11,20 @@ namespace py = pybind11;
 
 void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
     _tests
-    .def("callback", &callback
-        , py::arg("value")
-        , py::return_value_policy::automatic_reference)
-    .def("function_with_callback", [](std::vector<unsigned int> a, bool (int) callback)
+    .def("function_with_callback", [](std::vector<unsigned int> a, py::function callback, void * context)
         {
             const uint32_t * _a = (const uint32_t *)a.data();
             auto count = a.size();
             
-            functionWithCallback(_a, count, callback);
+            bool (*)(int, void *) _callback = (bool (*)(int, void *))callback.data();
+            auto context = callback.size();
+            
+            functionWithCallback(_a, count, _callback, context);
             return ;
         }
         , py::arg("a")
         , py::arg("callback")
+        , py::arg("context")
         , py::return_value_policy::automatic_reference)
     ;
 
