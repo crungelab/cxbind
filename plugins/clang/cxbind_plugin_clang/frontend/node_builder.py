@@ -16,12 +16,11 @@ T_Node = TypeVar("T_Node", bound=Node)
 class NodeBuilder(Builder, Generic[T_Node]):
     def __init__(
         self,
-        context: BuilderContext,
         name: str,
         cursor: cindex.Cursor = None,
         spec: Spec = None,
     ) -> None:
-        super().__init__(context)
+        super().__init__()
         #self.name = name
         self.cursor = cursor
         self.spec = spec or self.find_or_create_spec()
@@ -56,13 +55,15 @@ class NodeBuilder(Builder, Generic[T_Node]):
         if self.should_cancel():
             return
 
+        logger.debug(f"Building node: {self.name}")
+
         self.create_node()
 
         handled = self.build_node()
         if not handled:
             self.top_node.add_child(self.node)
 
-        self.session.visited[self.name] = self.node
+        #self.current_session.visited[self.name] = self.node
 
     def create_node(self):
         pass

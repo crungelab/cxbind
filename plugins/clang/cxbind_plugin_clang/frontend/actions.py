@@ -1,6 +1,17 @@
 from clang import cindex
 
 MAP = {
+    cindex.CursorKind.TRANSLATION_UNIT : lambda self, node : self.visit_translation_unit(node),
+
+    cindex.CursorKind.LINKAGE_SPEC : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.UNION_DECL : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.STATIC_ASSERT : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.CXX_ACCESS_SPEC_DECL : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.CONVERSION_FUNCTION : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.VISIBILITY_ATTR : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.TYPE_ALIAS_DECL : lambda self, node : self.visit_none(node),
+    cindex.CursorKind.DESTRUCTOR : lambda self, node : self.visit_none(node),
+
     cindex.CursorKind.STRUCT_DECL : lambda self, node : self.visit_struct(node),
     cindex.CursorKind.CLASS_DECL : lambda self, node : self.visit_class(node),
     cindex.CursorKind.ENUM_DECL : lambda self, node : self.visit_enum(node),
@@ -16,6 +27,7 @@ MAP = {
 
     cindex.CursorKind.FUNCTION_TEMPLATE : lambda self, node : self.visit_function_template(node),
     cindex.CursorKind.CLASS_TEMPLATE : lambda self, node : self.visit_class_template(node),
+
     cindex.CursorKind.CLASS_TEMPLATE_PARTIAL_SPECIALIZATION : lambda self, node : self.visit_none(node),
     cindex.CursorKind.TYPE_ALIAS_TEMPLATE_DECL : lambda self, node : self.visit_none(node),
     cindex.CursorKind.TEMPLATE_REF : lambda self, node : self.visit_none(node),

@@ -10,7 +10,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         self.node = FieldNode(kind='field', name=self.name, cursor=self.cursor)
 
     def create_pyname(self, name) -> str:
-        return self.session.format_field(name)
+        return self.current_session.format_field(name)
 
     def should_cancel(self) -> bool:
         return super().should_cancel() or not self.is_field_bindable(self.cursor)

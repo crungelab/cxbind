@@ -5,6 +5,7 @@ from loguru import logger
 from clang import cindex
 
 from . import cu
+from .session import Session
 from .worker_context import WorkerContext
 from .node import Node, StructuralNode
 
@@ -14,101 +15,106 @@ T_Context = TypeVar("T_Context", bound=WorkerContext)
 class Worker(Generic[T_Context]):
     actions: Dict[cindex.CursorKind, Callable] = {}
 
-    def __init__(self, context: T_Context) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.context = context
-        self.session = context.session
 
+    @property
+    def current_session(self) -> Session:
+        return Session.get_current()
     # ------------------------------------------------------------------
     # Session property pass-throughs
     # ------------------------------------------------------------------
 
+    """
     @property
     def unit(self):
-        return self.session.unit
-
+        return self.current_session.unit
+    """
+    
     @property
     def prefixes(self) -> list[str]:
-        return self.session.prefixes
+        return self.current_session.prefixes
 
     @property
     def wrapped(self) -> dict[str, StructuralNode]:
-        return self.session.wrapped
+        return self.current_session.wrapped
 
+    """
     @property
     def mapped(self):
-        return self.session.mapped
-
+        return self.current_session.mapped
+    """
+    
     @property
     def target(self):
-        return self.session.target
+        return self.current_session.target
 
     @property
     def module(self):
-        return self.session.module
+        return self.current_session.module
 
     @property
     def flags(self):
-        return self.session.flags
+        return self.current_session.flags
 
     @property
     def defaults(self):
-        return self.session.defaults
+        return self.current_session.defaults
 
     @property
     def excluded(self):
-        return self.session.excluded
+        return self.current_session.excluded
 
     @property
     def overloaded(self):
-        return self.session.overloaded
+        return self.current_session.overloaded
 
     @property
     def node_stack(self):
-        return self.session.node_stack
+        return self.current_session.node_stack
 
     @property
     def top_node(self) -> Optional[Node]:
-        return self.session.top_node
+        return self.current_session.top_node
 
     # ------------------------------------------------------------------
     # Node management
     # ------------------------------------------------------------------
 
     def push_node(self, node) -> None:
-        self.session.push_node(node)
+        self.current_session.push_node(node)
 
     def pop_node(self) -> Node:
-        self.session.pop_node()
+        self.current_session.pop_node()
 
     # ------------------------------------------------------------------
     # Formatting
     # ------------------------------------------------------------------
 
     def spell(self, cursor: cindex.Cursor) -> str:
-        return self.session.spell(cursor)
+        return self.current_session.spell(cursor)
 
     def format_field(self, name: str) -> str:
-        return self.session.format_field(name)
+        return self.current_session.format_field(name)
 
     def format_function(self, name: str) -> str:
-        return self.session.format_function(name)
+        return self.current_session.format_function(name)
 
     def format_type(self, name: str) -> str:
-        return self.session.format_type(name)
+        return self.current_session.format_type(name)
 
     def format_enum_constant(self, name: str, enum_name: str) -> str:
-        return self.session.format_enum_constant(name, enum_name)
+        return self.current_session.format_enum_constant(name, enum_name)
 
     # ------------------------------------------------------------------
     # Spec / registry
     # ------------------------------------------------------------------
 
     def register_node(self, node: Node) -> str:
-        return self.session.register_spec(node)
+        return self.current_session.register_spec(node)
 
     def lookup_spec(self, key: str) -> Node:
-        return self.session.lookup_spec(key)
+        return self.current_session.lookup_spec(key)
 
     # ------------------------------------------------------------------
     # Scope helpers
@@ -152,11 +158,66 @@ class Worker(Generic[T_Context]):
             return False
         if cu.is_template(cursor.type):
             return False
+
+        if cursor.location.file:
+            return self.is_cursor_mappable(cursor)
+
+        return True
+
+    def is_cursor_mappable(self, cursor: cindex.Cursor) -> bool:
+        node_path = Path(cursor.location.file.name)
+        name = node_path.name
+        mapped = self.mapped
+        name_in_mapped = name in mapped
+
+        """
+        if name_in_mapped:
+            logger.debug(f"Node: {cursor.spelling} path name: {name} is in mapped: {mapped}")
+        else:
+            logger.debug(f"Node: {cursor.spelling} path name: {name} is not in mapped: {mapped}")
+        """
+
+        """
+        logger.debug(f"Node path name: {name}")
+        logger.debug(f"Mapped: {mapped}")
+
+        logger.debug(f"type(name)={type(name)} type(mapped)={type(mapped)}")
+        logger.debug(f"name == next(iter(mapped))? {name == next(iter(mapped))}")
+        logger.debug(f"any(x == name for x in mapped)? {any(x == name for x in mapped)}")
+        logger.debug(f"name in mapped? {name in mapped}")
+
+        # hash diagnostics (only works if elements are hashable, which strings are)
+        first = next(iter(mapped))
+        logger.debug(f"hash(name)={hash(name)} hash(first)={hash(first)}")
+        logger.debug(f"id(name)={id(name)} id(first)={id(first)}")  # ids can differ; value equality matters
+        """
+
+        return name_in_mapped
+
+    """
+    def is_cursor_bindable(self, cursor: cindex.Cursor) -> bool:
+        if self.is_excluded(cursor):
+            return False
+        if cursor.access_specifier in (
+            cindex.AccessSpecifier.PRIVATE,
+            cindex.AccessSpecifier.PROTECTED,
+        ):
+            return False
+        if cu.is_template(cursor.type):
+            return False
+
         if cursor.location.file:
             node_path = Path(cursor.location.file.name)
-            if node_path.name not in self.mapped:
-                return False
+            logger.debug(f"Node path name: {node_path.name}")
+            logger.debug(f"Mapped: {self.mapped}")
+
+            logger.debug(f"Node path repr: {repr(node_path.name)}")
+            logger.debug(f"Mapped repr: {[repr(x) for x in self.mapped]}")
+
+            return node_path.name in self.mapped
+
         return True
+    """
 
     def is_rvalue_ref(self, param: cindex.Type) -> bool:
         return param.kind == cindex.TypeKind.RVALUEREFERENCE
@@ -209,6 +270,9 @@ class Worker(Generic[T_Context]):
         # Strip leading const/volatile so callers get a clean name.
         return spelling.replace("const ", "").replace("volatile ", "").strip()
 
+    def strip_qualifiers(self, name: str) -> str:
+        return name.replace("const ", "").replace("volatile ", "").strip()
+
     def get_base_type_name(self, typ: cindex.Type) -> str:
         """Return the base type name, stripping qualifiers and pointer/reference
         indirections. Typedef names (e.g. uint32_t) are preserved."""
@@ -223,7 +287,7 @@ class Worker(Generic[T_Context]):
                 typ = typ.get_pointee()
             else:
                 break
-        return typ.spelling.replace("const ", "").replace("volatile ", "")
+        return self.strip_qualifiers(typ.spelling)
 
     # ------------------------------------------------------------------
     # Misc
@@ -231,3 +295,11 @@ class Worker(Generic[T_Context]):
 
     def arg_spelling(self, argument: cindex.Cursor) -> str:
         return argument.spelling or "arg"
+    
+    def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
+        type_name = self.get_base_type_name(cursor)
+        #logger.debug(f"type_name: {type_name}")
+        if type_name in self.wrapped:
+            logger.debug(f"Wrapped type: {type_name}")
+            return True
+        return False

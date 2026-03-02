@@ -4,5 +4,5 @@ from ...node import ClassTemplateSpecializationNode
 from .class_renderer import ClassRenderer
 
 class ClassTemplateSpecializationRenderer(ClassRenderer):
-    def __init__(self, context, node):
-        super().__init__(context, node)
+    def __init__(self, node):
+        super().__init__(node)

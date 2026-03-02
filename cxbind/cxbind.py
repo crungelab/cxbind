@@ -6,7 +6,7 @@ if TYPE_CHECKING:
 import os, sys
 from pathlib import Path
 from importlib.metadata import entry_points
-
+import pprint
 
 from loguru import logger
 
@@ -131,6 +131,7 @@ class CxBind:
             tool = self.create_tool(unit)
             logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
             logger.debug(f"unit: {unit}")
+
             tools.append(tool)
 
         runner = self.runner_factory()

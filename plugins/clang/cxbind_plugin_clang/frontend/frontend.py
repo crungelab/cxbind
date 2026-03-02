@@ -7,6 +7,7 @@ from rich import print
 from clang import cindex
 
 from cxbind.unit import Unit
+
 from .builder import Builder
 from .builder_context import BuilderContext
 
@@ -14,13 +15,16 @@ from ..node import Node, RootNode
 from ..session import Session
 
 class Frontend(Builder):
-    def __init__(self, source: str, session: Session) -> None:
-        super().__init__(BuilderContext(session))
+    def __init__(self, source: str) -> None:
+        super().__init__()
+        self.builder_context = BuilderContext()
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source
-        self.mapped.append(self.path.name)
+        """
+        self.mapped.add(self.path.name)
         logger.debug(f"mapped: {self.mapped}")
+        """
 
         self.import_actions()
 
@@ -36,6 +40,11 @@ class Frontend(Builder):
         Builder.actions = __actions__.MAP
 
     def build(self):
+        self.builder_context.make_current()
+        
+        self.mapped.add(self.path.name)
+        logger.debug(f"mapped: {self.mapped}")
+
         tu = cindex.TranslationUnit.from_source(
             self.path,
             args=self.flags,
@@ -43,12 +52,14 @@ class Frontend(Builder):
             options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
         )
 
-        #print(tu.diagnostics)
         for diag in tu.diagnostics:
             logger.warning(f"Diagnostic: {diag}")
 
         self.visit_overloads(tu.cursor)
-        self.visit_children(tu.cursor)
+        logger.debug(f"Overloads: {self.overloaded}")
+
+        #self.visit_children(tu.cursor)
+        self.visit(tu.cursor)
 
         return self.top_node
 
@@ -62,6 +73,7 @@ class Frontend(Builder):
                 key = self.spell(child)
                 if key in self.overloaded.visited:
                     self.overloaded.add(key)
+                    logger.debug(f"Overloaded function detected: {key}")
                 else:
                     self.overloaded.visited.add(key)
             elif self.is_cursor_bindable(child):

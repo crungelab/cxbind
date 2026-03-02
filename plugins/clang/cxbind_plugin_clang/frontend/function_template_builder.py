@@ -22,7 +22,7 @@ class FunctionTemplateBuilder(TemplateBuilder[FunctionTemplateNode]):
             cname = f"{self.node.name}<{args}>"
 
             builder = FunctionTemplateSpecializationBuilder(
-                self.context, cname, cursor, specialization
+                cname, cursor, specialization
             )
             builder.build()
 

@@ -14,6 +14,7 @@ from loguru import logger
 from .extra import special_methods, Extra, ExtraMethod, ExtraProperty, ExtraMethodUnion
 from .facade import ArgFacadeUnion
 
+
 class Spec(BaseModel):
     kind: str
     name: str
@@ -87,6 +88,29 @@ class FunctionTemplateSpec(TemplateSpec):
         default_factory=list
     )
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_specializations(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+
+        specs = data.get("specializations")
+        if not specs:
+            return data
+
+        normalized = []
+        for item in specs:
+            if isinstance(item, dict):
+                if "name" not in item and "name" in data:
+                    item = {"name": data["name"], **item}
+                normalized.append(item)
+            elif isinstance(item, (list, tuple)):
+                normalized.append({"name": data.get("name"), "args": list(item)})
+            else:
+                normalized.append({"name": str(item)})
+
+        data["specializations"] = normalized
+        return data
 
 class MethodSpec(FunctionalSpec):
     kind: Literal["method"]
@@ -152,52 +176,6 @@ class StructuralSpec(Spec):
     wrapper: str | None = None
     holder: str | None = None
     extra: StructuralExtra = Field(default_factory=StructuralExtra)
-
-
-"""
-class StructBaseSpec(Spec):
-    extends: list[str] | None = None
-    wrapper: str | None = None
-    holder: str | None = None
-    properties: list[ExtraProperty] = Field(default_factory=list)
-    methods: list[ExtraMethodUnion] = Field(default_factory=list)
-
-    @field_validator("properties", mode="before")
-    @classmethod
-    def _normalize_properties(cls, v: Any) -> Any:
-        if not isinstance(v, dict):
-            return v
-
-        normalized = []
-        for key, item in v.items():
-            if isinstance(item, dict):
-                if "name" not in item:
-                    item = {"name": key, **item}
-                normalized.append(item)
-
-        return normalized
-
-    @field_validator("methods", mode="before")
-    @classmethod
-    def _normalize_methods(cls, v: Any) -> Any:
-        logger.debug(f"Normalizing methods: {v}")
-        if not isinstance(v, dict):
-            return v
-
-        normalized = []
-        for key, item in v.items():
-            if isinstance(item, dict):
-                if "name" not in item:
-                    item = {"name": key, **item}
-                if item["name"] in special_methods and "kind" not in item:
-                    item["kind"] = item["name"]
-                else:
-                    item["kind"] = "standard"
-                normalized.append(item)
-
-        logger.debug(f"Normalized methods: {normalized}")
-        return normalized
-"""
 
 
 class StructSpec(StructuralSpec):

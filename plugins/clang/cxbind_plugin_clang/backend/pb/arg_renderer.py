@@ -1,6 +1,7 @@
 from typing import Generic, TypeVar
 
 from loguru import logger
+from clang import cindex
 
 from cxbind.facade import (
     ArgFacade,
@@ -23,8 +24,8 @@ class ArgRenderer(Renderer):
     # Matches the "unnamed function pointer" hole: "(*)", allowing whitespace: "( * )"
     _FN_PTR_HOLE_RE = re.compile(r"\(\s*\*\s*\)")
 
-    def __init__(self, context: RenderContext, arg: Argument):
-        super().__init__(context)
+    def __init__(self, arg: Argument):
+        super().__init__()
         self.arg = arg
 
     def excludes(self) -> set[str]:
@@ -34,7 +35,7 @@ class ArgRenderer(Renderer):
         # Whatever your generator currently stores (string spelling).
         # Ex: "int", "const char *", "bool (*)(int, void *)", "Foo[]"
         return self.arg.type
-
+    
     def _render_type_and_name(self, arg_type: str, arg_name: str) -> str:
         """
         Render a single C/C++ parameter declarator.
@@ -53,6 +54,14 @@ class ArgRenderer(Renderer):
         # Default case
         return f"{arg_type} {arg_name}"
 
+    """
+    def arg_name(self, argument: Argument):
+        arg_spelling = argument.name
+        if argument.cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
+            return f"&{arg_spelling}[0]"
+        return arg_spelling
+    """
+
     def make_arg_string(self) -> str:
         arg_type = self.make_arg_type_string()
         arg_name = self.arg.name
@@ -63,9 +72,22 @@ class ArgRenderer(Renderer):
             # For arrays, name is part of declarator suffix
             return f"{base_type} {arg_name}[]"
 
+        if self.is_wrapped_type(self.arg.cursor.type):
+            base_type = self.get_base_type_name(self.arg.cursor.type)
+            wrapped_spec = self.wrapped.get(base_type)
+            logger.debug(f"Wrapped spec for type {self.arg.type}: {wrapped_spec}")
+            if wrapped_spec and wrapped_spec.wrapper:
+                return f"const {wrapped_spec.wrapper}& {arg_name}"
+
         return self._render_type_and_name(arg_type, arg_name)
 
     def make_pass_string(self) -> str:
+        if self.arg.cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
+            return f"&{self.arg.name}[0]"
+
+        if self.is_wrapped_type(self.arg.cursor.type):
+            return f"{self.arg.name}.get()"
+        
         return self.arg.name
 
     def make_pyarg_string(self):
@@ -80,8 +102,8 @@ T_Facade = TypeVar("T_Facade", bound=ArgFacade)
 class ArgFacadeRenderer(ArgRenderer, Generic[T_Facade]):
     facade: T_Facade
 
-    def __init__(self, context: RenderContext, arg: Argument):
-        super().__init__(context, arg)
+    def __init__(self, arg: Argument):
+        super().__init__(arg)
         self.facade = arg.spec.facade
 
 
@@ -94,8 +116,8 @@ class ObjectArgRenderer(ArgFacadeRenderer[ObjectArgFacade]):
 
 
 class VectorArgRenderer(ArgFacadeRenderer[VectorArgFacade]):
-    def __init__(self, context: RenderContext, arg: Argument):
-        super().__init__(context, arg)
+    def __init__(self, arg: Argument):
+        super().__init__(arg)
         self.length_arg = self.facade.length_arg
 
     def excludes(self) -> set[str]:
@@ -120,8 +142,8 @@ class VectorArgRenderer(ArgFacadeRenderer[VectorArgFacade]):
 
 
 class CallbackArgRenderer(ArgFacadeRenderer[CallbackArgFacade]):
-    def __init__(self, context: RenderContext, arg: Argument):
-        super().__init__(context, arg)
+    def __init__(self, arg: Argument):
+        super().__init__(arg)
         self.context_arg = self.facade.context_arg
 
     """
@@ -150,8 +172,8 @@ class CallbackArgRenderer(ArgFacadeRenderer[CallbackArgFacade]):
 
 
 class BufferArgRenderer(ArgFacadeRenderer[BufferArgFacade]):
-    def __init__(self, context: RenderContext, arg: Argument):
-        super().__init__(context, arg)
+    def __init__(self, arg: Argument):
+        super().__init__(arg)
         self.length_arg = self.facade.length_arg
 
     def make_facade_type(self):

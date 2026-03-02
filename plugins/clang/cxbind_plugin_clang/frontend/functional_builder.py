@@ -80,10 +80,6 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             arg_type = self.resolve_argument_type(a)
             arg_spelling = self.arg_spelling(a)
 
-            if arg_type.endswith("[]"):
-                arg_type = arg_type[:-2]
-                arg_spelling = f"{arg_spelling}[]"
-
             default = self.get_arg_default(a, self.node)
             spec = self.node.spec.args.get(arg_spelling)
             argument = Argument(
@@ -115,7 +111,8 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             default = node.spec.args[argument.spelling].default
             logger.debug(f"Default value for argument {argument.spelling} after processing children: {default}")
 
-        if default is not None and default.startswith("{") and default.endswith("}"):
+        # TODO:  Added this for Yoga to initialize default values for aggregate types
+        if default is not None and type(default) == str and default.startswith("{") and default.endswith("}"):
             default = f"{self.get_base_type_name(argument.type)}{default}"
 
         logger.debug(f"Default value for argument {argument.spelling}: {default}")
@@ -176,8 +173,10 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     def is_function_void_return(self, cursor: cindex.Cursor) -> bool:
         return cursor.type.get_result().kind == cindex.TypeKind.VOID
 
+    """
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
         return self.get_base_type_name(cursor) in self.wrapped
+    """
 
     def resolve_argument_type(self, argument: cindex.Cursor) -> str:
         arg_type = argument.type
@@ -222,17 +221,20 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             element_type = arg_type.get_array_element_type()
             element_canon_spelling = element_type.get_canonical().spelling
             element_fq_spelling = element_type.get_fully_qualified_name(printing_policy)
-            element_type_name = _prefer_fq(element_canon_spelling, element_fq_spelling)
+            element_type_name = self.strip_qualifiers(_prefer_fq(element_canon_spelling, element_fq_spelling))
             logger.debug(f"Element type (canon): {element_canon_spelling}")
             logger.debug(f"Element type (fq): {element_fq_spelling}")
             logger.debug(f"Element type (final): {element_type_name}")
             return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
 
         type_name = self.get_base_type_name(canonical)
+
+        """
         if type_name in self.wrapped:
             wrapper = self.wrapped[type_name].wrapper
             return f"const {wrapper}&"
-
+        """
+        
         typedef_name = self.typedef_spelling(arg_type)
         if typedef_name is not None:
             return typedef_name

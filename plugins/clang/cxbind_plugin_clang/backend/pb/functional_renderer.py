@@ -14,8 +14,8 @@ T_Node = TypeVar("T_Node", bound=FunctionalNode)
 
 
 class FunctionalRenderer(NodeRenderer[T_Node]):
-    def __init__(self, context: RenderContext, node: T_Node) -> None:
-        super().__init__(context, node)
+    def __init__(self, node: T_Node) -> None:
+        super().__init__(node)
         self.node = node
         self.arg_renderers: List[ArgRenderer] = []
         self.in_arg_renderers: List[ArgRenderer] = []
@@ -25,7 +25,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         for arg in self.node.args:
             facade_kind = arg.spec.facade.kind if arg.spec is not None and arg.spec.facade is not None else None
             renderer_cls = arg_renderer_table.get(facade_kind, ArgRenderer)
-            self.arg_renderers.append(renderer_cls(self.context, arg))
+            self.arg_renderers.append(renderer_cls(arg))
 
         excluded_arguments = set()
         for arg_renderer in self.arg_renderers:
@@ -52,6 +52,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         self.begin_chain()
 
         if self.is_overloaded(cursor):
+            logger.debug(f"Overloaded function rendered: {cursor.spelling}")
             extra = ""
             if cursor.is_const_method():
                 extra = ", py::const_"
@@ -113,13 +114,16 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         result = cursor.type.get_result()
         return result.kind == cindex.TypeKind.VOID
 
+    """
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
         type_name = self.get_base_type_name(cursor)
         # logger.debug(f"type_name: {result_type_name}")
         if type_name in self.wrapped:
+            logger.debug(f"Wrapped type: {type_name}")
             return True
         return False
-
+    """
+    
     def should_wrap_function(self) -> bool:
         node = self.node
         cursor = node.cursor

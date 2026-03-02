@@ -5,8 +5,8 @@ from .class_builder import ClassBuilder
 
 
 class ClassTemplateSpecializationBuilder(ClassBuilder):
-    def __init__(self, context, name, cursor=None, spec=None):
-        super().__init__(context, name, cursor, spec)
+    def __init__(self, name, cursor=None, spec=None):
+        super().__init__(name, cursor, spec)
 
     def create_node(self):
         self.node = ClassTemplateSpecializationNode(

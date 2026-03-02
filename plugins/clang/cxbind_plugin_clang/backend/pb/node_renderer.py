@@ -24,19 +24,19 @@ T_Node = TypeVar("T_Node", bound=Node)
 
 
 class NodeRenderer(Renderer, Generic[T_Node]):
-    def __init__(self, context: RenderContext, node: T_Node) -> None:
-        super().__init__(context)
+    def __init__(self, node: T_Node) -> None:
+        super().__init__()
         self.node = node
 
     @contextmanager
     def enter(self, node) -> Generator[Any, Any, Any]:
-        self.session.push_node(node)
+        self.current_session.push_node(node)
         self.out.indent()
         yield node
         self.out.dedent()
-        self.session.pop_node()
+        self.current_session.pop_node()
 
     def render(self):
         for child in self.node.children:
-            renderer = self.context.create_renderer(child)
+            renderer = self.current_context.create_renderer(child)
             renderer.render()

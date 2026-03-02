@@ -19,15 +19,22 @@ from .backend.generator import Generator
 from .node import Node
 from .clang_runner import ClangRunner
 
+"""
 class BuildResult:
     def __init__(self, source: str, session: Session, node: Node):
         self.source = source
         self.session = session
         self.node = node
+"""
+class BuildResult:
+    def __init__(self, source: str, node: Node):
+        self.source = source
+        self.node = node
 
 class Compiler(Tool):
     def __init__(self, unit: Unit) -> None:
         super().__init__(unit)
+        self.session = Session(self.unit)
 
         BASE_PATH = Path(".")
         config_searchpath = BASE_PATH / ".cxbind" / "templates"
@@ -54,23 +61,32 @@ class Compiler(Tool):
             sources.append(self.unit.source)
 
         for source in sources:
-            self.build_unit(source)
+            self.build_source(source)
 
-    def build_unit(self, source: str) -> None:
-        session = Session(self.unit)
-        frontend = Frontend(source, session)
-        root = frontend.build()
+    def build_source(self, source: str) -> None:
         runner = ClangRunner.get_current()
+
+        session = self.session
+        session.make_current()
+
+        frontend = Frontend(source)
+        root = frontend.build()
+        logger.debug(f"Built root node: {root}")
         runner.update_specs(session.specs)
-        #runner.root.add_child(node)
+        # runner.root.add_child(node)
         for node in root.traverse():
             runner.add_node(node)
-        self.build_results.append(BuildResult(source, session, root))
+        #self.build_results.append(BuildResult(source, session, root))
+        self.build_results.append(BuildResult(source, root))
 
     def generate(self) -> None:
+        session = self.session
+        session.make_current()
+
         text_list = []
         for build_result in self.build_results:
-            generator = Generator(build_result.source, build_result.session, build_result.node)
+            #build_result.session.make_current()
+            generator = Generator(build_result.source, build_result.node)
             text_list.append(generator.generate())
 
         text = "\n".join(text_list)
@@ -92,7 +108,6 @@ class Compiler(Tool):
             fh.write(rendered)
 
         print(f"[bold green]Generated[/bold green]: {filename}", ":thumbs_up:")
-
 
     def run(self):
         runner = ClangRunner.get_current()

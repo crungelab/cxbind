@@ -15,8 +15,16 @@ from ..worker import Worker
 class Builder(Worker[BuilderContext]):
     actions: Dict[cindex.CursorKind, Callable] = {}
 
-    def __init__(self, context: BuilderContext):
-        super().__init__(context)
+    def __init__(self):
+        super().__init__()
+
+    @property
+    def current_context(self) -> BuilderContext:
+        return BuilderContext.get_current()
+
+    @property
+    def mapped(self):
+        return self.current_context.mapped
 
     @contextmanager
     def enter(self, node) -> Generator[Any, Any, Any]:
@@ -28,13 +36,15 @@ class Builder(Worker[BuilderContext]):
         raise NotImplementedError("Builder.build must be implemented in subclasses")
 
     def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "Builder":
-        return self.context.create_builder(entry_key, cursor)
+        return self.current_context.create_builder(entry_key, cursor)
 
     def visit(self, cursor: cindex.Cursor):
         if not self.is_cursor_bindable(cursor):
             return
+
         if not cursor.kind in self.actions:
             return
+
         # logger.debug(f"{cursor.kind} : {cursor.spelling}")
         logger.debug(
             f"Visiting {cursor.spelling} kind={cursor.kind} type={cursor.type.spelling}"
@@ -43,6 +53,9 @@ class Builder(Worker[BuilderContext]):
         # logger.debug(f"canonical_kind={cursor.type.get_canonical().kind}")
 
         self.actions[cursor.kind](self, cursor)
+
+    def visit_translation_unit(self, cursor: cindex.Cursor):
+        self.visit_children(cursor)
 
     def visit_children(self, cursor: cindex.Cursor):
         for child in cursor.get_children():

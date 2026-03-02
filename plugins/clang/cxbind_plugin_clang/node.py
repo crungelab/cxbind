@@ -123,7 +123,8 @@ class RootNode(Node):
 class Argument(BaseModel):
     name: str
     type: str
-    default: str | None = None
+    #default: str | None = None
+    default: object | None = None
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: ArgSpec | None = Field(None, exclude=True, repr=False)

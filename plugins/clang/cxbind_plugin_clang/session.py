@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Type, Dict, List, Any, Callable
-import re
 import contextlib
 from contextvars import ContextVar
+import re
 
 from clang import cindex
 from loguru import logger
@@ -29,21 +29,22 @@ class Overloaded(UserSet):
         super().__init__(data)
         self.visited = set()
 
+    """
     def is_overloaded(self, cursor):
         return self.name(cursor) in self
-
+    """
 
 class Session:
     def __init__(self, unit: Unit, **kwargs) -> None:
         self.unit = unit
+        self.module = unit.module
 
         self.options = {"save": True}
         self.wrapped: Dict[StructuralNode] = {}
-        self.visited: Dict[Node] = {}
+        #self.visited: Dict[Node] = {}
+        #self.mapped: List[str] = unit.mapped.copy()
+        #self.mapped: set[str] = set(unit.mapped)
 
-        self.module = unit.module
-
-        self.mapped: List[str] = unit.mapped.copy()
         self.target = ""
         self.flags: List[str] = unit.flags.copy()
         self.defaults: Dict[str, str] = unit.defaults.copy()
@@ -98,6 +99,7 @@ class Session:
             self.excludes.append(key)
         if spec.overload:
             self.overloads.append(key)
+        # TODO: Maybe wrapper should go in Spec proper
         if hasattr(spec, "wrapper") and spec.wrapper:
             logger.debug(f"Adding wrapped: {name}")
             self.wrapped[name] = spec

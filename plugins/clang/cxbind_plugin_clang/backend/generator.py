@@ -17,8 +17,9 @@ from .pb import NodeRenderer
 
 
 class Generator(NodeRenderer):
-    def __init__(self, source: str, session: Session, node: RootNode, **kwargs):
-        super().__init__(RenderContext(session, **kwargs), node)
+    def __init__(self, source: str, node: RootNode, **kwargs):
+        super().__init__(node)
+        self.render_context = RenderContext(**kwargs)
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source
@@ -32,6 +33,7 @@ class Generator(NodeRenderer):
         self.jinja_env = jinja2.Environment(loader=loader)
 
     def generate(self):
+        self.render_context.make_current()
         with self.out:
             self.render()
             self.end_chain()
