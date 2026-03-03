@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, ArgSpec
+from cxbind.spec import Spec, ArgSpec, ArgDirection
 
 from . import cu
 
@@ -125,16 +125,27 @@ class Argument(BaseModel):
     type: str
     #default: str | None = None
     default: object | None = None
+    direction: ArgDirection = ArgDirection.IN
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: ArgSpec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    @property
+    def is_out(self) -> bool:
+        return self.direction in (ArgDirection.OUT, ArgDirection.INOUT)
+
+class ReturnValue(BaseModel):
+    type: str
+    cursor: cindex.Type | None = Field(None, exclude=True, repr=False)
+    spec: ArgSpec | None = Field(None, exclude=True, repr=False)
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 class FunctionalNode(TypeNode):
     args: list[Argument] | None = []
-
+    returns: ReturnValue | None = None
 
 class FunctionNode(FunctionalNode):
     kind: Literal["function"]

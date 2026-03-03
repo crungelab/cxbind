@@ -18,7 +18,11 @@ current_render_context: ContextVar[Optional["RenderContext"]] = ContextVar("curr
 class RenderContext(WorkerContext):
     def __init__(self) -> None:
         super().__init__()
-        self.out = RenderStream()
+        #self.out = RenderStream()
+        self.streams: dict[str, RenderStream] = {}
+        self.stream_stack: list[RenderStream] = []
+        self.push_stream("default")
+
         self.chaining = False
 
     def make_current(self):
@@ -27,6 +31,64 @@ class RenderContext(WorkerContext):
     @classmethod
     def get_current(cls) -> Optional["RenderContext"]:
         return current_render_context.get()
+
+    @property
+    def out(self) -> RenderStream:
+        return self.stream_stack[-1]
+
+    def get_stream(self, name: str) -> RenderStream:
+        return self.streams[name]
+    
+    def get_text(self, name: str) -> str:
+        stream = self.streams.get(name)
+        if stream is None:
+            return ""
+        return stream.text
+    
+    def open_stream(self, name: str) -> RenderStream:
+        stream = self.streams.get(name)
+        if stream is None:
+            indentation = 0
+            if len(self.stream_stack):
+                indentation = self.stream_stack[-1].indentation
+            stream = RenderStream(indentation)
+            self.streams[name] = stream
+        return stream
+    
+    def close_stream(self, name: str) -> None:
+        pass
+
+    def destroy_stream(self, name: str) -> None:
+        if name in self.streams:
+            del self.streams[name]
+
+    def destroy_streams(self, names: list[str]) -> None:
+        for name in names:
+            self.destroy_stream(name)
+
+    def push_stream(self, name: str) -> None:
+        stream = self.streams.get(name)
+        if stream is None:
+            indentation = 0
+            if len(self.stream_stack):
+                indentation = self.stream_stack[-1].indentation
+            stream = RenderStream(indentation)
+            self.streams[name] = stream
+        self.stream_stack.append(stream)
+
+    def pop_stream(self, destroy: bool = False) -> RenderStream:
+        #return self.stream_stack.pop()
+        stream = self.stream_stack.pop()
+        if destroy:
+            for key, val in self.streams.items():
+                if val is stream:
+                    del self.streams[key]
+                    break
+        return stream
+    
+    def combine_streams(self, streams: list[RenderStream]) -> None:
+        for stream in streams:
+            self.out.inject(stream)
 
     def create_renderer(self, node: Node) -> "Renderer":
         from .pb.node_renderer_table import NODE_RENDERER_TABLE

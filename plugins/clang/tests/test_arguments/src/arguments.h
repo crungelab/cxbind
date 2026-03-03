@@ -13,3 +13,8 @@ struct Arguments
         return i + j;
     }
 };
+
+void inOutFunction(int i, int* j)
+{
+    *j = i + *j;
+}

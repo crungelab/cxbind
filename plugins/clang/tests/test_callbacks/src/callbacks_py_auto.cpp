@@ -5,6 +5,7 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
+#include <cxbind/callback.h>
 
 #include "callbacks.h"
 
@@ -17,14 +18,13 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
             const uint32_t * _a = (const uint32_t *)a.data();
             auto count = a.size();
             
-            auto _callback = +[](b2ShapeId shapeId, void* ctx) -> bool {
+            auto _callback = +[](int, void* ctx) -> bool {
                 auto* st = static_cast<OverlapThunkState*>(ctx);
                 // ... use st, acquire GIL, call Python, etc ...
                 return true;
             };
             
             functionWithCallback(_a, count, _callback, context);
-            return ;
         }
         , py::arg("a")
         , py::arg("callback")

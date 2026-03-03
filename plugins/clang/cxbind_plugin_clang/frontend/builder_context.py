@@ -8,12 +8,12 @@ if TYPE_CHECKING:
 from clang import cindex
 from loguru import logger
 
-from cxbind.unit import Unit
-
 from ..worker_context import WorkerContext
-from ..session import Session
 
-current_builder_context: ContextVar[Optional["BuilderContext"]] = ContextVar("current_builder_context", default=None)
+current_builder_context: ContextVar[Optional["BuilderContext"]] = ContextVar(
+    "current_builder_context", default=None
+)
+
 
 class BuilderContext(WorkerContext):
     def __init__(self) -> None:

@@ -34,7 +34,7 @@ class BuildResult:
 class Compiler(Tool):
     def __init__(self, unit: Unit) -> None:
         super().__init__(unit)
-        self.session = Session(self.unit)
+        self.my_session = Session(self.unit)
 
         BASE_PATH = Path(".")
         config_searchpath = BASE_PATH / ".cxbind" / "templates"
@@ -66,7 +66,7 @@ class Compiler(Tool):
     def build_source(self, source: str) -> None:
         runner = ClangRunner.get_current()
 
-        session = self.session
+        session = self.my_session
         session.make_current()
 
         frontend = Frontend(source)
@@ -80,7 +80,7 @@ class Compiler(Tool):
         self.build_results.append(BuildResult(source, root))
 
     def generate(self) -> None:
-        session = self.session
+        session = self.my_session
         session.make_current()
 
         text_list = []

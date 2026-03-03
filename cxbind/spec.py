@@ -1,6 +1,8 @@
 from typing import Any, Literal, Union
 from typing_extensions import Annotated
 
+from enum import Enum
+
 from pydantic import (
     BaseModel,
     Field,
@@ -46,14 +48,28 @@ class TemplateSpec(Spec):
     pass
 
 
+class ArgDirection(str, Enum):
+    IN = "in"
+    OUT = "out"
+    INOUT = "inout"
+
+
 class ArgSpec(BaseModel):
     optional: bool = False
     default: Any | None = None
     facade: ArgFacadeUnion | None = None
+    direction: ArgDirection = ArgDirection.IN
 
+    @property
+    def is_out(self) -> bool:
+        return self.direction in (ArgDirection.OUT, ArgDirection.INOUT)
+    
+class ReturnSpec(BaseModel):
+    pass
 
 class FunctionalSpec(Spec):
     args: dict[str, ArgSpec] = Field(default_factory=dict)
+    returns: ReturnSpec | None = None
     return_type: str | None = None
     omit_ret: bool = False
     check_result: bool = False
@@ -111,6 +127,7 @@ class FunctionTemplateSpec(TemplateSpec):
 
         data["specializations"] = normalized
         return data
+
 
 class MethodSpec(FunctionalSpec):
     kind: Literal["method"]

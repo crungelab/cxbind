@@ -2,17 +2,14 @@ import os
 from pathlib import Path
 import importlib
 from loguru import logger
-from rich import print
 
 from clang import cindex
-
-from cxbind.unit import Unit
 
 from .builder import Builder
 from .builder_context import BuilderContext
 
-from ..node import Node, RootNode
-from ..session import Session
+from ..node import RootNode
+
 
 class Frontend(Builder):
     def __init__(self, source: str) -> None:
@@ -21,16 +18,12 @@ class Frontend(Builder):
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source
-        """
-        self.mapped.add(self.path.name)
-        logger.debug(f"mapped: {self.mapped}")
-        """
 
         self.import_actions()
 
         self.root = RootNode(kind="root", name="root")
         self.push_node(self.root)
-        
+
     def import_actions(self):
         path = Path(os.path.dirname(os.path.abspath(__file__)), "actions.py")
         spec = importlib.util.spec_from_file_location("actions", path)
@@ -41,15 +34,15 @@ class Frontend(Builder):
 
     def build(self):
         self.builder_context.make_current()
-        
+
         self.mapped.add(self.path.name)
         logger.debug(f"mapped: {self.mapped}")
 
         tu = cindex.TranslationUnit.from_source(
             self.path,
             args=self.flags,
-            #options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
-            options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES
+            # options=cindex.TranslationUnit.PARSE_DETAILED_PROCESSING_RECORD,
+            options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES,
         )
 
         for diag in tu.diagnostics:
@@ -58,7 +51,6 @@ class Frontend(Builder):
         self.visit_overloads(tu.cursor)
         logger.debug(f"Overloads: {self.overloaded}")
 
-        #self.visit_children(tu.cursor)
         self.visit(tu.cursor)
 
         return self.top_node

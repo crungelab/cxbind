@@ -11,12 +11,18 @@ namespace py = pybind11;
 
 void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
     _tests
-    .def("test_wrapper", [](const SDLWindowWrapper& window)
+    .def("test_wrapper", [](const SDLWindowWrapper& window, int width, int height)
         {
-            testWrapper(window.get());
-            return ;
+            return testWrapper(window.get(), width, height);
         }
         , py::arg("window")
+        , py::arg("width")
+        , py::arg("height")
+        , py::return_value_policy::automatic_reference)
+    .def("return_window", []()
+        {
+            return SDLWindowWrapper(returnWindow());
+        }
         , py::return_value_policy::automatic_reference)
     ;
 

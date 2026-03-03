@@ -9,7 +9,7 @@ from ...node import FunctionalNode, Argument
 
 from .node_renderer import NodeRenderer, RenderContext
 from .arg_renderer import ArgRenderer, arg_renderer_table
-from .return_renderer import ReturnRenderer, WrapperReturnRenderer
+from .return_renderer import ReturnRenderer
 from .functional_render_pod import FunctionalRenderPod
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
@@ -20,12 +20,11 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         super().__init__(node)
         self.node = node
         self.my_pod = FunctionalRenderPod(node)
+        self.my_pod.return_renderer = ReturnRenderer(node.returns)
         self.create_arg_renderers()
-        self.create_return_renderer()
 
     def create_arg_renderers(self):
-        node = self.node
-        for arg in node.args:
+        for arg in self.node.args:
             facade_kind = (
                 arg.spec.facade.kind
                 if arg.spec is not None and arg.spec.facade is not None
@@ -43,23 +42,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             for arg_renderer in self.my_pod.arg_renderers
             if arg_renderer.arg.name not in excluded_arguments
         ]
-
-        out_args = [arg.name for arg in node.args if arg.is_out]
-        self.my_pod.out_args = out_args
-        self.my_pod.has_out_args = len(out_args) > 0
-
-
-    def create_return_renderer(self):
-        node = self.node
-        cursor = node.cursor
-
-        result_type: cindex.Cursor = cursor.result_type
-        result_type_name = self.get_base_type_name(result_type)
-
-        if result_type_name in self.wrapped:
-            self.my_pod.return_renderer = WrapperReturnRenderer(self.node.returns)
-        else:
-            self.my_pod.return_renderer = ReturnRenderer(self.node.returns)
 
     def render(self):
         self.my_pod.make_current()
@@ -107,6 +89,13 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
 
                 ret = "" if self.my_pod.is_function_void_return() else "auto ret = "
 
+                """
+                self.context.push_stream("output")
+                self.render_output()
+                text = self.context.pop_stream().text
+                result = f"{self_call}({text})"
+                """
+
                 # result = f"{self_call}({self.render_output()})"
 
                 result_type: cindex.Cursor = cursor.result_type
@@ -124,8 +113,13 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                     for arg_renderer in self.my_pod.arg_renderers:
                         arg_renderer.render()
 
-                    self.my_pod.return_renderer.render()
-
+                    #out(f"{ret}{result};")
+                    #out // f"{ret}{self_call}("
+                    out // f"return {self_call}("
+                    self.my_pod.render_output()
+                    out << ");\n"
+                    # out(f"return {self.make_function_result()};")
+                    # self.render_return(ret)
                 out("}")
         else:
             out(f'{def_call}("{pyname}", {cname}')

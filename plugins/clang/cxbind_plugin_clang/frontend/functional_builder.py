@@ -4,8 +4,8 @@ from typing import Generic, List, TypeVar
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, create_spec
-from ..node import FunctionalNode, Argument
+from cxbind.spec import Spec, ArgDirection, create_spec
+from ..node import FunctionalNode, Argument, ReturnValue
 from .node_builder import NodeBuilder
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
@@ -73,26 +73,56 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     def build_node(self):
         super().build_node()
         self.build_args()
+        self.build_return_value()
 
     def build_args(self) -> None:
         logger.debug(f"Building args for function: {self.name}")
-        for a in self.cursor.get_arguments():
-            arg_type = self.resolve_argument_type(a)
-            arg_spelling = self.arg_spelling(a)
-
-            default = self.get_arg_default(a, self.node)
-            spec = self.node.spec.args.get(arg_spelling)
+        for arg_cursor in self.cursor.get_arguments():
+            arg_type = self.make_argument_type(arg_cursor)
+            arg_name = self.make_arg_name(arg_cursor)
+            default = self.make_arg_default(arg_cursor, self.node)
+            spec = self.node.spec.args.get(arg_name)
+            direction = self.make_arg_direction(arg_cursor)
             argument = Argument(
-                name=arg_spelling, type=arg_type, default=default, cursor=a, spec=spec
+                name=arg_name, type=arg_type, default=default, cursor=arg_cursor, spec=spec, direction=direction
             )
             self.node.args.append(argument)
 
         logger.debug(f"args: {self.node.args}")
 
-    def get_arg_default(self, argument: cindex.Cursor, node: FunctionalNode = None) -> str:
+    def build_return_value(self) -> None:
+        logger.debug(f"Building return value for function: {self.name}")
+        ret_type = self.cursor.result_type.spelling
+        self.node.returns = ReturnValue(type=ret_type, cursor=self.cursor.result_type)
+        logger.debug(f"return value: {self.node.returns}")
+
+    def make_arg_direction(self, arg_cursor: cindex.Cursor) -> ArgDirection:
+        arg_type = arg_cursor.type.get_canonical()
+        if arg_type.kind == cindex.TypeKind.LVALUEREFERENCE:
+            if not arg_type.get_pointee().is_const_qualified():
+                return ArgDirection.OUT
+        if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
+            return ArgDirection.OUT
+        if arg_type.kind == cindex.TypeKind.POINTER:
+            ptr = arg_type.get_pointee()
+            kinds = [
+                cindex.TypeKind.BOOL,
+                cindex.TypeKind.FLOAT,
+                cindex.TypeKind.DOUBLE,
+                cindex.TypeKind.INT,
+                cindex.TypeKind.UINT,
+                cindex.TypeKind.USHORT,
+                cindex.TypeKind.ULONG,
+                cindex.TypeKind.ULONGLONG,
+            ]
+            if not ptr.is_const_qualified() and ptr.kind in kinds:
+                return ArgDirection.OUT
+        return ArgDirection.IN
+
+    def make_arg_default(self, argument: cindex.Cursor, node: FunctionalNode = None) -> str:
         default = self.default_from_tokens(argument.get_tokens())
         logger.debug(f"Initial default value for argument {argument.spelling}: {default}")
-        default = str(self.defaults.get(argument.spelling, default))
+        default = self.defaults.get(argument.spelling, default)
         logger.debug(f"Updated default value for argument {argument.spelling}: {default}")
 
         for child in argument.get_children():
@@ -121,7 +151,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
     def default_from_tokens(self, tokens) -> str:
         parts = "".join(t.spelling for t in tokens).split("=")
-        return parts[1] if len(parts) == 2 else ""
+        return parts[1] if len(parts) == 2 else None
 
     def create_pyname(self, name: str) -> str:
         return self.format_function(name)
@@ -173,12 +203,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     def is_function_void_return(self, cursor: cindex.Cursor) -> bool:
         return cursor.type.get_result().kind == cindex.TypeKind.VOID
 
-    """
-    def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
-        return self.get_base_type_name(cursor) in self.wrapped
-    """
-
-    def resolve_argument_type(self, argument: cindex.Cursor) -> str:
+    def make_argument_type(self, argument: cindex.Cursor) -> str:
         arg_type = argument.type
         logger.debug(f"Spelling: {arg_type.spelling}")
 
@@ -227,14 +252,6 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             logger.debug(f"Element type (final): {element_type_name}")
             return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
 
-        type_name = self.get_base_type_name(canonical)
-
-        """
-        if type_name in self.wrapped:
-            wrapper = self.wrapped[type_name].wrapper
-            return f"const {wrapper}&"
-        """
-        
         typedef_name = self.typedef_spelling(arg_type)
         if typedef_name is not None:
             return typedef_name

@@ -7,6 +7,7 @@ from clang import cindex
 from . import cu
 from .session import Session
 from .worker_context import WorkerContext
+from .pod import Pod
 from .node import Node, StructuralNode
 
 T_Context = TypeVar("T_Context", bound=WorkerContext)
@@ -19,8 +20,13 @@ class Worker(Generic[T_Context]):
         super().__init__()
 
     @property
-    def current_session(self) -> Session:
+    def session(self) -> Session:
         return Session.get_current()
+    
+    @property
+    def pod(self) -> Pod:
+        return Pod.get_current()
+
     # ------------------------------------------------------------------
     # Session property pass-throughs
     # ------------------------------------------------------------------
@@ -33,11 +39,11 @@ class Worker(Generic[T_Context]):
     
     @property
     def prefixes(self) -> list[str]:
-        return self.current_session.prefixes
+        return self.session.prefixes
 
     @property
     def wrapped(self) -> dict[str, StructuralNode]:
-        return self.current_session.wrapped
+        return self.session.wrapped
 
     """
     @property
@@ -47,74 +53,74 @@ class Worker(Generic[T_Context]):
     
     @property
     def target(self):
-        return self.current_session.target
+        return self.session.target
 
     @property
     def module(self):
-        return self.current_session.module
+        return self.session.module
 
     @property
     def flags(self):
-        return self.current_session.flags
+        return self.session.flags
 
     @property
     def defaults(self):
-        return self.current_session.defaults
+        return self.session.defaults
 
     @property
     def excluded(self):
-        return self.current_session.excluded
+        return self.session.excluded
 
     @property
     def overloaded(self):
-        return self.current_session.overloaded
+        return self.session.overloaded
 
     @property
     def node_stack(self):
-        return self.current_session.node_stack
+        return self.session.node_stack
 
     @property
     def top_node(self) -> Optional[Node]:
-        return self.current_session.top_node
+        return self.session.top_node
 
     # ------------------------------------------------------------------
     # Node management
     # ------------------------------------------------------------------
 
     def push_node(self, node) -> None:
-        self.current_session.push_node(node)
+        self.session.push_node(node)
 
     def pop_node(self) -> Node:
-        self.current_session.pop_node()
+        self.session.pop_node()
 
     # ------------------------------------------------------------------
     # Formatting
     # ------------------------------------------------------------------
 
     def spell(self, cursor: cindex.Cursor) -> str:
-        return self.current_session.spell(cursor)
+        return self.session.spell(cursor)
 
     def format_field(self, name: str) -> str:
-        return self.current_session.format_field(name)
+        return self.session.format_field(name)
 
     def format_function(self, name: str) -> str:
-        return self.current_session.format_function(name)
+        return self.session.format_function(name)
 
     def format_type(self, name: str) -> str:
-        return self.current_session.format_type(name)
+        return self.session.format_type(name)
 
     def format_enum_constant(self, name: str, enum_name: str) -> str:
-        return self.current_session.format_enum_constant(name, enum_name)
+        return self.session.format_enum_constant(name, enum_name)
 
     # ------------------------------------------------------------------
     # Spec / registry
     # ------------------------------------------------------------------
 
     def register_node(self, node: Node) -> str:
-        return self.current_session.register_spec(node)
+        return self.session.register_spec(node)
 
     def lookup_spec(self, key: str) -> Node:
-        return self.current_session.lookup_spec(key)
+        return self.session.lookup_spec(key)
 
     # ------------------------------------------------------------------
     # Scope helpers
@@ -289,11 +295,38 @@ class Worker(Generic[T_Context]):
                 break
         return self.strip_qualifiers(typ.spelling)
 
+    def get_base_type(self,t: cindex.Type) -> cindex.Type:
+        # Resolve typedefs
+        t = t.get_canonical()
+
+        # Strip qualifiers
+        #t = t.get_unqualified_type()
+
+        # Strip pointers and references
+        while t.kind in (
+            cindex.TypeKind.POINTER,
+            cindex.TypeKind.LVALUEREFERENCE,
+            cindex.TypeKind.RVALUEREFERENCE,
+        ):
+            t = t.get_pointee()
+            #t = t.get_unqualified_type()
+
+        # Strip arrays
+        while t.kind in (
+            cindex.TypeKind.CONSTANTARRAY,
+            cindex.TypeKind.INCOMPLETEARRAY,
+            cindex.TypeKind.VARIABLEARRAY,
+        ):
+            t = t.get_array_element_type()
+            #t = t.get_unqualified_type()
+
+        return t
+
     # ------------------------------------------------------------------
     # Misc
     # ------------------------------------------------------------------
 
-    def arg_spelling(self, argument: cindex.Cursor) -> str:
+    def make_arg_name(self, argument: cindex.Cursor) -> str:
         return argument.spelling or "arg"
     
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:

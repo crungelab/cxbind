@@ -5,6 +5,7 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
+#include <cxbind/callback.h>
 
 #include "callbacks.h"
 

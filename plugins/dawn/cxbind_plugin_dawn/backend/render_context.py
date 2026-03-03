@@ -19,7 +19,6 @@ class RenderContext:
             self.catalog.add_entry(value)
         self.jinja_env = jinja_env
 
-        #self.out = RenderStream()
         self.streams: Dict[str, RenderStream] = {}
         self.stream_stack: List[RenderStream] = []
         self.push_stream("default")

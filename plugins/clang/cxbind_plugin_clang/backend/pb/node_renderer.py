@@ -30,13 +30,13 @@ class NodeRenderer(Renderer, Generic[T_Node]):
 
     @contextmanager
     def enter(self, node) -> Generator[Any, Any, Any]:
-        self.current_session.push_node(node)
+        self.session.push_node(node)
         self.out.indent()
         yield node
         self.out.dedent()
-        self.current_session.pop_node()
+        self.session.pop_node()
 
     def render(self):
         for child in self.node.children:
-            renderer = self.current_context.create_renderer(child)
+            renderer = self.context.create_renderer(child)
             renderer.render()

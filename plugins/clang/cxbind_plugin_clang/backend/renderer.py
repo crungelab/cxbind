@@ -15,25 +15,25 @@ class Renderer(Worker[RenderContext]):
         super().__init__()
 
     @property
-    def current_context(self):
+    def context(self):
         return RenderContext.get_current()
 
     @property
     def out(self):
-        return self.current_context.out
+        return self.context.out
 
     @property
     def chaining(self) -> bool:
-        return self.current_context.chaining
+        return self.context.chaining
 
     @chaining.setter
     def chaining(self, value) -> None:
-        self.current_context.chaining = value
+        self.context.chaining = value
 
     def begin_chain(self, emit_scope:bool = True) -> None:
         if self.chaining:
             return
-        self.current_context.chaining = True
+        self.context.chaining = True
         if emit_scope:
             self.out(f"_{self.scope}")
         #self.out(self.scope)
@@ -41,7 +41,7 @@ class Renderer(Worker[RenderContext]):
     def end_chain(self) -> None:
         if not self.chaining:
             return
-        self.current_context.chaining = False
+        self.context.chaining = False
         self.out(";")
         self.out()
 
