@@ -21,7 +21,7 @@ class CtorRenderer(MethodRenderer):
             arg_types = self.arg_types(arguments)
 
             out(f".def(py::init<{arg_types}>()")
-            self.render_pyargs(arguments)
+            self.render_pyargs()
             out(")")
         else:
             out(".def(py::init<>())")

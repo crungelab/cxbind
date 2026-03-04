@@ -19,11 +19,9 @@ class ReturnRenderer(Renderer):
         self.value = value
 
     def render(self):
-        #out = self.out
         self.render_prolog()
         self.render_call()
         self.render_epilog()
-        #out << ");\n"
 
     def render_prolog(self):
         out = self.out
@@ -34,6 +32,10 @@ class ReturnRenderer(Renderer):
             out // f"return "
 
     def render_call(self):
+        self.render_begin_call()
+        self.render_end_call()
+        
+    def render_begin_call(self):
         out = self.out
         node = self.pod.node
         cursor = node.cursor
@@ -52,12 +54,17 @@ class ReturnRenderer(Renderer):
         out << f"{self_call}("
         self.pod.render_output()
 
+    def render_end_call(self):
+        out = self.out
+        out << ")"
+
     def render_epilog(self):
         out = self.out
         node = self.pod.node
 
         #self.pod.render_output()
-        out << ");\n"
+        #out << ");\n"
+        out << ";\n"
 
         if self.pod.has_out_args:
             # return "std::make_tuple({})".format(", ".join(out_args))
@@ -75,7 +82,9 @@ class ReturnRenderer(Renderer):
 class WrapperReturnRenderer(ReturnRenderer):
     def __init__(self, value: ReturnValue):
         super().__init__(value)
+        self.extra: str = ""
 
+    '''
     def render_call(self):
         out = self.out
         #base_type = self.get_base_type(self.pod.node.returns.cursor)
@@ -90,9 +99,25 @@ class WrapperReturnRenderer(ReturnRenderer):
         #result = f"{wrapper}({result}{extra})"
         out << f"{wrapper}("
         super().render_call()
-        #out << f"{extra})"
-        out << f")"
+        out << f"{extra})"
+        #out << f")"
         """
         if len(self.pod.arg_renderers) > 0:
             out << ", "
         """
+    '''
+
+    def render_call(self):
+        out = self.out
+        result_type_name = self.get_base_type_name(self.pod.node.returns.cursor)
+        wrapper = self.wrapped[result_type_name].wrapper
+        if wrapper == "py::capsule":
+            self.extra = f'), "{result_type_name}"'
+        out << f"{wrapper}("
+        super().render_call()
+
+    def render_end_call(self):
+        out = self.out
+        out << f"{self.extra}"
+
+        return super().render_end_call()

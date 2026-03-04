@@ -24,7 +24,7 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
                 return true;
             };
             
-            functionWithCallback(_a, count, _callback, context);
+            return functionWithCallback(_a, count, _callback, context);
         }
         , py::arg("a")
         , py::arg("callback")

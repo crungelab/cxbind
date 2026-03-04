@@ -22,6 +22,11 @@ class ArgFacade(Facade):
     pass
 
 
+class WrapperArgFacade(ArgFacade):
+    kind: Literal["wrapper"] = "wrapper"
+    wrapper: str
+
+
 class ObjectArgFacade(ArgFacade):
     kind: Literal["object"] = "object"
 

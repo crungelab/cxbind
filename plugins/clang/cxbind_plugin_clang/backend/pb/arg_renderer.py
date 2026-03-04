@@ -5,6 +5,7 @@ from clang import cindex
 
 from cxbind.facade import (
     ArgFacade,
+    WrapperArgFacade,
     ObjectArgFacade,
     VectorArgFacade,
     BufferArgFacade,
@@ -97,18 +98,21 @@ class ArgRenderer(Renderer):
         prefix += "_" if private else ""
 
         if self.arg.cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            out << f"&{prefix}{self.arg.name}[0]"
+            out << f"{prefix}&{self.arg.name}[0]"
             return
 
         if self.is_wrapped_type(self.arg.cursor.type):
-            out << f"{prefix}{self.arg.name}.get()"
+            result_type_name = self.get_base_type_name(self.arg.cursor.type)
+            wrapper = self.wrapped[result_type_name].wrapper
+            extractor = "get_pointer" if wrapper == "py::capsule" else "get"
+            #out << f"{prefix}{self.arg.name}.get()"
+            out << f"{prefix}{self.arg.name}.{extractor}()"
             return
         
         out << f"{prefix}{self.arg.name}"
 
     def render_pyarg(self):
         argument = self.arg
-        #default = f" = {argument.default}" if argument.default else ""
         default = f" = {argument.default}" if argument.default is not None else ""
         self.out(f', py::arg("{self.format_field(argument.name)}"){default}')
 
@@ -122,6 +126,13 @@ class ArgFacadeRenderer(ArgRenderer, Generic[T_Facade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.facade = arg.spec.facade
+
+class WrapperArgRenderer(ArgFacadeRenderer[WrapperArgFacade]):
+    def make_arg_type_string(self):
+        return f"py::object"
+
+    def render_output(self):
+        return f"static_cast<{self.arg.type}>({super().render_output()}.ptr())"
 
 
 class ObjectArgRenderer(ArgFacadeRenderer[ObjectArgFacade]):
@@ -231,6 +242,7 @@ class BufferArgRenderer(ArgFacadeRenderer[BufferArgFacade]):
 
 
 arg_renderer_table = {
+    "wrapper": WrapperArgRenderer,
     "object": ObjectArgRenderer,
     "vector": VectorArgRenderer,
     "callback": CallbackArgRenderer,
