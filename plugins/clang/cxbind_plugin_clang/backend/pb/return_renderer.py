@@ -113,6 +113,8 @@ class WrapperReturnRenderer(ReturnRenderer):
         wrapper = self.wrapped[result_type_name].wrapper
         if wrapper == "py::capsule":
             self.extra = f'), "{result_type_name}"'
+        else:
+            self.extra = ")"
         out << f"{wrapper}("
         super().render_call()
 

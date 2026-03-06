@@ -48,7 +48,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         self.my_pod.out_args = out_args
         self.my_pod.has_out_args = len(out_args) > 0
 
-
     def create_return_renderer(self):
         node = self.node
         cursor = node.cursor
@@ -92,11 +91,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 and not cursor.is_static_method()
             )
             self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
-            self_call = (
-                f"self.{cursor.spelling}"
-                if is_non_static_method
-                else f"{self.spell(cursor)}"
-            )
             # out(f'{def_call}("{pyname}", []({self_arg}{self.arg_string()})')
             out // f'{def_call}("{pyname}", []({self_arg}'
             self.my_pod.render_input()
@@ -104,6 +98,12 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
 
             with out:
                 out("{")
+                """
+                self_call = (
+                    f"self.{cursor.spelling}"
+                    if is_non_static_method
+                    else f"{self.spell(cursor)}"
+                )
 
                 ret = "" if self.my_pod.is_function_void_return() else "auto ret = "
 
@@ -112,7 +112,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 result_type: cindex.Cursor = cursor.result_type
                 result_type_name = self.get_base_type_name(result_type)
 
-                """
                 if result_type_name in self.wrapped:
                     wrapper = self.wrapped[result_type_name].wrapper
                     extra = ""
@@ -134,6 +133,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             self.render_pyargs()
             out(f", {self.get_return_policy(cursor)})")
 
+    """ Defined in FunctionalBuilder
     def process_function_decl(self, decl):
         for param in decl.get_children():
             if param.kind == cindex.CursorKind.PARM_DECL:
@@ -142,6 +142,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                     logger.debug(f"Found rvalue reference in function {decl.spelling}")
                     return False
         return True
+    """
 
     def should_wrap_function(self) -> bool:
         node = self.node

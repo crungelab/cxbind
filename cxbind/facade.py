@@ -18,40 +18,37 @@ class Facade(BaseModel):
     kind: str
 
 
-class ArgFacade(Facade):
-    pass
-
-
-class WrapperArgFacade(ArgFacade):
+class WrapperFacade(Facade):
     kind: Literal["wrapper"] = "wrapper"
     wrapper: str
 
 
-class ObjectArgFacade(ArgFacade):
+class ObjectFacade(Facade):
     kind: Literal["object"] = "object"
 
 
-class VectorArgFacade(ArgFacade):
+class VectorFacade(Facade):
     kind: Literal["vector"] = "vector"
     length_arg: str
 
 
-class BufferArgFacade(ArgFacade):
+class BufferFacade(Facade):
     kind: Literal["buffer"] = "buffer"
     length_arg: str
 
 
-class CallbackArgFacade(ArgFacade):
+class CallbackFacade(Facade):
     kind: Literal["callback"] = "callback"
     context_arg: str | None = None
 
 
 ArgFacadeUnion = Annotated[
     Union[
-        ObjectArgFacade,
-        VectorArgFacade,
-        BufferArgFacade,
-        CallbackArgFacade,
+        WrapperFacade,
+        ObjectFacade,
+        VectorFacade,
+        BufferFacade,
+        CallbackFacade,
     ],
     Field(discriminator="kind"),
 ]

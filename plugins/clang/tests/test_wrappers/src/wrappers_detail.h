@@ -27,4 +27,6 @@ typedef struct SDL_Window SDL_Window;
 
 using SDLWindowWrapper = Wrapper<SDL_Window>;
 
+typedef struct ImGuiContext ImGuiContext;
+
 //} // namespace test_wrappers

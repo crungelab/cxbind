@@ -14,3 +14,5 @@ units:
     specs:
       'struct@SDL_Window':
         wrapper: 'SDLWindowWrapper'
+      'struct@ImGuiContext':
+        wrapper: 'py::capsule'

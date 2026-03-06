@@ -8,18 +8,17 @@ from loguru import logger
 
 from cxbind.spec import Spec, ArgSpec, ArgDirection
 
-from . import cu
-
 
 class Node(BaseModel):
     kind: str
     name: str
     signature: str | None = None
     pyname: str | None = None
-    children: list["Node"] = []
+    #children: list["Node"] = []
+    children: list["Node"] = Field(default_factory=list)
     parent: Optional["Node"] = None
 
-    cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
+    #cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: Spec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
@@ -77,26 +76,12 @@ class Node(BaseModel):
 
         name = cls.spell(cursor)
 
-        """
-        logger.debug(f"Struct name: '{name}'")
-        if "unnamed struct" in name:
-            logger.debug(f"Anonymous struct detected: {name}")
-            #name = self.session.camel(cu.anonymous_struct_name(cursor))
-            name = cu.anonymous_struct_name(cursor)
-            logger.debug(f"Renamed to: {name}")
-        """
-
         if overload:
             key = f"{kind}@{name}@{cursor.type.spelling}"
         else:
             key = f"{kind}@{name}"
 
         return key
-
-    """
-    def model_post_init(self, __context: object) -> None:
-        self.first_name = self.name.split("::")[-1]
-    """
 
     def add_child(self, child: "Node"):
         child.parent = self
@@ -109,7 +94,12 @@ class Node(BaseModel):
 
 
 class TypeNode(Node):
-    pass
+    type: cindex.Type | None = Field(None, exclude=True, repr=False)
+
+
+class DeclNode(Node):
+    #pass
+    cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
 
 
 class TemplateNode(Node):
@@ -123,7 +113,6 @@ class RootNode(Node):
 class Argument(BaseModel):
     name: str
     type: str
-    #default: str | None = None
     default: object | None = None
     direction: ArgDirection = ArgDirection.IN
 
@@ -136,6 +125,7 @@ class Argument(BaseModel):
     def is_out(self) -> bool:
         return self.direction in (ArgDirection.OUT, ArgDirection.INOUT)
 
+
 class ReturnValue(BaseModel):
     type: str
     cursor: cindex.Type | None = Field(None, exclude=True, repr=False)
@@ -143,9 +133,12 @@ class ReturnValue(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-class FunctionalNode(TypeNode):
-    args: list[Argument] | None = []
+
+class FunctionalNode(DeclNode):
+    #args: list[Argument] | None = []
+    args: list[Argument] = Field(default_factory=list)
     returns: ReturnValue | None = None
+
 
 class FunctionNode(FunctionalNode):
     kind: Literal["function"]
@@ -167,11 +160,12 @@ class CtorNode(FunctionalNode):
     kind: Literal["ctor"]
 
 
-class FieldNode(Node):
+#class FieldNode(Node):
+class FieldNode(DeclNode):
     kind: Literal["field"]
 
 
-class StructuralNode(TypeNode):
+class StructuralNode(DeclNode):
     constructible: bool = True
     has_constructor: bool = False
 
@@ -192,7 +186,7 @@ class ClassTemplateNode(TemplateNode):
     kind: Literal["class_template"]
 
 
-class EnumNode(TypeNode):
+class EnumNode(DeclNode):
     kind: Literal["enum"]
 
 

@@ -4,12 +4,12 @@ from loguru import logger
 from clang import cindex
 
 from cxbind.facade import (
-    ArgFacade,
-    WrapperArgFacade,
-    ObjectArgFacade,
-    VectorArgFacade,
-    BufferArgFacade,
-    CallbackArgFacade,
+    Facade,
+    WrapperFacade,
+    ObjectFacade,
+    VectorFacade,
+    BufferFacade,
+    CallbackFacade,
 )
 
 from ...node import Argument
@@ -117,7 +117,7 @@ class ArgRenderer(Renderer):
         self.out(f', py::arg("{self.format_field(argument.name)}"){default}')
 
 
-T_Facade = TypeVar("T_Facade", bound=ArgFacade)
+T_Facade = TypeVar("T_Facade", bound=Facade)
 
 
 class ArgFacadeRenderer(ArgRenderer, Generic[T_Facade]):
@@ -127,7 +127,7 @@ class ArgFacadeRenderer(ArgRenderer, Generic[T_Facade]):
         super().__init__(arg)
         self.facade = arg.spec.facade
 
-class WrapperArgRenderer(ArgFacadeRenderer[WrapperArgFacade]):
+class WrapperArgRenderer(ArgFacadeRenderer[WrapperFacade]):
     def make_arg_type_string(self):
         return f"py::object"
 
@@ -135,7 +135,7 @@ class WrapperArgRenderer(ArgFacadeRenderer[WrapperArgFacade]):
         return f"static_cast<{self.arg.type}>({super().render_output()}.ptr())"
 
 
-class ObjectArgRenderer(ArgFacadeRenderer[ObjectArgFacade]):
+class ObjectArgRenderer(ArgFacadeRenderer[ObjectFacade]):
     def make_arg_type_string(self):
         return f"py::object"
 
@@ -143,7 +143,7 @@ class ObjectArgRenderer(ArgFacadeRenderer[ObjectArgFacade]):
         return f"static_cast<{self.arg.type}>({super().render_output()}.ptr())"
 
 
-class VectorArgRenderer(ArgFacadeRenderer[VectorArgFacade]):
+class VectorArgRenderer(ArgFacadeRenderer[VectorFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.length_arg = self.facade.length_arg
@@ -172,7 +172,7 @@ class VectorArgRenderer(ArgFacadeRenderer[VectorArgFacade]):
         out(value)
 
 
-class CallbackArgRenderer(ArgFacadeRenderer[CallbackArgFacade]):
+class CallbackArgRenderer(ArgFacadeRenderer[CallbackFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.context_arg = self.facade.context_arg
@@ -202,7 +202,7 @@ class CallbackArgRenderer(ArgFacadeRenderer[CallbackArgFacade]):
         out(value)
 
 
-class BufferArgRenderer(ArgFacadeRenderer[BufferArgFacade]):
+class BufferArgRenderer(ArgFacadeRenderer[BufferFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.length_arg = self.facade.length_arg
