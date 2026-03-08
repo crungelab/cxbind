@@ -12,7 +12,7 @@ units:
     target: 'src/facades_py_auto.cpp'
 
 specs:
-  'function@facadeFunction':
+  'function@vectorFacadeFunction':
     args:
       a:
         facade:

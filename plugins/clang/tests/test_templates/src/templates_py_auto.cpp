@@ -28,7 +28,7 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
         .def("do_that", [](MyClass<float, double>& self, std::array<float, 3>& bmin)
             {
                 self.doThat(&bmin[0]);
-                return bmin;
+                return std::make_tuple(bmin);
             }
             , py::arg("bmin")
             , py::return_value_policy::automatic_reference)

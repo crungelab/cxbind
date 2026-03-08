@@ -12,9 +12,14 @@ from cxbind_tests.test_overloads import Overloads
 class Test(unittest.TestCase):
     def test(self):
         overloads = Overloads()
+
         result = overloads.add(2, 2)
         print(result)
         self.assertEqual(result, 4)
+
+        result = overloads.add(2.0, 2.0)
+        print(result)
+        self.assertEqual(result, 4.0)
 
 if __name__ == '__main__':
     unittest.main()

@@ -15,8 +15,8 @@ void register_arguments_py_auto(py::module &_tests, Registry &registry) {
         _Arguments
         .def(py::init<>())
         .def("add", &Arguments::add
-            , py::arg("i")
-            , py::arg("j")
+            , py::arg("i") = 0
+            , py::arg("j") = 0
             , py::return_value_policy::automatic_reference)
     ;
 
@@ -25,6 +25,14 @@ void register_arguments_py_auto(py::module &_tests, Registry &registry) {
         {
             inOutFunction(i, j);
             return std::make_tuple(j);
+        }
+        , py::arg("i")
+        , py::arg("j")
+        , py::return_value_policy::automatic_reference)
+    .def("in_out_function_with_return", [](int i, int * j)
+        {
+            auto _ret = inOutFunctionWithReturn(i, j);
+            return std::make_tuple(_ret, j);
         }
         , py::arg("i")
         , py::arg("j")

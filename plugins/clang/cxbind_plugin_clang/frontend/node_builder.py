@@ -37,13 +37,18 @@ class NodeBuilder(Builder, Generic[T_Node]):
     def find_spec(self) -> Spec:
         key = Node.make_key(self.cursor)
         spec = self.lookup_spec(key)
+        #spec = self.lookup_spec(self.node.name)
+        #spec = self.lookup_spec(self.node.name)
+        #spec = self.lookup_spec(self.spell(self.cursor))
         return spec
 
     def find_or_create_spec(self) -> Spec:
         spec = self.find_spec()
         if spec is None:
             key = Node.make_key(self.cursor)
+            #kind = Node.make_kind(self.cursor)
             # logger.debug(f"Spec not found for {key}")
+            #spec = create_spec(key, kind)
             spec = create_spec(key)
         return spec
 

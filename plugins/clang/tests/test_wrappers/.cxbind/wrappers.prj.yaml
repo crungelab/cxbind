@@ -15,4 +15,4 @@ units:
       'struct@SDL_Window':
         wrapper: 'SDLWindowWrapper'
       'struct@ImGuiContext':
-        wrapper: 'py::capsule'
+        wrapper: 'pycapsule'

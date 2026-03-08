@@ -4,6 +4,8 @@ from pathlib import Path
 from loguru import logger
 from clang import cindex
 
+from cxbind.spec import Spec
+
 from . import cu
 from .session import Session
 from .worker_context import WorkerContext
@@ -119,7 +121,7 @@ class Worker(Generic[T_Context]):
     def register_node(self, node: Node) -> str:
         return self.session.register_spec(node)
 
-    def lookup_spec(self, key: str) -> Node:
+    def lookup_spec(self, key: str) -> Spec:
         return self.session.lookup_spec(key)
 
     # ------------------------------------------------------------------
@@ -144,6 +146,11 @@ class Worker(Generic[T_Context]):
     def is_excluded(self, cursor: cindex.Cursor) -> bool:
         if Node.make_key(cursor) in self.excluded:
             return True
+        """
+        if Node.spell(cursor) in self.excluded:
+            return True
+        """
+
         if self.is_overloaded(cursor):
             key = Node.make_key(cursor, overload=True)
             logger.debug(f"Checking overloaded: {key}")

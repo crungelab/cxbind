@@ -1,4 +1,17 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
+
+from loguru import logger
+from clang import cindex
+
+from cxbind.facade import (
+    Facade,
+    PyCapsuleFacade,
+    WrapperFacade,
+    ObjectFacade,
+    VectorFacade,
+    BufferFacade,
+    CallbackFacade,
+)
 
 from loguru import logger
 from clang import cindex
@@ -14,11 +27,19 @@ if TYPE_CHECKING:
 class ReturnRenderer(Renderer):
     pod: "FunctionalRenderPod"
 
-    def __init__(self, value: ReturnValue):
+    def __init__(self, return_value: ReturnValue):
         super().__init__()
-        self.value = value
+        self.return_value = return_value
+        self.use_return_temp = False
 
     def render(self):
+        node = self.pod.node
+        if (
+            self.pod.has_out_args
+            and not self.pod.is_function_void_return()
+            and not node.spec.omit_ret
+        ):
+            self.use_return_temp = True
         self.render_prolog()
         self.render_call()
         self.render_epilog()
@@ -26,15 +47,17 @@ class ReturnRenderer(Renderer):
     def render_prolog(self):
         out = self.out
         node = self.pod.node
-        if self.pod.has_out_args:
+        if self.use_return_temp:
+            out // "auto _ret = "
+        elif self.pod.has_out_args:
             out.write_indent()
         else:
-            out // f"return "
+            out // "return "
 
     def render_call(self):
         self.render_begin_call()
         self.render_end_call()
-        
+
     def render_begin_call(self):
         out = self.out
         node = self.pod.node
@@ -60,58 +83,61 @@ class ReturnRenderer(Renderer):
 
     def render_epilog(self):
         out = self.out
-        node = self.pod.node
 
-        #self.pod.render_output()
-        #out << ");\n"
         out << ";\n"
 
         if self.pod.has_out_args:
-            # return "std::make_tuple({})".format(", ".join(out_args))
             out // "return std::make_tuple("
+            if self.use_return_temp:
+                out << "_ret, "
             self.pod.render_out_args()
             out << ");" << out.nl
 
-    """
-    def render_epilog(self):
+
+T_Facade = TypeVar("T_Facade", bound=Facade)
+
+
+class FacadeReturnRenderer(ReturnRenderer, Generic[T_Facade]):
+    facade: T_Facade
+
+    def __init__(self, return_value: ReturnValue):
+        super().__init__(return_value)
+        self.facade = return_value.type.facade
+
+
+class PyCapsuleReturnRenderer(ReturnRenderer):
+    def __init__(self, return_value: ReturnValue):
+        super().__init__(return_value)
+        self.extra: str = ""
+
+    def render_call(self):
         out = self.out
-        #self.pod.render_output()
-        out << ");\n"
-    """
+        result_type_name = self.return_value.type.base_name
+        # wrapper = self.wrapped[result_type_name].wrapper
+        self.extra = f'), "{result_type_name}"'
+        # out << f"{wrapper}("
+        out << f"py::capsule("
+        super().render_call()
+
+    def render_end_call(self):
+        out = self.out
+        out << f"{self.extra}"
+
+        return super().render_end_call()
+
 
 class WrapperReturnRenderer(ReturnRenderer):
     def __init__(self, value: ReturnValue):
         super().__init__(value)
         self.extra: str = ""
 
-    '''
     def render_call(self):
         out = self.out
-        #base_type = self.get_base_type(self.pod.node.returns.cursor)
-        #logger.debug(f"Base type: {base_type}, spelling: {base_type.spelling}")
-        #result_type_name = base_type.spelling
-        result_type_name = self.get_base_type_name(self.pod.node.returns.cursor)
+        # result_type_name = self.get_base_type_name(self.pod.node.returns.cursor)
+        # result_type_name = self.pod.node.returns.type.base_name
+        result_type_name = self.return_value.type.base_name
         wrapper = self.wrapped[result_type_name].wrapper
-        extra = ""
-        if wrapper == "py::capsule":
-            extra = f', "{result_type_name}"'
-        logger.debug(f"Wrapper: {wrapper}, extra: {extra}")
-        #result = f"{wrapper}({result}{extra})"
-        out << f"{wrapper}("
-        super().render_call()
-        out << f"{extra})"
-        #out << f")"
-        """
-        if len(self.pod.arg_renderers) > 0:
-            out << ", "
-        """
-    '''
-
-    def render_call(self):
-        out = self.out
-        result_type_name = self.get_base_type_name(self.pod.node.returns.cursor)
-        wrapper = self.wrapped[result_type_name].wrapper
-        if wrapper == "py::capsule":
+        if wrapper == "pycapsule":
             self.extra = f'), "{result_type_name}"'
         else:
             self.extra = ")"
@@ -123,3 +149,13 @@ class WrapperReturnRenderer(ReturnRenderer):
         out << f"{self.extra}"
 
         return super().render_end_call()
+
+
+RETURN_RENDERER_TABLE = {
+    "pycapsule": PyCapsuleReturnRenderer,
+    "wrapper": WrapperReturnRenderer,
+    # "object": ObjectRenderer,
+    # "vector": VectorArgRenderer,
+    # "callback": CallbackArgRenderer,
+    # "buffer": BufferArgRenderer,
+}

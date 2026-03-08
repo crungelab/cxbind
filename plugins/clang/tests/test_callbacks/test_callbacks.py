@@ -11,12 +11,10 @@ from cxbind_tests.test_callbacks import function_with_callback
 
 class Test(unittest.TestCase):
     def test__function(self):
-        def callback(x, context):
-            print(x)
+        def callback(x):
+            print(f"x: {x}")
 
-        result = function_with_callback([1, 2, 3], callback, None)
-        print(result)
-        self.assertEqual(result, 6)
+        function_with_callback([1, 2, 3], callback)
 
 if __name__ == '__main__':
     unittest.main()

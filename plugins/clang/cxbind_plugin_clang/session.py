@@ -106,6 +106,7 @@ class Session:
 
     def lookup_spec(self, key: str) -> Spec:
         spec = self.specs.get(key)
+        #logger.debug(f"Looking up spec for key: {key}, specs: {self.specs}, spec: {spec}")
         return spec
 
     def spell(self, cursor: cindex.Cursor) -> str:

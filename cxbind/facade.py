@@ -18,7 +18,16 @@ class Facade(BaseModel):
     kind: str
 
 
-class WrapperFacade(Facade):
+class BaseWrapperFacade(Facade):
+    #kind: Literal["base_wrapper"] = "base_wrapper"
+    pass
+
+
+class PyCapsuleFacade(BaseWrapperFacade):
+    kind: Literal["pycapsule"] = "pycapsule"
+
+
+class WrapperFacade(BaseWrapperFacade):
     kind: Literal["wrapper"] = "wrapper"
     wrapper: str
 
@@ -42,8 +51,9 @@ class CallbackFacade(Facade):
     context_arg: str | None = None
 
 
-ArgFacadeUnion = Annotated[
+FacadeUnion = Annotated[
     Union[
+        PyCapsuleFacade,
         WrapperFacade,
         ObjectFacade,
         VectorFacade,
@@ -52,3 +62,7 @@ ArgFacadeUnion = Annotated[
     ],
     Field(discriminator="kind"),
 ]
+
+WRAPPER_FACADES = {
+    "pycapsule"
+}

@@ -18,3 +18,9 @@ void inOutFunction(int i, int* j)
 {
     *j = i + *j;
 }
+
+int inOutFunctionWithReturn(int i, int* j)
+{
+    *j = i + *j;
+    return *j;
+}

@@ -6,17 +6,15 @@ sys.path.insert(0, str(build_dir))
 
 import unittest
 
-from cxbind_tests.test_callbacks import function_with_callback
+from cxbind_tests.test_object_args import function_with_void_arg
 
 
 class Test(unittest.TestCase):
-    def test__function(self):
-        def callback(x, context):
-            print(x)
-
-        result = function_with_callback([1, 2, 3], callback, None)
+    def test_function(self):
+        obj = object()
+        result = function_with_void_arg(obj)
         print(result)
-        self.assertEqual(result, 6)
+        self.assertIsNone(result)
 
 if __name__ == '__main__':
     unittest.main()

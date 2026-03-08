@@ -13,22 +13,25 @@ namespace py = pybind11;
 
 void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
     _tests
-    .def("function_with_callback", [](std::vector<unsigned int> a, py::function callback, void * context)
+    .def("function_with_callback", [](std::vector<unsigned int> a, py::function callback)
         {
             const uint32_t * _a = (const uint32_t *)a.data();
             auto count = a.size();
             
-            auto _callback = +[](int, void* ctx) -> bool {
-                auto* st = static_cast<OverlapThunkState*>(ctx);
-                // ... use st, acquire GIL, call Python, etc ...
-                return true;
+            cxbind::thunk_state _context(callback);
+            auto context = &_context;
+            auto _callback = +[](int value, void* ctx) -> bool {
+                auto& ts = *static_cast<cxbind::thunk_state*>(ctx);
+                // ... use ts, acquire GIL, call Python, etc ...
+                py::gil_scoped_acquire gil;
+                py::object result = ts.cb(value);
+                return result.cast<bool>();
             };
             
             return functionWithCallback(_a, count, _callback, context);
         }
         , py::arg("a")
         , py::arg("callback")
-        , py::arg("context")
         , py::return_value_policy::automatic_reference)
     ;
 

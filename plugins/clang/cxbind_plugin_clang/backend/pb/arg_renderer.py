@@ -5,6 +5,7 @@ from clang import cindex
 
 from cxbind.facade import (
     Facade,
+    PyCapsuleFacade,
     WrapperFacade,
     ObjectFacade,
     VectorFacade,
@@ -12,7 +13,7 @@ from cxbind.facade import (
     CallbackFacade,
 )
 
-from ...node import Argument
+from ...node import Argument, Type
 
 from ..render_context import RenderContext
 from ..renderer import Renderer
@@ -32,12 +33,9 @@ class ArgRenderer(Renderer):
     def excludes(self) -> set[str]:
         return set()
 
-    def make_arg_type_string(self) -> str:
-        # Whatever your generator currently stores (string spelling).
-        # Ex: "int", "const char *", "bool (*)(int, void *)", "Foo[]"
-        return self.arg.type
-    
-    def render_type_and_name(self, arg_type: str, arg_name: str, private: bool = False, first: bool = False) -> str:
+    def render_type_and_name(
+        self, arg_type: Type, arg_name: str, private: bool = False
+    ) -> str:
         out = self.out
         """
         Render a single C/C++ parameter declarator.
@@ -46,69 +44,43 @@ class ArgRenderer(Renderer):
         - Array:     "float x[]"
         - Fn ptr:    "bool (*cb)(int, void *)"   (injects name into "(*)")
         """
-        prefix = ", " if not first else ""
         name_prefix = "_" if private else ""
 
         # Function pointer case: type contains "(*)"
         # Example arg_type: "bool (*)(int, void *)"
-        if self._FN_PTR_HOLE_RE.search(arg_type):
+        if self._FN_PTR_HOLE_RE.search(arg_type.spelling):
             # Inject name inside the first "(*)"
-            injected = self._FN_PTR_HOLE_RE.sub(f"(*{arg_name})", arg_type, count=1)
+            injected = self._FN_PTR_HOLE_RE.sub(
+                f"(*{arg_name})", arg_type.spelling, count=1
+            )
             out << injected
+            return
 
         # Default case
-        out << f"{prefix}{arg_type} {name_prefix}{arg_name}"
+        out << f"{arg_type.spelling} {name_prefix}{arg_name}"
 
-    def render_input(self, first: bool = False, private: bool = False) -> None:
-        """
-        if self.arg.is_out:
-            return
-        """
+    def render_input(self, private: bool = False) -> None:
         out = self.out
-        prefix = ", " if not first else ""
-        arg_type = self.make_arg_type_string()
+        arg_type = self.arg.type
         arg_name = self.arg.name
 
         # Handle C-style "T name[]" where you currently encode "T[]"
-        if arg_type.endswith("[]"):
-            base_type = arg_type[:-2].rstrip()
+        if arg_type.spelling.endswith("[]"):
+            base_type = arg_type.spelling[:-2].rstrip()
             # For arrays, name is part of declarator suffix
-            out << f"{prefix}{base_type} {arg_name}[]"
+            out << f"{base_type} {arg_name}[]"
             return
 
-        if self.is_wrapped_type(self.arg.cursor.type):
-            base_type = self.get_base_type_name(self.arg.cursor.type)
-            wrapped_spec = self.wrapped.get(base_type)
-            logger.debug(f"Wrapped spec for type {self.arg.type}: {wrapped_spec}")
-            if wrapped_spec and wrapped_spec.wrapper:
-                out << f"{prefix}const {wrapped_spec.wrapper}& {arg_name}"
-                """
-                if len(self.pod.in_arg_renderers) > 1 and first:
-                    out << ", "
-                """
-                return
+        self.render_type_and_name(arg_type, arg_name, private=private)
 
-        #out  << self.render_type_and_name(arg_type, arg_name, private=private) << suffix
-
-        self.render_type_and_name(arg_type, arg_name, private=private, first=first)
-
-    def render_output(self, first: bool = False, private: bool = False) -> None:
+    def render_output(self, private: bool = False) -> None:
         out = self.out
-        prefix = ", " if not first else ""
-        prefix += "_" if private else ""
+        prefix = "_" if private else ""
 
         if self.arg.cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
             out << f"{prefix}&{self.arg.name}[0]"
             return
 
-        if self.is_wrapped_type(self.arg.cursor.type):
-            result_type_name = self.get_base_type_name(self.arg.cursor.type)
-            wrapper = self.wrapped[result_type_name].wrapper
-            extractor = "get_pointer" if wrapper == "py::capsule" else "get"
-            #out << f"{prefix}{self.arg.name}.get()"
-            out << f"{prefix}{self.arg.name}.{extractor}()"
-            return
-        
         out << f"{prefix}{self.arg.name}"
 
     def render_pyarg(self):
@@ -120,30 +92,48 @@ class ArgRenderer(Renderer):
 T_Facade = TypeVar("T_Facade", bound=Facade)
 
 
-class ArgFacadeRenderer(ArgRenderer, Generic[T_Facade]):
+class FacadeArgRenderer(ArgRenderer, Generic[T_Facade]):
     facade: T_Facade
 
     def __init__(self, arg: Argument):
         super().__init__(arg)
-        self.facade = arg.spec.facade
-
-class WrapperArgRenderer(ArgFacadeRenderer[WrapperFacade]):
-    def make_arg_type_string(self):
-        return f"py::object"
-
-    def render_output(self):
-        return f"static_cast<{self.arg.type}>({super().render_output()}.ptr())"
+        self.facade = arg.type.facade
 
 
-class ObjectArgRenderer(ArgFacadeRenderer[ObjectFacade]):
-    def make_arg_type_string(self):
-        return f"py::object"
+class PyCapsuleArgRenderer(FacadeArgRenderer[PyCapsuleFacade]):
+    def render_input(self, private=False):
+        out = self.out
+        out << "py::capsule " << self.arg.name
 
     def render_output(self):
-        return f"static_cast<{self.arg.type}>({super().render_output()}.ptr())"
+        out = self.out
+        arg_name = self.arg.name
+        (out << f"static_cast<{self.arg.type.spelling}>({arg_name}.get_pointer())")
 
 
-class VectorArgRenderer(ArgFacadeRenderer[VectorFacade]):
+class ObjectArgRenderer(FacadeArgRenderer[ObjectFacade]):
+    def render_input(self, private=False):
+        out = self.out
+        out << "py::object " << self.arg.name
+
+    def render_output(self):
+        out = self.out
+        arg_name = self.arg.name
+        out << f"static_cast<{self.arg.type.spelling}>({arg_name}.ptr())"
+
+
+class WrapperArgRenderer(FacadeArgRenderer[WrapperFacade]):
+    def render_input(self, private=False):
+        out = self.out
+        out << f"{self.facade.wrapper} " << self.arg.name
+
+    def render_output(self):
+        out = self.out
+        arg_name = self.arg.name
+        out << f"static_cast<{self.arg.type.spelling}>({arg_name}.get())"
+
+
+class VectorArgRenderer(FacadeArgRenderer[VectorFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.length_arg = self.facade.length_arg
@@ -151,58 +141,59 @@ class VectorArgRenderer(ArgFacadeRenderer[VectorFacade]):
     def excludes(self) -> set[str]:
         return {self.length_arg}
 
-    def make_arg_type_string(self):
-        base_type = self.get_base_type_name(self.arg.cursor.type)
-        return f"std::vector<{base_type}>"
+    def render_input(self, private=False):
+        out = self.out
+        # out << f"std::vector<{self.arg.type.spelling}> " << self.arg.name
+        out << f"std::vector<{self.arg.type.base_name}> " << self.arg.name
 
-    def render_input(self, first: bool = False) -> None:
-        super().render_input(first, private=False)
-
-    def render_output(self, first: bool = False) -> None:
-        super().render_output(first, private=True)
+    def render_output(self, private=False) -> None:
+        super().render_output(private=True)
 
     def render(self):
         out = self.out
         arg_name = self.arg.name
         arg_type = self.arg.type
         value = f"""\
-        {arg_type} _{arg_name} = ({arg_type}){arg_name}.data();
+        {arg_type.spelling} _{arg_name} = ({arg_type.spelling}){arg_name}.data();
         auto {self.length_arg} = {arg_name}.size();
         """
         out(value)
 
 
-class CallbackArgRenderer(ArgFacadeRenderer[CallbackFacade]):
+class CallbackArgRenderer(FacadeArgRenderer[CallbackFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.context_arg = self.facade.context_arg
 
-    """
     def excludes(self) -> set[str]:
         return {self.context_arg}
-    """
 
-    def make_arg_type_string(self):
-        return f"py::function"
+    def render_input(self, private=False):
+        out = self.out
+        out << f"py::function " << self.arg.name
 
-    def render_output(self, first: bool = False) -> None:
-        super().render_output(first, private=True)
+    def render_output(self, private=False) -> None:
+        super().render_output(private=True)
 
     def render(self):
         out = self.out
         arg_name = self.arg.name
         arg_type = self.arg.type
         value = f"""\
-        auto _{arg_name} = +[](int, void* ctx) -> bool {{
-            auto* st = static_cast<OverlapThunkState*>(ctx);
-            // ... use st, acquire GIL, call Python, etc ...
-            return true;
+        cxbind::thunk_state _{self.context_arg}({arg_name});
+        auto {self.context_arg} = &_{self.context_arg};
+        auto _{arg_name} = +[](int value, void* ctx) -> bool {{
+            auto& ts = *static_cast<cxbind::thunk_state*>(ctx);
+            // ... use ts, acquire GIL, call Python, etc ...
+            py::gil_scoped_acquire gil;
+            py::object result = ts.cb(value);
+            return result.cast<bool>();
         }};
         """
         out(value)
 
 
-class BufferArgRenderer(ArgFacadeRenderer[BufferFacade]):
+class BufferArgRenderer(FacadeArgRenderer[BufferFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.length_arg = self.facade.length_arg
@@ -222,7 +213,7 @@ class BufferArgRenderer(ArgFacadeRenderer[BufferFacade]):
         size_expr = f"(({info_name}.size * {info_name}.itemsize) + 3) & ~size_t(3)"
 
         logger.debug(
-            f"BufferArgWrapper: {self.arg.name} type: {self.arg.type.name.get()} size_expr: {size_expr}"
+            f"BufferArgWrapper: {self.arg.name} type: {self.arg.type.spelling.get()} size_expr: {size_expr}"
         )
 
         if self.arg.optional or self.arg.default is not None:
@@ -241,7 +232,8 @@ class BufferArgRenderer(ArgFacadeRenderer[BufferFacade]):
         out(value)
 
 
-arg_renderer_table = {
+ARG_RENDERER_TABLE = {
+    "pycapsule": PyCapsuleArgRenderer,
     "wrapper": WrapperArgRenderer,
     "object": ObjectArgRenderer,
     "vector": VectorArgRenderer,

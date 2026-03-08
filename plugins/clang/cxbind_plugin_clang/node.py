@@ -6,7 +6,8 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, ArgSpec, ArgDirection
+from cxbind.spec import Spec, ArgSpec, ArgDirection, ReturnSpec
+from cxbind.facade import Facade
 
 
 class Node(BaseModel):
@@ -48,6 +49,47 @@ class Node(BaseModel):
                 return res + "::" + cursor.spelling
         return cursor.spelling
 
+    """
+    @classmethod
+    def make_key(cls, cursor: cindex.Cursor, overload: bool = False) -> str:
+        name = cls.spell(cursor)
+
+        if overload:
+            key = f"{name}@{cursor.type.spelling}"
+        else:
+            key = name
+
+        return key
+
+    @classmethod
+    def make_kind(cls, cursor: cindex.Cursor) -> str:
+        kind = None
+        if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+            kind = "translation_unit"
+        elif cursor.kind == cindex.CursorKind.CLASS_DECL:
+            kind = "class"
+        elif cursor.kind == cindex.CursorKind.STRUCT_DECL:
+            kind = "struct"
+        elif cursor.kind == cindex.CursorKind.ENUM_DECL:
+            kind = "enum"
+        elif cursor.kind == cindex.CursorKind.FIELD_DECL:
+            kind = "field"
+        elif cursor.kind == cindex.CursorKind.FUNCTION_DECL:
+            kind = "function"
+        elif cursor.kind == cindex.CursorKind.CXX_METHOD:
+            kind = "method"
+        elif cursor.kind == cindex.CursorKind.CONSTRUCTOR:
+            kind = "ctor"
+        elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
+            kind = "typedef"
+        elif cursor.kind == cindex.CursorKind.CLASS_TEMPLATE:
+            kind = "class_template"
+        elif cursor.kind == cindex.CursorKind.FUNCTION_TEMPLATE:
+            kind = "function_template"
+
+        return kind
+
+    """
     @classmethod
     def make_key(cls, cursor: cindex.Cursor, overload: bool = False) -> str:
         kind = None
@@ -93,8 +135,13 @@ class Node(BaseModel):
             yield from child.traverse()
 
 
-class TypeNode(Node):
+class Type(BaseModel):
+    spelling: str
+    base_name: str
     type: cindex.Type | None = Field(None, exclude=True, repr=False)
+    base_spec: Spec | None = Field(None, exclude=True, repr=False)
+    facade: Facade | None = Field(None, exclude=True, repr=False)
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class DeclNode(Node):
@@ -112,7 +159,8 @@ class RootNode(Node):
 
 class Argument(BaseModel):
     name: str
-    type: str
+    type: Type
+    #type: str
     default: object | None = None
     direction: ArgDirection = ArgDirection.IN
 
@@ -127,9 +175,10 @@ class Argument(BaseModel):
 
 
 class ReturnValue(BaseModel):
-    type: str
-    cursor: cindex.Type | None = Field(None, exclude=True, repr=False)
-    spec: ArgSpec | None = Field(None, exclude=True, repr=False)
+    type: Type
+    #type: str
+    #cursor: cindex.Type | None = Field(None, exclude=True, repr=False)
+    spec: ReturnSpec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

@@ -13,8 +13,7 @@ void register_object_args_py_auto(py::module &_tests, Registry &registry) {
     _tests
     .def("function_with_void_arg", [](py::object obj)
         {
-            functionWithVoidArg(static_cast<void *>(obj.ptr()));
-            return ;
+            return functionWithVoidArg(static_cast<void *>(obj.ptr()));
         }
         , py::arg("obj")
         , py::return_value_policy::automatic_reference)

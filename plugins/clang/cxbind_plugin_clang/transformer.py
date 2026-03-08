@@ -41,7 +41,7 @@ class MogrifyTransformer:
             first_arg = node.args[0] if node.args else None
             logger.debug(f"First argument: {first_arg}")
             #if first_arg and first_arg.type == name:
-            if first_arg and spec_name in first_arg.type:
+            if first_arg and spec_name in first_arg.type.spelling:
                 logger.debug(f"Found matching function node: {node}")
                 #spec.extra.add_method(ExtraStandardMethod(name=node.name, use=node.name))
                 name = node.pyname

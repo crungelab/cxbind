@@ -8,8 +8,8 @@ from cxbind.spec import Spec, create_spec
 from ...node import FunctionalNode, Argument
 
 from .node_renderer import NodeRenderer, RenderContext
-from .arg_renderer import ArgRenderer, arg_renderer_table
-from .return_renderer import ReturnRenderer, WrapperReturnRenderer
+from .arg_renderer import ArgRenderer, ARG_RENDERER_TABLE
+from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
 from .functional_render_pod import FunctionalRenderPod
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
@@ -26,12 +26,8 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def create_arg_renderers(self):
         node = self.node
         for arg in node.args:
-            facade_kind = (
-                arg.spec.facade.kind
-                if arg.spec is not None and arg.spec.facade is not None
-                else None
-            )
-            renderer_cls = arg_renderer_table.get(facade_kind, ArgRenderer)
+            facade_kind = arg.type.facade.kind if arg.type.facade is not None else None
+            renderer_cls = ARG_RENDERER_TABLE.get(facade_kind, ArgRenderer)
             self.my_pod.arg_renderers.append(renderer_cls(arg))
 
         excluded_arguments = set()
@@ -44,21 +40,22 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             if arg_renderer.arg.name not in excluded_arguments
         ]
 
+        logger.debug(f"in arguments: {self.my_pod.in_arg_renderers}")
+
         out_args = [arg.name for arg in node.args if arg.is_out]
         self.my_pod.out_args = out_args
         self.my_pod.has_out_args = len(out_args) > 0
 
     def create_return_renderer(self):
         node = self.node
-        cursor = node.cursor
-
-        result_type: cindex.Cursor = cursor.result_type
-        result_type_name = self.get_base_type_name(result_type)
-
-        if result_type_name in self.wrapped:
-            self.my_pod.return_renderer = WrapperReturnRenderer(self.node.returns)
-        else:
-            self.my_pod.return_renderer = ReturnRenderer(self.node.returns)
+        return_value = node.returns
+        facade_kind = (
+            return_value.type.facade.kind
+            if return_value.type.facade is not None
+            else None
+        )
+        renderer_cls = RETURN_RENDERER_TABLE.get(facade_kind, ReturnRenderer)
+        self.my_pod.return_renderer = renderer_cls(return_value)
 
     def render(self):
         self.my_pod.make_current()
@@ -91,34 +88,12 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 and not cursor.is_static_method()
             )
             self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
-            # out(f'{def_call}("{pyname}", []({self_arg}{self.arg_string()})')
             out // f'{def_call}("{pyname}", []({self_arg}'
             self.my_pod.render_input()
             out << ")" << out.nl
 
             with out:
                 out("{")
-                """
-                self_call = (
-                    f"self.{cursor.spelling}"
-                    if is_non_static_method
-                    else f"{self.spell(cursor)}"
-                )
-
-                ret = "" if self.my_pod.is_function_void_return() else "auto ret = "
-
-                # result = f"{self_call}({self.render_output()})"
-
-                result_type: cindex.Cursor = cursor.result_type
-                result_type_name = self.get_base_type_name(result_type)
-
-                if result_type_name in self.wrapped:
-                    wrapper = self.wrapped[result_type_name].wrapper
-                    extra = ""
-                    if wrapper == "py::capsule":
-                        extra = f', "{result_type_name}"'
-                    result = f"{wrapper}({result}{extra})"
-                """
                 with out:
                     for arg_renderer in self.my_pod.arg_renderers:
                         arg_renderer.render()
@@ -132,17 +107,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         with out:
             self.render_pyargs()
             out(f", {self.get_return_policy(cursor)})")
-
-    """ Defined in FunctionalBuilder
-    def process_function_decl(self, decl):
-        for param in decl.get_children():
-            if param.kind == cindex.CursorKind.PARM_DECL:
-                param_type = param.type
-                if self.is_rvalue_ref(param_type):
-                    logger.debug(f"Found rvalue reference in function {decl.spelling}")
-                    return False
-        return True
-    """
 
     def should_wrap_function(self) -> bool:
         node = self.node
@@ -171,43 +135,6 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 return True
         return False
 
-    """
-    def render_return(self, has_ret:bool = False) -> None:
-        ret = "ret" if has_ret else ""
-        out = self.out
-        node = self.node
-        out_args = [arg.name for arg in node.args]
-        has_out_args = any(arg.is_out for arg in node.args)
-        #logger.debug(f"Function {node.cursor.spelling} will return: {out_args}")
-        if not self.is_function_void_return() and not node.spec.omit_ret:
-            # out_args.insert(0, "ret")
-            # out << "ret, "
-            out // f"return {ret};" << out.nl
-
-        elif has_out_args:
-            # return "std::make_tuple({})".format(", ".join(out_args))
-            out // "return std::make_tuple("
-            self.render_output()
-            out << ");" << out.nl
-        elif len(out_args) == 1:
-            return out_args[0]
-    """
-
-    """
-    def make_function_result(self) -> str:
-        node = self.node
-        out_args = [arg.name for arg in node.args]
-        has_out_args = any(arg.is_out for arg in node.args)
-        logger.debug(f"Function {node.cursor.spelling} will return: {out_args}")
-        if not self.is_function_void_return() and not node.spec.omit_ret:
-            out_args.insert(0, "ret")
-        if has_out_args:
-            return "std::make_tuple({})".format(", ".join(out_args))
-        if len(out_args) == 1:
-            return out_args[0]
-        return ""
-    """
-
     def get_return_policy(self, cursor: cindex.Cursor) -> str:
         result = cursor.type.get_result()
         if result.kind == cindex.TypeKind.LVALUEREFERENCE:
@@ -216,7 +143,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             return "py::return_value_policy::automatic_reference"
 
     def arg_types(self, arguments: List[Argument]):
-        return ", ".join([a.type for a in arguments])
+        return ", ".join([a.type.spelling for a in arguments])
 
     def arg_name(self, argument: Argument):
         arg_spelling = argument.name

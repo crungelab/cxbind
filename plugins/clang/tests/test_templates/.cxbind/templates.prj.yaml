@@ -14,10 +14,12 @@ units:
       'class_template@MyClass':
         specializations:
           - args: [float, double]
+
       'class_template@MyClass2':
         specializations:
           - pyname: MyClassI
             args: [int]
+
       'function_template@myFunction':
         specializations:
           - args: [float]

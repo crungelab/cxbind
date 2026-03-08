@@ -14,7 +14,7 @@ from pydantic import (
 from loguru import logger
 
 from .extra import special_methods, Extra, ExtraMethod, ExtraProperty, ExtraMethodUnion
-from .facade import ArgFacadeUnion
+from .facade import WRAPPER_FACADES, FacadeUnion
 
 
 class Spec(BaseModel):
@@ -26,6 +26,7 @@ class Spec(BaseModel):
     exclude: bool = False
     overload: bool = False
     readonly: bool = False
+    facade: FacadeUnion | None = None
 
     # model_config = ConfigDict(arbitrary_types_allowed=True)
     model_config = ConfigDict(extra="forbid")
@@ -57,22 +58,24 @@ class ArgDirection(str, Enum):
 class ArgSpec(BaseModel):
     optional: bool = False
     default: Any | None = None
-    facade: ArgFacadeUnion | None = None
+    facade: FacadeUnion | None = None
     direction: ArgDirection = ArgDirection.IN
 
     @property
     def is_out(self) -> bool:
         return self.direction in (ArgDirection.OUT, ArgDirection.INOUT)
-    
+
+
 class ReturnSpec(BaseModel):
     pass
+
 
 class FunctionalSpec(Spec):
     args: dict[str, ArgSpec] = Field(default_factory=dict)
     returns: ReturnSpec | None = None
-    return_type: str | None = None
+    # return_type: str | None = None
     omit_ret: bool = False
-    check_result: bool = False
+    # check_result: bool = False
 
     @field_validator("args", mode="before")
     @classmethod
@@ -145,8 +148,8 @@ class StructuralExtra(Extra):
     properties: list[ExtraProperty] = Field(default_factory=list)
     methods: list[ExtraMethodUnion] = Field(default_factory=list)
 
-    def add_property(self, propery: ExtraProperty) -> None:
-        self.properties.append(property)
+    def add_property(self, prop: ExtraProperty) -> None:
+        self.properties.append(prop)
 
     def add_method(self, method: ExtraMethodUnion) -> None:
         self.methods.append(method)
@@ -194,6 +197,20 @@ class StructuralSpec(Spec):
     holder: str | None = None
     extra: StructuralExtra = Field(default_factory=StructuralExtra)
 
+    @model_validator(mode="before")
+    @classmethod
+    def validate(cls, data: Any) -> Any:
+
+        if not isinstance(data, dict):
+            return data
+
+        if "wrapper" in data:
+            if data["wrapper"] in WRAPPER_FACADES:
+                data["facade"] = {"kind": data["wrapper"]}
+            else:
+                data["facade"] = {"kind": "wrapper", "wrapper": data["wrapper"]}
+
+        return data
 
 class StructSpec(StructuralSpec):
     kind: Literal["struct"]
@@ -269,10 +286,12 @@ def validate_spec_dict(v: Any) -> Any:
             # Work on a copy to avoid mutating the user's original dictionary
             val_copy = value.copy()
             parts = key.split("@")
+            kind = parts[0]
+            name = parts[1]
 
             if len(parts) >= 2:
-                val_copy["kind"] = parts[0]
-                val_copy["name"] = parts[1]
+                val_copy["kind"] = kind
+                val_copy["name"] = name
             if len(parts) == 3:
                 val_copy["signature"] = parts[2]
 
