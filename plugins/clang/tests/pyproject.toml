@@ -9,6 +9,7 @@ description = "Testing environment for cxbind bindings"
 requires-python = ">=3.10,<3.11"
 dependencies = [
     "pytest",
+    "loguru==0.7.3",
     #"cxtest",
 ]
 
@@ -21,3 +22,6 @@ dependencies = [
 [tool.hatch.envs.default.scripts]
 test = "cxtest"
 pytest = "pytest"
+
+[tool.pytest.ini_options]
+log_cli = false

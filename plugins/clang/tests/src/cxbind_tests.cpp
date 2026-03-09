@@ -31,6 +31,7 @@ void register_facades_py_auto(py::module &, Registry &registry);
 void register_callbacks_py_auto(py::module &, Registry &registry);
 
 void register_object_args_py_auto(py::module &, Registry &registry);
+void register_wrappers_py_auto(py::module &, Registry &registry);
 
 PYBIND11_MODULE(cxbind_tests, m)
 {
@@ -104,6 +105,10 @@ PYBIND11_MODULE(cxbind_tests, m)
     register_callbacks_py_auto(_callbacks, r);
 
     auto _object_args = m.def_submodule("test_object_args");
+    register_object_args_py_auto(_object_args, r);
+
+    auto _wrappers = m.def_submodule("test_wrappers");
+    register_wrappers_py_auto(_wrappers, r);
     register_object_args_py_auto(_object_args, r);
 }
 

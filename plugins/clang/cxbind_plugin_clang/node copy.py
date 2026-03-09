@@ -1,14 +1,12 @@
-from __future__ import annotations
-
-from typing import Optional, Literal, Union, Any
 from typing_extensions import Annotated
+from typing import Optional, Literal, Union
 
-from pydantic import BaseModel, Field, TypeAdapter, ConfigDict
+from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, SpecKey, ArgSpec, ArgDirection, ReturnSpec, FunctionalSpec
+from cxbind.spec import Spec, SpecKey, ArgSpec, ArgDirection, ReturnSpec
 from cxbind.facade import Facade
 
 
@@ -18,55 +16,40 @@ class Node(BaseModel):
     signature: str | None = None
     pyname: str | None = None
     children: list["Node"] = Field(default_factory=list)
-    #parent: Optional["Node"] = None
-    parent: Optional["Node"] = Field(None, exclude=True, repr=False)
+    parent: Optional["Node"] = None
 
     spec: Spec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
-    def key(self) -> SpecKey:
-        return SpecKey.build(
-            kind=self.kind,
-            name=self.name,
-            signature=self.signature,
-        )
-
-    @property
-    def key_string(self) -> str:
-        return self.key.dump()
+    def key(self) -> str:
+        if self.signature:
+            return f"{self.kind}@{self.name}@{self.signature}"
+        return f"{self.kind}@{self.name}"
 
     @property
     def first_name(self) -> str:
         return self.name.split("::")[-1]
 
     def __repr__(self) -> str:
-        return (
-            f"<{self.__class__.__name__} "
-            f"kind={self.kind}, name={self.name}, signature={self.signature}, pyname={self.pyname}>"
-        )
+        return f"<{self.__class__.__name__} kind={self.kind}, name={self.name}, pyname={self.pyname}>"
 
     @classmethod
     def spell(cls, cursor: cindex.Cursor) -> str:
         if cursor is None:
             return ""
-        if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
+        elif cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
             return ""
-
-        res = cls.spell(cursor.semantic_parent)
-        if res:
-            return res + "::" + cursor.spelling
+        else:
+            res = cls.spell(cursor.semantic_parent)
+            if res != "":
+                return res + "::" + cursor.spelling
         return cursor.spelling
 
     @classmethod
-    def make_key(
-        cls,
-        cursor: cindex.Cursor,
-        overload: bool = False,
-    ) -> SpecKey | None:
+    def make_key(cls, cursor: cindex.Cursor, overload: bool = False) -> str:
         kind = None
-
         if cursor.kind in (
             cindex.CursorKind.TYPEDEF_DECL,
             cindex.CursorKind.TYPE_ALIAS_DECL,
@@ -101,22 +84,24 @@ class Node(BaseModel):
             kind = "type_alias"
         else:
             return None
+        """
+        else:
+            raise ValueError(f"Unsupported cursor kind: {cursor.kind}")
+        """
 
         name = cls.spell(cursor)
 
         if overload:
-            key = SpecKey.build(
-                kind=kind,
-                name=name,
-                signature=cursor.type.spelling,
-            )
+            key = SpecKey(kind=kind, name=name, signature=cursor.type.spelling)
         else:
-            key = SpecKey.build(kind=kind, name=name)
+            logger.debug(f"kind: {kind}, name: {name}")
+            key = SpecKey(kind=kind, name=name)
 
         logger.debug(f"Spec key: {key}")
+
         return key
 
-    def add_child(self, child: "Node") -> None:
+    def add_child(self, child: "Node"):
         child.parent = self
         self.children.append(child)
 
@@ -132,14 +117,12 @@ class Type(BaseModel):
     type: cindex.Type | None = Field(None, exclude=True, repr=False)
     base_spec: Spec | None = Field(None, exclude=True, repr=False)
     facade: Facade | None = Field(None, exclude=True, repr=False)
-
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class DeclNode(Node):
+    # pass
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
-
-    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class TemplateNode(Node):
@@ -174,7 +157,6 @@ class ReturnValue(BaseModel):
 
 
 class FunctionalNode(DeclNode):
-    spec: FunctionalSpec | None = Field(None, exclude=True, repr=False)
     args: list[Argument] = Field(default_factory=list)
     returns: ReturnValue | None = None
 
@@ -228,20 +210,40 @@ class EnumNode(DeclNode):
     kind: Literal["enum"]
 
 
-NodeUnion = Annotated[
-    Union[
-        RootNode,
-        StructNode,
-        ClassNode,
-        ClassTemplateNode,
-        FieldNode,
-        FunctionNode,
-        FunctionTemplateNode,
-        MethodNode,
-        CtorNode,
-        EnumNode,
-    ],
-    Field(discriminator="kind"),
+NodeUnion = Union[
+    StructNode,
+    ClassNode,
+    ClassTemplateNode,
+    FieldNode,
+    FunctionNode,
+    FunctionTemplateNode,
+    MethodNode,
+    CtorNode,
+    EnumNode,
 ]
 
-NODE_ADAPTER = TypeAdapter(NodeUnion)
+
+def validate_node_dict(v: dict[str, Node]) -> dict[str, Node]:
+    # logger.debug(f"validate_node_dict: {v}")
+    data = {}
+    for key, value in v.items():
+        if "@" in key:
+            kind, name, signature = None, None, None
+            parts = key.split("@")
+
+            if len(parts) == 2:
+                kind, name = parts
+            elif len(parts) == 3:
+                kind, name, signature = parts
+
+            value["kind"] = kind
+            value["name"] = name
+            value["signature"] = signature
+
+            data[key] = value
+        else:
+            data[key] = value
+    return data
+
+
+NodeDict = Annotated[dict[str, NodeUnion], BeforeValidator(validate_node_dict)]
