@@ -8,6 +8,8 @@ if TYPE_CHECKING:
 from clang import cindex
 from loguru import logger
 
+from cxbind.entry import EntryKey
+
 from ..worker_context import WorkerContext
 
 current_builder_context: ContextVar[Optional["BuilderContext"]] = ContextVar(
@@ -28,12 +30,11 @@ class BuilderContext(WorkerContext):
         return current_builder_context.get()
 
     def create_builder(
-        self, entry_key: str, cursor: cindex.Cursor = None
+        self, entry_key: EntryKey, cursor: cindex.Cursor = None
     ) -> "NodeBuilder":
         from .node_builder_table import NODE_BUILDER_TABLE
         from . import NodeBuilder
 
-        kind, name = entry_key.split("@")
-        builder_cls: Type[NodeBuilder] = NODE_BUILDER_TABLE[kind]
-        builder = builder_cls(name, cursor)
+        builder_cls: Type[NodeBuilder] = NODE_BUILDER_TABLE[entry_key.kind]
+        builder = builder_cls(entry_key.name, cursor)
         return builder

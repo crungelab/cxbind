@@ -3,12 +3,11 @@ from pathlib import Path
 from contextlib import contextmanager
 
 from loguru import logger
-
 from clang import cindex
 
-from .. import cu
+from cxbind.entry import EntryKey
+
 from .builder_context import BuilderContext
-from ..node import Node, StructuralNode
 from ..worker import Worker
 
 
@@ -35,7 +34,7 @@ class Builder(Worker[BuilderContext]):
     def build(self) -> None:
         raise NotImplementedError("Builder.build must be implemented in subclasses")
 
-    def create_builder(self, entry_key: str, cursor: cindex.Cursor = None) -> "Builder":
+    def create_builder(self, entry_key: EntryKey, cursor: cindex.Cursor = None) -> "Builder":
         return self.current_context.create_builder(entry_key, cursor)
 
     def visit(self, cursor: cindex.Cursor):
@@ -65,23 +64,23 @@ class Builder(Worker[BuilderContext]):
         logger.debug(f"visit_none: {cursor.spelling}")
 
     def visit_typedef_decl(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"typedef@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="typedef", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_enum(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"enum@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="enum", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_field(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"field@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="field", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_constructor(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"ctor@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="ctor", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_function(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"function@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="function", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_function_template(self, cursor: cindex.Cursor):
@@ -99,7 +98,7 @@ class Builder(Worker[BuilderContext]):
             return
 
         builder = self.create_builder(
-            f"function_template@{self.spell(cursor)}", cursor=cursor
+            EntryKey(kind="function_template", name=self.spell(cursor)), cursor=cursor
         )
         builder.build()
 
@@ -110,7 +109,7 @@ class Builder(Worker[BuilderContext]):
                 f"Skipping method declared in a different scope: {cursor.spelling}"
             )
             return
-        builder = self.create_builder(f"method@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="method", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_struct(self, cursor: cindex.Cursor):
@@ -121,7 +120,7 @@ class Builder(Worker[BuilderContext]):
                 f"Skipping anonymous struct: {name}"
             )  # TODO: Handle this better
             return
-        builder = self.create_builder(f"struct@{name}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="struct", name=name), cursor=cursor)
         builder.build()
 
     """
@@ -137,12 +136,12 @@ class Builder(Worker[BuilderContext]):
     """
 
     def visit_class(self, cursor: cindex.Cursor):
-        builder = self.create_builder(f"class@{self.spell(cursor)}", cursor=cursor)
+        builder = self.create_builder(EntryKey(kind="class", name=self.spell(cursor)), cursor=cursor)
         builder.build()
 
     def visit_class_template(self, cursor: cindex.Cursor):
         builder = self.create_builder(
-            f"class_template@{self.spell(cursor)}", cursor=cursor
+            EntryKey(kind="class_template", name=self.spell(cursor)), cursor=cursor
         )
         builder.build()
 
