@@ -113,9 +113,7 @@ class PyCapsuleReturnRenderer(ReturnRenderer):
     def render_call(self):
         out = self.out
         result_type_name = self.return_value.type.base_name
-        # wrapper = self.wrapped[result_type_name].wrapper
         self.extra = f'), "{result_type_name}"'
-        # out << f"{wrapper}("
         out << f"py::capsule("
         super().render_call()
 

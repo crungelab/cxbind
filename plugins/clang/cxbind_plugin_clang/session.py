@@ -8,11 +8,15 @@ from loguru import logger
 
 from cxbind import UserSet
 from cxbind.spec import Spec
+from cxbind.spec_registry import SpecRegistry
 from cxbind.unit import Unit
 
 from .node import Node, StructuralNode
 
-current_session: ContextVar[Optional["Session"]] = ContextVar("current_session", default=None)
+current_session: ContextVar[Optional["Session"]] = ContextVar(
+    "current_session", default=None
+)
+
 
 # TODO: Use pydantic settings
 class Options:
@@ -29,10 +33,6 @@ class Overloaded(UserSet):
         super().__init__(data)
         self.visited = set()
 
-    """
-    def is_overloaded(self, cursor):
-        return self.name(cursor) in self
-    """
 
 class Session:
     def __init__(self, unit: Unit, **kwargs) -> None:
@@ -41,9 +41,6 @@ class Session:
 
         self.options = {"save": True}
         self.wrapped: Dict[StructuralNode] = {}
-        #self.visited: Dict[Node] = {}
-        #self.mapped: List[str] = unit.mapped.copy()
-        #self.mapped: set[str] = set(unit.mapped)
 
         self.target = ""
         self.flags: List[str] = unit.flags.copy()
@@ -56,16 +53,17 @@ class Session:
         self.node_stack: List[Node] = []
         self.prefixes = unit.prefixes
 
-        for name, spec in self.specs.items():
+        self.spec_registry = SpecRegistry()
+        for spec in self.specs.values():
             self.register_spec(spec)
 
-        for key in kwargs:
-            if key == "options":
-                options: Dict = kwargs[key]
+        for kw in kwargs:
+            if kw == "options":
+                options: Dict = kwargs[kw]
                 options.update(self.options)
                 self.options = options
 
-            setattr(self, key, kwargs[key])
+            setattr(self, kw, kwargs[kw])
 
         self.options = Options(self.options)
         self.excluded = set(self.excludes)
@@ -96,7 +94,8 @@ class Session:
         key = spec.key
         if spec.exclude:
             logger.debug(f"Excluding: {key}")
-            self.excludes.append(key)
+            #self.excludes.append(key)
+            self.excludes.add(key)
         if spec.overload:
             self.overloads.append(key)
         # TODO: Maybe wrapper should go in Spec proper
@@ -104,9 +103,12 @@ class Session:
             logger.debug(f"Adding wrapped: {name}")
             self.wrapped[name] = spec
 
+        self.spec_registry.register(spec)
+
     def lookup_spec(self, key: str) -> Spec:
-        spec = self.specs.get(key)
-        #logger.debug(f"Looking up spec for key: {key}, specs: {self.specs}, spec: {spec}")
+        #spec = self.specs.get(key)
+        spec = self.spec_registry.get(key)
+        logger.debug(f"Looking up spec for key: {key}, specs: {self.specs}, spec: {spec}")
         return spec
 
     def spell(self, cursor: cindex.Cursor) -> str:
@@ -123,13 +125,6 @@ class Session:
 
                 return res + "::" + cursor.spelling
         return cursor.spelling
-
-    """
-    @classmethod
-    def snake(cls, name: str) -> str:
-        s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-        return re.sub("([a-z])([A-Z])", r"\1_\2", s1).lower()
-    """
 
     @classmethod
     def snake(cls, name: str) -> str:
@@ -153,46 +148,13 @@ class Session:
                 return text[len(prefix) :]
         return text
 
-    """
-    def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
-        for prefix in prefixes:
-            if (
-                text.startswith(prefix)
-                and len(text) > len(prefix)
-                and text[len(prefix)].isupper()
-            ):
-                return text[len(prefix) :]
-        return text
-    """
-
     def strip_prefixes(self, text: str, prefixes: List[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
 
-    """
-    def format_field(self, name: str) -> str:
-        name = self.strip_prefixes(name)
-        name = self.snake(name)
-        name = name.rstrip("_")
-        name = name.replace("__", "_")
-        return name
-    """
-
     def format_field(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.snake(name)
         return name
-
-    """
-    def format_function(self, name: str) -> str:
-        name = self.strip_prefixes(name)
-        name = self.snake(name)
-        name = name.replace(",", "_")
-        name = name.replace("<", "_")
-        name = name.replace(">", "")
-        name = name.replace(" ", "")
-        name = name.rstrip("_")
-        return name
-    """
 
     def format_function(self, name: str) -> str:
         name = self.strip_prefixes(name)
@@ -212,18 +174,6 @@ class Session:
         name = name.rstrip("_")
         name = self.camel(name)
         return name
-
-    """
-    def format_type(self, name: str) -> str:
-        name = self.strip_prefixes(name)
-        name = self.camel(name)
-        name = name.replace(",", "_")
-        name = name.replace("<", "_")
-        name = name.replace(">", "")
-        name = name.replace(" ", "")
-        name = name.rstrip("_")
-        return name
-    """
 
     def format_enum(self, name: str) -> str:
         name = self.strip_prefixes(name)

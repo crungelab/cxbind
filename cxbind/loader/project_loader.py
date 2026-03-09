@@ -6,7 +6,6 @@ from loguru import logger
 from .unit_base_loader import UnitBaseLoader
 
 from ..project import Project
-from ..unit import Unit
 
 
 class ProjectLoader(UnitBaseLoader):
@@ -24,6 +23,6 @@ class ProjectLoader(UnitBaseLoader):
         if project.name is None:
             project.name = path.stem
 
-        #logger.debug(f"project: {project}")
+        # logger.debug(f"project: {project}")
 
         return project

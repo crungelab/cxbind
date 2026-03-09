@@ -1,15 +1,20 @@
-from typing import List, Dict, Optional
+from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from typing import Any
 
-from .spec import SpecDict
+from pydantic import BaseModel, ConfigDict, Field
+
+from .spec import SpecKey, SpecKeySet, SpecMap
+
 
 class UnitBase(BaseModel):
-    name: Optional[str] = None
-    module: Optional[str] = None
-    flags: Optional[List[str]] = None
-    prefixes: Optional[List[str]] = []
-    defaults: Optional[dict] = {}
-    specs: Optional[SpecDict] = {}
-    excludes: Optional[List[str]] = []
-    tool: Optional[str] = None
+    name: str | None = None
+    module: str | None = None
+    flags: list[str] | None = None
+    prefixes: list[str] = Field(default_factory=list)
+    defaults: dict[str, Any] = Field(default_factory=dict)
+    specs: SpecMap = Field(default_factory=SpecMap)
+    excludes: SpecKeySet = Field(default_factory=set)
+    tool: str | None = None
+
+    model_config = ConfigDict(extra="forbid")

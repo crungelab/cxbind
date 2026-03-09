@@ -32,12 +32,6 @@ class Worker(Generic[T_Context]):
     # ------------------------------------------------------------------
     # Session property pass-throughs
     # ------------------------------------------------------------------
-
-    """
-    @property
-    def unit(self):
-        return self.current_session.unit
-    """
     
     @property
     def prefixes(self) -> list[str]:
@@ -46,12 +40,6 @@ class Worker(Generic[T_Context]):
     @property
     def wrapped(self) -> dict[str, StructuralNode]:
         return self.session.wrapped
-
-    """
-    @property
-    def mapped(self):
-        return self.current_session.mapped
-    """
     
     @property
     def target(self):
@@ -118,9 +106,6 @@ class Worker(Generic[T_Context]):
     # Spec / registry
     # ------------------------------------------------------------------
 
-    def register_node(self, node: Node) -> str:
-        return self.session.register_spec(node)
-
     def lookup_spec(self, key: str) -> Spec:
         return self.session.lookup_spec(key)
 
@@ -144,7 +129,12 @@ class Worker(Generic[T_Context]):
         return self.spell(cursor) in self.overloaded
 
     def is_excluded(self, cursor: cindex.Cursor) -> bool:
-        if Node.make_key(cursor) in self.excluded:
+        key = Node.make_key(cursor)
+        logger.debug(f"Checking excluded: {key}")
+        logger.debug(f"Excluded: {self.excluded}")
+        if key in self.excluded:
+            logger.debug(f"Excluded key: {key}")
+            #logger.debug(f"Excluded: {self.excluded}")
             return True
         """
         if Node.spell(cursor) in self.excluded:
@@ -285,6 +275,25 @@ class Worker(Generic[T_Context]):
 
     def strip_qualifiers(self, name: str) -> str:
         return name.replace("const ", "").replace("volatile ", "").strip()
+
+    def get_base_declaration(self, typ: cindex.Type) -> str:
+        """Return the base type name, stripping qualifiers and pointer/reference
+        indirections. Typedef names (e.g. uint32_t) are preserved."""
+        while True:
+            if typ.is_const_qualified() or typ.is_volatile_qualified():
+                typ = typ.get_canonical()
+            if typ.kind in (
+                cindex.TypeKind.POINTER,
+                cindex.TypeKind.LVALUEREFERENCE,
+                cindex.TypeKind.RVALUEREFERENCE,
+            ):
+                typ = typ.get_pointee()
+            else:
+                break
+        decl = typ.get_declaration()
+        if decl.kind != cindex.CursorKind.NO_DECL_FOUND:
+            return decl
+        return None
 
     def get_base_type_name(self, typ: cindex.Type) -> str:
         """Return the base type name, stripping qualifiers and pointer/reference

@@ -5,7 +5,7 @@ from clang import cindex
 from loguru import logger
 
 from cxbind.spec import FunctionalSpec, ArgSpec, ArgDirection, ReturnSpec, create_spec
-from ..node import FunctionalNode, Argument, ReturnValue, Type
+from ..node import Node, FunctionalNode, Argument, ReturnValue, Type
 from .node_builder import NodeBuilder
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
@@ -103,8 +103,14 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         spelling = self.make_argument_type_spelling(arg_cursor)
         base_name = self.get_base_type_name(arg_cursor.type)
         logger.debug(f"Argument type spelling: {spelling}, base name: {base_name}")
-        base_spec = self.lookup_spec(base_name)
-        logger.debug(f"type_spec: {base_spec}")
+        decl = self.get_base_declaration(arg_cursor.type)
+        if decl is not None:
+            base_key = Node.make_key(decl)
+            logger.debug(f"Base key: {base_key}")
+        else:
+            base_key = None
+        base_spec = self.lookup_spec(base_key)
+        logger.debug(f"base_spec: {base_spec}")
 
         facade = None
         if arg_spec is not None and arg_spec.facade is not None:
@@ -118,7 +124,6 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
     def build_return_value(self) -> None:
         logger.debug(f"Building return value for function: {self.name}")
-        #ret_type = self.cursor.result_type.spelling
         spec = self.node.returns.spec if self.node.returns is not None else None
         ret_type = self.build_return_type(spec)
         self.node.returns = ReturnValue(type=ret_type, cursor=self.cursor.result_type)
@@ -128,8 +133,15 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         spelling = self.cursor.result_type.spelling
         base_name = self.get_base_type_name(self.cursor.result_type)
         logger.debug(f"Return type spelling: {spelling}, base name: {base_name}")
-        base_spec = self.lookup_spec(base_name)
-        logger.debug(f"type_spec: {base_spec}")
+        decl = self.get_base_declaration(self.cursor.result_type)
+        if decl is not None:
+            base_key = Node.make_key(decl)
+            logger.debug(f"Base key: {base_key}")
+        else:
+            base_key = None
+        base_spec = self.lookup_spec(base_key)
+
+        logger.debug(f"base_spec: {base_spec}")
 
         facade = None
         if return_spec is not None and return_spec.facade is not None:
@@ -218,13 +230,8 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         return super().should_cancel() or not self.is_function_bindable(self.cursor)
 
     def find_spec(self) -> FunctionalSpec:
-        #name = FunctionalNode.spell(self.cursor)
         key = FunctionalNode.make_key(self.cursor, self.is_overloaded(self.cursor))
         spec = self.lookup_spec(key) or create_spec(key)
-        #kind = FunctionalNode.make_kind(self.cursor)
-        #spec = self.lookup_spec(key) or create_spec(key, kind)
-        #spec = self.lookup_spec(name) or create_spec(key, kind)
-        #logger.debug(f"FunctionBaseBuilder: find_spec: {spec}")
         return spec
 
     def process_function_decl(self, decl: cindex.Cursor) -> bool:

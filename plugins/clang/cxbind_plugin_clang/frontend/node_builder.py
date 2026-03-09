@@ -46,9 +46,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
         spec = self.find_spec()
         if spec is None:
             key = Node.make_key(self.cursor)
-            #kind = Node.make_kind(self.cursor)
-            # logger.debug(f"Spec not found for {key}")
-            #spec = create_spec(key, kind)
             spec = create_spec(key)
         return spec
 

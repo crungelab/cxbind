@@ -11,9 +11,9 @@ namespace py = pybind11;
 
 void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
     _tests
-    .def("test_wrapper_in", [](SDL_Window * window, int width, int height)
+    .def("test_wrapper_in", [](SDLWindowWrapper window, int width, int height)
         {
-            return testWrapperIn(window, width, height);
+            return testWrapperIn(static_cast<SDL_Window *>(window.get()), width, height);
         }
         , py::arg("window")
         , py::arg("width")
@@ -21,12 +21,12 @@ void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
         , py::return_value_policy::automatic_reference)
     .def("test_wrapper_out", []()
         {
-            return testWrapperOut();
+            return SDLWindowWrapper(testWrapperOut());
         }
         , py::return_value_policy::automatic_reference)
-    .def("test_capsule_in", [](ImGuiContext * context, int width, int height)
+    .def("test_capsule_in", [](py::capsule context, int width, int height)
         {
-            return testCapsuleIn(context, width, height);
+            return testCapsuleIn(static_cast<ImGuiContext *>(context.get_pointer()), width, height);
         }
         , py::arg("context")
         , py::arg("width")
@@ -34,7 +34,7 @@ void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
         , py::return_value_policy::automatic_reference)
     .def("test_capsule_out", [](int width, int height)
         {
-            return testCapsuleOut(width, height);
+            return py::capsule(testCapsuleOut(width, height), "ImGuiContext");
         }
         , py::arg("width")
         , py::arg("height")

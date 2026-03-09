@@ -7,14 +7,13 @@ from typing_extensions import Annotated
 
 from pydantic import (
     BaseModel,
+    BeforeValidator,
     ConfigDict,
     Field,
     TypeAdapter,
     field_validator,
     model_validator,
-    BeforeValidator,
 )
-from pydantic_core import core_schema
 from loguru import logger
 
 from .extra import special_methods, Extra, ExtraProperty, ExtraMethodUnion
@@ -28,17 +27,15 @@ class SpecKey(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    def dump(self) -> str:
-        if self.signature is None:
-            return f"{self.kind}@{self.name}"
-        return f"{self.kind}@{self.name}@{self.signature}"
-
-    def __str__(self) -> str:
-        return self.dump()
+    @property
+    def value(self) -> str:
+        if self.signature:
+            return f"{self.kind}@{self.name}@{self.signature}"
+        return f"{self.kind}@{self.name}"
 
     @classmethod
     def parse(cls, value: str) -> "SpecKey":
-        parts = value.split("@", 2)
+        parts = value.split("@")
 
         if len(parts) == 2:
             kind, name = parts
@@ -46,7 +43,7 @@ class SpecKey(BaseModel):
         elif len(parts) == 3:
             kind, name, signature = parts
         else:
-            raise ValueError(f"Invalid spec key: {value!r}")
+            raise ValueError(f"Invalid spec key: {value}")
 
         return cls(kind=kind, name=name, signature=signature)
 
@@ -60,42 +57,10 @@ class SpecKey(BaseModel):
     ) -> "SpecKey":
         return cls(kind=kind, name=name, signature=signature)
 
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
-        model_schema = handler(source)
-
-        return core_schema.union_schema(
-            [
-                core_schema.is_instance_schema(cls),
-                core_schema.chain_schema(
-                    [
-                        core_schema.str_schema(),
-                        core_schema.no_info_plain_validator_function(cls.parse),
-                    ]
-                ),
-                model_schema,
-            ]
-        )
-
-def normalize_spec_key_set(value: Any) -> Any:
-    if value is None:
-        return set()
-
-    if not isinstance(value, (list, tuple, set, frozenset)):
-        return value
-
-    out: set[SpecKey] = set()
-    for item in value:
-        if isinstance(item, SpecKey):
-            out.add(item)
-        elif isinstance(item, str):
-            out.add(SpecKey.parse(item))
-        else:
-            raise TypeError(f"Invalid SpecKey entry: {item!r}")
-    return out
-
-
-SpecKeySet = Annotated[set[SpecKey], BeforeValidator(normalize_spec_key_set)]
+    """
+    def __str__(self) -> str:
+        return self.value
+    """
 
 class Spec(BaseModel):
     kind: str
@@ -117,10 +82,6 @@ class Spec(BaseModel):
             name=self.name,
             signature=self.signature,
         )
-
-    @property
-    def key_string(self) -> str:
-        return self.key.dump()
 
     def __repr__(self) -> str:
         return (
@@ -337,6 +298,42 @@ class EnumSpec(Spec):
     kind: Literal["enum"]
 
 
+class TypeAliasSpec(Spec):
+    kind: Literal["type_alias"]
+    wrapper: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+
+        if "wrapper" in data:
+            if data["wrapper"] in WRAPPER_FACADES:
+                data["facade"] = {"kind": data["wrapper"]}
+            else:
+                data["facade"] = {"kind": "wrapper", "wrapper": data["wrapper"]}
+
+        return data
+
+class TypeDefSpec(Spec):
+    kind: Literal["typedef"]
+    wrapper: str | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+
+        if "wrapper" in data:
+            if data["wrapper"] in WRAPPER_FACADES:
+                data["facade"] = {"kind": data["wrapper"]}
+            else:
+                data["facade"] = {"kind": "wrapper", "wrapper": data["wrapper"]}
+
+        return data
+
 SpecUnion = Annotated[
     Union[
         StructSpec,
@@ -348,54 +345,74 @@ SpecUnion = Annotated[
         MethodSpec,
         CtorSpec,
         EnumSpec,
+        TypeAliasSpec,
+        TypeDefSpec,
     ],
     Field(discriminator="kind"),
 ]
 
 SPEC_ADAPTER = TypeAdapter(SpecUnion)
 
+def validate_spec_dict(v: Any) -> Any:
+    """
+    Pre-process dictionary keys of the form:
 
-class SpecMap(dict[SpecKey, SpecUnion]):
-    @classmethod
-    def _normalize_input(cls, value: Any) -> dict[SpecKey, Any]:
-        if value is None:
-            return {}
+        kind@name
+        kind@name@signature
 
-        if isinstance(value, cls):
-            return dict(value)
+    into SpecKey keys and explicit data fields before Pydantic validates.
+    """
+    if not isinstance(v, dict):
+        return v
 
-        if not isinstance(value, dict):
-            raise TypeError(f"SpecMap input must be a dict, got {type(value).__name__}")
+    data = {}
+    for key, value in v.items():
+        spec_key = key if isinstance(key, SpecKey) else SpecKey.parse(key)
 
-        out: dict[SpecKey, Any] = {}
+        if isinstance(value, dict):
+            val_copy = value.copy()
+            val_copy["kind"] = spec_key.kind
+            val_copy["name"] = spec_key.name
+            if spec_key.signature is not None:
+                val_copy["signature"] = spec_key.signature
+            data[spec_key] = val_copy
+        else:
+            data[spec_key] = value
 
-        for raw_key, raw_value in value.items():
-            key = raw_key if isinstance(raw_key, SpecKey) else SpecKey.parse(raw_key)
+    return data
+'''
+def validate_spec_dict(v: Any) -> Any:
+    """
+    Pre-process dictionary keys of the form:
 
-            if not isinstance(raw_value, dict):
-                raise TypeError(f"Spec entry for {key} must be a dict")
+        kind@name
+        kind@name@signature
 
-            item = raw_value.copy()
-            item["kind"] = key.kind
-            item["name"] = key.name
-            if key.signature is not None:
-                item["signature"] = key.signature
+    into explicit data fields before Pydantic validates.
+    """
+    if not isinstance(v, dict):
+        return v
 
-            out[key] = item
+    data = {}
+    for key, value in v.items():
+        if "@" in key and isinstance(value, dict):
+            val_copy = value.copy()
+            spec_key = SpecKey.parse(key)
 
-        return out
+            val_copy["kind"] = spec_key.kind
+            val_copy["name"] = spec_key.name
+            if spec_key.signature is not None:
+                val_copy["signature"] = spec_key.signature
 
-    @classmethod
-    def __get_pydantic_core_schema__(cls, source, handler):
-        dict_schema = handler.generate_schema(dict[SpecKey, SpecUnion])
+            data[key] = val_copy
+        else:
+            data[key] = value
 
-        return core_schema.chain_schema(
-            [
-                core_schema.no_info_plain_validator_function(cls._normalize_input),
-                dict_schema,
-                core_schema.no_info_plain_validator_function(cls),
-            ]
-        )
+    return data
+'''
+
+#SpecDict = Annotated[dict[str, SpecUnion], BeforeValidator(validate_spec_dict)]
+SpecDict = Annotated[dict[SpecKey, SpecUnion], BeforeValidator(validate_spec_dict)]
 
 
 def create_spec(key: SpecKey | str, **kwargs: Any) -> SpecUnion:
@@ -411,10 +428,10 @@ def create_spec(key: SpecKey | str, **kwargs: Any) -> SpecUnion:
         "class": ClassSpec,
         "class_template": ClassTemplateSpec,
         "enum": EnumSpec,
+        "type_alias": TypeAliasSpec,
     }.get(spec_key.kind)
 
     if spec_cls is None:
-        logger.error(f"Unknown spec kind: {spec_key.kind}")
         raise ValueError(f"Unknown spec kind: {spec_key.kind}")
 
     return spec_cls(

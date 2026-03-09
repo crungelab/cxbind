@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, ArgSpec, ArgDirection, ReturnSpec
+from cxbind.spec import Spec, SpecKey, ArgSpec, ArgDirection, ReturnSpec
 from cxbind.facade import Facade
 
 
@@ -93,6 +93,14 @@ class Node(BaseModel):
     @classmethod
     def make_key(cls, cursor: cindex.Cursor, overload: bool = False) -> str:
         kind = None
+        if cursor.kind in (
+            cindex.CursorKind.TYPEDEF_DECL,
+            cindex.CursorKind.TYPE_ALIAS_DECL,
+        ):
+            underlying = cursor.underlying_typedef_type
+            cursor = underlying.get_declaration()
+            logger.debug(f"Underlying typedef type spelling: {underlying.spelling}")
+
         if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
             kind = "translation_unit"
         elif cursor.kind == cindex.CursorKind.CLASS_DECL:
@@ -115,13 +123,30 @@ class Node(BaseModel):
             kind = "class_template"
         elif cursor.kind == cindex.CursorKind.FUNCTION_TEMPLATE:
             kind = "function_template"
+        elif cursor.kind == cindex.CursorKind.TYPE_ALIAS_DECL:
+            kind = "type_alias"
+        else:
+            return None
+        """
+        else:
+            raise ValueError(f"Unsupported cursor kind: {cursor.kind}")
+        """
 
         name = cls.spell(cursor)
 
+        """
         if overload:
             key = f"{kind}@{name}@{cursor.type.spelling}"
         else:
             key = f"{kind}@{name}"
+        """
+        if overload:
+            key = SpecKey(kind=kind, name=name, signature=cursor.type.spelling)
+        else:
+            logger.debug(f"kind: {kind}, name: {name}")
+            key = SpecKey(kind=kind, name=name)
+
+        logger.debug(f"Spec key: {key}")
 
         return key
 
