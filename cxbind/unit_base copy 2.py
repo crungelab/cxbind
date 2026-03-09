@@ -2,7 +2,7 @@ from typing import List, Dict, Optional, Any
 
 from pydantic import BaseModel, Field, field_validator
 
-from .spec import SpecDict, SpecKey
+from .spec import SpecDict, EntryKey
 
 class UnitBase(BaseModel):
     name: Optional[str] = None
@@ -12,7 +12,7 @@ class UnitBase(BaseModel):
     defaults: Optional[dict] = {}
     specs: Optional[SpecDict] = {}
     #excludes: Optional[List[str]] = []
-    excludes: Optional[List[SpecKey]] = []
+    excludes: Optional[List[EntryKey]] = []
     tool: Optional[str] = None
 
     @field_validator("excludes", mode="before")
@@ -24,10 +24,10 @@ class UnitBase(BaseModel):
         out = []
 
         for item in v:
-            if isinstance(item, SpecKey):
+            if isinstance(item, EntryKey):
                 out.append(item)
             elif isinstance(item, str):
-                out.append(SpecKey.parse(item))
+                out.append(EntryKey.parse(item))
             else:
                 raise TypeError(f"Invalid exclude entry: {item!r}")
 

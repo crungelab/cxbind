@@ -1,8 +1,8 @@
-from cxbind.spec import SpecKey
+from cxbind.spec import EntryKey
 from cxbind.transform import Transform, register_transform
 
 
 @register_transform("mogrify")
 class Mogrify(Transform):
     #target: str
-    target: SpecKey
+    target: EntryKey

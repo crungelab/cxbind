@@ -8,14 +8,16 @@ from pydantic import BaseModel, Field, TypeAdapter, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, SpecKey, ArgSpec, ArgDirection, ReturnSpec, FunctionalSpec
+from cxbind.entry import Entry, EntryKey
+from cxbind.spec import Spec, ArgSpec, ArgDirection, ReturnSpec, FunctionalSpec
 from cxbind.facade import Facade
 
 
-class Node(BaseModel):
-    kind: str
-    name: str
-    signature: str | None = None
+class Node(Entry):
+    #kind: str
+    #name: str
+    #signature: str | None = None
+
     pyname: str | None = None
     children: list["Node"] = Field(default_factory=list)
     #parent: Optional["Node"] = None
@@ -25,9 +27,10 @@ class Node(BaseModel):
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
+    '''
     @property
-    def key(self) -> SpecKey:
-        return SpecKey.build(
+    def key(self) -> EntryKey:
+        return EntryKey.build(
             kind=self.kind,
             name=self.name,
             signature=self.signature,
@@ -36,10 +39,11 @@ class Node(BaseModel):
     @property
     def key_string(self) -> str:
         return self.key.dump()
-
+    
     @property
     def first_name(self) -> str:
         return self.name.split("::")[-1]
+    '''
 
     def __repr__(self) -> str:
         return (
@@ -64,7 +68,7 @@ class Node(BaseModel):
         cls,
         cursor: cindex.Cursor,
         overload: bool = False,
-    ) -> SpecKey | None:
+    ) -> EntryKey | None:
         kind = None
 
         if cursor.kind in (
@@ -105,13 +109,13 @@ class Node(BaseModel):
         name = cls.spell(cursor)
 
         if overload:
-            key = SpecKey.build(
+            key = EntryKey.build(
                 kind=kind,
                 name=name,
                 signature=cursor.type.spelling,
             )
         else:
-            key = SpecKey.build(kind=kind, name=name)
+            key = EntryKey.build(kind=kind, name=name)
 
         logger.debug(f"Spec key: {key}")
         return key

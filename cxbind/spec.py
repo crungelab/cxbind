@@ -17,11 +17,12 @@ from pydantic import (
 from pydantic_core import core_schema
 from loguru import logger
 
+from .entry import Entry, EntryKey, EntryKeySet
 from .extra import special_methods, Extra, ExtraProperty, ExtraMethodUnion
 from .facade import WRAPPER_FACADES, FacadeUnion
 
-
-class SpecKey(BaseModel):
+'''
+class EntryKey(BaseModel):
     kind: str
     name: str
     signature: str | None = None
@@ -37,7 +38,7 @@ class SpecKey(BaseModel):
         return self.dump()
 
     @classmethod
-    def parse(cls, value: str) -> "SpecKey":
+    def parse(cls, value: str) -> "EntryKey":
         parts = value.split("@", 2)
 
         if len(parts) == 2:
@@ -57,7 +58,7 @@ class SpecKey(BaseModel):
         kind: str,
         name: str,
         signature: str | None = None,
-    ) -> "SpecKey":
+    ) -> "EntryKey":
         return cls(kind=kind, name=name, signature=signature)
 
     @classmethod
@@ -77,31 +78,33 @@ class SpecKey(BaseModel):
             ]
         )
 
-def normalize_spec_key_set(value: Any) -> Any:
+def normalize_entry_key_set(value: Any) -> Any:
     if value is None:
         return set()
 
     if not isinstance(value, (list, tuple, set, frozenset)):
         return value
 
-    out: set[SpecKey] = set()
+    out: set[EntryKey] = set()
     for item in value:
-        if isinstance(item, SpecKey):
+        if isinstance(item, EntryKey):
             out.add(item)
         elif isinstance(item, str):
-            out.add(SpecKey.parse(item))
+            out.add(EntryKey.parse(item))
         else:
-            raise TypeError(f"Invalid SpecKey entry: {item!r}")
+            raise TypeError(f"Invalid EntryKey entry: {item!r}")
     return out
 
 
-SpecKeySet = Annotated[set[SpecKey], BeforeValidator(normalize_spec_key_set)]
+EntryKeySet = Annotated[set[EntryKey], BeforeValidator(normalize_entry_key_set)]
+'''
 
-class Spec(BaseModel):
-    kind: str
-    name: str
+class Spec(Entry):
+    #kind: str
+    #name: str
+    #signature: str | None = None
+
     alias: str | None = None
-    signature: str | None = None
     pyname: str | None = None
     exclude: bool = False
     overload: bool = False
@@ -110,9 +113,10 @@ class Spec(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
+    '''
     @property
-    def key(self) -> SpecKey:
-        return SpecKey.build(
+    def key(self) -> EntryKey:
+        return EntryKey.build(
             kind=self.kind,
             name=self.name,
             signature=self.signature,
@@ -121,6 +125,7 @@ class Spec(BaseModel):
     @property
     def key_string(self) -> str:
         return self.key.dump()
+    '''
 
     def __repr__(self) -> str:
         return (
@@ -355,9 +360,9 @@ SpecUnion = Annotated[
 SPEC_ADAPTER = TypeAdapter(SpecUnion)
 
 
-class SpecMap(dict[SpecKey, SpecUnion]):
+class SpecMap(dict[EntryKey, SpecUnion]):
     @classmethod
-    def _normalize_input(cls, value: Any) -> dict[SpecKey, Any]:
+    def _normalize_input(cls, value: Any) -> dict[EntryKey, Any]:
         if value is None:
             return {}
 
@@ -367,10 +372,10 @@ class SpecMap(dict[SpecKey, SpecUnion]):
         if not isinstance(value, dict):
             raise TypeError(f"SpecMap input must be a dict, got {type(value).__name__}")
 
-        out: dict[SpecKey, Any] = {}
+        out: dict[EntryKey, Any] = {}
 
         for raw_key, raw_value in value.items():
-            key = raw_key if isinstance(raw_key, SpecKey) else SpecKey.parse(raw_key)
+            key = raw_key if isinstance(raw_key, EntryKey) else EntryKey.parse(raw_key)
 
             if not isinstance(raw_value, dict):
                 raise TypeError(f"Spec entry for {key} must be a dict")
@@ -387,7 +392,7 @@ class SpecMap(dict[SpecKey, SpecUnion]):
 
     @classmethod
     def __get_pydantic_core_schema__(cls, source, handler):
-        dict_schema = handler.generate_schema(dict[SpecKey, SpecUnion])
+        dict_schema = handler.generate_schema(dict[EntryKey, SpecUnion])
 
         return core_schema.chain_schema(
             [
@@ -398,8 +403,8 @@ class SpecMap(dict[SpecKey, SpecUnion]):
         )
 
 
-def create_spec(key: SpecKey | str, **kwargs: Any) -> SpecUnion:
-    spec_key = SpecKey.parse(key) if isinstance(key, str) else key
+def create_spec(key: EntryKey | str, **kwargs: Any) -> SpecUnion:
+    spec_key = EntryKey.parse(key) if isinstance(key, str) else key
 
     spec_cls = {
         "function": FunctionSpec,

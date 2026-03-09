@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .spec import SpecKey, SpecKeySet, SpecMap
+from .spec import EntryKey, EntryKeySet, SpecMap
 
 
 class UnitBase(BaseModel):
@@ -14,7 +14,7 @@ class UnitBase(BaseModel):
     prefixes: list[str] = Field(default_factory=list)
     defaults: dict[str, Any] = Field(default_factory=dict)
     specs: SpecMap = Field(default_factory=SpecMap)
-    excludes: SpecKeySet = Field(default_factory=set)
+    excludes: EntryKeySet = Field(default_factory=set)
     tool: str | None = None
 
     model_config = ConfigDict(extra="forbid")

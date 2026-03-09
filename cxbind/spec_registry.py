@@ -1,14 +1,14 @@
-from .spec import SpecKey, SpecUnion
+from .spec import EntryKey, SpecUnion
 
 
 class SpecRegistry:
     def __init__(self) -> None:
-        self._by_key: dict[SpecKey, SpecUnion] = {}
+        self._by_key: dict[EntryKey, SpecUnion] = {}
         self._by_name: dict[str, SpecUnion | None] = {}
         self._by_kind_name: dict[tuple[str, str], SpecUnion | None] = {}
 
     @classmethod
-    def from_specs(cls, specs: dict[SpecKey, SpecUnion]) -> "SpecRegistry":
+    def from_specs(cls, specs: dict[EntryKey, SpecUnion]) -> "SpecRegistry":
         registry = cls()
         for spec in specs.values():
             registry.register(spec)
@@ -32,10 +32,10 @@ class SpecRegistry:
         else:
             self._by_kind_name[kind_name] = None
 
-    def get(self, key: SpecKey) -> SpecUnion | None:
+    def get(self, key: EntryKey) -> SpecUnion | None:
         return self._by_key.get(key)
 
-    def require(self, key: SpecKey) -> SpecUnion:
+    def require(self, key: EntryKey) -> SpecUnion:
         spec = self.get(key)
         if spec is None:
             raise KeyError(f"Unknown spec key: {key}")
@@ -72,7 +72,7 @@ class SpecRegistry:
         signature: str | None = None,
     ) -> SpecUnion | None:
         if kind is not None:
-            exact = self.get(SpecKey.build(kind=kind, name=name, signature=signature))
+            exact = self.get(EntryKey.build(kind=kind, name=name, signature=signature))
             if exact is not None:
                 return exact
 

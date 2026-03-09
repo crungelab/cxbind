@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field, BeforeValidator, ConfigDict
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, SpecKey, ArgSpec, ArgDirection, ReturnSpec
+from cxbind.spec import Spec, EntryKey, ArgSpec, ArgDirection, ReturnSpec
 from cxbind.facade import Facade
 
 
@@ -92,10 +92,10 @@ class Node(BaseModel):
         name = cls.spell(cursor)
 
         if overload:
-            key = SpecKey(kind=kind, name=name, signature=cursor.type.spelling)
+            key = EntryKey(kind=kind, name=name, signature=cursor.type.spelling)
         else:
             logger.debug(f"kind: {kind}, name: {name}")
-            key = SpecKey(kind=kind, name=name)
+            key = EntryKey(kind=kind, name=name)
 
         logger.debug(f"Spec key: {key}")
 
