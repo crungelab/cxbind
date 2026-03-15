@@ -8,7 +8,7 @@ from cxbind.facade import Facade
 
 from ...node import FunctionalNode, Argument
 
-from .node_renderer import NodeRenderer, RendererContext
+from .node_renderer import NodeRenderer, RenderContext
 from .arg_renderer import ArgRenderer, ARG_RENDERER_TABLE
 from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
 from .functional_render_pod import FunctionalRenderPod

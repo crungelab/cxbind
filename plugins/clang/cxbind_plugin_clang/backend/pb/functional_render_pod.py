@@ -2,12 +2,12 @@ from clang import cindex
 
 from ...node import FunctionalNode, Argument
 
-from ..renderer_pod import RendererPod
+from ..render_pod import RenderPod
 
 from .arg_renderer import ArgRenderer, ARG_RENDERER_TABLE
 from .return_renderer import ReturnRenderer
 
-class FunctionalRenderPod(RendererPod):
+class FunctionalRenderPod(RenderPod):
     node: FunctionalNode
     def __init__(self, node: FunctionalNode):
         super().__init__(node)

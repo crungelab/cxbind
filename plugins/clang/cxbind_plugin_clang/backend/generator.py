@@ -6,14 +6,14 @@ import jinja2
 
 from ..node import RootNode
 
-from .renderer_context import RendererContext
+from .render_context import RenderContext
 from .pb import NodeRenderer
 
 
 class Generator(NodeRenderer):
     def __init__(self, source: str, node: RootNode, **kwargs):
         super().__init__(node)
-        self.render_context = RendererContext(**kwargs)
+        self.render_context = RenderContext(**kwargs)
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source

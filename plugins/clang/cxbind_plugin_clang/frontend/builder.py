@@ -7,19 +7,19 @@ from clang import cindex
 
 from cxbind.entry import EntryKey
 
-from .builder_context import BuilderContext
+from .build_context import BuildContext
 from ..worker import Worker
 
 
-class Builder(Worker[BuilderContext]):
+class Builder(Worker[BuildContext]):
     actions: Dict[cindex.CursorKind, Callable] = {}
 
     def __init__(self):
         super().__init__()
 
     @property
-    def current_context(self) -> BuilderContext:
-        return BuilderContext.get_current()
+    def current_context(self) -> BuildContext:
+        return BuildContext.get_current()
 
     @property
     def mapped(self):

@@ -2,7 +2,7 @@ from loguru import logger
 
 from .session import Session
 
-class WorkerContext:
+class WorkContext:
     def __init__(self) -> None:
         pass
 

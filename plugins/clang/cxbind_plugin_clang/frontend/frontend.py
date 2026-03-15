@@ -6,7 +6,7 @@ from loguru import logger
 from clang import cindex
 
 from .builder import Builder
-from .builder_context import BuilderContext
+from .build_context import BuildContext
 
 from ..node import RootNode
 
@@ -14,7 +14,7 @@ from ..node import RootNode
 class Frontend(Builder):
     def __init__(self, source: str) -> None:
         super().__init__()
-        self.builder_context = BuilderContext()
+        self.builder_context = BuildContext()
 
         BASE_PATH = Path(".")
         self.path = BASE_PATH / source

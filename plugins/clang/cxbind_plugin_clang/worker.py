@@ -8,11 +8,11 @@ from cxbind.spec import Spec
 
 from . import cu
 from .session import Session
-from .worker_context import WorkerContext
+from .work_context import WorkContext
 from .pod import Pod
 from .node import Node, StructuralNode
 
-T_Context = TypeVar("T_Context", bound=WorkerContext)
+T_Context = TypeVar("T_Context", bound=WorkContext)
 
 
 class Worker(Generic[T_Context]):

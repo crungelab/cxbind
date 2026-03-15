@@ -8,7 +8,7 @@ from cxbind.spec import Spec, create_spec
 from ..node import Node
 
 from .builder import Builder
-from .builder_context import BuilderContext
+from .build_context import BuildContext
 
 T_Node = TypeVar("T_Node", bound=Node)
 

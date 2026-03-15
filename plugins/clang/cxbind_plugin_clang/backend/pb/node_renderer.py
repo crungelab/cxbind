@@ -18,7 +18,7 @@ from loguru import logger
 from ...node import Node
 
 from ..renderer import Renderer
-from ..renderer_context import RendererContext
+from ..render_context import RenderContext
 
 T_Node = TypeVar("T_Node", bound=Node)
 

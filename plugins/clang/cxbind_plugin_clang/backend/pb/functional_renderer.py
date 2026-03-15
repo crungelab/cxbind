@@ -8,7 +8,7 @@ from cxbind.facade import Facade
 
 from ...node import FunctionalNode, Argument
 
-from .node_renderer import NodeRenderer, RendererContext
+from .node_renderer import NodeRenderer, RenderContext
 from .arg_renderer import ArgRenderer, ARG_RENDERER_TABLE
 from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
 from .functional_render_pod import FunctionalRenderPod
@@ -20,9 +20,13 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def __init__(self, node: T_Node) -> None:
         super().__init__(node)
         self.node = node
-        self.my_pod = FunctionalRenderPod(node)
+        self._pod = FunctionalRenderPod(node)
         self.create_arg_renderers()
         self.create_return_renderer()
+
+    @property
+    def pod(self) -> FunctionalRenderPod:
+        return self._pod
 
     def create_arg_renderers(self):
         node = self.node
@@ -32,23 +36,23 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             facade_kind = arg.type.facade.kind if arg.type.facade is not None else None
             renderer_cls = ARG_RENDERER_TABLE.get(facade_kind, ArgRenderer)
             logger.debug(f"Creating argument renderer for argument: {arg}, renderer: {renderer_cls.__name__}")
-            self.my_pod.arg_renderers.append(renderer_cls(arg))
+            self.pod.arg_renderers.append(renderer_cls(arg))
 
         excluded_arguments = set()
-        for arg_renderer in self.my_pod.arg_renderers:
+        for arg_renderer in self.pod.arg_renderers:
             excluded_arguments.update(arg_renderer.excludes())
 
-        self.my_pod.in_arg_renderers = [
+        self.pod.in_arg_renderers = [
             arg_renderer
-            for arg_renderer in self.my_pod.arg_renderers
+            for arg_renderer in self.pod.arg_renderers
             if arg_renderer.arg.name not in excluded_arguments
         ]
 
-        logger.debug(f"in arguments: {self.my_pod.in_arg_renderers}")
+        logger.debug(f"in arguments: {self.pod.in_arg_renderers}")
 
         out_args = [arg.name for arg in node.args if arg.is_out]
-        self.my_pod.out_args = out_args
-        self.my_pod.has_out_args = len(out_args) > 0
+        self.pod.out_args = out_args
+        self.pod.has_out_args = len(out_args) > 0
 
     def create_return_renderer(self):
         node = self.node
@@ -59,10 +63,10 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             else None
         )
         renderer_cls = RETURN_RENDERER_TABLE.get(facade_kind, ReturnRenderer)
-        self.my_pod.return_renderer = renderer_cls(return_value)
+        self.pod.return_renderer = renderer_cls(return_value)
 
     def render(self):
-        self.my_pod.make_current()
+        self.pod.make_current()
 
         out = self.out
         node = self.node
@@ -93,16 +97,16 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             )
             self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
             out // f'{def_call}("{pyname}", []({self_arg}'
-            self.my_pod.render_input()
+            self.pod.render_input()
             out << ")" << out.nl
 
             with out:
                 out("{")
                 with out:
-                    for arg_renderer in self.my_pod.arg_renderers:
+                    for arg_renderer in self.pod.arg_renderers:
                         arg_renderer.render()
 
-                    self.my_pod.return_renderer.render()
+                    self.pod.return_renderer.render()
 
                 out("}")
         else:
@@ -160,5 +164,5 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         return arg_spelling
 
     def render_pyargs(self):
-        for arg_renderer in self.my_pod.in_arg_renderers:
+        for arg_renderer in self.pod.in_arg_renderers:
             arg_renderer.render_pyarg()

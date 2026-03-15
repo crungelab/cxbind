@@ -15,7 +15,7 @@ from cxbind.facade import (
 
 from ...node import Argument, Type
 
-from ..renderer_context import RendererContext
+from ..render_context import RenderContext
 from ..renderer import Renderer
 
 

@@ -10,14 +10,14 @@ from loguru import logger
 
 from cxbind.entry import EntryKey
 
-from ..worker_context import WorkerContext
+from ..work_context import WorkContext
 
-current_builder_context: ContextVar[Optional["BuilderContext"]] = ContextVar(
+current_builder_context: ContextVar[Optional["BuildContext"]] = ContextVar(
     "current_builder_context", default=None
 )
 
 
-class BuilderContext(WorkerContext):
+class BuildContext(WorkContext):
     def __init__(self) -> None:
         super().__init__()
         self.mapped: set[str] = set()
@@ -26,7 +26,7 @@ class BuilderContext(WorkerContext):
         current_builder_context.set(self)
 
     @classmethod
-    def get_current(cls) -> Optional["BuilderContext"]:
+    def get_current(cls) -> Optional["BuildContext"]:
         return current_builder_context.get()
 
     def create_builder(
