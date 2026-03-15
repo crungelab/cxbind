@@ -15,7 +15,7 @@ from cxbind.facade import (
 
 from ...node import Argument, Type
 
-from ..render_context import RenderContext
+from ..renderer_context import RendererContext
 from ..renderer import Renderer
 
 
@@ -164,6 +164,17 @@ class CallbackArgRenderer(FacadeArgRenderer[CallbackFacade]):
     def __init__(self, arg: Argument):
         super().__init__(arg)
         self.context_arg = self.facade.context_arg
+
+        logger.debug(f"CallbackArgRenderer: {self.arg}")
+        for child in self.arg.cursor.get_children():
+            logger.debug(f"CallbackArgRenderer child kind: {child.kind}")
+            child_type = child.type
+            logger.debug(f"CallbackArgRenderer child type: {child_type.spelling}")
+            logger.debug(f"CallbackArgRenderer child type kind: {child_type.kind}")
+            child_decl = child_type.get_declaration()
+            logger.debug(f"CallbackArgRenderer child declaration: {child_decl.kind}")
+            for parm_cursor in child_decl.get_children():
+                logger.debug(f"CallbackArgRenderer child argument: {parm_cursor.spelling} type: {parm_cursor.type.spelling}")
 
     def excludes(self) -> set[str]:
         return {self.context_arg}

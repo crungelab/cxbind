@@ -13,14 +13,14 @@ namespace py = pybind11;
 
 void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
     _tests
-    .def("function_with_callback", [](std::vector<unsigned int> a, py::function callback)
+    .def("function_with_callback", [](std::vector<unsigned int> a, py::function cb)
         {
             const uint32_t * _a = (const uint32_t *)a.data();
             auto count = a.size();
             
-            cxbind::thunk_state _context(callback);
+            cxbind::thunk_state _context(cb);
             auto context = &_context;
-            auto _callback = +[](int value, void* ctx) -> bool {
+            auto _cb = +[](int value, void* ctx) -> bool {
                 auto& ts = *static_cast<cxbind::thunk_state*>(ctx);
                 // ... use ts, acquire GIL, call Python, etc ...
                 py::gil_scoped_acquire gil;
@@ -28,10 +28,16 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
                 return result.cast<bool>();
             };
             
-            return functionWithCallback(_a, count, _callback, context);
+            return functionWithCallback(_a, count, _cb, context);
         }
         , py::arg("a")
-        , py::arg("callback")
+        , py::arg("cb")
+        , py::return_value_policy::automatic_reference)
+    .def("function_with_callback2", &functionWithCallback2
+        , py::arg("a")
+        , py::arg("count")
+        , py::arg("cb") = nullptr
+        , py::arg("context")
         , py::return_value_policy::automatic_reference)
     ;
 

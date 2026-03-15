@@ -14,10 +14,10 @@ units:
       'class_template@AliasClass':
         specializations:
           - alias: AliasClassI
-            args: [int]
+            template_args: [int]
       'function_template@aliasFunction':
         specializations:
-          - args: [float]
+          - template_args: [float]
           
           - alias: aliasFunctionI
-            args: [int]
+            template_args: [int]

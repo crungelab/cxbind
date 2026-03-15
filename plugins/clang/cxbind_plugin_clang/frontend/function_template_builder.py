@@ -18,7 +18,7 @@ class FunctionTemplateBuilder(TemplateBuilder[FunctionTemplateNode]):
 
         for specialization in self.node.spec.specializations:
             #logger.debug(f"specialization: {specialization}")
-            args = ", ".join(specialization.args)
+            args = ", ".join(specialization.template_args)
             cname = f"{self.node.name}<{args}>"
 
             builder = FunctionTemplateSpecializationBuilder(

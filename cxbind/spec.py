@@ -21,7 +21,7 @@ from .entry import Entry, EntryKey, EntryKeySet
 from .extra import special_methods, Extra, ExtraProperty, ExtraMethodUnion
 from .facade import WRAPPER_FACADES, FacadeUnion
 
-'''
+"""
 class EntryKey(BaseModel):
     kind: str
     name: str
@@ -97,12 +97,13 @@ def normalize_entry_key_set(value: Any) -> Any:
 
 
 EntryKeySet = Annotated[set[EntryKey], BeforeValidator(normalize_entry_key_set)]
-'''
+"""
+
 
 class Spec(Entry):
-    #kind: str
-    #name: str
-    #signature: str | None = None
+    # kind: str
+    # name: str
+    # signature: str | None = None
 
     alias: str | None = None
     pyname: str | None = None
@@ -113,7 +114,7 @@ class Spec(Entry):
 
     model_config = ConfigDict(extra="forbid")
 
-    '''
+    """
     @property
     def key(self) -> EntryKey:
         return EntryKey.build(
@@ -125,7 +126,7 @@ class Spec(Entry):
     @property
     def key_string(self) -> str:
         return self.key.dump()
-    '''
+    """
 
     def __repr__(self) -> str:
         return (
@@ -156,7 +157,7 @@ class ArgSpec(BaseModel):
 
 
 class ReturnSpec(BaseModel):
-    pass
+    facade: FacadeUnion | None = None
 
 
 class FunctionalSpec(Spec):
@@ -184,7 +185,8 @@ class FunctionTemplateSpecializationSpec(FunctionSpec):
     kind: Literal["function_template_specialization"] = (
         "function_template_specialization"
     )
-    args: list[str]
+    #args: list[str]
+    template_args: list[str] = Field(default_factory=list)
 
 
 class FunctionTemplateSpec(TemplateSpec):
@@ -216,6 +218,10 @@ class FunctionTemplateSpec(TemplateSpec):
 
         data["specializations"] = normalized
         return data
+
+
+class FunctionPrototypeSpec(FunctionalSpec):
+    kind: Literal["function_prototype"]
 
 
 class MethodSpec(FunctionalSpec):
@@ -306,7 +312,8 @@ class ClassSpec(StructuralSpec):
 
 class ClassTemplateSpecializationSpec(ClassSpec):
     kind: Literal["class_template_specialization"] = "class_template_specialization"
-    args: list[str]
+    #args: list[str]
+    template_args: list[str] = Field(default_factory=list)
 
 
 class ClassTemplateSpec(TemplateSpec):

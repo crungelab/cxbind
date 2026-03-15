@@ -115,32 +115,28 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def should_wrap_function(self) -> bool:
         node = self.node
         cursor = node.cursor
-
         if cursor.type.is_function_variadic():
             return True
 
-        result_type = node.returns.type.type
+        result_type = cursor.result_type
+        # logger.debug(f"result_type: {result_type.spelling}")
+
         if self.is_wrapped_type(result_type):
             return True
 
         for arg in node.args:
-            arg_type = arg.type.type
-
-            if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
+            arg_cursor = arg.cursor
+            if arg_cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
                 return True
-
             if arg.is_out:
                 logger.debug(
                     f"Found out parameter in function {node.cursor.spelling}, argument {arg.name}"
                 )
                 return True
-
-            if self.is_wrapped_type(arg_type):
+            if self.is_wrapped_type(arg_cursor.type):
                 return True
-
             if arg.spec is not None and arg.spec.facade is not None:
                 return True
-
         return False
 
     def get_return_policy(self, cursor: cindex.Cursor) -> str:

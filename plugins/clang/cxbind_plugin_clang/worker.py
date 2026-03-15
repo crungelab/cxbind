@@ -276,9 +276,23 @@ class Worker(Generic[T_Context]):
     def strip_qualifiers(self, name: str) -> str:
         return name.replace("const ", "").replace("volatile ", "").strip()
 
-    def get_base_declaration(self, typ: cindex.Type) -> str:
-        """Return the base type name, stripping qualifiers and pointer/reference
-        indirections. Typedef names (e.g. uint32_t) are preserved."""
+    def get_base_declaration(self, typ: cindex.Type) -> cindex.Cursor | None:
+        while True:
+            if typ.kind in (
+                cindex.TypeKind.POINTER,
+                cindex.TypeKind.LVALUEREFERENCE,
+                cindex.TypeKind.RVALUEREFERENCE,
+            ):
+                typ = typ.get_pointee()
+            else:
+                break
+        decl = typ.get_declaration()
+        if decl.kind != cindex.CursorKind.NO_DECL_FOUND:
+            return decl
+        return None
+
+    """
+    def get_base_declaration(self, typ: cindex.Type) -> cindex.Cursor | None:
         while True:
             if typ.is_const_qualified() or typ.is_volatile_qualified():
                 typ = typ.get_canonical()
@@ -294,6 +308,7 @@ class Worker(Generic[T_Context]):
         if decl.kind != cindex.CursorKind.NO_DECL_FOUND:
             return decl
         return None
+    """
 
     def get_base_type_name(self, typ: cindex.Type) -> str:
         """Return the base type name, stripping qualifiers and pointer/reference

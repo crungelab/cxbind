@@ -24,32 +24,6 @@ def is_template(cursor: cindex.Cursor) -> bool:
         return True
     return False
 
-"""
-# Function to get the base type name without qualifiers or pointers
-def get_base_type_name(typ):
-    # Loop to remove qualifiers like 'const' or 'volatile' and dereference pointers/references
-    while True:
-        # Remove const/volatile qualifiers
-        if typ.is_const_qualified() or typ.is_volatile_qualified():
-            typ = typ.get_canonical()
-
-        # If the type is a pointer or reference, dereference it
-        if typ.kind == cindex.TypeKind.POINTER:
-            typ = typ.get_pointee()
-        elif (
-            typ.kind == cindex.TypeKind.LVALUEREFERENCE
-            or typ.kind == cindex.TypeKind.RVALUEREFERENCE
-        ):
-            typ = typ.get_pointee()
-        else:
-            # When no more qualifiers or pointers, break out of the loop
-            break
-
-    # Return the base type name
-    # return typ.spelling
-    return typ.spelling.replace("const ", "").replace("volatile ", "")
-"""
-
 # TODO: Skipping anonymous structs for now.
 def anonymous_struct_name(anon_struct_cursor: cindex.Cursor) -> str | None:
     """

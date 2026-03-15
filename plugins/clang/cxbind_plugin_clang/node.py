@@ -14,20 +14,20 @@ from cxbind.facade import Facade
 
 
 class Node(Entry):
-    #kind: str
-    #name: str
-    #signature: str | None = None
+    # kind: str
+    # name: str
+    # signature: str | None = None
 
     pyname: str | None = None
     children: list["Node"] = Field(default_factory=list)
-    #parent: Optional["Node"] = None
+    # parent: Optional["Node"] = None
     parent: Optional["Node"] = Field(None, exclude=True, repr=False)
 
     spec: Spec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
-    '''
+    """
     @property
     def key(self) -> EntryKey:
         return EntryKey.build(
@@ -43,7 +43,7 @@ class Node(Entry):
     @property
     def first_name(self) -> str:
         return self.name.split("::")[-1]
-    '''
+    """
 
     def __repr__(self) -> str:
         return (
@@ -77,7 +77,7 @@ class Node(Entry):
         ):
             underlying = cursor.underlying_typedef_type
             cursor = underlying.get_declaration()
-            logger.debug(f"Underlying typedef type spelling: {underlying.spelling}")
+            # logger.debug(f"Underlying typedef type spelling: {underlying.spelling}")
 
         if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
             kind = "translation_unit"
@@ -162,6 +162,7 @@ class Argument(BaseModel):
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: ArgSpec | None = Field(None, exclude=True, repr=False)
+    function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -181,6 +182,10 @@ class FunctionalNode(DeclNode):
     spec: FunctionalSpec | None = Field(None, exclude=True, repr=False)
     args: list[Argument] = Field(default_factory=list)
     returns: ReturnValue | None = None
+
+
+class FunctionPrototypeNode(FunctionalNode):
+    kind: Literal["function_prototype"]
 
 
 class FunctionNode(FunctionalNode):

@@ -30,8 +30,12 @@ void register_aliases_py_auto(py::module &_tests, Registry &registry) {
 
     _tests
     .def("alias_function_float", &aliasFunction<float>
+        , py::arg("arg0")
+        , py::arg("arg1")
         , py::return_value_policy::automatic_reference)
     .def("alias_function_i", aliasFunctionI
+        , py::arg("arg0")
+        , py::arg("arg1")
         , py::return_value_policy::automatic_reference)
     ;
 

@@ -13,9 +13,9 @@ from ..session import Session
 if TYPE_CHECKING:
     from .renderer import Renderer
 
-current_render_context: ContextVar[Optional["RenderContext"]] = ContextVar("current_render_context", default=None)
+current_renderer_context: ContextVar[Optional["RendererContext"]] = ContextVar("current_renderer_context", default=None)
 
-class RenderContext(WorkerContext):
+class RendererContext(WorkerContext):
     def __init__(self) -> None:
         super().__init__()
         #self.out = RenderStream()
@@ -26,11 +26,11 @@ class RenderContext(WorkerContext):
         self.chaining = False
 
     def make_current(self):
-        current_render_context.set(self)
+        current_renderer_context.set(self)
 
     @classmethod
-    def get_current(cls) -> Optional["RenderContext"]:
-        return current_render_context.get()
+    def get_current(cls) -> Optional["RendererContext"]:
+        return current_renderer_context.get()
 
     @property
     def out(self) -> RenderStream:

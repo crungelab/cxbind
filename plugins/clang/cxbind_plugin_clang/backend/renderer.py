@@ -4,11 +4,11 @@ from loguru import logger
 
 from clang import cindex
 
-from .render_context import RenderContext
+from .renderer_context import RendererContext
 from ..worker import Worker
 
 
-class Renderer(Worker[RenderContext]):
+class Renderer(Worker[RendererContext]):
     actions: dict[cindex.CursorKind, Callable] = {}
 
     def __init__(self):
@@ -16,7 +16,7 @@ class Renderer(Worker[RenderContext]):
 
     @property
     def context(self):
-        return RenderContext.get_current()
+        return RendererContext.get_current()
 
     @property
     def out(self):
