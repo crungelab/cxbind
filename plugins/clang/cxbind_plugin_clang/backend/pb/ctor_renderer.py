@@ -14,11 +14,11 @@ class CtorRenderer(MethodRenderer):
 
         self.begin_chain()
 
-        arguments = node.args
-        logger.debug(f"Rendering constructor for {node.name} with args {arguments}")
+        params = node.params
+        logger.debug(f"Rendering constructor for {node.name} with params {params}")
 
-        if len(arguments) > 0:
-            arg_types = self.arg_types(arguments)
+        if len(params) > 0:
+            arg_types = self.param_types(params)
 
             out(f".def(py::init<{arg_types}>()")
             self.render_pyargs()

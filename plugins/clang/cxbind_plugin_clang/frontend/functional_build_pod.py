@@ -1,10 +1,10 @@
 from clang import cindex
 
-from ..node import FunctionalNode, Argument
+from ..node import FunctionalNode, Parameter
 
 from .build_pod import BuildPod
 
-from .arg_builder import ArgBuilder
+from .param_builder import ParamBuilder
 
 class FunctionalBuildPod(BuildPod):
     node: FunctionalNode

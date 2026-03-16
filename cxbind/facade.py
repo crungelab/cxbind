@@ -38,17 +38,17 @@ class ObjectFacade(Facade):
 
 class VectorFacade(Facade):
     kind: Literal["vector"] = "vector"
-    length_arg: str
+    length_param: str
 
 
 class BufferFacade(Facade):
     kind: Literal["buffer"] = "buffer"
-    length_arg: str
+    length_param: str
 
 
 class CallbackFacade(Facade):
     kind: Literal["callback"] = "callback"
-    context_arg: str | None = None
+    context_param: str | None = None
 
 
 FacadeUnion = Annotated[

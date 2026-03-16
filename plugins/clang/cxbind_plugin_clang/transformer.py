@@ -38,10 +38,10 @@ class MogrifyTransformer:
             if not isinstance(node, FunctionNode):
                 continue
             logger.debug(f"Checking function node: {node.name}")
-            first_arg = node.args[0] if node.args else None
-            logger.debug(f"First argument: {first_arg}")
-            #if first_arg and first_arg.type == name:
-            if first_arg and spec_name in first_arg.type.spelling:
+            first_param = node.params[0] if node.params else None
+            logger.debug(f"First parameter: {first_param}")
+            #if first_param and first_param.type == name:
+            if first_param and spec_name in first_param.type.spelling:
                 logger.debug(f"Found matching function node: {node}")
                 #spec.extra.add_method(ExtraStandardMethod(name=node.name, use=node.name))
                 name = node.pyname

@@ -13,8 +13,8 @@ units:
 
 specs:
   'function@vectorFacadeFunction':
-    args:
+    params:
       a:
         facade:
           kind: vector
-          length_arg: count
+          length_param: count

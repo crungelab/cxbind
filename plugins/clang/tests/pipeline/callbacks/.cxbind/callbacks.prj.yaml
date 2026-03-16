@@ -13,12 +13,12 @@ units:
 
 specs:
   'function@functionWithCallback':
-    args:
+    params:
       a:
         facade:
           kind: vector
-          length_arg: count
+          length_param: count
       cb:
         facade:
           kind: callback
-          context_arg: context
+          context_param: context

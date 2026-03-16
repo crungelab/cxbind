@@ -1,4 +1,4 @@
-from typing import List, Optional, TypeVar
+from typing import TypeVar
 
 from clang import cindex
 from loguru import logger
@@ -6,10 +6,10 @@ from loguru import logger
 from cxbind.spec import Spec, create_spec
 from cxbind.facade import Facade
 
-from ...node import FunctionalNode, Argument
+from ...node import FunctionalNode, Parameter
 
 from .node_renderer import NodeRenderer, RenderContext
-from .arg_renderer import ArgRenderer, ARG_RENDERER_TABLE
+from .param_renderer import ParamRenderer, PARAM_RENDERER_TABLE
 from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
 from .functional_render_pod import FunctionalRenderPod
 
@@ -21,38 +21,42 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         super().__init__(node)
         self.node = node
         self._pod = FunctionalRenderPod(node)
-        self.create_arg_renderers()
+        self.create_param_renderers()
         self.create_return_renderer()
 
     @property
     def pod(self) -> FunctionalRenderPod:
         return self._pod
 
-    def create_arg_renderers(self):
+    def create_param_renderers(self):
         node = self.node
-        logger.debug(f"Creating argument renderers for node: {node.name}")
+        logger.debug(f"Creating parameter renderers for node: {node.name}")
 
-        for arg in node.args:
-            facade_kind = arg.type.facade.kind if arg.type.facade is not None else None
-            renderer_cls = ARG_RENDERER_TABLE.get(facade_kind, ArgRenderer)
-            logger.debug(f"Creating argument renderer for argument: {arg}, renderer: {renderer_cls.__name__}")
-            self.pod.arg_renderers.append(renderer_cls(arg))
+        for param in node.params:
+            facade_kind = (
+                param.type.facade.kind if param.type.facade is not None else None
+            )
+            renderer_cls = PARAM_RENDERER_TABLE.get(facade_kind, ParamRenderer)
+            logger.debug(
+                f"Creating parameter renderer for parameter: {param}, renderer: {renderer_cls.__name__}"
+            )
+            self.pod.arg_renderers.append(renderer_cls(param))
 
-        excluded_arguments = set()
+        excluded_params = set()
         for arg_renderer in self.pod.arg_renderers:
-            excluded_arguments.update(arg_renderer.excludes())
+            excluded_params.update(arg_renderer.excludes())
 
-        self.pod.in_arg_renderers = [
+        self.pod.param_renderers = [
             arg_renderer
             for arg_renderer in self.pod.arg_renderers
-            if arg_renderer.arg.name not in excluded_arguments
+            if arg_renderer.param.name not in excluded_params
         ]
 
-        logger.debug(f"in arguments: {self.pod.in_arg_renderers}")
+        logger.debug(f"param_renderers: {self.pod.param_renderers}")
 
-        out_args = [arg.name for arg in node.args if arg.is_out]
-        self.pod.out_args = out_args
-        self.pod.has_out_args = len(out_args) > 0
+        out_params = [param.name for param in node.params if param.is_out]
+        self.pod.out_params = out_params
+        self.pod.has_out_params = len(out_params) > 0
 
     def create_return_renderer(self):
         node = self.node
@@ -71,7 +75,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         out = self.out
         node = self.node
         cursor = node.cursor
-        arguments = node.args
+        params = node.params
         cname = node.name if node.spec.alias else "&" + node.name
         pyname = node.pyname
 
@@ -88,7 +92,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             extra = ""
             if cursor.is_const_method():
                 extra = ", py::const_"
-            cname = f"py::overload_cast<{self.arg_types(arguments)}>({cname}{extra})"
+            cname = f"py::overload_cast<{self.param_types(params)}>({cname}{extra})"
 
         if self.should_wrap_function():
             is_non_static_method = (
@@ -97,7 +101,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             )
             self_arg = f"{self.top_node.name}& self, " if is_non_static_method else ""
             out // f'{def_call}("{pyname}", []({self_arg}'
-            self.pod.render_input()
+            self.pod.render_params()
             out << ")" << out.nl
 
             with out:
@@ -127,22 +131,22 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         if self.is_wrapped_type(result_type):
             return True
 
-        for arg in node.args:
-            arg_type = arg.type.type
+        for param in node.params:
+            param_type = param.type.type
 
-            if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
+            if param_type.kind == cindex.TypeKind.CONSTANTARRAY:
                 return True
 
-            if arg.is_out:
+            if param.is_out:
                 logger.debug(
-                    f"Found out parameter in function {node.cursor.spelling}, argument {arg.name}"
+                    f"Found out parameter in function {node.cursor.spelling}, parameter {param.name}"
                 )
                 return True
 
-            if self.is_wrapped_type(arg_type):
+            if self.is_wrapped_type(param_type):
                 return True
 
-            if arg.spec is not None and arg.spec.facade is not None:
+            if param.spec is not None and param.spec.facade is not None:
                 return True
 
         return False
@@ -154,15 +158,15 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         else:
             return "py::return_value_policy::automatic_reference"
 
-    def arg_types(self, arguments: List[Argument]):
-        return ", ".join([a.type.spelling for a in arguments])
+    def param_types(self, params: list[Parameter]):
+        return ", ".join([param.type.spelling for param in params])
 
-    def arg_name(self, argument: Argument):
-        arg_spelling = argument.name
-        if argument.cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return f"&{arg_spelling}[0]"
-        return arg_spelling
+    def param_name(self, param: Parameter):
+        param_name = param.name
+        if param.cursor.type.kind == cindex.TypeKind.CONSTANTARRAY:
+            return f"&{param_name}[0]"
+        return param_name
 
     def render_pyargs(self):
-        for arg_renderer in self.pod.in_arg_renderers:
+        for arg_renderer in self.pod.param_renderers:
             arg_renderer.render_pyarg()

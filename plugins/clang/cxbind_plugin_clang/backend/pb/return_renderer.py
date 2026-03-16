@@ -35,7 +35,7 @@ class ReturnRenderer(Renderer):
     def render(self):
         node = self.pod.node
         if (
-            self.pod.has_out_args
+            self.pod.has_out_params
             and not self.pod.is_function_void_return()
             and not node.spec.omit_ret
         ):
@@ -49,7 +49,7 @@ class ReturnRenderer(Renderer):
         node = self.pod.node
         if self.use_return_temp:
             out // "auto _ret = "
-        elif self.pod.has_out_args:
+        elif self.pod.has_out_params:
             out.write_indent()
         else:
             out // "return "
@@ -75,7 +75,7 @@ class ReturnRenderer(Renderer):
         )
 
         out << f"{self_call}("
-        self.pod.render_output()
+        self.pod.render_args()
 
     def render_end_call(self):
         out = self.out
@@ -86,7 +86,7 @@ class ReturnRenderer(Renderer):
 
         out << ";\n"
 
-        if self.pod.has_out_args:
+        if self.pod.has_out_params:
             out // "return std::make_tuple("
             if self.use_return_temp:
                 out << "_ret, "

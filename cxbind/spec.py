@@ -139,21 +139,21 @@ class TemplateSpec(Spec):
     pass
 
 
-class ArgDirection(str, Enum):
+class ParamDirection(str, Enum):
     IN = "in"
     OUT = "out"
     INOUT = "inout"
 
 
-class ArgSpec(BaseModel):
+class ParamSpec(BaseModel):
     optional: bool = False
     default: Any | None = None
     facade: FacadeUnion | None = None
-    direction: ArgDirection = ArgDirection.IN
+    direction: ParamDirection = ParamDirection.IN
 
     @property
     def is_out(self) -> bool:
-        return self.direction in (ArgDirection.OUT, ArgDirection.INOUT)
+        return self.direction in (ParamDirection.OUT, ParamDirection.INOUT)
 
 
 class ReturnSpec(BaseModel):
@@ -161,18 +161,18 @@ class ReturnSpec(BaseModel):
 
 
 class FunctionalSpec(Spec):
-    args: dict[str, ArgSpec] = Field(default_factory=dict)
+    params: dict[str, ParamSpec] = Field(default_factory=dict)
     returns: ReturnSpec | None = None
     omit_ret: bool = False
 
-    @field_validator("args", mode="before")
+    @field_validator("params", mode="before")
     @classmethod
-    def _parse_arguments(cls, v: Any) -> Any:
+    def _parse_parameters(cls, v: Any) -> Any:
         if not isinstance(v, dict):
             return v
 
         return {
-            k: val if isinstance(val, (dict, ArgSpec)) else {"default": val}
+            k: val if isinstance(val, (dict, ParamSpec)) else {"default": val}
             for k, val in v.items()
         }
 
@@ -212,7 +212,7 @@ class FunctionTemplateSpec(TemplateSpec):
                     item = {"name": data["name"], **item}
                 normalized.append(item)
             elif isinstance(item, (list, tuple)):
-                normalized.append({"name": data.get("name"), "args": list(item)})
+                normalized.append({"name": data.get("name"), "template_args": list(item)})
             else:
                 normalized.append({"name": str(item)})
 
@@ -337,7 +337,7 @@ class ClassTemplateSpec(TemplateSpec):
                     item = {"name": data["name"], **item}
                 normalized.append(item)
             elif isinstance(item, (list, tuple)):
-                normalized.append({"name": data.get("name"), "args": list(item)})
+                normalized.append({"name": data.get("name"), "template_args": list(item)})
             else:
                 normalized.append({"name": str(item)})
 

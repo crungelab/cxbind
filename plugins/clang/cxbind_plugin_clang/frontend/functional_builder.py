@@ -7,8 +7,8 @@ from typing import Generic, Iterable, TypeVar
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, FunctionalSpec, ArgSpec, ArgDirection, ReturnSpec, create_spec
-from ..node import Node, FunctionalNode, Argument, ReturnValue, Type
+from cxbind.spec import Spec, FunctionalSpec, ParamSpec, ParamDirection, ReturnSpec, create_spec
+from ..node import Node, FunctionalNode, Parameter, ReturnValue, Type
 from .node_builder import NodeBuilder
 from .functional_build_pod import FunctionalBuildPod
 
@@ -120,7 +120,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     
     def build_node(self):
         super().build_node()
-        self.build_args()
+        self.build_params()
         self.build_return_value()
 
     #
@@ -183,7 +183,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         """
         Normalize parameters from either:
         - real parameter cursors on a declaration
-        - arg types on a FUNCTIONPROTO
+        - param types on a FUNCTIONPROTO
         """
         cursor = self.cursor
 
@@ -250,42 +250,42 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         return None
 
     #
-    # -------- build args / return --------
+    # -------- build params / return --------
     #
 
-    def build_args(self) -> None:
-        self.node.args.clear()
+    def build_params(self) -> None:
+        self.node.params.clear()
 
-        for param in self.get_param_infos():
-            spec = self.node.spec.args.get(param.name) if self.node.spec and self.node.spec.args else None
+        for info in self.get_param_infos():
+            spec = self.node.spec.params.get(info.name) if self.node.spec and self.node.spec.params else None
 
-            arg_type = self.build_argument_type(param.type, param.cursor, spec)
-            default = self.make_arg_default(param.name, param.cursor, self.node)
-            direction = self.make_arg_direction(param.type)
+            param_type = self.build_param_type(info.type, info.cursor, spec)
+            default = self.make_param_default(info.name, info.cursor, self.node)
+            direction = self.make_param_direction(info.type)
 
-            argument = Argument(
-                name=param.name,
-                type=arg_type,
+            parameter = Parameter(
+                name=info.name,
+                type=param_type,
                 default=default,
-                cursor=param.cursor,
+                cursor=info.cursor,
                 spec=spec,
                 direction=direction,
             )
-            self.node.args.append(argument)
+            self.node.params.append(parameter)
 
-        logger.debug(f"args: {self.node.args}")
+        logger.debug(f"params: {self.node.params}")
 
-    def build_argument_type(
+    def build_param_type(
         self,
-        arg_type: cindex.Type,
-        arg_cursor: cindex.Cursor | None = None,
-        arg_spec: ArgSpec | None = None,
+        param_type: cindex.Type,
+        param_cursor: cindex.Cursor | None = None,
+        param_spec: ParamSpec | None = None,
     ) -> Type:
-        spelling = self.make_argument_type_spelling(arg_type, arg_cursor)
-        base_name = self.get_base_type_name(arg_type)
-        logger.debug(f"Argument type spelling: {spelling}, base name: {base_name}")
+        spelling = self.make_param_type_spelling(param_type, param_cursor)
+        base_name = self.get_base_type_name(param_type)
+        logger.debug(f"Parameter type spelling: {spelling}, base name: {base_name}")
 
-        base_decl = self.get_base_declaration(arg_type)
+        base_decl = self.get_base_declaration(param_type)
         if base_decl is not None:
             base_key = Node.make_key(base_decl)
             logger.debug(f"Base declaration: {base_decl}")
@@ -298,15 +298,15 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         logger.debug(f"base_spec: {base_spec}")
 
         facade = None
-        if arg_spec is not None and arg_spec.facade is not None:
-            facade = arg_spec.facade
+        if param_spec is not None and param_spec.facade is not None:
+            facade = param_spec.facade
         elif base_spec is not None and base_spec.facade is not None:
             facade = base_spec.facade
 
         return Type(
             spelling=spelling,
             base_name=base_name,
-            type=arg_type,
+            type=param_type,
             base_spec=base_spec,
             facade=facade,
         )
@@ -362,43 +362,43 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     # -------- direction / defaults --------
     #
 
-    def make_arg_direction(self, arg_type: cindex.Type) -> ArgDirection:
-        arg_type = arg_type.get_canonical()
+    def make_param_direction(self, param_type: cindex.Type) -> ParamDirection:
+        param_type = param_type.get_canonical()
 
-        if arg_type.kind == cindex.TypeKind.LVALUEREFERENCE:
-            pointee = arg_type.get_pointee()
+        if param_type.kind == cindex.TypeKind.LVALUEREFERENCE:
+            pointee = param_type.get_pointee()
             if not pointee.is_const_qualified():
-                return ArgDirection.OUT
+                return ParamDirection.OUT
 
-        if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
-            return ArgDirection.OUT
+        if param_type.kind == cindex.TypeKind.CONSTANTARRAY:
+            return ParamDirection.OUT
 
-        if arg_type.kind == cindex.TypeKind.POINTER:
-            ptr = arg_type.get_pointee()
+        if param_type.kind == cindex.TypeKind.POINTER:
+            ptr = param_type.get_pointee()
             if not ptr.is_const_qualified() and ptr.kind in self.SCALAR_POINTER_OUT_KINDS:
-                return ArgDirection.OUT
+                return ParamDirection.OUT
 
-        return ArgDirection.IN
+        return ParamDirection.IN
 
-    def make_arg_default(
+    def make_param_default(
         self,
-        arg_name: str,
-        argument: cindex.Cursor | None,
+        param_name: str,
+        param_cursor: cindex.Cursor | None,
         node: FunctionalNode | None = None,
     ) -> str | None:
         # Pure type-based FUNCTIONPROTO parameters do not reliably carry defaults
-        if argument is None:
-            if node and node.spec.args and arg_name in node.spec.args:
-                return node.spec.args[arg_name].default
+        if param_cursor is None:
+            if node and node.spec.params and param_name in node.spec.params:
+                return node.spec.params[param_name].default
             return None
 
-        default = self.default_from_tokens(argument.get_tokens())
-        logger.debug(f"Initial default value for argument {argument.spelling}: {default}")
+        default = self.default_from_tokens(param_cursor.get_tokens())
+        logger.debug(f"Initial default value for parameter {param_cursor.spelling}: {default}")
 
-        default = self.defaults.get(argument.spelling, default)
-        logger.debug(f"Updated default value for argument {argument.spelling}: {default}")
+        default = self.defaults.get(param_cursor.spelling, default)
+        logger.debug(f"Updated default value for parameter {param_cursor.spelling}: {default}")
 
-        for child in argument.get_children():
+        for child in param_cursor.get_children():
             if child.type.kind == cindex.TypeKind.POINTER:
                 default = "nullptr"
             elif (
@@ -410,10 +410,10 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             elif not default:
                 default = self.default_from_tokens(child.get_tokens())
 
-        if node and node.spec.args and argument.spelling in node.spec.args:
-            default = node.spec.args[argument.spelling].default
+        if node and node.spec.params and param_cursor.spelling in node.spec.params:
+            default = node.spec.params[param_cursor.spelling].default
             logger.debug(
-                f"Default value for argument {argument.spelling} after processing children: {default}"
+                f"Default value for parameter {param_cursor.spelling} after processing children: {default}"
             )
 
         if (
@@ -422,9 +422,9 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             and default.startswith("{")
             and default.endswith("}")
         ):
-            default = f"{self.get_base_type_name(argument.type)}{default}"
+            default = f"{self.get_base_type_name(param_cursor.type)}{default}"
 
-        logger.debug(f"Default value for argument {argument.spelling}: {default}")
+        logger.debug(f"Default value for parameter {param_cursor.spelling}: {default}")
         return default
 
     def default_from_tokens(self, tokens) -> str | None:
@@ -495,23 +495,23 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     # -------- spelling helpers --------
     #
 
-    def make_argument_type_spelling(
+    def make_param_type_spelling(
         self,
-        arg_type: cindex.Type,
-        arg_cursor: cindex.Cursor | None = None,
+        param_type: cindex.Type,
+        param_cursor: cindex.Cursor | None = None,
     ) -> str:
-        logger.debug(f"Spelling: {arg_type.spelling}")
+        logger.debug(f"Spelling: {param_type.spelling}")
 
-        if self.is_function_pointer_type(arg_type):
-            logger.debug(f"Function pointer type: {arg_type.spelling}")
-            return arg_type.get_canonical().spelling
+        if self.is_function_pointer_type(param_type):
+            logger.debug(f"Function pointer type: {param_type.spelling}")
+            return param_type.get_canonical().spelling
 
-        canonical = arg_type.get_canonical()
+        canonical = param_type.get_canonical()
         canonical_spelling = canonical.spelling
         logger.debug(f"Canonical spelling: {canonical_spelling}")
 
-        printing_policy = cindex.PrintingPolicy.create(arg_cursor or self.cursor)
-        fq_spelling = arg_type.get_fully_qualified_name(printing_policy)
+        printing_policy = cindex.PrintingPolicy.create(param_cursor or self.cursor)
+        fq_spelling = param_type.get_fully_qualified_name(printing_policy)
         logger.debug(f"Fully qualified spelling: {fq_spelling}")
 
         specialization_node = self.top_node
@@ -537,9 +537,9 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
                 return patched
             return resolved
 
-        if arg_type.kind == cindex.TypeKind.CONSTANTARRAY:
-            logger.debug(f"Constant array type: {arg_type.spelling}")
-            element_type = arg_type.get_array_element_type()
+        if param_type.kind == cindex.TypeKind.CONSTANTARRAY:
+            logger.debug(f"Constant array type: {param_type.spelling}")
+            element_type = param_type.get_array_element_type()
             element_canon_spelling = element_type.get_canonical().spelling
             element_fq_spelling = element_type.get_fully_qualified_name(printing_policy)
             element_type_name = self.strip_qualifiers(
@@ -548,9 +548,9 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             logger.debug(f"Element type (canon): {element_canon_spelling}")
             logger.debug(f"Element type (fq): {element_fq_spelling}")
             logger.debug(f"Element type (final): {element_type_name}")
-            return f"std::array<{element_type_name}, {arg_type.get_array_size()}>&"
+            return f"std::array<{element_type_name}, {param_type.get_array_size()}>&"
 
-        typedef_name = self.typedef_spelling(arg_type)
+        typedef_name = self.typedef_spelling(param_type)
         if typedef_name is not None:
             return typedef_name
 

@@ -9,7 +9,7 @@ from clang import cindex
 from loguru import logger
 
 from cxbind.entry import Entry, EntryKey
-from cxbind.spec import Spec, ArgSpec, ArgDirection, ReturnSpec, FunctionalSpec
+from cxbind.spec import Spec, ParamSpec, ParamDirection, ReturnSpec, FunctionalSpec
 from cxbind.facade import Facade
 
 
@@ -154,21 +154,21 @@ class RootNode(Node):
     kind: Literal["root"] = "root"
 
 
-class Argument(BaseModel):
+class Parameter(BaseModel):
     name: str
     type: Type
     default: object | None = None
-    direction: ArgDirection = ArgDirection.IN
+    direction: ParamDirection = ParamDirection.IN
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
-    spec: ArgSpec | None = Field(None, exclude=True, repr=False)
+    spec: ParamSpec | None = Field(None, exclude=True, repr=False)
     function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def is_out(self) -> bool:
-        return self.direction in (ArgDirection.OUT, ArgDirection.INOUT)
+        return self.direction in (ParamDirection.OUT, ParamDirection.INOUT)
 
 
 class ReturnValue(BaseModel):
@@ -180,7 +180,7 @@ class ReturnValue(BaseModel):
 
 class FunctionalNode(DeclNode):
     spec: FunctionalSpec | None = Field(None, exclude=True, repr=False)
-    args: list[Argument] = Field(default_factory=list)
+    params: list[Parameter] = Field(default_factory=list)
     returns: ReturnValue | None = None
 
 

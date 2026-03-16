@@ -1,5 +1,5 @@
 from .builder import Builder
 
 
-class ArgBuilder(Builder):
+class ParamBuilder(Builder):
     pass
