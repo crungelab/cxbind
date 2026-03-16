@@ -162,7 +162,7 @@ class Parameter(BaseModel):
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: ParamSpec | None = Field(None, exclude=True, repr=False)
-    function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
+    #function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
