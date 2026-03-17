@@ -415,6 +415,7 @@ def create_spec(key: EntryKey | str, **kwargs: Any) -> SpecUnion:
 
     spec_cls = {
         "function": FunctionSpec,
+        "function_prototype": FunctionPrototypeSpec,
         "function_template": FunctionTemplateSpec,
         "method": MethodSpec,
         "ctor": CtorSpec,

@@ -6,9 +6,9 @@ from clang import cindex
 
 from cxbind.spec import ParamSpec, ParamDirection
 
-from ..node import Node, Parameter, Type
-from .builder import Builder
-from .functional_build_pod import FunctionalBuildPod, ParamInfo
+from ...node import Node, Parameter, Type
+from ..builder import Builder
+from ..functional_build_pod import FunctionalBuildPod, ParamInfo
 from .param_builder_helpers import _outer_template_args, _replace_outer_template_args
 T_Parameter = TypeVar("T_Parameter", bound=Parameter)
 
@@ -39,6 +39,42 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
 
     def build(self) -> None:
         node = self.pod.node
+        self.spec = (
+            node.spec.params.get(self.info.name)
+            if node.spec and node.spec.params
+            else None
+        )
+
+        self.param_type = self.build_param_type(self.info.type, self.info.cursor, self.spec)
+        self.default = self.make_param_default(self.info.name, self.info.cursor)
+        self.direction = self.make_param_direction(self.info.type)
+
+        self.create_parameter()
+        self.build_param()
+
+        logger.debug(f"Adding parameter to node({node.name}): {self.param}")
+
+        node.params.append(self.param)
+
+    def create_parameter(self) -> None:
+        self.param = Parameter(
+            name=self.info.name,
+            type=self.param_type,
+            #default=self.default,
+            #cursor=self.info.cursor,
+            #spec=self.spec,
+            #direction=self.direction,
+        )
+
+    def build_param(self) -> None:
+        self.param.cursor = self.info.cursor
+        self.param.default = self.default
+        self.param.spec = self.spec
+        self.param.direction = self.direction
+
+    '''
+    def build(self) -> None:
+        node = self.pod.node
         spec = (
             node.spec.params.get(self.info.name)
             if node.spec and node.spec.params
@@ -58,6 +94,7 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
             direction=direction,
         )
         node.params.append(parameter)
+    '''
 
     def build_param_type(
         self,

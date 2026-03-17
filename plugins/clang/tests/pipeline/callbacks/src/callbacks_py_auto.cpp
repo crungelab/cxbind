@@ -20,8 +20,8 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
             
             cxbind::thunk_state _context(cb);
             auto context = &_context;
-            auto _cb = +[](int value, void* ctx) -> bool {
-                auto& ts = *static_cast<cxbind::thunk_state*>(ctx);
+            auto _cb = +[](int value, void * context) -> bool {
+                auto& ts = *static_cast<cxbind::thunk_state*>(context);
                 // ... use ts, acquire GIL, call Python, etc ...
                 py::gil_scoped_acquire gil;
                 py::object result = ts.cb(value);

@@ -49,12 +49,8 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
 
     _tests
     .def("my_function_float", &myFunction<float>
-        , py::arg("arg0")
-        , py::arg("arg1")
         , py::return_value_policy::automatic_reference)
     .def("my_function_i", &myFunction<int>
-        , py::arg("arg0")
-        , py::arg("arg1")
         , py::return_value_policy::automatic_reference)
     ;
 

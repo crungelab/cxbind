@@ -31,6 +31,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def create_param_renderers(self):
         node = self.node
         logger.debug(f"Creating parameter renderers for node: {node.name}")
+        logger.debug(f"Node parameters: {node.params}")
 
         for param in node.params:
             facade_kind = (

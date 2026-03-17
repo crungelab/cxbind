@@ -23,3 +23,12 @@ class Pod:
     @classmethod
     def get_current(cls) -> Optional["Pod"]:
         return current_pod.get()
+    
+    @contextlib.contextmanager
+    def use(self):
+        token = current_pod.set(self)
+        try:
+            yield self
+        finally:
+            current_pod.reset(token)
+

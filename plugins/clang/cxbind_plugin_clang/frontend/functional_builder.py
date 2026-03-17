@@ -11,10 +11,12 @@ from cxbind.spec import (
     ReturnSpec,
     create_spec,
 )
+from cxbind.facade import Facade
+
 from ..node import Node, FunctionalNode, Parameter, ReturnValue, Type
 from .node_builder import NodeBuilder
 from .functional_build_pod import FunctionalBuildPod, ParamInfo
-from .param_builder import ParamBuilder
+from .param_builder import ParamBuilder, PARAM_BUILDER_TABLE
 
 T_Node = TypeVar("T_Node", bound=FunctionalNode)
 
@@ -49,9 +51,9 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     def build_node(self):
         super().build_node()
         self._pod = FunctionalBuildPod(self.node)
-        self.pod.make_current()
-        self.build_params()
-        self.build_return_value()
+        with self.pod.use():
+            self.build_params()
+            self.build_return_value()
 
     #
     # -------- normalized signature access --------
@@ -116,33 +118,46 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         return None
 
     def get_param_infos(self) -> list[ParamInfo]:
-        """
-        Normalize parameters from either:
-        - real parameter cursors on a declaration
-        - param types on a FUNCTIONPROTO
-        """
         cursor = self.cursor
 
-        # Best path: real declaration parameters
-        if cursor.kind in self.FUNCTION_CURSOR_KINDS:
-            infos: list[ParamInfo] = []
-            for i, arg_cursor in enumerate(cursor.get_arguments()):
-                name = self.make_arg_name(arg_cursor) or f"arg{i}"
-                infos.append(
-                    ParamInfo(name=name, type=arg_cursor.type, cursor=arg_cursor)
+        infos: list[ParamInfo] = []
+        for i, arg_cursor in enumerate(cursor.get_arguments()):
+            name = self.make_arg_name(arg_cursor) or f"arg{i}"
+            facade = self.get_param_facade(name, arg_cursor.type)
+            infos.append(
+                ParamInfo(
+                    name=name, type=arg_cursor.type, cursor=arg_cursor, facade=facade
                 )
-            return infos
-
-        # Typedef / alias / raw function type fallback
-        func_type = self.get_function_type()
-        if func_type is None:
-            return []
-
-        infos = []
-        arg_types = self.get_function_arg_types(func_type)
-        for i, arg_type in enumerate(arg_types):
-            infos.append(ParamInfo(name=f"arg{i}", type=arg_type, cursor=None))
+            )
         return infos
+
+    def get_param_facade(
+        self, param_name: str, param_type: cindex.Type
+    ) -> Facade | None:
+        node = self.node
+        param_spec = (
+            node.spec.params.get(param_name) if node.spec and node.spec.params else None
+        )
+
+        base_decl = self.get_base_declaration(param_type)
+        if base_decl is not None:
+            base_key = Node.make_key(base_decl)
+            logger.debug(f"Base declaration: {base_decl}")
+            logger.debug(f"Base kind: {base_decl.kind}")
+            logger.debug(f"Base key: {base_key}")
+        else:
+            base_key = None
+
+        base_spec = self.lookup_spec(base_key)
+        logger.debug(f"base_spec: {base_spec}")
+
+        facade = None
+        if param_spec is not None and param_spec.facade is not None:
+            facade = param_spec.facade
+        elif base_spec is not None and base_spec.facade is not None:
+            facade = base_spec.facade
+
+        return facade
 
     def get_function_arg_types(self, func_type: cindex.Type) -> list[cindex.Type]:
         """
@@ -196,8 +211,21 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
     def build_params(self) -> None:
         for info in self.get_param_infos():
+            facade_kind = info.facade.kind if info.facade is not None else None
+            builder_cls = PARAM_BUILDER_TABLE.get(facade_kind, ParamBuilder)
+            logger.debug(
+                f"Creating parameter builder for parameter: {info}, builder: {builder_cls.__name__}"
+            )
+
+            builder: ParamBuilder = builder_cls(info)
+            builder.build()
+
+    """
+    def build_params(self) -> None:
+        for info in self.get_param_infos():
             builder = ParamBuilder(info)
             builder.build()
+    """
 
     def build_return_value(self) -> None:
         logger.debug(f"Building return value for function: {self.name}")

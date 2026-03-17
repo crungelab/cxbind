@@ -74,10 +74,10 @@ class Node(Entry):
         if cursor.kind in (
             cindex.CursorKind.TYPEDEF_DECL,
             cindex.CursorKind.TYPE_ALIAS_DECL,
-        ):
+        ) and cursor.type.get_canonical().kind != cindex.TypeKind.FUNCTIONPROTO:
             underlying = cursor.underlying_typedef_type
             cursor = underlying.get_declaration()
-            # logger.debug(f"Underlying typedef type spelling: {underlying.spelling}")
+            logger.debug(f"Underlying typedef type spelling: {underlying.spelling}")
 
         if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
             kind = "translation_unit"
@@ -96,7 +96,12 @@ class Node(Entry):
         elif cursor.kind == cindex.CursorKind.CONSTRUCTOR:
             kind = "ctor"
         elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
-            kind = "typedef"
+            #kind = "typedef"
+            if cursor.type.get_canonical().kind == cindex.TypeKind.FUNCTIONPROTO:
+                kind = "function_prototype"
+            else:
+                logger.debug(f"Unsupported cursor kind: {cursor.kind}")
+                return None
         elif cursor.kind == cindex.CursorKind.CLASS_TEMPLATE:
             kind = "class_template"
         elif cursor.kind == cindex.CursorKind.FUNCTION_TEMPLATE:
@@ -104,7 +109,9 @@ class Node(Entry):
         elif cursor.kind == cindex.CursorKind.TYPE_ALIAS_DECL:
             kind = "type_alias"
         else:
+            logger.debug(f"Unsupported cursor kind: {cursor.kind}")
             return None
+            #raise ValueError(f"Unsupported cursor kind: {cursor.kind}")
 
         name = cls.spell(cursor)
 
@@ -162,13 +169,17 @@ class Parameter(BaseModel):
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: ParamSpec | None = Field(None, exclude=True, repr=False)
-    #function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
+    # function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     @property
     def is_out(self) -> bool:
         return self.direction in (ParamDirection.OUT, ParamDirection.INOUT)
+
+
+class CallbackParam(Parameter):
+    function_prototype: FunctionPrototypeNode | None = None
 
 
 class ReturnValue(BaseModel):
