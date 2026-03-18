@@ -22,3 +22,15 @@ specs:
         facade:
           kind: callback
           context_param: context
+
+  'function_prototype@callback2':
+    facade:
+      kind: callback
+      context_param: context
+
+  'function@functionWithCallback2':
+    params:
+      a:
+        facade:
+          kind: vector
+          length_param: count

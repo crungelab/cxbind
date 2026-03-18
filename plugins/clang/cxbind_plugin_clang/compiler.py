@@ -71,7 +71,7 @@ class Compiler(Tool):
 
         frontend = Frontend(source)
         root = frontend.build()
-        logger.debug(f"Built root node: {root}")
+        #logger.debug(f"Built root node: {root}")
         runner.update_specs(session.specs)
         # runner.root.add_child(node)
         for node in root.traverse():

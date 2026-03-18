@@ -96,7 +96,6 @@ class Node(Entry):
         elif cursor.kind == cindex.CursorKind.CONSTRUCTOR:
             kind = "ctor"
         elif cursor.kind == cindex.CursorKind.TYPEDEF_DECL:
-            #kind = "typedef"
             if cursor.type.get_canonical().kind == cindex.TypeKind.FUNCTIONPROTO:
                 kind = "function_prototype"
             else:
@@ -169,7 +168,7 @@ class Parameter(BaseModel):
 
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
     spec: ParamSpec | None = Field(None, exclude=True, repr=False)
-    # function_prototype: FunctionPrototypeNode | None = Field(None, exclude=True, repr=False)
+    facade: Facade | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 

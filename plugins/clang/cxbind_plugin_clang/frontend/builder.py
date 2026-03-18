@@ -63,10 +63,6 @@ class Builder(Worker[BuildContext]):
     def visit_none(self, cursor: cindex.Cursor):
         logger.debug(f"visit_none: {cursor.spelling}")
 
-    def visit_typedef_decl(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="typedef", name=self.spell(cursor)), cursor=cursor)
-        builder.build()
-
     def visit_enum(self, cursor: cindex.Cursor):
         builder = self.create_builder(EntryKey(kind="enum", name=self.spell(cursor)), cursor=cursor)
         builder.build()
@@ -154,3 +150,20 @@ class Builder(Worker[BuildContext]):
         logger.debug(f"Not implemented:  visit_using_decl: {cursor.spelling}")
         # pass
         raise NotImplementedError
+
+    '''
+    def visit_typedef_decl(self, cursor: cindex.Cursor):
+        builder = self.create_builder(EntryKey(kind="typedef", name=self.spell(cursor)), cursor=cursor)
+        builder.build()
+    '''
+
+    '''
+    def visit_typedef_decl(self, cursor: cindex.Cursor):
+        #logger.debug(f"Not implemented:  visit_typedef_decl: {cursor.spelling}")
+        if cursor.type.get_canonical().kind == cindex.TypeKind.FUNCTIONPROTO:
+            #kind = "function_prototype"
+            logger.debug(f"Found function prototype:  visit_typedef_decl: {cursor.spelling}")
+
+        pass
+        #raise NotImplementedError
+    '''

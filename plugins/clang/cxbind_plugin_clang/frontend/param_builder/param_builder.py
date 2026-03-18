@@ -33,9 +33,9 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
         cindex.TypeKind.DOUBLE,
     }
 
-    def __init__(self, param_info: ParamInfo):
+    def __init__(self, info: ParamInfo):
         super().__init__()
-        self.info = param_info
+        self.info = info
 
     def build(self) -> None:
         node = self.pod.node
@@ -44,7 +44,7 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
             if node.spec and node.spec.params
             else None
         )
-
+        self.facade = self.info.facade
         self.param_type = self.build_param_type(self.info.type, self.info.cursor, self.spec)
         self.default = self.make_param_default(self.info.name, self.info.cursor)
         self.direction = self.make_param_direction(self.info.type)
@@ -70,6 +70,7 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
         self.param.cursor = self.info.cursor
         self.param.default = self.default
         self.param.spec = self.spec
+        self.param.facade = self.facade
         self.param.direction = self.direction
 
     '''

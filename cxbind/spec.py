@@ -177,6 +177,10 @@ class FunctionalSpec(Spec):
         }
 
 
+class FunctionPrototypeSpec(FunctionalSpec):
+    kind: Literal["function_prototype"]
+
+
 class FunctionSpec(FunctionalSpec):
     kind: Literal["function"]
 
@@ -185,7 +189,7 @@ class FunctionTemplateSpecializationSpec(FunctionSpec):
     kind: Literal["function_template_specialization"] = (
         "function_template_specialization"
     )
-    #args: list[str]
+    # args: list[str]
     template_args: list[str] = Field(default_factory=list)
 
 
@@ -212,16 +216,14 @@ class FunctionTemplateSpec(TemplateSpec):
                     item = {"name": data["name"], **item}
                 normalized.append(item)
             elif isinstance(item, (list, tuple)):
-                normalized.append({"name": data.get("name"), "template_args": list(item)})
+                normalized.append(
+                    {"name": data.get("name"), "template_args": list(item)}
+                )
             else:
                 normalized.append({"name": str(item)})
 
         data["specializations"] = normalized
         return data
-
-
-class FunctionPrototypeSpec(FunctionalSpec):
-    kind: Literal["function_prototype"]
 
 
 class MethodSpec(FunctionalSpec):
@@ -312,7 +314,7 @@ class ClassSpec(StructuralSpec):
 
 class ClassTemplateSpecializationSpec(ClassSpec):
     kind: Literal["class_template_specialization"] = "class_template_specialization"
-    #args: list[str]
+    # args: list[str]
     template_args: list[str] = Field(default_factory=list)
 
 
@@ -337,7 +339,9 @@ class ClassTemplateSpec(TemplateSpec):
                     item = {"name": data["name"], **item}
                 normalized.append(item)
             elif isinstance(item, (list, tuple)):
-                normalized.append({"name": data.get("name"), "template_args": list(item)})
+                normalized.append(
+                    {"name": data.get("name"), "template_args": list(item)}
+                )
             else:
                 normalized.append({"name": str(item)})
 
@@ -355,6 +359,7 @@ SpecUnion = Annotated[
         ClassSpec,
         ClassTemplateSpec,
         FieldSpec,
+        FunctionPrototypeSpec,
         FunctionSpec,
         FunctionTemplateSpec,
         MethodSpec,

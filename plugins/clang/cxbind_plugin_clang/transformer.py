@@ -12,20 +12,20 @@ class MogrifyTransformer:
 
     def transform(self, transform: Mogrify):
         runner = ClangRunner.get_current()
-        logger.debug(f"Transforming spec: {transform.target}")
+        #logger.debug(f"Transforming spec: {transform.target}")
 
         spec = self.unit.specs.get(transform.target)
 
         if spec is None:
             raise ValueError(f"Spec not found for target: {transform.target}")
-        logger.debug(f"Spec: {spec}")
+        #logger.debug(f"Spec: {spec}")
 
         spec_name = spec.name
 
         spec_node = runner.nodes_by_name.get(spec_name)
         if spec_node is None:
             raise ValueError(f"Node not found for spec: {spec_name}")
-        logger.debug(f"Spec node: {spec_node}")
+        #logger.debug(f"Spec node: {spec_node}")
 
         target_pyname = spec.pyname or spec_node.pyname
 
@@ -34,15 +34,15 @@ class MogrifyTransformer:
 
         #for node in root.traverse():
         for node in runner.nodes:
-            logger.debug(f"Checking node: {node}")
+            #logger.debug(f"Checking node: {node}")
             if not isinstance(node, FunctionNode):
                 continue
-            logger.debug(f"Checking function node: {node.name}")
+            #logger.debug(f"Checking function node: {node.name}")
             first_param = node.params[0] if node.params else None
-            logger.debug(f"First parameter: {first_param}")
+            #logger.debug(f"First parameter: {first_param}")
             #if first_param and first_param.type == name:
             if first_param and spec_name in first_param.type.spelling:
-                logger.debug(f"Found matching function node: {node}")
+                #logger.debug(f"Found matching function node: {node}")
                 #spec.extra.add_method(ExtraStandardMethod(name=node.name, use=node.name))
                 name = node.pyname
                 name = name.removeprefix(target_pyname.lower() + "_")

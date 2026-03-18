@@ -37,7 +37,7 @@ class StructuralRenderer(NodeRenderer[T_Node]):
         spec = node.spec
         #logger.debug(f"spec: {spec}")
         for method in spec.extra.methods:
-            logger.debug(f"rendering extra method: {method.name} for node: {node.name}")
+            #logger.debug(f"rendering extra method: {method.name} for node: {node.name}")
             if method.name == "__init__":
                 if method.gen_kwargs:
                     self.render_kwargs_init(method)

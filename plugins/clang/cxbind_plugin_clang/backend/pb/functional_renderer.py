@@ -30,17 +30,19 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
 
     def create_param_renderers(self):
         node = self.node
-        logger.debug(f"Creating parameter renderers for node: {node.name}")
-        logger.debug(f"Node parameters: {node.params}")
+        #logger.debug(f"Creating parameter renderers for node: {node.name}")
+        #logger.debug(f"Node parameters: {node.params}")
 
         for param in node.params:
             facade_kind = (
                 param.type.facade.kind if param.type.facade is not None else None
             )
             renderer_cls = PARAM_RENDERER_TABLE.get(facade_kind, ParamRenderer)
+            '''
             logger.debug(
                 f"Creating parameter renderer for parameter: {param}, renderer: {renderer_cls.__name__}"
             )
+            '''
             self.pod.arg_renderers.append(renderer_cls(param))
 
         excluded_params = set()
@@ -53,7 +55,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             if arg_renderer.param.name not in excluded_params
         ]
 
-        logger.debug(f"param_renderers: {self.pod.param_renderers}")
+        #logger.debug(f"param_renderers: {self.pod.param_renderers}")
 
         out_params = [param.name for param in node.params if param.is_out]
         self.pod.out_params = out_params
@@ -147,7 +149,8 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             if self.is_wrapped_type(param_type):
                 return True
 
-            if param.spec is not None and param.spec.facade is not None:
+            #if param.spec is not None and param.spec.facade is not None:
+            if param.facade is not None:
                 return True
 
         return False

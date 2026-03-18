@@ -21,11 +21,9 @@ class NodeBuilder(Builder, Generic[T_Node]):
         spec: Spec = None,
     ) -> None:
         super().__init__()
-        #self.name = name
         self.cursor = cursor
         self.spec = spec or self.find_or_create_spec()
         self.name = self.spec.alias or name
-        #self.pyname = self.spec.pyname or self.create_pyname(self.spec.first_name)
         self.node: T_Node = None
 
     def create_pyname(self, name) -> str:
@@ -37,9 +35,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
     def find_spec(self) -> Spec:
         key = Node.make_key(self.cursor)
         spec = self.lookup_spec(key)
-        #spec = self.lookup_spec(self.node.name)
-        #spec = self.lookup_spec(self.node.name)
-        #spec = self.lookup_spec(self.spell(self.cursor))
         return spec
 
     def find_or_create_spec(self) -> Spec:
@@ -65,14 +60,11 @@ class NodeBuilder(Builder, Generic[T_Node]):
         if not handled:
             self.top_node.add_child(self.node)
 
-        #self.current_session.visited[self.name] = self.node
-
     def create_node(self):
         pass
 
     def build_node(self):
         self.node.spec = self.spec
-        #self.node.pyname = self.pyname
         self.node.pyname = self.get_pyname()
 
         if self.node.spec.exclude:
