@@ -57,6 +57,7 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.create_node()
 
         handled = self.build_node()
+        self.session.register_node(self.node)
         if not handled:
             self.top_node.add_child(self.node)
 

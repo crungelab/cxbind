@@ -21,6 +21,9 @@ class EntryKey(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    def __hash__(self) -> int:
+        return hash((self.kind, self.name, self.signature))
+
     def dump(self) -> str:
         if self.signature is None:
             return f"{self.kind}@{self.name}"
@@ -39,7 +42,7 @@ class EntryKey(BaseModel):
         elif len(parts) == 3:
             kind, name, signature = parts
         else:
-            raise ValueError(f"Invalid spec key: {value!r}")
+            raise ValueError(f"Invalid entry key: {value!r}")
 
         return cls(kind=kind, name=name, signature=signature)
 

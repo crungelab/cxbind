@@ -1,5 +1,3 @@
-from typing import Generic
-
 from .task import Task
 from .phase import Phase
 

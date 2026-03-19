@@ -50,6 +50,8 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
     def build_node(self):
         super().build_node()
+        #self.node.key = FunctionalNode.make_key(self.cursor, self.is_overloaded(self.cursor))
+        self.node.signature = self.cursor.type.spelling if self.is_overloaded(self.cursor) else None
         self._pod = FunctionalBuildPod(self.node)
         with self.pod.use():
             self.build_params()

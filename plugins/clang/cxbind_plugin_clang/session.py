@@ -12,6 +12,7 @@ from cxbind.spec_registry import SpecRegistry
 from cxbind.unit import Unit
 
 from .node import Node, StructuralNode
+from .node_registry import NodeRegistry
 
 current_session: ContextVar[Optional["Session"]] = ContextVar(
     "current_session", default=None
@@ -41,6 +42,7 @@ class Session:
 
         self.options = {"save": True}
         self.wrapped: Dict[StructuralNode] = {}
+        self.node_registry = NodeRegistry()
 
         self.target = ""
         self.flags: List[str] = unit.flags.copy()
@@ -87,6 +89,9 @@ class Session:
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
+
+    def register_node(self, node: Node) -> None:
+        self.node_registry.register(node)
 
     def register_spec(self, spec: Spec) -> None:
         logger.debug(f"Registering spec: {spec.name}")

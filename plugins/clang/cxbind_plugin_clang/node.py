@@ -14,10 +14,6 @@ from cxbind.facade import Facade
 
 
 class Node(Entry):
-    # kind: str
-    # name: str
-    # signature: str | None = None
-
     pyname: str | None = None
     children: list["Node"] = Field(default_factory=list)
     # parent: Optional["Node"] = None
@@ -26,24 +22,6 @@ class Node(Entry):
     spec: Spec | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
-
-    """
-    @property
-    def key(self) -> EntryKey:
-        return EntryKey.build(
-            kind=self.kind,
-            name=self.name,
-            signature=self.signature,
-        )
-
-    @property
-    def key_string(self) -> str:
-        return self.key.dump()
-    
-    @property
-    def first_name(self) -> str:
-        return self.name.split("::")[-1]
-    """
 
     def __repr__(self) -> str:
         return (
@@ -123,7 +101,7 @@ class Node(Entry):
         else:
             key = EntryKey.build(kind=kind, name=name)
 
-        logger.debug(f"Spec key: {key}")
+        logger.debug(f"Entry key: {key}")
         return key
 
     def add_child(self, child: "Node") -> None:

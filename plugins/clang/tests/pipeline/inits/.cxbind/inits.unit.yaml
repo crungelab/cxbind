@@ -2,7 +2,6 @@ source: 'src/inits.h'
 target: 'src/inits_py_auto.cpp'
 
 specs:
-  #'struct@KwInits': {gen_kw_init: true}
   'struct@KwInits':
     extra:
       methods:
