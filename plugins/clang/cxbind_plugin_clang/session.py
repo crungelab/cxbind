@@ -1,5 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Type, Dict, List, Any, Callable
-import contextlib
+from typing import Optional
 from contextvars import ContextVar
 import re
 
@@ -12,7 +11,7 @@ from cxbind.spec_registry import SpecRegistry
 from cxbind.unit import Unit
 
 from .node import Node, StructuralNode
-from .node_registry import NodeRegistry
+#from .node_registry import NodeRegistry
 
 current_session: ContextVar[Optional["Session"]] = ContextVar(
     "current_session", default=None
@@ -41,18 +40,18 @@ class Session:
         self.module = unit.module
 
         self.options = {"save": True}
-        self.wrapped: Dict[StructuralNode] = {}
-        self.node_registry = NodeRegistry()
+        self.wrapped: dict[StructuralNode] = {}
+        #self.node_registry = NodeRegistry()
 
         self.target = ""
-        self.flags: List[str] = unit.flags.copy()
-        self.defaults: Dict[str, str] = unit.defaults.copy()
-        self.excludes: List[str] = unit.excludes.copy()
+        self.flags: list[str] = unit.flags.copy()
+        self.defaults: dict[str, str] = unit.defaults.copy()
+        self.excludes: list[str] = unit.excludes.copy()
         self.specs = unit.specs.copy()
 
-        self.overloads: List[str] = []
+        self.overloads: list[str] = []
 
-        self.node_stack: List[Node] = []
+        self.node_stack: list[Node] = []
         self.prefixes = unit.prefixes
 
         self.spec_registry = SpecRegistry()
@@ -61,7 +60,7 @@ class Session:
 
         for kw in kwargs:
             if kw == "options":
-                options: Dict = kwargs[kw]
+                options: dict = kwargs[kw]
                 options.update(self.options)
                 self.options = options
 
@@ -90,9 +89,11 @@ class Session:
             return None
         return self.node_stack[-1]
 
+    """
     def register_node(self, node: Node) -> None:
         self.node_registry.register(node)
-
+    """
+    
     def register_spec(self, spec: Spec) -> None:
         logger.debug(f"Registering spec: {spec.name}")
         name = spec.name
@@ -143,7 +144,7 @@ class Session:
         s1 = re.sub("(_[a-z])", lambda x: x.group(1)[1].upper(), name)
         return s1[0].upper() + s1[1:]
 
-    def _strip_prefixes(self, text: str, prefixes: List[str]) -> str:
+    def _strip_prefixes(self, text: str, prefixes: list[str]) -> str:
         for prefix in prefixes:
             if (
                 text.startswith(prefix)
@@ -153,7 +154,7 @@ class Session:
                 return text[len(prefix) :]
         return text
 
-    def strip_prefixes(self, text: str, prefixes: List[str] = []) -> str:
+    def strip_prefixes(self, text: str, prefixes: list[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
 
     def format_field(self, name: str) -> str:

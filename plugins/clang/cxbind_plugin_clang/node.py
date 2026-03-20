@@ -16,7 +16,6 @@ from cxbind.facade import Facade
 class Node(Entry):
     pyname: str | None = None
     children: list["Node"] = Field(default_factory=list)
-    # parent: Optional["Node"] = None
     parent: Optional["Node"] = Field(None, exclude=True, repr=False)
 
     spec: Spec | None = Field(None, exclude=True, repr=False)
@@ -28,6 +27,10 @@ class Node(Entry):
             f"<{self.__class__.__name__} "
             f"kind={self.kind}, name={self.name}, signature={self.signature}, pyname={self.pyname}>"
         )
+
+    def clone(self) -> "Node":
+        # return self.model_copy(deep=True)
+        return self.model_copy()
 
     @classmethod
     def spell(cls, cursor: cindex.Cursor) -> str:
@@ -49,10 +52,14 @@ class Node(Entry):
     ) -> EntryKey | None:
         kind = None
 
-        if cursor.kind in (
-            cindex.CursorKind.TYPEDEF_DECL,
-            cindex.CursorKind.TYPE_ALIAS_DECL,
-        ) and cursor.type.get_canonical().kind != cindex.TypeKind.FUNCTIONPROTO:
+        if (
+            cursor.kind
+            in (
+                cindex.CursorKind.TYPEDEF_DECL,
+                cindex.CursorKind.TYPE_ALIAS_DECL,
+            )
+            and cursor.type.get_canonical().kind != cindex.TypeKind.FUNCTIONPROTO
+        ):
             underlying = cursor.underlying_typedef_type
             cursor = underlying.get_declaration()
             logger.debug(f"Underlying typedef type spelling: {underlying.spelling}")
@@ -88,7 +95,7 @@ class Node(Entry):
         else:
             logger.debug(f"Unsupported cursor kind: {cursor.kind}")
             return None
-            #raise ValueError(f"Unsupported cursor kind: {cursor.kind}")
+            # raise ValueError(f"Unsupported cursor kind: {cursor.kind}")
 
         name = cls.spell(cursor)
 
@@ -128,6 +135,11 @@ class DeclNode(Node):
     cursor: cindex.Cursor | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def clone(self) -> "DeclNode":
+        other = super().clone()
+        other.cursor = self.cursor
+        return other
 
 
 class TemplateNode(Node):
@@ -170,6 +182,7 @@ class FunctionalNode(DeclNode):
     spec: FunctionalSpec | None = Field(None, exclude=True, repr=False)
     params: list[Parameter] = Field(default_factory=list)
     returns: ReturnValue | None = None
+    mogrified: bool = False
 
 
 class FunctionPrototypeNode(FunctionalNode):

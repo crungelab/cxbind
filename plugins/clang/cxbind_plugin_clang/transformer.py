@@ -22,7 +22,8 @@ class MogrifyTransformer:
 
         spec_name = spec.name
 
-        spec_node = runner.nodes_by_name.get(spec_name)
+        #spec_node = runner.nodes_by_name.get(spec_name)
+        spec_node = runner.node_registry.get(spec.key)
         if spec_node is None:
             raise ValueError(f"Node not found for spec: {spec_name}")
         #logger.debug(f"Spec node: {spec_node}")
@@ -33,7 +34,8 @@ class MogrifyTransformer:
         #logger.debug(f"Root node: {root}")
 
         #for node in root.traverse():
-        for node in runner.nodes:
+        #for node in runner.nodes:
+        for node in runner.node_registry:
             #logger.debug(f"Checking node: {node}")
             if not isinstance(node, FunctionNode):
                 continue
@@ -47,4 +49,5 @@ class MogrifyTransformer:
                 name = node.pyname
                 name = name.removeprefix(target_pyname.lower() + "_")
                 name = name.removesuffix("_" + target_pyname.lower())
-                spec.extra.add_method(ExtraStandardMethod(name=name, use=node.name))
+                #spec.extra.add_method(ExtraStandardMethod(name=name, use=node.name))
+                spec.extra.add_method(ExtraStandardMethod(name=name, use=node.key))

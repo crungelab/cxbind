@@ -19,7 +19,9 @@ void register_transforms_py_auto(py::module &_tests, Registry &registry) {
         , py::arg("value") = 0
         )
         .def_readwrite("value", &Transforms::value)
-        .def("create_dummy", &transformsCreateDummy)
+        .def("create_dummy", &transformsCreateDummy
+            , py::arg("value")
+            , py::return_value_policy::automatic_reference)
     ;
 
     py::class_<TransformsDummy> _TransformsDummy(_tests, "TransformsDummy");

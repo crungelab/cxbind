@@ -2,10 +2,11 @@ from loguru import logger
 
 from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraProperty
 
-from ...node import StructuralNode, FieldNode
+from ...node import StructuralNode, FunctionalNode, FieldNode
 
 from .node_renderer import NodeRenderer, T_Node
 from .method_renderer import MethodRenderer
+
 
 class StructuralRenderer(NodeRenderer[T_Node]):
     def render(self):
@@ -35,9 +36,9 @@ class StructuralRenderer(NodeRenderer[T_Node]):
     def render_extra_methods(self):
         node = self.node
         spec = node.spec
-        #logger.debug(f"spec: {spec}")
+        # logger.debug(f"spec: {spec}")
         for method in spec.extra.methods:
-            #logger.debug(f"rendering extra method: {method.name} for node: {node.name}")
+            # logger.debug(f"rendering extra method: {method.name} for node: {node.name}")
             if method.name == "__init__":
                 if method.gen_kwargs:
                     self.render_kwargs_init(method)
@@ -50,7 +51,42 @@ class StructuralRenderer(NodeRenderer[T_Node]):
             else:
                 self.render_standard_method(method)
 
+    def render_using(self, method: ExtraMethod):
+        use_node: FunctionalNode = self.session.node_registry.get(method.use)
+        if use_node is not None:
+            other_node = use_node.clone()
+            other_node.mogrified = True
+            other_node.pyname = method.name
+            self.context.render_node(other_node)
 
+    def render_init(self, method: ExtraInitMethod):
+        self.begin_chain()
+        if method.use is not None:
+            self.out(
+                #f'.def("{method.name}", &{method.use})'
+                #.def(py::init([](const py::kwargs& kwargs)
+                f'.def(py::init(&{method.use.name}))'
+            )
+        else:
+            self.out(f".def(py::init<>())")
+
+    """
+    def render_init(self, method: ExtraInitMethod):
+        node = self.node
+        self.begin_chain()
+        if method.use is not None:
+            #use_node = self.session.node_registry.get(method.use)
+            use_node = self.runner.node_registry.get(method.use)
+            if use_node is not None:
+                other_node = use_node.clone()
+                other_node.mogrified = True
+                other_node.pyname = method.name
+                self.context.render_node(other_node)
+        else:
+            self.out(f".def(py::init<>())")
+    """
+
+    """
     def render_init(self, method: ExtraInitMethod):
         self.begin_chain()
         if method.use is not None:
@@ -61,6 +97,7 @@ class StructuralRenderer(NodeRenderer[T_Node]):
             )
         else:
             self.out(f".def(py::init<>())")
+    """
 
     """
     def render_init(self, method: ExtraInitMethod):
@@ -112,6 +149,95 @@ class StructuralRenderer(NodeRenderer[T_Node]):
         self.out("{")
         with self.out:
             if method.use is not None:
+                self.out(f"{node.name} obj = {method.use.name}();")
+            else:
+                self.out(f"{node.name} obj{{}};")
+            for child in node.children:
+                cursor = child.cursor
+                typename = None
+                is_char_ptr = self.is_char_ptr(cursor)
+                if is_char_ptr:
+                    typename = "std::string"
+                else:
+                    # typename = cursor.type.spelling
+                    typename = cursor.type.get_canonical().spelling
+                if type(child) is FieldNode:
+                    self.out(f'if (kwargs.contains("{child.pyname}"))')
+                    self.out("{")
+                    with self.out:
+                        if is_char_ptr:
+                            self.out(
+                                f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();'
+                            )
+                            self.out(f"char* value = (char*)malloc(_value.size());")
+                            self.out(f"strcpy(value, _value.c_str());")
+                        else:
+                            self.out(
+                                f'auto value = kwargs["{child.pyname}"].cast<{typename}>();'
+                            )
+                        self.out(f"obj.{child.first_name} = value;")
+                    self.out("}")
+            self.out("return obj;")
+        # self.out("}), py::return_value_policy::automatic_reference);")
+        # self.out("}));")
+        self.out("}))")
+
+    """
+    def render_kwargs_init(self, method: ExtraInitMethod):
+        logger.debug("renderering kwargs_init for: {self.node}")
+        self.begin_chain()
+        # node = self.top_node
+        node = self.node
+        self.out(f".def(py::init([](const py::kwargs& kwargs)")
+        self.out("{")
+        with self.out:
+            if method.use is not None:
+                #use_node = self.session.node_registry.get(method.use)
+                use_node = self.runner.node_registry.get(method.use)
+                self.out(f"{node.name} obj = {use_node.name}();")
+            else:
+                self.out(f"{node.name} obj{{}};")
+            for child in node.children:
+                cursor = child.cursor
+                typename = None
+                is_char_ptr = self.is_char_ptr(cursor)
+                if is_char_ptr:
+                    typename = "std::string"
+                else:
+                    # typename = cursor.type.spelling
+                    typename = cursor.type.get_canonical().spelling
+                if type(child) is FieldNode:
+                    self.out(f'if (kwargs.contains("{child.pyname}"))')
+                    self.out("{")
+                    with self.out:
+                        if is_char_ptr:
+                            self.out(
+                                f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();'
+                            )
+                            self.out(f"char* value = (char*)malloc(_value.size());")
+                            self.out(f"strcpy(value, _value.c_str());")
+                        else:
+                            self.out(
+                                f'auto value = kwargs["{child.pyname}"].cast<{typename}>();'
+                            )
+                        self.out(f"obj.{child.first_name} = value;")
+                    self.out("}")
+            self.out("return obj;")
+        # self.out("}), py::return_value_policy::automatic_reference);")
+        # self.out("}));")
+        self.out("}))")
+    """
+
+    """
+    def render_kwargs_init(self, method: ExtraInitMethod):
+        logger.debug("renderering kwargs_init for: {self.node}")
+        self.begin_chain()
+        # node = self.top_node
+        node = self.node
+        self.out(f".def(py::init([](const py::kwargs& kwargs)")
+        self.out("{")
+        with self.out:
+            if method.use is not None:
                 self.out(f"{node.name} obj = {method.use}();")
             else:
                 self.out(f"{node.name} obj{{}};")
@@ -144,6 +270,7 @@ class StructuralRenderer(NodeRenderer[T_Node]):
         # self.out("}), py::return_value_policy::automatic_reference);")
         # self.out("}));")
         self.out("}))")
+    """
 
     def render_repr(self, method: ExtraReprMethod):
         node = self.node
@@ -197,6 +324,25 @@ class StructuralRenderer(NodeRenderer[T_Node]):
         node = self.node
         self.begin_chain()
         if method.use is not None:
+            #use_node = self.session.node_registry.get(method.use)
+            use_node = self.runner.node_registry.get(method.use)
+            if use_node is not None:
+                other_node = use_node.clone()
+                other_node.mogrified = True
+                other_node.pyname = method.name
+                self.context.render_node(other_node)
+            else:
+                raise ValueError(f"Node not found for method use: {method.use}")
+        else:
+            logger.warning(
+                f"Unsupported extra method '{method.name}' for node {node.name}: no function provided"
+            )
+
+    """
+    def render_standard_method(self, method: ExtraMethod):
+        node = self.node
+        self.begin_chain()
+        if method.use is not None:
             self.out(
                 f'.def("{method.name}", &{method.use})'
             )
@@ -204,6 +350,7 @@ class StructuralRenderer(NodeRenderer[T_Node]):
             logger.warning(
                 f"Unsupported extra method '{method.name}' for node {node.name}: no function provided"
             )
+    """
 
     def render_extra_properties(self):
         node = self.node
@@ -213,11 +360,11 @@ class StructuralRenderer(NodeRenderer[T_Node]):
             self.begin_chain()
             if setter is not None:
                 self.out(
-                    #f'.def_property("{prop.name}", &{node.name}::{getter}, &{node.name}::{setter})'
+                    # f'.def_property("{prop.name}", &{node.name}::{getter}, &{node.name}::{setter})'
                     f'.def_property("{prop.name}", &{getter}, &{setter})'
                 )
             else:
                 self.out(
-                    #f'.def_property_readonly("{prop.name}", &{node.name}::{getter})'
+                    # f'.def_property_readonly("{prop.name}", &{node.name}::{getter})'
                     f'.def_property_readonly("{prop.name}", &{getter})'
                 )

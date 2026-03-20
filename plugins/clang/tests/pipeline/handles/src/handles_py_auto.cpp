@@ -18,7 +18,9 @@ void register_handles_py_auto(py::module &_tests, Registry &registry) {
         , py::arg("value") = 0
         )
         .def_readwrite("value", &Handle::value)
-        .def("create_dummy", &handleCreateDummy)
+        .def("create_dummy", &handleCreateDummy
+            , py::arg("value")
+            , py::return_value_policy::automatic_reference)
     ;
 
     py::class_<Dummy> _Dummy(_tests, "Dummy");

@@ -7,6 +7,7 @@ from clang import cindex
 from cxbind.spec import Spec
 
 from . import cu
+from .clang_runner import ClangRunner
 from .session import Session
 from .work_context import WorkContext
 from .pod import Pod
@@ -22,9 +23,13 @@ class Worker(Generic[T_Context]):
         super().__init__()
 
     @property
+    def runner(self) -> ClangRunner:
+        return ClangRunner.get_current()
+
+    @property
     def session(self) -> Session:
         return Session.get_current()
-    
+
     @property
     def pod(self) -> Pod:
         return Pod.get_current()
@@ -32,7 +37,7 @@ class Worker(Generic[T_Context]):
     # ------------------------------------------------------------------
     # Session property pass-throughs
     # ------------------------------------------------------------------
-    
+
     @property
     def prefixes(self) -> list[str]:
         return self.session.prefixes
@@ -40,7 +45,7 @@ class Worker(Generic[T_Context]):
     @property
     def wrapped(self) -> dict[str, StructuralNode]:
         return self.session.wrapped
-    
+
     @property
     def target(self):
         return self.session.target
@@ -130,11 +135,11 @@ class Worker(Generic[T_Context]):
 
     def is_excluded(self, cursor: cindex.Cursor) -> bool:
         key = Node.make_key(cursor)
-        logger.debug(f"Checking excluded: {key}")
-        logger.debug(f"Excluded: {self.excluded}")
+        # logger.debug(f"Checking excluded: {key}")
+        # logger.debug(f"Excluded: {self.excluded}")
         if key in self.excluded:
             logger.debug(f"Excluded key: {key}")
-            #logger.debug(f"Excluded: {self.excluded}")
+            # logger.debug(f"Excluded: {self.excluded}")
             return True
         """
         if Node.spell(cursor) in self.excluded:
@@ -326,12 +331,12 @@ class Worker(Generic[T_Context]):
                 break
         return self.strip_qualifiers(typ.spelling)
 
-    def get_base_type(self,t: cindex.Type) -> cindex.Type:
+    def get_base_type(self, t: cindex.Type) -> cindex.Type:
         # Resolve typedefs
         t = t.get_canonical()
 
         # Strip qualifiers
-        #t = t.get_unqualified_type()
+        # t = t.get_unqualified_type()
 
         # Strip pointers and references
         while t.kind in (
@@ -340,7 +345,7 @@ class Worker(Generic[T_Context]):
             cindex.TypeKind.RVALUEREFERENCE,
         ):
             t = t.get_pointee()
-            #t = t.get_unqualified_type()
+            # t = t.get_unqualified_type()
 
         # Strip arrays
         while t.kind in (
@@ -349,7 +354,7 @@ class Worker(Generic[T_Context]):
             cindex.TypeKind.VARIABLEARRAY,
         ):
             t = t.get_array_element_type()
-            #t = t.get_unqualified_type()
+            # t = t.get_unqualified_type()
 
         return t
 
@@ -359,10 +364,10 @@ class Worker(Generic[T_Context]):
 
     def make_arg_name(self, argument: cindex.Cursor) -> str:
         return argument.spelling or "arg"
-    
+
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
         type_name = self.get_base_type_name(cursor)
-        #logger.debug(f"type_name: {type_name}")
+        # logger.debug(f"type_name: {type_name}")
         if type_name in self.wrapped:
             logger.debug(f"Wrapped type: {type_name}")
             return True

@@ -115,7 +115,7 @@ class CxBind:
         tool = self.create_tool(unit)
         #tool.run()
         runner_factory = self.runner_factory(tool)
-        runner = runner_factory()
+        runner: Runner = runner_factory()
         runner.run([tool])
 
     def gen_all(self):
@@ -134,7 +134,7 @@ class CxBind:
 
             tools.append(tool)
 
-        runner = self.runner_factory()
+        runner: Runner = self.runner_factory()
         runner.run(tools)
 
     """

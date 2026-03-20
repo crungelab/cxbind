@@ -13,7 +13,7 @@ specs:
       methods:
         __init__:
           gen_kwargs: true
-          use: InitKwInitsUse
+          use: function@InitKwInitsUse
 
   'struct@ArgsInits':
     extra:

@@ -99,3 +99,10 @@ class RenderContext(WorkContext):
             return None
         renderer = cls(node)
         return renderer
+    
+    def render_node(self, node: Node) -> None:
+        renderer = self.create_renderer(node)
+        if renderer is None:
+            logger.warning(f"No renderer for node kind: {node.kind}")
+            return
+        renderer.render()

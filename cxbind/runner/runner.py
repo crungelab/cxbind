@@ -5,19 +5,17 @@ from contextvars import ContextVar
 
 from loguru import logger
 
-"""
-if TYPE_CHECKING:
-    from .task import Task
-    from .plan import Plan
-"""
 from .task import Task
 from .plan import Plan
 
-current_runner: ContextVar[Optional["Runner"]] = ContextVar("runner", default=None)
+#current_runner: ContextVar[Optional["Runner"]] = ContextVar("runner", default=None)
+
+from ..context import Context
 
 
-class Runner:
+class Runner(Context["Runner"]):
     def __init__(self) -> None:
+        super().__init__()
         self._plan: Optional["Plan"] = None
 
     @property
@@ -25,7 +23,8 @@ class Runner:
         if self._plan is None:
             self._plan = Plan()
         return self._plan
-    
+
+    """
     @contextlib.contextmanager
     def use(self):
         token = current_runner.set(self)
@@ -48,6 +47,7 @@ class Runner:
         yield self
         if prev_runner is not None:
             prev_runner.make_current()
+    """
 
     def run(self, tasks: list["Task"]) -> None:
         with self.use():

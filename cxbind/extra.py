@@ -11,6 +11,8 @@ from pydantic import (
 )
 from loguru import logger
 
+from .entry import EntryKey
+
 special_methods = {"__init__", "__repr__"}
 
 
@@ -27,7 +29,8 @@ class ExtraProperty(BaseModel):
 class ExtraMethod(BaseModel):
     kind: str
     name: str
-    use: str | None = None
+    #use: str | None = None
+    use: EntryKey | None = None
     gen_args: bool | None = False
     gen_kwargs: bool | None = False
 

@@ -74,8 +74,10 @@ class Compiler(Tool):
         #logger.debug(f"Built root node: {root}")
         runner.update_specs(session.specs)
         # runner.root.add_child(node)
+        """
         for node in root.traverse():
             runner.add_node(node)
+        """
         #self.build_results.append(BuildResult(source, session, root))
         self.build_results.append(BuildResult(source, root))
 

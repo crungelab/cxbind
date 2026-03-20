@@ -172,5 +172,14 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         return param_name
 
     def render_pyargs(self):
+        skip_first = self.node.mogrified
+        for i, arg_renderer in enumerate(self.pod.param_renderers):
+            if skip_first and i == 0:
+                continue
+            arg_renderer.render_pyarg()
+
+    '''
+    def render_pyargs(self):
         for arg_renderer in self.pod.param_renderers:
             arg_renderer.render_pyarg()
+    '''

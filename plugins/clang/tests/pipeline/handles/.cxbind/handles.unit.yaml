@@ -6,7 +6,7 @@ specs:
     extra:
       methods:
         create_dummy:
-          use: handleCreateDummy
+          use: function@handleCreateDummy
 
   'struct@Dummy':
     extra:

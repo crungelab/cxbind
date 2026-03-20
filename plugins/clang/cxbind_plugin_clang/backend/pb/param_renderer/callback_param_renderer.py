@@ -33,6 +33,7 @@ class CallbackParamRenderer(FacadeParamRenderer[CallbackFacade]):
 
         thunk_params = self.param.function_prototype.params
         thunk_param_string = ", ".join([f"{p.type.spelling} {p.name}" for p in thunk_params])
+        thunk_args_string = ", ".join([p.name for p in thunk_params if p.name != self.context_param])
         thunk_return_value = self.param.function_prototype.returns
         thunk_return_string = thunk_return_value.type.spelling if thunk_return_value is not None else "void"
         value = f"""\
@@ -42,7 +43,7 @@ class CallbackParamRenderer(FacadeParamRenderer[CallbackFacade]):
             auto& ts = *static_cast<cxbind::thunk_state*>({self.context_param});
             // ... use ts, acquire GIL, call Python, etc ...
             py::gil_scoped_acquire gil;
-            py::object result = ts.cb(value);
+            py::object result = ts.cb({thunk_args_string});
             return result.cast<{thunk_return_string}>();
         }};
         """
