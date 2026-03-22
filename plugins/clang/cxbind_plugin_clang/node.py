@@ -9,7 +9,15 @@ from clang import cindex
 from loguru import logger
 
 from cxbind.entry import Entry, EntryKey
-from cxbind.spec import Spec, ParamSpec, ParamDirection, ReturnSpec, FunctionalSpec
+from cxbind.spec import (
+    Spec,
+    ParamSpec,
+    ParamDirection,
+    ReturnSpec,
+    FunctionalSpec,
+    StructuralSpec,
+    FieldSpec,
+)
 from cxbind.facade import Facade
 
 
@@ -19,6 +27,7 @@ class Node(Entry):
     parent: Optional["Node"] = Field(None, exclude=True, repr=False)
 
     spec: Spec | None = Field(None, exclude=True, repr=False)
+    facade: Facade | None = Field(None, exclude=True, repr=False)
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -137,7 +146,7 @@ class DeclNode(Node):
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
     def clone(self) -> "DeclNode":
-        other = super().clone()
+        other: "DeclNode" = super().clone()
         other.cursor = self.cursor
         return other
 
@@ -211,9 +220,12 @@ class CtorNode(FunctionalNode):
 
 class FieldNode(DeclNode):
     kind: Literal["field"]
+    spec: FieldSpec | None = Field(None, exclude=True, repr=False)
+    type: Type | None = Field(None, exclude=True, repr=False)
 
 
 class StructuralNode(DeclNode):
+    spec: StructuralSpec | None = Field(None, exclude=True, repr=False)
     constructible: bool = True
     has_constructor: bool = False
 

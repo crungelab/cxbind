@@ -1,9 +1,13 @@
 from loguru import logger
-from .node_renderer import NodeRenderer
-from .method_renderer import MethodRenderer
+
 from ...node import CtorNode
 
+from ..renderer_registry import RendererRegistry
 
+from .method_renderer import MethodRenderer
+
+
+@RendererRegistry.register("ctor")
 class CtorRenderer(MethodRenderer):
     def render(self):
         node = self.node

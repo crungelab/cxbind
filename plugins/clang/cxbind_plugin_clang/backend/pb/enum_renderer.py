@@ -1,12 +1,16 @@
 from loguru import logger
 
 from .node_renderer import NodeRenderer
+
+from ..renderer_registry import RendererRegistry
+
 from ...node import EnumNode
 
 
+@RendererRegistry.register("enum")
 class EnumRenderer(NodeRenderer[EnumNode]):
     def render(self):
-        #logger.debug(f"Building Enum: {self.node.name}")
+        # logger.debug(f"Building Enum: {self.node.name}")
 
         self.end_chain()
 

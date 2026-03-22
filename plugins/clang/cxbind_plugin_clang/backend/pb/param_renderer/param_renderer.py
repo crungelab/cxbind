@@ -3,11 +3,7 @@ from typing import Generic, TypeVar
 from loguru import logger
 from clang import cindex
 
-from cxbind.facade import (
-    Facade,
-    BufferFacade,
-    CallbackFacade,
-)
+from cxbind.facade import Facade
 
 from ....node import Parameter, Type
 

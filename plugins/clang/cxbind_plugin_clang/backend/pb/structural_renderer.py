@@ -1,14 +1,21 @@
+from typing import (
+    TypeVar,
+    Generic,
+    Any,
+    Generator,
+)
+
 from loguru import logger
 
 from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraProperty
 
 from ...node import StructuralNode, FunctionalNode, FieldNode
 
-from .node_renderer import NodeRenderer, T_Node
-from .method_renderer import MethodRenderer
+from .node_renderer import NodeRenderer
 
+T_Node = TypeVar("T_Node", bound=StructuralNode)
 
-class StructuralRenderer(NodeRenderer[T_Node]):
+class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
     def render(self):
         node = self.node
         pyname = node.pyname
@@ -63,9 +70,9 @@ class StructuralRenderer(NodeRenderer[T_Node]):
         self.begin_chain()
         if method.use is not None:
             self.out(
-                #f'.def("{method.name}", &{method.use})'
-                #.def(py::init([](const py::kwargs& kwargs)
-                f'.def(py::init(&{method.use.name}))'
+                # f'.def("{method.name}", &{method.use})'
+                # .def(py::init([](const py::kwargs& kwargs)
+                f".def(py::init(&{method.use.name}))"
             )
         else:
             self.out(f".def(py::init<>())")
@@ -324,7 +331,7 @@ class StructuralRenderer(NodeRenderer[T_Node]):
         node = self.node
         self.begin_chain()
         if method.use is not None:
-            #use_node = self.session.node_registry.get(method.use)
+            # use_node = self.session.node_registry.get(method.use)
             use_node = self.runner.node_registry.get(method.use)
             if use_node is not None:
                 other_node = use_node.clone()

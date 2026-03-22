@@ -8,17 +8,19 @@ from cxbind.render_stream import RenderStream
 
 from ..node import Node
 from ..work_context import WorkContext
-from ..session import Session
 
 if TYPE_CHECKING:
     from .renderer import Renderer
 
-current_render_context: ContextVar[Optional["RenderContext"]] = ContextVar("current_render_context", default=None)
+current_render_context: ContextVar[Optional["RenderContext"]] = ContextVar(
+    "current_render_context", default=None
+)
+
 
 class RenderContext(WorkContext):
     def __init__(self) -> None:
         super().__init__()
-        #self.out = RenderStream()
+        # self.out = RenderStream()
         self.streams: dict[str, RenderStream] = {}
         self.stream_stack: list[RenderStream] = []
         self.push_stream("default")
@@ -38,13 +40,13 @@ class RenderContext(WorkContext):
 
     def get_stream(self, name: str) -> RenderStream:
         return self.streams[name]
-    
+
     def get_text(self, name: str) -> str:
         stream = self.streams.get(name)
         if stream is None:
             return ""
         return stream.text
-    
+
     def open_stream(self, name: str) -> RenderStream:
         stream = self.streams.get(name)
         if stream is None:
@@ -54,7 +56,7 @@ class RenderContext(WorkContext):
             stream = RenderStream(indentation)
             self.streams[name] = stream
         return stream
-    
+
     def close_stream(self, name: str) -> None:
         pass
 
@@ -77,7 +79,7 @@ class RenderContext(WorkContext):
         self.stream_stack.append(stream)
 
     def pop_stream(self, destroy: bool = False) -> RenderStream:
-        #return self.stream_stack.pop()
+        # return self.stream_stack.pop()
         stream = self.stream_stack.pop()
         if destroy:
             for key, val in self.streams.items():
@@ -85,13 +87,18 @@ class RenderContext(WorkContext):
                     del self.streams[key]
                     break
         return stream
-    
+
     def combine_streams(self, streams: list[RenderStream]) -> None:
         for stream in streams:
             self.out.inject(stream)
 
     def create_renderer(self, node: Node) -> "Renderer":
-        from .pb.node_renderer_table import NODE_RENDERER_TABLE
+        from .pb.node_renderer_manufacturer import NodeRendererManufacturer
+        return NodeRendererManufacturer.create_renderer(node)
+
+    '''
+    def create_renderer(self, node: Node) -> "Renderer":
+        from .pb.node_renderer_manufacturer import NODE_RENDERER_TABLE
 
         cls: Type = NODE_RENDERER_TABLE.get(node.kind, None)
         if cls is None:
@@ -99,7 +106,8 @@ class RenderContext(WorkContext):
             return None
         renderer = cls(node)
         return renderer
-    
+    '''
+
     def render_node(self, node: Node) -> None:
         renderer = self.create_renderer(node)
         if renderer is None:

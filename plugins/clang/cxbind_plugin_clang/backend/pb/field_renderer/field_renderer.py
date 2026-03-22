@@ -1,13 +1,18 @@
+from typing import Generic, TypeVar
+
 from clang import cindex
 from loguru import logger
 
-from cxbind.types import RenderFn
+from cxbind.facade import Facade
 
-from ...node import FieldNode
+from ....node import FieldNode
 
-from .node_renderer import NodeRenderer
+from ...renderer_registry import RendererRegistry
+
+from ..node_renderer import NodeRenderer
 
 
+@RendererRegistry.register("field")
 class FieldRenderer(NodeRenderer[FieldNode]):
     def render(self):
         node = self.node
@@ -16,18 +21,18 @@ class FieldRenderer(NodeRenderer[FieldNode]):
 
         field_type_name = self.get_base_type_name(cursor.type)
 
-        #logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
-        
+        # logger.debug(f'{cursor.type.spelling}, {cursor.type.kind}: {cursor.displayname}')
+
         self.begin_chain()
 
         if self.is_field_readonly(cursor):
             self.out(f'.def_readonly("{pyname}", &{node.name})')
         else:
             if self.is_char_ptr(cursor):
-                #logger.debug(f"{cursor.spelling}: is char*")
+                # logger.debug(f"{cursor.spelling}: is char*")
                 self.render_char_ptr_field(cursor, pyname)
             elif self.is_function_pointer(cursor):
-                #logger.debug(f"{cursor.spelling}: is fn*")
+                # logger.debug(f"{cursor.spelling}: is fn*")
                 self.render_fn_ptr_field(cursor, pyname)
             elif field_type_name in self.wrapped:
                 self.render_wrapped_field(cursor, pyname)
@@ -35,7 +40,7 @@ class FieldRenderer(NodeRenderer[FieldNode]):
                 self.render_bitfield(cursor, pyname)
             else:
                 self.out(f'.def_readwrite("{pyname}", &{node.name})')
-        #self.out()
+        # self.out()
 
     def render_wrapped_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
@@ -49,38 +54,27 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         result = f"{wrapper}(self.{name}{extra})"
         value = f"const {wrapper}& value"
 
-        self.out('//render_wrapped_field')
+        self.out("//render_wrapped_field")
         self.out(f'.def_property("{pyname}",')
         with self.out:
-            self.out(
-            f'[](const {pname}& self)' '{'
-            f' return {result};'
-            ' },'
-            )
-            self.out(
-            f'[]({pname}& self, {value})' '{'
-            f' self.{name} = value;'
-            ' }'
-            )
-        self.out(')')
+            self.out(f"[](const {pname}& self)" "{" f" return {result};" " },")
+            self.out(f"[]({pname}& self, {value})" "{" f" self.{name} = value;" " }")
+        self.out(")")
 
-    #TODO: This is creating memory leaks.  Need wrapper functionality pronto.
+    # TODO: This is creating memory leaks.  Need wrapper functionality pronto.
     def render_char_ptr_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
         name = cursor.spelling
         self.out(f'.def_property("{pyname}",')
         with self.out:
+            self.out(f"[](const {pname}& self)" "{" f" return self.{name};" " },")
             self.out(
-            f'[](const {pname}& self)' '{'
-            f' return self.{name};'
-            ' },'
+                f"[]({pname}& self, const char* source)"
+                "{"
+                f" self.{name} = strdup(source);"
+                " }"
             )
-            self.out(
-            f'[]({pname}& self, const char* source)' '{'
-            f' self.{name} = strdup(source);'
-            ' }'
-            )
-        self.out(')')
+        self.out(")")
 
     def render_fn_ptr_field(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
@@ -88,16 +82,14 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         typename = cursor.type.spelling
         self.out(f'.def_property("{pyname}",')
         with self.out:
+            self.out(f"[]({pname}& self)" "{" f" return self.{name};" " },")
             self.out(
-            f'[]({pname}& self)' '{'
-            f' return self.{name};'
-            ' },')
-            self.out(
-            f'[]({pname}& self, {typename} source)' '{'
-            f' self.{name} = source;'
-            ' }'
+                f"[]({pname}& self, {typename} source)"
+                "{"
+                f" self.{name} = source;"
+                " }"
             )
-        self.out(')')
+        self.out(")")
 
     def render_bitfield(self, cursor: cindex.Cursor, pyname: str):
         pname = self.top_node.name
@@ -105,22 +97,32 @@ class FieldRenderer(NodeRenderer[FieldNode]):
         typename = cursor.type.spelling
         self.out(f'.def_property("{pyname}",')
         with self.out:
+            self.out(f"[]({pname}& self)" "{" f" return self.{name};" " },")
             self.out(
-            f'[]({pname}& self)' '{'
-            f' return self.{name};'
-            ' },')
-            self.out(
-            f'[]({pname}& self, {typename} source)' '{'
-            f' self.{name} = source;'
-            ' }'
+                f"[]({pname}& self, {typename} source)"
+                "{"
+                f" self.{name} = source;"
+                " }"
             )
-        self.out(')')
+        self.out(")")
 
     def is_field_readonly(self, cursor: cindex.Cursor) -> bool:
         if self.top_node.spec.readonly:
             return True
         if cursor.type.is_const_qualified():
             return True
-        if cursor.type.kind == cindex.TypeKind.CONSTANTARRAY: # TODO: render_const_array_field?
+        if (
+            cursor.type.kind == cindex.TypeKind.CONSTANTARRAY
+        ):  # TODO: render_const_array_field?
             return True
         return False
+
+T_Facade = TypeVar("T_Facade", bound=Facade)
+
+
+class FacadeFieldRenderer(FieldRenderer, Generic[T_Facade]):
+    facade: T_Facade
+
+    def __init__(self, node: FieldNode):
+        super().__init__(node)
+        self.facade = node.facade

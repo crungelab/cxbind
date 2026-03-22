@@ -41,5 +41,20 @@ void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
         , py::return_value_policy::automatic_reference)
     ;
 
+    py::class_<WrapperStruct> _WrapperStruct(_tests, "WrapperStruct");
+    registry.on(_tests, "WrapperStruct", _WrapperStruct);
+        _WrapperStruct
+        //render_pycapsule_field
+        .def_property("context",
+            [](const WrapperStruct& self){ return py::capsule(self.context, "ImGuiContext"); },
+            [](WrapperStruct& self, const py::capsule& value){ self.context = value; }
+        )
+        //render_wrapper_field
+        .def_property("window",
+            [](const WrapperStruct& self){ return SDLWindowWrapper(self.window); },
+            [](WrapperStruct& self, const SDLWindowWrapper& value){ self.window = value; }
+        )
+    ;
+
 
 }

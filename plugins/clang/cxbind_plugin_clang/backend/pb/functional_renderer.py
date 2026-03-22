@@ -7,8 +7,7 @@ from cxbind.spec import Spec, create_spec
 from cxbind.facade import Facade
 
 from ...node import FunctionalNode, Parameter
-
-from .node_renderer import NodeRenderer, RenderContext
+from .node_renderer import NodeRenderer
 from .param_renderer import ParamRenderer, PARAM_RENDERER_TABLE
 from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
 from .functional_render_pod import FunctionalRenderPod
