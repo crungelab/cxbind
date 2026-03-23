@@ -5,11 +5,11 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
-#include "overloads.h"
+#include "ownership.h"
 
 namespace py = pybind11;
 
-void register_overloads_py_auto(py::module &_tests, Registry &registry) {
+void register_ownership_py_auto(py::module &_tests, Registry &registry) {
     py::class_<Ownership> _Ownership(_tests, "Ownership");
     registry.on(_tests, "Ownership", _Ownership);
     _tests
