@@ -20,7 +20,7 @@ void register_handles_py_auto(py::module &_tests, Registry &registry) {
         .def_readwrite("value", &Handle::value)
         .def("create_dummy", &handleCreateDummy
             , py::arg("value")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
     py::class_<Dummy> _Dummy(_tests, "Dummy");
@@ -43,7 +43,7 @@ void register_handles_py_auto(py::module &_tests, Registry &registry) {
     .def("handle_create_dummy", &handleCreateDummy
         , py::arg("handle")
         , py::arg("value")
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

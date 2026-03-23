@@ -17,7 +17,7 @@ void register_namespace_py_auto(py::module &_tests, Registry &registry) {
         .def("add", &ns1::Ns1::add
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
     py::class_<ns2::Ns2> _Ns2(_tests, "Ns2");
@@ -27,10 +27,10 @@ void register_namespace_py_auto(py::module &_tests, Registry &registry) {
         .def("add", py::overload_cast<int, int>(&ns2::Ns2::add)
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("add", py::overload_cast<ns1::Ns1>(&ns2::Ns2::add)
             , py::arg("other")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
 

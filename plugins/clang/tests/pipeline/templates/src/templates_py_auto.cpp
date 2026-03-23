@@ -19,39 +19,39 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
         )
         .def("set_value", &MyClass<float, double>::setValue
             , py::arg("value")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("get_value", &MyClass<float, double>::getValue
-            , py::return_value_policy::automatic_reference)
+            )
         .def("do_this", &MyClass<float, double>::doThis
             , py::arg("values")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("do_that", [](MyClass<float, double>& self, std::array<float, 3>& bmin)
             {
-                self.doThat(&bmin[0]);
-                return std::make_tuple(bmin);
+                return self.doThat(&bmin[0]);
             }
             , py::arg("bmin")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
     py::class_<MyClass2<int>> _MyClassI(_tests, "MyClassI");
     registry.on(_tests, "MyClassI", _MyClassI);
         _MyClassI
+        .def(py::init<>())
         .def(py::init<int>()
         , py::arg("value")
         )
         .def("set_value", &MyClass2<int>::setValue
             , py::arg("value")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("get_value", &MyClass2<int>::getValue
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
     _tests
     .def("my_function_float", &myFunction<float>
-        , py::return_value_policy::automatic_reference)
+        )
     .def("my_function_i", &myFunction<int>
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

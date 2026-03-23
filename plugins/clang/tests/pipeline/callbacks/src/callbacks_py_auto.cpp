@@ -32,7 +32,7 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
         }
         , py::arg("a")
         , py::arg("cb")
-        , py::return_value_policy::automatic_reference)
+        )
     .def("function_with_callback2", [](std::vector<unsigned int> a, py::function cb)
         {
             const uint32_t * _a = (const uint32_t *)a.data();
@@ -52,13 +52,13 @@ void register_callbacks_py_auto(py::module &_tests, Registry &registry) {
         }
         , py::arg("a")
         , py::arg("cb")
-        , py::return_value_policy::automatic_reference)
+        )
     .def("function_with_callback_signature", &functionWithCallbackSignature
         , py::arg("a")
         , py::arg("count")
         , py::arg("cb") = nullptr
         , py::arg("context")
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

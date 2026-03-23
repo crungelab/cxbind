@@ -25,7 +25,7 @@ class FieldBuilder(NodeBuilder[FieldNode]):
         return super().should_cancel() or not self.is_field_bindable(self.cursor)
 
     def is_field_bindable(self, cursor) -> bool:
-        return self.is_cursor_bindable(cursor)
+        return self.is_cursor_visitable(cursor)
 
     def build_field_type(
         self,

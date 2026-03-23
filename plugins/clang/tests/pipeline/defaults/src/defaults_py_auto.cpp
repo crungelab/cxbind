@@ -56,15 +56,15 @@ void register_defaults_py_auto(py::module &_tests, Registry &registry) {
         .def("add", &Defaults::add
             , py::arg("i") = 0
             , py::arg("j") = DefaultsEnum::DEFAULTS_ENUM_1
-            , py::return_value_policy::automatic_reference)
+            )
         .def("subtract", &Defaults::subtract
             , py::arg("i") = 0
             , py::arg("j") = Defaults::InnerEnum::INNER_ENUM_1
-            , py::return_value_policy::automatic_reference)
+            )
         .def("multiply", &Defaults::multiply
             , py::arg("i")
             , py::arg("k") = 2
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
 

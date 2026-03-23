@@ -15,7 +15,7 @@ void register_handles_py_auto(py::module &_tests, Registry &registry) {
     .def("transforms_create_dummy", &transformsCreateDummy
         , py::arg("handle")
         , py::arg("value")
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

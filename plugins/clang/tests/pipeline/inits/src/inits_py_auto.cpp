@@ -18,7 +18,7 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
         )
         .def("add", &Inits::add
             , py::arg("i")
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("value", &Inits::value)
     ;
 
@@ -26,7 +26,7 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
     registry.on(_tests, "KwInits", _KwInits);
         _KwInits
         .def("add", &KwInits::add
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("a", &KwInits::a)
         .def_readwrite("b", &KwInits::b)
         .def(py::init([](const py::kwargs& kwargs)
@@ -50,7 +50,7 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
     registry.on(_tests, "KwInitsUse", _KwInitsUse);
         _KwInitsUse
         .def("add", &KwInitsUse::add
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("a", &KwInitsUse::a)
         .def_readwrite("b", &KwInitsUse::b)
         .def_readwrite("c", &KwInitsUse::c)
@@ -78,14 +78,14 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
 
     _tests
     .def("init_kw_inits_use", &InitKwInitsUse
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
     py::class_<ArgsInits> _ArgsInits(_tests, "ArgsInits");
     registry.on(_tests, "ArgsInits", _ArgsInits);
         _ArgsInits
         .def("add", &ArgsInits::add
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("a", &ArgsInits::a)
         .def_readwrite("b", &ArgsInits::b)
         .def(py::init([](int a, int b)

@@ -141,10 +141,6 @@ class Worker(Generic[T_Context]):
             logger.debug(f"Excluded key: {key}")
             # logger.debug(f"Excluded: {self.excluded}")
             return True
-        """
-        if Node.spell(cursor) in self.excluded:
-            return True
-        """
 
         if self.is_overloaded(cursor):
             key = Node.make_key(cursor, overload=True)
@@ -156,7 +152,7 @@ class Worker(Generic[T_Context]):
             return True
         return False
 
-    def is_cursor_bindable(self, cursor: cindex.Cursor) -> bool:
+    def is_cursor_visitable(self, cursor: cindex.Cursor, overload: bool = False) -> bool:
         if self.is_excluded(cursor):
             return False
         if cursor.access_specifier in (
@@ -165,7 +161,8 @@ class Worker(Generic[T_Context]):
         ):
             return False
         if cu.is_template(cursor.type):
-            return False
+            #return False
+            return overload # Only visit templates if we are checking for overloads
 
         if cursor.location.file:
             return self.is_cursor_mappable(cursor)
@@ -185,47 +182,7 @@ class Worker(Generic[T_Context]):
             logger.debug(f"Node: {cursor.spelling} path name: {name} is not in mapped: {mapped}")
         """
 
-        """
-        logger.debug(f"Node path name: {name}")
-        logger.debug(f"Mapped: {mapped}")
-
-        logger.debug(f"type(name)={type(name)} type(mapped)={type(mapped)}")
-        logger.debug(f"name == next(iter(mapped))? {name == next(iter(mapped))}")
-        logger.debug(f"any(x == name for x in mapped)? {any(x == name for x in mapped)}")
-        logger.debug(f"name in mapped? {name in mapped}")
-
-        # hash diagnostics (only works if elements are hashable, which strings are)
-        first = next(iter(mapped))
-        logger.debug(f"hash(name)={hash(name)} hash(first)={hash(first)}")
-        logger.debug(f"id(name)={id(name)} id(first)={id(first)}")  # ids can differ; value equality matters
-        """
-
         return name_in_mapped
-
-    """
-    def is_cursor_bindable(self, cursor: cindex.Cursor) -> bool:
-        if self.is_excluded(cursor):
-            return False
-        if cursor.access_specifier in (
-            cindex.AccessSpecifier.PRIVATE,
-            cindex.AccessSpecifier.PROTECTED,
-        ):
-            return False
-        if cu.is_template(cursor.type):
-            return False
-
-        if cursor.location.file:
-            node_path = Path(cursor.location.file.name)
-            logger.debug(f"Node path name: {node_path.name}")
-            logger.debug(f"Mapped: {self.mapped}")
-
-            logger.debug(f"Node path repr: {repr(node_path.name)}")
-            logger.debug(f"Mapped repr: {[repr(x) for x in self.mapped]}")
-
-            return node_path.name in self.mapped
-
-        return True
-    """
 
     def is_rvalue_ref(self, param: cindex.Type) -> bool:
         return param.kind == cindex.TypeKind.RVALUEREFERENCE
@@ -296,25 +253,6 @@ class Worker(Generic[T_Context]):
             return decl
         return None
 
-    """
-    def get_base_declaration(self, typ: cindex.Type) -> cindex.Cursor | None:
-        while True:
-            if typ.is_const_qualified() or typ.is_volatile_qualified():
-                typ = typ.get_canonical()
-            if typ.kind in (
-                cindex.TypeKind.POINTER,
-                cindex.TypeKind.LVALUEREFERENCE,
-                cindex.TypeKind.RVALUEREFERENCE,
-            ):
-                typ = typ.get_pointee()
-            else:
-                break
-        decl = typ.get_declaration()
-        if decl.kind != cindex.CursorKind.NO_DECL_FOUND:
-            return decl
-        return None
-    """
-
     def get_base_type_name(self, typ: cindex.Type) -> str:
         """Return the base type name, stripping qualifiers and pointer/reference
         indirections. Typedef names (e.g. uint32_t) are preserved."""
@@ -363,7 +301,6 @@ class Worker(Generic[T_Context]):
     # ------------------------------------------------------------------
 
     def make_arg_name(self, argument: cindex.Cursor) -> str:
-        #return argument.spelling or "arg"
         return argument.spelling
 
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:

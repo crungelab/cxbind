@@ -19,7 +19,7 @@ void register_facades_py_auto(py::module &_tests, Registry &registry) {
             return vectorFacadeFunction(_a, count);
         }
         , py::arg("a")
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

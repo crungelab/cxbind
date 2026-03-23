@@ -14,11 +14,11 @@ void register_functions_py_auto(py::module &_tests, Registry &registry) {
     .def("add", &test_functions::add
         , py::arg("x")
         , py::arg("y")
-        , py::return_value_policy::automatic_reference)
+        )
     .def("sub", &test_functions::sub
         , py::arg("x")
         , py::arg("y")
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

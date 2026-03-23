@@ -115,7 +115,6 @@ class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
     def render_args_init(self, method: ExtraInitMethod):
         logger.debug("renderering args_init for: {self.node}")
         self.begin_chain()
-        # node = self.top_node
         node = self.node
         args = []
         values = []
@@ -150,7 +149,6 @@ class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
     def render_kwargs_init(self, method: ExtraInitMethod):
         logger.debug("renderering kwargs_init for: {self.node}")
         self.begin_chain()
-        # node = self.top_node
         node = self.node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")
         self.out("{")
@@ -193,7 +191,6 @@ class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
     def render_kwargs_init(self, method: ExtraInitMethod):
         logger.debug("renderering kwargs_init for: {self.node}")
         self.begin_chain()
-        # node = self.top_node
         node = self.node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")
         self.out("{")
@@ -239,7 +236,6 @@ class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
     def render_kwargs_init(self, method: ExtraInitMethod):
         logger.debug("renderering kwargs_init for: {self.node}")
         self.begin_chain()
-        # node = self.top_node
         node = self.node
         self.out(f".def(py::init([](const py::kwargs& kwargs)")
         self.out("{")

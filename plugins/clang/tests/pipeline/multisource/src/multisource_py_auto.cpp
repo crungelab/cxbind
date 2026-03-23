@@ -18,7 +18,7 @@ void register_multisource_py_auto(py::module &_tests, Registry &registry) {
         .def("add", &Multisource1::add
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
 
@@ -29,7 +29,7 @@ void register_multisource_py_auto(py::module &_tests, Registry &registry) {
         .def("add", &Multisource2::add
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
 

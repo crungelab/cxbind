@@ -22,9 +22,11 @@ private:
     U value_2_;
 };
 
+//Test overloading of template functions
 template <typename T>
 class MyClass2 {
 public:
+    MyClass2() : value_() {}
     MyClass2(T value) : value_(value) {}
     void setValue(T value) { value_ = value; }
     T getValue() const { return value_; }

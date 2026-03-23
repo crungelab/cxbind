@@ -68,5 +68,5 @@ class Frontend(Builder):
                     logger.debug(f"Overloaded function detected: {key}")
                 else:
                     self.overloaded.visited.add(key)
-            elif self.is_cursor_bindable(child):
+            elif self.is_cursor_visitable(child, overload=True):
                 self.visit_overloads(child)

@@ -18,12 +18,12 @@ class Builder(Worker[BuildContext]):
         super().__init__()
 
     @property
-    def current_context(self) -> BuildContext:
+    def context(self) -> BuildContext:
         return BuildContext.get_current()
 
     @property
     def mapped(self):
-        return self.current_context.mapped
+        return self.context.mapped
 
     @contextmanager
     def enter(self, node) -> Generator[Any, Any, Any]:
@@ -35,10 +35,10 @@ class Builder(Worker[BuildContext]):
         raise NotImplementedError("Builder.build must be implemented in subclasses")
 
     def create_builder(self, entry_key: EntryKey, cursor: cindex.Cursor = None) -> "Builder":
-        return self.current_context.create_builder(entry_key, cursor)
+        return self.context.create_builder(entry_key, cursor)
 
     def visit(self, cursor: cindex.Cursor):
-        if not self.is_cursor_bindable(cursor):
+        if not self.is_cursor_visitable(cursor):
             return
 
         if not cursor.kind in self.actions:

@@ -18,7 +18,7 @@ void register_advanced_py_auto(py::module &_tests, Registry &registry) {
         )
         .def("add", &Advanced::add
             , py::arg("i")
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("value", &Advanced::value)
     ;
 

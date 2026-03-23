@@ -17,11 +17,11 @@ void register_exclude_py_auto(py::module &_tests, Registry &registry) {
         .def("add", &Exclude::add
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("sub", &Exclude::sub
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
 

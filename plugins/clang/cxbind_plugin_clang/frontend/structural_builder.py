@@ -28,7 +28,7 @@ class StructuralBuilder(NodeBuilder[T_Node]):
     def is_class_bindable(self, cursor):
         if cursor.spelling == "Init":  # TODO: Why?
             return False
-        if not self.is_cursor_bindable(cursor):
+        if not self.is_cursor_visitable(cursor):
             return False
         if not cursor.is_definition():
             return False

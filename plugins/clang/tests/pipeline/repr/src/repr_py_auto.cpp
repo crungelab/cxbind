@@ -19,7 +19,7 @@ void register_repr_py_auto(py::module &_tests, Registry &registry) {
         )
         .def("add", &Repr::add
             , py::arg("i")
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("value", &Repr::value)
         .def("__repr__", [](const Repr &self) {
             std::stringstream ss;

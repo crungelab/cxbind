@@ -23,16 +23,16 @@ void register_aliases_py_auto(py::module &_tests, Registry &registry) {
         )
         .def("set_value", &AliasClassI::setValue
             , py::arg("value")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("get_value", &AliasClassI::getValue
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
     _tests
     .def("alias_function_float", &aliasFunction<float>
-        , py::return_value_policy::automatic_reference)
+        )
     .def("alias_function_i", aliasFunctionI
-        , py::return_value_policy::automatic_reference)
+        )
     ;
 
 

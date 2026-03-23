@@ -21,6 +21,7 @@ class BuildContext(WorkContext):
     def __init__(self) -> None:
         super().__init__()
         self.mapped: set[str] = set()
+        self.template_args: Optional[list[str]] = None
 
     def make_current(self):
         current_builder_context.set(self)
@@ -28,6 +29,15 @@ class BuildContext(WorkContext):
     @classmethod
     def get_current(cls) -> Optional["BuildContext"]:
         return current_builder_context.get()
+
+    @contextlib.contextmanager
+    def override_template_args(self, args: list[str]):
+        previous = self.template_args
+        self.template_args = args
+        try:
+            yield
+        finally:
+            self.template_args = previous
 
     def create_builder(
         self, entry_key: EntryKey, cursor: cindex.Cursor = None

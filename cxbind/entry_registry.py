@@ -1,3 +1,5 @@
+from loguru import logger
+
 from typing import TypeVar, Generic, Dict, Optional, Callable
 from .entry import EntryKey, Entry
 
@@ -21,7 +23,8 @@ class EntryRegistry(Generic[T_Entry]):
     def register(self, entry: T_Entry) -> None:
         key = entry.key
         if key in self.entries_by_key:
-            raise KeyError(f"Duplicate entry key: {key}")
+            #raise KeyError(f"Duplicate entry key: {key}")
+            logger.warning(f"Duplicate entry key: {key}, overwriting existing entry.")
 
         self.entries_by_key[key] = entry
         self.entries.append(entry)

@@ -15,16 +15,16 @@ void register_properties_py_auto(py::module &_tests, Registry &registry) {
         _Properties
         .def(py::init<>())
         .def("get_x", &Properties::getX
-            , py::return_value_policy::automatic_reference)
+            )
         .def("set_x", &Properties::setX
             , py::arg("value")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("get_y", &Properties::getY
-            , py::return_value_policy::automatic_reference)
+            )
         .def("add", &Properties::add
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
         .def_readwrite("x", &Properties::x)
         .def_property("x", &Properties::getX, &Properties::setX)
         .def_property_readonly("y", &Properties::getY)

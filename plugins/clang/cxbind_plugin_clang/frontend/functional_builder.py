@@ -344,7 +344,7 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         if cursor.kind in self.FUNCTION_CURSOR_KINDS:
             if self.is_inlined(cursor):
                 return False
-            if not self.is_cursor_bindable(cursor):
+            if not self.is_cursor_visitable(cursor):
                 return False
             if cursor.is_deleted_method():
                 return False

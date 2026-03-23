@@ -17,14 +17,16 @@ class ClassTemplateBuilder(TemplateBuilder[ClassTemplateNode]):
         cursor = self.cursor
 
         for specialization in self.node.spec.specializations:
+            template_args = specialization.template_args
             logger.debug(f"specialization: {specialization}")
-            args = ", ".join(specialization.template_args)
+            args = ", ".join(template_args)
             cname = f"{self.node.name}<{args}>"
 
             builder = ClassTemplateSpecializationBuilder(
                 cname, args, cursor, specialization
             )
-            builder.build()
+            with self.context.override_template_args(template_args):
+                builder.build()
 
         return True # Don't add this node to parent
 

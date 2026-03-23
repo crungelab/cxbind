@@ -17,11 +17,11 @@ void register_simple_py_auto(py::module &_tests, Registry &registry) {
         .def("add", &Simple::add
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
         .def("sub", &Simple::sub
             , py::arg("i")
             , py::arg("j")
-            , py::return_value_policy::automatic_reference)
+            )
     ;
 
 
