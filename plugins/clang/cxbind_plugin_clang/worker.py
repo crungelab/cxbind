@@ -363,7 +363,8 @@ class Worker(Generic[T_Context]):
     # ------------------------------------------------------------------
 
     def make_arg_name(self, argument: cindex.Cursor) -> str:
-        return argument.spelling or "arg"
+        #return argument.spelling or "arg"
+        return argument.spelling
 
     def is_wrapped_type(self, cursor: cindex.Cursor) -> bool:
         type_name = self.get_base_type_name(cursor)

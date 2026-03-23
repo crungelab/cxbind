@@ -14,6 +14,7 @@ class UnitLoader(UnitBaseLoader):
 
     def load(self, path: Path) -> Unit:
         data = self.load_yaml(path)
+        logger.debug(f"Loading unit, path: {path}")
 
         # Validate with Pydantic
         unit = Unit.model_validate(data)

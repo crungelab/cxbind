@@ -60,8 +60,26 @@ class ParamSpec(BaseModel):
         return self.direction in (ParamDirection.OUT, ParamDirection.INOUT)
 
 
+class Ownership(str, Enum):
+    AUTOMATIC = "automatic"  # auto-detect based on type, default behavior
+    # -> automatic (sk_sp for ref-counted, reference_internal for raw ptr, etc.)
+    OWNED = "owned"  # dynamically allocated, Python takes ownership
+    # → take_ownership (raw ptr) or automatic (sk_sp holder)
+    BORROWED = "borrowed"  # parent object owns it, keep parent alive
+    # → reference_internal (ptr/lref)
+    SHARED = "shared"  # sk_sp ref-counted, holder manages it
+    # → no RVP needed, holder does the work
+    REF = "ref"  # C++ manages lifetime globally, just reference it
+    # → reference (dangerous, use sparingly)
+    VALUE = "value"  # copy semantics
+    # → copy
+    MOVE = "move"  # rvalue, move into Python-owned instance
+    # → move
+
+
 class ReturnSpec(BaseModel):
     facade: FacadeUnion | None = None
+    ownership: Ownership = Ownership.AUTOMATIC
 
 
 class FunctionalSpec(Spec):
@@ -191,6 +209,7 @@ class StructuralSpec(Spec):
     extends: list[str] | None = None
     wrapper: str | None = None
     holder: str | None = None
+    ownership: Ownership = Ownership.AUTOMATIC
     extra: StructuralExtra = Field(default_factory=StructuralExtra)
 
     @model_validator(mode="before")

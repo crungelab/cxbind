@@ -8,6 +8,7 @@ from loguru import logger
 from cxbind.spec import (
     Spec,
     FunctionalSpec,
+    Ownership,
     ReturnSpec,
     create_spec,
 )
@@ -235,10 +236,13 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         ret_type = self.build_return_type(spec)
         result_type = self.get_function_result_type()
 
+        ownership = self.get_result_ownership(result_type) if result_type is not None else Ownership.AUTOMATIC
+
         self.node.returns = ReturnValue(
             type=ret_type,
             cursor=result_type,
             spec=spec,
+            ownership=ownership,
         )
         logger.debug(f"return value: {self.node.returns}")
 
@@ -277,6 +281,33 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             facade=facade,
         )
 
+    def get_result_ownership(
+        self, result_type: cindex.Type
+    ) -> Ownership:
+        node = self.node
+        result_spec = node.returns.spec if node.returns is not None else None
+
+        base_decl = self.get_base_declaration(result_type)
+        if base_decl is not None:
+            base_key = Node.make_key(base_decl)
+            logger.debug(f"Base declaration: {base_decl}")
+            logger.debug(f"Base kind: {base_decl.kind}")
+            logger.debug(f"Base key: {base_key}")
+        else:
+            base_key = None
+
+        base_spec = self.lookup_spec(base_key)
+        logger.debug(f"base_spec: {base_spec}")
+
+        ownership = Ownership.AUTOMATIC  # default ownership
+
+        if result_spec is not None:
+            ownership = result_spec.ownership
+        elif base_spec is not None:
+            ownership = base_spec.ownership
+
+        return ownership
+        
     #
     # -------- naming / specs / bindability --------
     #

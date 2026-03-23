@@ -41,7 +41,6 @@ class Session:
 
         self.options = {"save": True}
         self.wrapped: dict[StructuralNode] = {}
-        #self.node_registry = NodeRegistry()
 
         self.target = ""
         self.flags: list[str] = unit.flags.copy()
@@ -88,11 +87,6 @@ class Session:
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
-
-    """
-    def register_node(self, node: Node) -> None:
-        self.node_registry.register(node)
-    """
     
     def register_spec(self, spec: Spec) -> None:
         logger.debug(f"Registering spec: {spec.name}")

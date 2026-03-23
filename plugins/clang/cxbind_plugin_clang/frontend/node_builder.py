@@ -57,13 +57,15 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.create_node()
 
         handled = self.build_node()
-        #self.session.register_node(self.node)
-        self.runner.register_node(self.node)
+        self.register_node()
         if not handled:
             self.top_node.add_child(self.node)
 
     def create_node(self):
         pass
+
+    def register_node(self):
+        self.runner.register_node(self.node)
 
     def build_node(self):
         self.node.spec = self.spec

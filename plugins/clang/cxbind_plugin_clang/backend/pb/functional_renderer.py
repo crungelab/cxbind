@@ -3,7 +3,7 @@ from typing import TypeVar
 from clang import cindex
 from loguru import logger
 
-from cxbind.spec import Spec, create_spec
+from cxbind.spec import Spec, create_spec, Ownership
 from cxbind.facade import Facade
 
 from ...node import FunctionalNode, Parameter
@@ -120,7 +120,12 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
 
         with out:
             self.render_pyargs()
-            out(f", {self.get_return_policy(cursor)})")
+            return_policy = self.get_return_policy(cursor)
+            if return_policy:
+                out(f", {return_policy})")
+            else:
+                out(")")
+            #out(f", {self.get_return_policy(cursor)})")
 
     def should_wrap_function(self) -> bool:
         node = self.node
@@ -148,18 +153,47 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             if self.is_wrapped_type(param_type):
                 return True
 
-            #if param.spec is not None and param.spec.facade is not None:
             if param.facade is not None:
                 return True
 
         return False
 
-    def get_return_policy(self, cursor: cindex.Cursor) -> str:
+    def get_return_policy(self, cursor: cindex.Cursor) -> str | None:
+        ownership = self.node.returns.ownership if self.node.returns is not None else Ownership.AUTOMATIC
+        return self.ownership_to_rvp(ownership)
+
+    def ownership_to_rvp(self,ownership: Ownership) -> str | None:
+        match ownership:
+            case Ownership.AUTOMATIC:
+                return None  # automatic policy is the default, and only needed for pointers; omit for simplicity
+            case Ownership.SHARED:
+                return None  # holder handles it, emitting RVP would interfere
+            case Ownership.OWNED:
+                return "py::return_value_policy::take_ownership"
+            case Ownership.BORROWED:
+                return "py::return_value_policy::reference_internal"
+            case Ownership.REF:
+                return "py::return_value_policy::reference"
+            case Ownership.VALUE:
+                return "py::return_value_policy::copy"
+            case Ownership.MOVE:
+                return "py::return_value_policy::move"
+
+    """
+    def get_return_policy(self, cursor: cindex.Cursor) -> str | None:
+        result = cursor.type.get_result()
+        if result.kind == cindex.TypeKind.LVALUEREFERENCE:
+            return "py::return_value_policy::reference"
+        return None
+    """
+    """
+    def get_return_policy(self, cursor: cindex.Cursor) -> str | None:
         result = cursor.type.get_result()
         if result.kind == cindex.TypeKind.LVALUEREFERENCE:
             return "py::return_value_policy::reference"
         else:
             return "py::return_value_policy::automatic_reference"
+    """
 
     def param_types(self, params: list[Parameter]):
         return ", ".join([param.type.spelling for param in params])

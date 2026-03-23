@@ -22,8 +22,11 @@ class ClassTemplateBuilder(TemplateBuilder[ClassTemplateNode]):
             cname = f"{self.node.name}<{args}>"
 
             builder = ClassTemplateSpecializationBuilder(
-                cname, cursor, specialization
+                cname, args, cursor, specialization
             )
             builder.build()
 
         return True # Don't add this node to parent
+
+    def register_node(self):
+        pass # Don't register this node, only its specializations

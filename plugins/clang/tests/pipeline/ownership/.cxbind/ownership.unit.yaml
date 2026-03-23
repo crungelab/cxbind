@@ -1,0 +1,6 @@
+source: 'src/ownership.h'
+target: 'src/ownership_py_auto.cpp'
+
+specs:
+  'struct@Ownership':
+    ownership: borrowed

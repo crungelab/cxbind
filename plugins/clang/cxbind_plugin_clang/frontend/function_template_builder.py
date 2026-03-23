@@ -27,3 +27,6 @@ class FunctionTemplateBuilder(TemplateBuilder[FunctionTemplateNode]):
             builder.build()
 
         return True # Don't add this node to parent
+
+    def register_node(self):
+        pass # Don't register this node, only its specializations

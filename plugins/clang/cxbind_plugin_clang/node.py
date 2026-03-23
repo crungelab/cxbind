@@ -11,8 +11,9 @@ from loguru import logger
 from cxbind.entry import Entry, EntryKey
 from cxbind.spec import (
     Spec,
-    ParamSpec,
     ParamDirection,
+    ParamSpec,
+    Ownership,
     ReturnSpec,
     FunctionalSpec,
     StructuralSpec,
@@ -183,6 +184,7 @@ class CallbackParam(Parameter):
 class ReturnValue(BaseModel):
     type: Type
     spec: ReturnSpec | None = Field(None, exclude=True, repr=False)
+    ownership: Ownership = Ownership.AUTOMATIC
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
