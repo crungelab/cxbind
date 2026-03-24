@@ -315,9 +315,14 @@ class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
                     self.out('ss << ", ";')
 
                 # Use field.first_name for the label and the C++ access
-                self.out(
-                    f'ss << "{field.first_name}=" << py::repr(py::cast(self.{field.first_name})).cast<std::string>();'
-                )
+                if field.type.base_name == "py::function":
+                    self.out(
+                        f'ss << "{field.first_name}=" << py::repr(self.{field.first_name}).cast<std::string>();'
+                    )
+                else:
+                    self.out(
+                        f'ss << "{field.first_name}=" << py::repr(py::cast(self.{field.first_name})).cast<std::string>();'
+                    )
 
             self.out('ss << ")";')
             self.out("return ss.str();")

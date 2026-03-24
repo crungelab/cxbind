@@ -159,8 +159,24 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
         )
 
         for child in param_cursor.get_children():
+            logger.debug(
+                f"Child {child.spelling}: kind={child.kind}, "
+                f"type.kind={child.type.kind}, "
+                f"canonical.kind={child.type.get_canonical().kind}, "
+                f"default={default}"
+            )
+
             if child.type.kind == cindex.TypeKind.POINTER:
                 default = "nullptr"
+
+            elif (
+                # Handle a default of 0 for things like std::function parameters
+                child.kind == cindex.CursorKind.TYPE_REF
+                and default == "0"
+                and child.type.get_canonical().kind == cindex.TypeKind.RECORD
+            ):
+                default = "nullptr"
+
             elif (
                 child.referenced is not None
                 and child.referenced.kind == cindex.CursorKind.ENUM_CONSTANT_DECL

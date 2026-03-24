@@ -324,12 +324,14 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         return spec
 
     def process_function_decl(self, decl: cindex.Cursor) -> bool:
+        """
         for param in decl.get_children():
             if param.kind == cindex.CursorKind.PARM_DECL and self.is_rvalue_ref(
                 param.type
             ):
                 logger.debug(f"Found rvalue reference in function {decl.spelling}")
                 return False
+        """
         return True
 
     def is_inlined(self, cursor: cindex.Cursor) -> bool:
