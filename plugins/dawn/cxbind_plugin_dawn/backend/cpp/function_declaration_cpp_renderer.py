@@ -1,3 +1,5 @@
+from loguru import logger
+
 from ...node import ObjectType, StructureType, EnumType, BitmaskType, NativeType, CallbackInfoType
 
 from ..function_declaration_renderer import FunctionDeclarationRenderer
@@ -60,7 +62,8 @@ class FunctionDeclarationCppRenderer(FunctionDeclarationRenderer):
             else:
                 #TODO: Looks like dead code but might be used in the future
                 #self.out << f"return result;" << "\n"
-                exit()
+                logger.debug(f"Unhandled return type for function '{fn_name}': {return_type_name}")
+                #exit()
                 if return_type_name == "Future":
                     self.out / f"return {return_type_name}{{result.id}});" << "\n"
                 else:

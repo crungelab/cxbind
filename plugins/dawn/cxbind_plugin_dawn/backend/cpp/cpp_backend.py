@@ -18,6 +18,7 @@ class CppBackend(Backend):
         super().__init__(compiler)
 
     def render(self):
+        print("[bold blue]Rendering C++ source...[/bold blue]")
         context = CppGenerator(self).generate()
         cpp_code = context.get_text("default")
 
@@ -28,6 +29,7 @@ class CppBackend(Backend):
         # logger.debug(output)
         # Write the C++ code to a file
         path = Path(self.compiler.unit.target)
+        print(f"[bold blue]Writing C++ source to[/bold blue]: {path}")
         with open(path, "w") as f:
             f.write(output)
 

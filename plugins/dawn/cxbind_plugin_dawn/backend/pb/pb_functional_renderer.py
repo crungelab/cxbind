@@ -230,7 +230,7 @@ class PbFunctionalRenderer(Renderer[T_Node]):
             else:
                 arg_name_list.append(f"{arg.name.camelCase()}")
 
-        self.out / f'.def("{method_name}",'
+        self.out / f'.def("{method_name}", '
 
         if use_lambda:
             self.out.indent()
@@ -299,7 +299,10 @@ class PbFunctionalRenderer(Renderer[T_Node]):
 
         else:
             self.out.indent()
-            self.out << f"&pywgpu::{class_name}::{method_cpp_name}" << "\n"
+            if class_name:
+                self.out << f"&pywgpu::{class_name}::{method_cpp_name}" << "\n"
+            else:
+                self.out << f"&pywgpu::{method_cpp_name}" << "\n"
             self.out.dedent()
 
         '''

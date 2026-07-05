@@ -52,7 +52,7 @@ class RecordMember(TypedNode):
 
 
 class Functional(Type):
-    return_type_ref: Optional[str] = Field(alias="returns", default=None)
+    return_type_ref: Optional[str | dict] = Field(alias="returns", default=None)
     return_type: Optional["Type"] = None
     args: Optional[List[RecordMember]] = []
 
@@ -280,7 +280,7 @@ class Root(RootModel):
             native = isinstance(value, NativeType)
             value.name = Name.intern(key, native=native)
 
-        self.root["instance capabilities"].extensible = "in"  # crbug.com/374263404
+        #self.root["instance capabilities"].extensible = "in"  # crbug.com/374263404
         self.root["limits"].extensible = "in"  # crbug.com/374263404
 
         self.root["chained struct"] = StructureType(

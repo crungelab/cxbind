@@ -30,7 +30,6 @@ class PbFunctionDeclarationRenderer(FunctionDeclarationRenderer):
             logger.debug(
                 f"Function '{fn_name}' has excluded names: {', '.join(excluded_names)}"
             )
-            exit()
 
         args = [
             arg

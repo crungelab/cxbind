@@ -13,10 +13,23 @@ class Compiler(Tool):
         self.frontend = Frontend(self)
         self.backend: Backend = None
 
+    def lookup(self, ref: str | dict) -> Type:
+        if ref is None:
+            return None
+        
+        if isinstance(ref, dict):
+            #name = ref.get("type")
+            name = ref["type"]
+        else:
+            name = ref
+        return self.root[name]
+
+    '''
     def lookup(self, name: str) -> Type:
         if name is None:
             return None
         return self.root[name]
+    '''
 
     def run(self):
         self.frontend.run()

@@ -113,9 +113,9 @@ class CxBind:
         project = self.load_project()
         unit = project.get_unit(name)
         tool = self.create_tool(unit)
+        logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
         #tool.run()
-        runner_factory = self.runner_factory(tool)
-        runner: Runner = runner_factory()
+        runner: Runner = self.runner_factory()
         runner.run([tool])
 
     def gen_all(self):

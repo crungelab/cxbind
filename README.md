@@ -28,6 +28,10 @@ hatch shell
 cxbind
 ```
 
+```bash
+cxbind gen myunit
+```
+
 ## Build for PyPI
 ```bash
 cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=cxbind

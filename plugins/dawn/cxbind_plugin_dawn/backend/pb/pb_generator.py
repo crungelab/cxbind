@@ -26,7 +26,6 @@ class PbGenerator(Generator):
         self.render_callback_info_types()
         self.render_structure_types()
         self.render_object_types()
-        #self.render_structure_types()
         self.render_function_declarations()
         self.render_epilogue()
 

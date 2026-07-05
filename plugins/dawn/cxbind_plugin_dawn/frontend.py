@@ -40,11 +40,9 @@ class Frontend(Processor):
             """
             for k, v in filtered_data.items():
                 print(k)
-            exit()
             """
             root = Root.model_validate(filtered_data)
             # print(root["buffer"])
-            # exit()
             self.compiler.root = root
 
         except json.JSONDecodeError:
