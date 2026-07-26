@@ -14,7 +14,6 @@ class VectorParamRenderer(FacadeParamRenderer[VectorFacade]):
 
     def render_param(self, private=False):
         out = self.out
-        # out << f"std::vector<{self.param.type.spelling}> " << self.param.name
         out << f"std::vector<{self.param.type.base_name}> " << self.param.name
 
     def render_arg(self, private=False) -> None:

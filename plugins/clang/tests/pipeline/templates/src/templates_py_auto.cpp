@@ -52,6 +52,13 @@ void register_templates_py_auto(py::module &_tests, Registry &registry) {
         )
     .def("my_function_i", &myFunction<int>
         )
+    .def("test_specialized", [](MyClass2<int> & obj)
+        {
+            auto _ret = testSpecialized(obj);
+            return std::make_tuple(_ret, obj);
+        }
+        , py::arg("obj")
+        )
     ;
 
 

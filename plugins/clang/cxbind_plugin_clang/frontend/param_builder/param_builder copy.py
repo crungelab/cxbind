@@ -17,6 +17,23 @@ T_Parameter = TypeVar("T_Parameter", bound=Parameter)
 class ParamBuilder(Builder, Generic[T_Parameter]):
     pod: FunctionalBuildPod
 
+    SCALAR_POINTER_OUT_KINDS = {
+        cindex.TypeKind.BOOL,
+        cindex.TypeKind.CHAR_S,
+        cindex.TypeKind.SCHAR,
+        cindex.TypeKind.UCHAR,
+        cindex.TypeKind.SHORT,
+        cindex.TypeKind.USHORT,
+        cindex.TypeKind.INT,
+        cindex.TypeKind.UINT,
+        cindex.TypeKind.LONG,
+        cindex.TypeKind.ULONG,
+        cindex.TypeKind.LONGLONG,
+        cindex.TypeKind.ULONGLONG,
+        cindex.TypeKind.FLOAT,
+        cindex.TypeKind.DOUBLE,
+    }
+
     def __init__(self, info: ParamInfo):
         super().__init__()
         self.info = info
@@ -58,6 +75,30 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
         self.param.spec = self.spec
         self.param.facade = self.facade
         self.param.direction = self.direction
+
+    """
+    def build(self) -> None:
+        node = self.pod.node
+        spec = (
+            node.spec.params.get(self.info.name)
+            if node.spec and node.spec.params
+            else None
+        )
+
+        param_type = self.build_param_type(self.info.type, self.info.cursor, spec)
+        default = self.make_param_default(self.info.name, self.info.cursor)
+        direction = self.make_param_direction(self.info.type)
+
+        parameter = Parameter(
+            name=self.info.name,
+            type=param_type,
+            default=default,
+            cursor=self.info.cursor,
+            spec=spec,
+            direction=direction,
+        )
+        node.params.append(parameter)
+    """
 
     def build_param_type(
         self,
@@ -273,6 +314,208 @@ class ParamBuilder(Builder, Generic[T_Parameter]):
 
         # Scalars, enums, and other value types passed directly: always IN.
         return ParamDirection.IN
+
+    """
+    def make_param_direction(self, param_type: cindex.Type) -> ParamDirection:
+        t = param_type.get_canonical()
+
+        def canon(ty: cindex.Type) -> cindex.Type:
+            ty = ty.get_canonical()
+            while ty.kind == cindex.TypeKind.ELABORATED:
+                ty = ty.get_named_type().get_canonical()
+            return ty
+
+        def is_function_type(ty: cindex.Type) -> bool:
+            ty = canon(ty)
+            return ty.kind in {
+                cindex.TypeKind.FUNCTIONPROTO,
+                cindex.TypeKind.FUNCTIONNOPROTO,
+            }
+
+        def is_char_type(ty: cindex.Type) -> bool:
+            ty = canon(ty)
+            return ty.kind in {
+                cindex.TypeKind.CHAR_S,
+                cindex.TypeKind.SCHAR,
+                cindex.TypeKind.UCHAR,
+                cindex.TypeKind.CHAR_U,
+            }
+
+        def is_scalar_type(ty: cindex.Type) -> bool:
+            ty = canon(ty)
+            return ty.kind in {
+                cindex.TypeKind.BOOL,
+                cindex.TypeKind.CHAR_U,
+                cindex.TypeKind.UCHAR,
+                cindex.TypeKind.CHAR16,
+                cindex.TypeKind.CHAR32,
+                cindex.TypeKind.USHORT,
+                cindex.TypeKind.UINT,
+                cindex.TypeKind.ULONG,
+                cindex.TypeKind.ULONGLONG,
+                cindex.TypeKind.UINT128,
+                cindex.TypeKind.CHAR_S,
+                cindex.TypeKind.SCHAR,
+                cindex.TypeKind.WCHAR,
+                cindex.TypeKind.SHORT,
+                cindex.TypeKind.INT,
+                cindex.TypeKind.LONG,
+                cindex.TypeKind.LONGLONG,
+                cindex.TypeKind.INT128,
+                cindex.TypeKind.FLOAT,
+                cindex.TypeKind.DOUBLE,
+                cindex.TypeKind.LONGDOUBLE,
+                cindex.TypeKind.ENUM,
+            }
+
+        # T&
+        if t.kind == cindex.TypeKind.LVALUEREFERENCE:
+            referred = canon(t.get_pointee())
+
+            # callback-like references are input
+            if is_function_type(referred):
+                return ParamDirection.IN
+
+            # const T& is input
+            if referred.is_const_qualified():
+                return ParamDirection.IN
+
+            # non-const scalar/object refs are usually output-ish
+            return ParamDirection.OUT
+
+        # T*
+        if t.kind == cindex.TypeKind.POINTER:
+            pointee = canon(t.get_pointee())
+
+            # function pointer / callback
+            if is_function_type(pointee):
+                return ParamDirection.IN
+
+            # const char* / const unsigned char* style strings/buffers => input
+            if pointee.is_const_qualified():
+                return ParamDirection.IN
+
+            # mutable char* is more often an output buffer than plain input
+            if is_char_type(pointee):
+                return ParamDirection.OUT
+
+            # mutable scalar* is commonly used as out-param
+            if is_scalar_type(pointee):
+                return ParamDirection.OUT
+
+            # mutable object pointer is ambiguous; default conservatively to input
+            return ParamDirection.IN
+
+        # T[N], T[], etc.
+        if t.kind in {
+            cindex.TypeKind.CONSTANTARRAY,
+            cindex.TypeKind.INCOMPLETEARRAY,
+            cindex.TypeKind.VARIABLEARRAY,
+        }:
+            elem = canon(t.get_array_element_type())
+
+            # arrays of callbacks are not a normal public API shape, but treat as input
+            if is_function_type(elem):
+                return ParamDirection.IN
+
+            # const arrays are input
+            if elem.is_const_qualified():
+                return ParamDirection.IN
+
+            # mutable char/scalar arrays are often caller-provided output buffers
+            if is_char_type(elem) or is_scalar_type(elem):
+                return ParamDirection.OUT
+
+            # mutable object arrays are still ambiguous; do not assume OUT
+            return ParamDirection.IN
+
+        return ParamDirection.IN
+    """
+
+    """
+    def make_param_direction(self, param_type: cindex.Type) -> ParamDirection:
+        t = param_type.get_canonical()
+
+        def is_function_type(ty: cindex.Type) -> bool:
+            ty = ty.get_canonical()
+            return ty.kind in {
+                cindex.TypeKind.FUNCTIONPROTO,
+                cindex.TypeKind.FUNCTIONNOPROTO,
+            }
+
+        # T&
+        if t.kind == cindex.TypeKind.LVALUEREFERENCE:
+            referred = t.get_pointee().get_canonical()
+
+            # function reference / callback-like case
+            if is_function_type(referred):
+                return ParamDirection.IN
+
+            if referred.is_const_qualified():
+                return ParamDirection.IN
+
+            return ParamDirection.OUT
+
+        # T*
+        if t.kind == cindex.TypeKind.POINTER:
+            pointee = t.get_pointee().get_canonical()
+
+            # function pointer / callback
+            if is_function_type(pointee):
+                return ParamDirection.IN
+
+            # const T*
+            if pointee.is_const_qualified():
+                return ParamDirection.IN
+
+            if pointee.kind in self.SCALAR_POINTER_OUT_KINDS:
+                return ParamDirection.OUT
+
+            return ParamDirection.IN
+
+        # Arrays
+        if t.kind in {
+            cindex.TypeKind.CONSTANTARRAY,
+            cindex.TypeKind.INCOMPLETEARRAY,
+            cindex.TypeKind.VARIABLEARRAY,
+        }:
+            elem = t.get_array_element_type().get_canonical()
+
+            # array of function type is not really a normal parameter case,
+            # but keep the logic consistent
+            if is_function_type(elem):
+                return ParamDirection.IN
+
+            if not elem.is_const_qualified():
+                return ParamDirection.OUT
+
+            return ParamDirection.IN
+
+        return ParamDirection.IN
+    """
+
+    """
+    def make_param_direction(self, param_type: cindex.Type) -> ParamDirection:
+        param_type = param_type.get_canonical()
+
+        if param_type.kind == cindex.TypeKind.LVALUEREFERENCE:
+            pointee = param_type.get_pointee()
+            if not pointee.is_const_qualified():
+                return ParamDirection.OUT
+
+        if param_type.kind == cindex.TypeKind.CONSTANTARRAY:
+            return ParamDirection.OUT
+
+        if param_type.kind == cindex.TypeKind.POINTER:
+            ptr = param_type.get_pointee()
+            if (
+                not ptr.is_const_qualified()
+                and ptr.kind in self.SCALAR_POINTER_OUT_KINDS
+            ):
+                return ParamDirection.OUT
+
+        return ParamDirection.IN
+    """
 
     def make_param_type_spelling(
         self,

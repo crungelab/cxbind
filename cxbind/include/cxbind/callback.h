@@ -1,6 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <Python.h>        // for PyErr_Fetch / PyErr_Restore
 
+namespace py = pybind11;
+
 namespace cxbind
 {
 

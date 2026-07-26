@@ -7,7 +7,6 @@ from cxbind.facade import Facade
 
 from ....node import Parameter, Type
 
-from ...render_context import RenderContext
 from ...renderer import Renderer
 
 

@@ -22,7 +22,8 @@ private:
     U value_2_;
 };
 
-//Test overloading of template functions
+// Test overloading of template functions
+
 template <typename T>
 class MyClass2 {
 public:
@@ -38,4 +39,11 @@ private:
 template <typename T>
 T myFunction(T a, T b) {
     return a + b;
+}
+
+// Test usage of specialized classes
+
+int testSpecialized(MyClass2<int> &obj) {
+    obj.setValue(42);
+    return obj.getValue();
 }
