@@ -43,6 +43,34 @@ KwInitsUse InitKwInitsUse() {
     return obj;
 }
 
+struct KwInitsBase
+{
+    int add()
+    {
+        return a + b;
+    }
+
+    int a = 0;
+    int b = 0;
+};
+
+struct KwInitsFlatten
+{
+    int add()
+    {
+        return base.add();
+    }
+
+    KwInitsBase base;
+};
+
+KwInitsFlatten InitKwInitsFlatten() {
+    KwInitsFlatten obj;
+    obj.base.a = 1;
+    obj.base.b = 2;
+    return obj;
+}
+
 struct ArgsInits
 {
     int add()

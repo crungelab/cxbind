@@ -32,6 +32,15 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
         .def(py::init([](const py::kwargs& kwargs)
         {
             KwInits obj{};
+            static const std::unordered_set<std::string> allowed_keys = {"a", "b"};
+            for (auto item : kwargs)
+            {
+                std::string key = py::str(item.first);
+                if (allowed_keys.find(key) == allowed_keys.end())
+                {
+                    throw py::value_error("Unexpected keyword argument: '" + key + "'");
+                }
+            }
             if (kwargs.contains("a"))
             {
                 auto value = kwargs["a"].cast<int>();
@@ -57,6 +66,15 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
         .def(py::init([](const py::kwargs& kwargs)
         {
             KwInitsUse obj = InitKwInitsUse();
+            static const std::unordered_set<std::string> allowed_keys = {"a", "b", "c"};
+            for (auto item : kwargs)
+            {
+                std::string key = py::str(item.first);
+                if (allowed_keys.find(key) == allowed_keys.end())
+                {
+                    throw py::value_error("Unexpected keyword argument: '" + key + "'");
+                }
+            }
             if (kwargs.contains("a"))
             {
                 auto value = kwargs["a"].cast<int>();
@@ -78,6 +96,59 @@ void register_inits_py_auto(py::module &_tests, Registry &registry) {
 
     _tests
     .def("init_kw_inits_use", &InitKwInitsUse
+        )
+    ;
+
+    py::class_<KwInitsBase> _KwInitsBase(_tests, "KwInitsBase");
+    registry.on(_tests, "KwInitsBase", _KwInitsBase);
+        _KwInitsBase
+        .def("add", &KwInitsBase::add
+            )
+        .def_readwrite("a", &KwInitsBase::a)
+        .def_readwrite("b", &KwInitsBase::b)
+    ;
+
+    py::class_<KwInitsFlatten> _KwInitsFlatten(_tests, "KwInitsFlatten");
+    registry.on(_tests, "KwInitsFlatten", _KwInitsFlatten);
+        _KwInitsFlatten
+        .def("add", &KwInitsFlatten::add
+            )
+        .def_property("a",
+            [](const KwInitsFlatten& self){ return self.base.a; },
+            [](KwInitsFlatten& self, int value){ self.base.a = value; }
+        )
+        .def_property("b",
+            [](const KwInitsFlatten& self){ return self.base.b; },
+            [](KwInitsFlatten& self, int value){ self.base.b = value; }
+        )
+        .def(py::init([](const py::kwargs& kwargs)
+        {
+            KwInitsFlatten obj = InitKwInitsFlatten();
+            static const std::unordered_set<std::string> allowed_keys = {"a", "b"};
+            for (auto item : kwargs)
+            {
+                std::string key = py::str(item.first);
+                if (allowed_keys.find(key) == allowed_keys.end())
+                {
+                    throw py::value_error("Unexpected keyword argument: '" + key + "'");
+                }
+            }
+            if (kwargs.contains("a"))
+            {
+                auto value = kwargs["a"].cast<int>();
+                obj.base.a = value;
+            }
+            if (kwargs.contains("b"))
+            {
+                auto value = kwargs["b"].cast<int>();
+                obj.base.b = value;
+            }
+            return obj;
+        }))
+    ;
+
+    _tests
+    .def("init_kw_inits_flatten", &InitKwInitsFlatten
         )
     ;
 

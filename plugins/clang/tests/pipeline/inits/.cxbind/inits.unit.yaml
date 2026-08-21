@@ -15,6 +15,16 @@ specs:
           gen_kwargs: true
           use: function@InitKwInitsUse
 
+  'field@KwInitsFlatten::base':
+    flatten: true
+
+  'struct@KwInitsFlatten':
+    extra:
+      methods:
+        __init__:
+          gen_kwargs: true
+          use: function@InitKwInitsFlatten
+
   'struct@ArgsInits':
     extra:
       methods:

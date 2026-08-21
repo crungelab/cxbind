@@ -108,10 +108,7 @@ class FunctionSpec(FunctionalSpec):
 
 
 class FunctionTemplateSpecializationSpec(FunctionSpec):
-    kind: Literal["function_template_specialization"] = (
-        "function_template_specialization"
-    )
-    # args: list[str]
+    kind: Literal["function_template_specialization"]
     template_args: list[str] = Field(default_factory=list)
 
 
@@ -158,6 +155,7 @@ class CtorSpec(FunctionalSpec):
 
 class FieldSpec(Spec):
     kind: Literal["field"]
+    flatten: bool = False
 
 
 class StructuralExtra(Extra):
@@ -207,6 +205,7 @@ class StructuralExtra(Extra):
 
 class StructuralSpec(Spec):
     extends: list[str] | None = None
+    identity: str | None = None
     wrapper: str | None = None
     holder: str | None = None
     ownership: Ownership = Ownership.AUTOMATIC
@@ -236,8 +235,7 @@ class ClassSpec(StructuralSpec):
 
 
 class ClassTemplateSpecializationSpec(ClassSpec):
-    kind: Literal["class_template_specialization"] = "class_template_specialization"
-    # args: list[str]
+    kind: Literal["class_template_specialization"]
     template_args: list[str] = Field(default_factory=list)
 
 
