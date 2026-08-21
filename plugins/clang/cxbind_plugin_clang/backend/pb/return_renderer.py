@@ -87,12 +87,35 @@ class ReturnRenderer(Renderer):
         out << ";\n"
 
         if self.pod.has_out_params:
+            total_returns = (1 if self.use_return_temp else 0) + len(self.pod.out_params)
+
+            if total_returns == 1:
+                out // "return "
+                if self.use_return_temp:
+                    out << "_ret"
+                else:
+                    self.pod.render_out_args()
+                out << ";" << out.nl
+            else:
+                out // "return std::make_tuple("
+                if self.use_return_temp:
+                    out << "_ret, "
+                self.pod.render_out_args()
+                out << ");" << out.nl
+
+    """
+    def render_epilog(self):
+        out = self.out
+
+        out << ";\n"
+
+        if self.pod.has_out_params:
             out // "return std::make_tuple("
             if self.use_return_temp:
                 out << "_ret, "
             self.pod.render_out_args()
             out << ");" << out.nl
-
+    """
 
 T_Facade = TypeVar("T_Facade", bound=Facade)
 

@@ -29,19 +29,19 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
 
     def create_param_renderers(self):
         node = self.node
-        #logger.debug(f"Creating parameter renderers for node: {node.name}")
-        #logger.debug(f"Node parameters: {node.params}")
+        # logger.debug(f"Creating parameter renderers for node: {node.name}")
+        # logger.debug(f"Node parameters: {node.params}")
 
         for param in node.params:
             facade_kind = (
                 param.type.facade.kind if param.type.facade is not None else None
             )
             renderer_cls = PARAM_RENDERER_TABLE.get(facade_kind, ParamRenderer)
-            '''
+            """
             logger.debug(
                 f"Creating parameter renderer for parameter: {param}, renderer: {renderer_cls.__name__}"
             )
-            '''
+            """
             self.pod.arg_renderers.append(renderer_cls(param))
 
         excluded_params = set()
@@ -54,7 +54,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             if arg_renderer.param.name not in excluded_params
         ]
 
-        #logger.debug(f"param_renderers: {self.pod.param_renderers}")
+        # logger.debug(f"param_renderers: {self.pod.param_renderers}")
 
         out_params = [param.name for param in node.params if param.is_out]
         self.pod.out_params = out_params
@@ -125,7 +125,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 out(f", {return_policy})")
             else:
                 out(")")
-            #out(f", {self.get_return_policy(cursor)})")
+            # out(f", {self.get_return_policy(cursor)})")
 
     def should_wrap_function(self) -> bool:
         node = self.node
@@ -159,10 +159,14 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         return False
 
     def get_return_policy(self, cursor: cindex.Cursor) -> str | None:
-        ownership = self.node.returns.ownership if self.node.returns is not None else Ownership.AUTOMATIC
+        ownership = (
+            self.node.returns.ownership
+            if self.node.returns is not None
+            else Ownership.AUTOMATIC
+        )
         return self.ownership_to_rvp(ownership)
 
-    def ownership_to_rvp(self,ownership: Ownership) -> str | None:
+    def ownership_to_rvp(self, ownership: Ownership) -> str | None:
         match ownership:
             case Ownership.AUTOMATIC:
                 return None  # automatic policy is the default, and only needed for pointers; omit for simplicity
@@ -211,8 +215,8 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
                 continue
             arg_renderer.render_pyarg()
 
-    '''
+    """
     def render_pyargs(self):
         for arg_renderer in self.pod.param_renderers:
             arg_renderer.render_pyarg()
-    '''
+    """

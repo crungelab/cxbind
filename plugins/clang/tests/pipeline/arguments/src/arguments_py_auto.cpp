@@ -24,7 +24,7 @@ void register_arguments_py_auto(py::module &_tests, Registry &registry) {
     .def("in_out_function", [](int i, int * j)
         {
             inOutFunction(i, j);
-            return std::make_tuple(j);
+            return j;
         }
         , py::arg("i")
         , py::arg("j")

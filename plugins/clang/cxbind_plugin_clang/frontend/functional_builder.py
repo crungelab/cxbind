@@ -51,7 +51,9 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
     def build_node(self):
         super().build_node()
-        self.node.signature = self.cursor.type.spelling if self.is_overloaded(self.cursor) else None
+        self.node.signature = (
+            self.cursor.type.spelling if self.is_overloaded(self.cursor) else None
+        )
         self._pod = FunctionalBuildPod(self.node)
         with self.pod.use():
             self.build_params()
@@ -236,7 +238,11 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         ret_type = self.build_return_type(spec)
         result_type = self.get_function_result_type()
 
-        ownership = self.get_result_ownership(result_type) if result_type is not None else Ownership.AUTOMATIC
+        ownership = (
+            self.get_result_ownership(result_type)
+            if result_type is not None
+            else Ownership.AUTOMATIC
+        )
 
         self.node.returns = ReturnValue(
             type=ret_type,
@@ -281,6 +287,85 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             facade=facade,
         )
 
+    def get_result_ownership(self, result_type: cindex.Type) -> Ownership:
+        node = self.node
+        result_spec = node.returns.spec if node.returns is not None else None
+
+        base_decl = self.get_base_declaration(result_type)
+        if base_decl is not None:
+            base_key = Node.make_key(base_decl)
+            logger.debug(f"Base declaration: {base_decl}")
+            logger.debug(f"Base kind: {base_decl.kind}")
+            logger.debug(f"Base key: {base_key}")
+        else:
+            base_key = None
+
+        base_spec = self.lookup_spec(base_key)
+        logger.debug(f"base_spec: {base_spec}")
+
+        if result_spec is not None:
+            return result_spec.ownership
+        elif base_spec is not None:
+            return base_spec.ownership
+
+        # No explicit spec on the return type or its base declaration —
+        # fall back to inferring ownership from the return type's own kind,
+        # mirroring the pointer/reference dispatch used for parameter
+        # direction classification.
+        return self.infer_ownership_from_type_kind(result_type)
+
+    def infer_ownership_from_type_kind(self, result_type: cindex.Type) -> Ownership:
+        kind = result_type.kind
+
+        if kind == cindex.TypeKind.LVALUEREFERENCE:
+            return Ownership.REF
+
+        if kind == cindex.TypeKind.RVALUEREFERENCE:
+            return Ownership.MOVE
+
+        if kind == cindex.TypeKind.POINTER:
+            # Pointer-returning accessors in C-style APIs (ImGui, box2d, etc.)
+            # overwhelmingly alias internal/context-owned state rather than
+            # transferring a heap allocation the caller must free. Defaulting
+            # to `automatic`'s take_ownership is actively dangerous here —
+            # pybind11 will `delete` memory it doesn't own on GC, corrupting
+            # the heap (as with ImGui::GetDrawData()). Default to non-owning
+            # reference instead; factory functions that really do transfer
+            # ownership should get an explicit spec with Ownership.OWNED.
+            return Ownership.REF
+
+        return Ownership.AUTOMATIC
+
+    """
+    def infer_ownership_from_type_kind(self, result_type: cindex.Type) -> Ownership:
+        kind = result_type.kind
+
+        if kind == cindex.TypeKind.LVALUEREFERENCE:
+            # Functions returning T& (const or not) are almost always
+            # aliasing persistent state (singleton accessors like
+            # ImGui::GetIO(), container element accessors, etc.), not
+            # handing back a temporary. `automatic` would default this
+            # to return_value_policy::copy, silently detaching the
+            # Python object from the real C++ instance. Reference it.
+            return Ownership.REF
+
+        if kind == cindex.TypeKind.RVALUEREFERENCE:
+            # T&& return is a genuine temporary being handed off.
+            return Ownership.MOVE
+
+        if kind == cindex.TypeKind.POINTER:
+            # Pointer returns are ambiguous (owning factory result vs.
+            # non-owning view) without more context, so leave pybind11's
+            # `automatic` (take_ownership) as the default rather than
+            # guessing — same as today's behavior.
+            return Ownership.AUTOMATIC
+
+        # Returned by value: `automatic` already does the right thing
+        # (move-construct the Python object), no override needed.
+        return Ownership.AUTOMATIC
+    """
+
+    """
     def get_result_ownership(
         self, result_type: cindex.Type
     ) -> Ownership:
@@ -307,7 +392,8 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             ownership = base_spec.ownership
 
         return ownership
-        
+    """
+
     #
     # -------- naming / specs / bindability --------
     #
