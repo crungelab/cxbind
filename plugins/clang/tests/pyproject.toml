@@ -1,27 +1,19 @@
-#[build-system]
-#requires = ["hatchling"]
-#build-backend = "hatchling.build"
-
 [project]
 name = "cxbind-tests"
 version = "0.0.0"
 description = "Testing environment for cxbind bindings"
-requires-python = ">=3.10,<3.11"
+requires-python = ">=3.12"
+
+[tool.hatch.envs.default]
+python = "3.12"
+detached = true
 dependencies = [
     "pytest",
     "loguru==0.7.3",
-    #"cxtest",
-]
-
-[tool.hatch.envs.default]
-python = "3.10"
-dependencies = [
-    "pytest",
 ]
 
 [tool.hatch.envs.default.scripts]
 test = "cxtest"
-pytest = "pytest"
 
 [tool.pytest.ini_options]
 log_cli = false

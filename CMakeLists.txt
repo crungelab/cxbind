@@ -40,7 +40,8 @@ write_basic_package_version_file(
 configure_package_config_file(
     tools/${PROJECT_NAME}Config.cmake.in
     ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake
-    INSTALL_DESTINATION ${CXBIND_CMAKECONFIG_INSTALL_DIR})
+    INSTALL_DESTINATION ${CXBIND_CMAKECONFIG_INSTALL_DIR}
+    PATH_VARS CMAKE_INSTALL_INCLUDEDIR)
 
 install(
     FILES

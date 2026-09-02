@@ -4,6 +4,15 @@
 set_and_check(cxbind_INCLUDE_DIR "@PACKAGE_CMAKE_INSTALL_INCLUDEDIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/cxbindTargets.cmake")
+
+# The export namespaces this as cxbind::cxbind_headers. ALIAS targets are not
+# exported, so the shorter cxbind::headers name is recreated here.
+if(NOT TARGET cxbind::headers)
+  add_library(cxbind::headers IMPORTED INTERFACE)
+  set_target_properties(cxbind::headers PROPERTIES
+    INTERFACE_LINK_LIBRARIES cxbind::cxbind_headers)
+endif()
+
 include("${CMAKE_CURRENT_LIST_DIR}/cxbindTools.cmake")
 
 if(NOT cxbind_FIND_QUIETLY)
