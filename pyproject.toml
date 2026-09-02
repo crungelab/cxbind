@@ -7,15 +7,14 @@ name = "cxbind"
 version = "0.3"
 description = 'pybind11 binding generator'
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.12"
 license = { file = "LICENSE" }
 keywords = []
 authors = [{ name = "Kurtis Fields", email = "kurtisfields@gmail.com" }]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
 ]
@@ -44,6 +43,9 @@ changelog = "https://github.com/crungelab/cxbind/blob/main/CHANGELOG.md"
 [project.scripts]
 cxbind = 'cxbind.cli:cli'
 
+[project.entry-points."cmake.prefix"]
+cxbind = "cxbind.share.cmake.cxbind"
+
 [tool.hatch.version]
 path = "cxbind/__about__.py"
 
@@ -66,7 +68,7 @@ dependencies = [
 build = "sphinx-build docs docs/_build"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["310", "311"]
+python = ["312"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["cxbind"]

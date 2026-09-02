@@ -1,84 +1,40 @@
-/target
-
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
-.pytest_cache/
 *.py[cod]
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-.venv/
-env/
-bin/
-build/
-develop-eggs/
-dist/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-#include/
-man/
-venv/
 *.egg-info/
-.installed.cfg
-*.egg
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-pip-selfcheck.json
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 .coverage
-.cache
-nosetests.xml
 coverage.xml
+htmlcov/
 
-# Translations
-*.mo
-
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
-
-# Rope
-.ropeproject
-
-# Django stuff:
-*.log
-*.pot
-
-.DS_Store
-
-# Sphinx documentation
-docs/_build/
-
-# PyCharm
-.idea/
-
-# VSCode
-.vscode/
-
-# Pyenv
+# Virtual environments
+.venv/
+venv/
 .python-version
 
-# envrc
+# Build output
+build/
+/dist/
+/_build/
+
+# Native artifacts (test modules built from generated bindings)
+*.so
+*.pyd
+*.dylib
+
+# CMake install output staged into the package
+/cxbind/include/
+/cxbind/share/
+
+# Editors
+.idea/
+.vscode/
+.DS_Store
+
+# Local
 .envrc
-
-# CxBuild
-_cxbuild
-_cxinstall
-
-depot
-tmp
-temp
-_build
+*.log
+/tmp/
+/temp/

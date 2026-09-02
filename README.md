@@ -34,8 +34,13 @@ cxbind gen myunit
 
 ## Build for PyPI
 ```bash
-cmake -S . -B _build -DCMAKE_INSTALL_PREFIX=cxbind
-cmake --install _build
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=cxbind
+cmake --install build
+```
+
+```bash
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=$PWD/cxbind
+cmake --install build
 ```
 
 ## Testing Clang Plugin
