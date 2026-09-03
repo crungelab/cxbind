@@ -1,0 +1,19 @@
+[project]
+name = "cxbind-dawn-tests"
+version = "0.0.0"
+description = "Testing environment for cxbind bindings"
+requires-python = ">=3.12"
+
+[tool.hatch.envs.default]
+python = "3.12"
+detached = true
+dependencies = [
+    "pytest",
+    "loguru==0.7.3",
+]
+
+[tool.hatch.envs.default.scripts]
+test = "cxtest"
+
+[tool.pytest.ini_options]
+log_cli = false

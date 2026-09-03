@@ -819,6 +819,11 @@ class DawnDrmFormatCapabilities:
     properties_count: Any  # type: size_t 
     properties: Any  # type: DawnDrmFormatProperties const * 
 
+class InstanceCapabilities:
+    next_in_chain: Optional[Any] = None  # type: ChainedStructOut * 
+    timed_wait_any_enable: Any  # type: Bool 
+    timed_wait_any_max_count: Any  # type: size_t 
+
 class SurfaceTexture:
     next_in_chain: Optional[Any] = None  # type: ChainedStructOut * 
     texture: Any  # type: Texture 

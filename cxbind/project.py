@@ -14,6 +14,7 @@ class UnitFile(BaseModel):
 
 
 class Project(UnitBase):
+    runner: str | None = None
     unit_files: list[UnitFile] = {}
     units: UnitDict = {}
 

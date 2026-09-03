@@ -470,13 +470,6 @@ class ImageCopyExternalTexture:
 
 
 @dataclass(frozen=True, kw_only=True)
-class InstanceCapabilities:
-    next_in_chain: Optional[Any] = None  # type: ChainedStructOut * , default: None
-    timed_wait_any_enable: Any = False  # type: Bool , default: False
-    timed_wait_any_max_count: Any = 0  # type: size_t , default: 0
-
-
-@dataclass(frozen=True, kw_only=True)
 class InstanceDescriptor:
     next_in_chain: Optional[Any] = None  # type: ChainedStruct const * , default: None
     capabilities: Any  # type: InstanceCapabilities , default: None

@@ -1,3 +1,5 @@
+runner: dawn
+
 module: wgpu
 
 flags: [
