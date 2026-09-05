@@ -24,10 +24,6 @@ build/
 *.pyd
 *.dylib
 
-# CMake install output staged into the package
-/cxbind/include/
-/cxbind/share/
-
 # Editors
 .idea/
 .vscode/
@@ -38,3 +34,10 @@ build/
 *.log
 /tmp/
 /temp/
+
+# Procure
+/depot/
+
+# CMake install output staged into the package
+/cxbind/include/
+/cxbind/share/
