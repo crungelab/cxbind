@@ -73,6 +73,12 @@ python = ["312"]
 [tool.hatch.build.targets.wheel]
 packages = ["cxbind"]
 
+[tool.hatch.build]
+artifacts = [
+    "cxbind/share/**",
+    "cxbind/include/**",
+]
+
 [tool.coverage.run]
 branch = true
 parallel = true
