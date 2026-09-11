@@ -37,10 +37,11 @@ class Overloaded(UserSet):
 class Session:
     def __init__(self, unit: Unit, **kwargs) -> None:
         self.unit = unit
-        self.module = unit.module
+        self.module_name = unit.module
 
         self.options = {"save": True}
         self.wrapped: dict[StructuralNode] = {}
+        self.pyname_registry: dict[str, Node] = {}
 
         self.target = ""
         self.flags: list[str] = unit.flags.copy()
@@ -87,7 +88,17 @@ class Session:
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
-    
+
+    # TODO: Needs to be per-module.  Also need to rename node already registered if there is a conflict
+    def register_pyname(self, pyname: str, node: Node) -> str:
+        if pyname in self.pyname_registry:
+            logger.warning(f"Pyname '{pyname}' already exists for node: {node}")
+            logger.debug(f"Top node pyname: {self.top_node.pyname if self.top_node else 'None'}")
+            return f"{self.top_node.pyname}{pyname}"
+        self.pyname_registry[pyname] = node
+        #logger.debug(f"Registered pyname '{pyname}' for node: {node}")
+        return pyname
+
     def register_spec(self, spec: Spec) -> None:
         logger.debug(f"Registering spec: {spec.name}")
         name = spec.name

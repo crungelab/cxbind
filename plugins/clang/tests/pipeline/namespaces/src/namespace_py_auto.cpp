@@ -10,9 +10,9 @@
 namespace py = pybind11;
 
 void register_namespace_py_auto(py::module &_tests, Registry &registry) {
-    py::class_<ns1::Ns1> _Ns1(_tests, "Ns1");
-    registry.on(_tests, "Ns1", _Ns1);
-        _Ns1
+    py::class_<ns1::Ns1> _Ns1Ns1(_tests, "Ns1Ns1");
+    registry.on(_tests, "Ns1Ns1", _Ns1Ns1);
+        _Ns1Ns1
         .def(py::init<>())
         .def("add", &ns1::Ns1::add
             , py::arg("i")
@@ -20,9 +20,9 @@ void register_namespace_py_auto(py::module &_tests, Registry &registry) {
             )
     ;
 
-    py::class_<ns2::Ns2> _Ns2(_tests, "Ns2");
-    registry.on(_tests, "Ns2", _Ns2);
-        _Ns2
+    py::class_<ns2::Ns2> _Ns2Ns2(_tests, "Ns2Ns2");
+    registry.on(_tests, "Ns2Ns2", _Ns2Ns2);
+        _Ns2Ns2
         .def(py::init<>())
         .def("add", py::overload_cast<int, int>(&ns2::Ns2::add)
             , py::arg("i")

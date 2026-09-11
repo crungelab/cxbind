@@ -18,7 +18,8 @@ class EnumRenderer(NodeRenderer[EnumNode]):
         cursor = node.cursor
 
         name = self.spell(cursor)
-        pyname = self.format_type(cursor.spelling)
+        #pyname = self.format_type(cursor.spelling)
+        pyname = node.pyname
 
         self.out(f'py::enum_<{name}>(_{self.scope}, "{pyname}", py::arithmetic())')
 

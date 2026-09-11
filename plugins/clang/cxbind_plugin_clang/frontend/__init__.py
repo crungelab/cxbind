@@ -1,3 +1,4 @@
+from .namespace_builder import NamespaceBuilder
 from .structural_builder import StructuralBuilder
 from .class_builder import ClassBuilder
 from .template_builder import TemplateBuilder
@@ -13,6 +14,5 @@ from .function_template_builder import FunctionTemplateBuilder
 from .ctor_builder import CtorBuilder
 from .node_builder import NodeBuilder
 from .node_builder_table import NODE_BUILDER_TABLE
-from .node_builder import NodeBuilder
 
 from .frontend import Frontend

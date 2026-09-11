@@ -39,6 +39,9 @@ class Spec(Entry):
         )
 
 
+class NamespaceSpec(Spec):
+    kind: Literal["namespace"]
+
 class TemplateSpec(Spec):
     pass
 
@@ -340,6 +343,7 @@ def create_spec(key: EntryKey | str, **kwargs: Any) -> SpecUnion:
     spec_key = EntryKey.parse(key) if isinstance(key, str) else key
 
     spec_cls = {
+        "namespace": NamespaceSpec,
         "function": FunctionSpec,
         "function_prototype": FunctionPrototypeSpec,
         "function_template": FunctionTemplateSpec,

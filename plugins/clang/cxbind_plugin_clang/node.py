@@ -76,6 +76,8 @@ class Node(Entry):
 
         if cursor.kind == cindex.CursorKind.TRANSLATION_UNIT:
             kind = "translation_unit"
+        elif cursor.kind == cindex.CursorKind.NAMESPACE:
+            kind = "namespace"
         elif cursor.kind == cindex.CursorKind.CLASS_DECL:
             kind = "class"
         elif cursor.kind == cindex.CursorKind.STRUCT_DECL:
@@ -151,6 +153,8 @@ class DeclNode(Node):
         other.cursor = self.cursor
         return other
 
+class NamespaceNode(DeclNode):
+    kind: Literal["namespace"] = "namespace"
 
 class TemplateNode(Node):
     pass

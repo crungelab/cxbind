@@ -1,10 +1,3 @@
-from typing import (
-    TypeVar,
-    Generic,
-    Any,
-    Generator,
-)
-
 from loguru import logger
 
 from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraProperty
@@ -13,9 +6,8 @@ from ...node import StructuralNode, FunctionalNode, FieldNode
 
 from .node_renderer import NodeRenderer
 
-T_Node = TypeVar("T_Node", bound=StructuralNode)
 
-class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
+class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
     def render(self):
         node = self.node
         pyname = node.pyname
@@ -27,9 +19,9 @@ class StructuralRenderer(NodeRenderer[T_Node], Generic[T_Node]):
         extra += f",{node.spec.holder}<{node.name}>" if node.spec.holder else ""
 
         self.out(
-            f'py::class_<{node.name}{extra}> _{pyname}(_{self.module}, "{pyname}");'
+            f'py::class_<{node.name}{extra}> _{pyname}(_{self.module_name}, "{pyname}");'
         )
-        self.out(f'registry.on(_{self.module}, "{pyname}", _{pyname});')
+        self.out(f'registry.on(_{self.module_name}, "{pyname}", _{pyname});')
 
         with self.enter(node):
             super().render()

@@ -51,8 +51,8 @@ class Worker(Generic[T_Context]):
         return self.session.target
 
     @property
-    def module(self):
-        return self.session.module
+    def module_name(self):
+        return self.session.module_name
 
     @property
     def flags(self):
@@ -121,10 +121,10 @@ class Worker(Generic[T_Context]):
     @property
     def scope(self) -> str:
         node = self.top_node
-        return self.module if node.kind == "root" else node.pyname
+        return self.module_name if node.kind == "root" else node.pyname
 
     def module_(self, node: Node) -> str:
-        return self.module if node.kind == "root" else node.pyname
+        return self.module_name if node.kind == "root" else node.pyname
 
     # ------------------------------------------------------------------
     # Cursor / type predicates

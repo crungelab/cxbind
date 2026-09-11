@@ -63,6 +63,10 @@ class Builder(Worker[BuildContext]):
     def visit_none(self, cursor: cindex.Cursor):
         logger.debug(f"visit_none: {cursor.spelling}")
 
+    def visit_namespace(self, cursor: cindex.Cursor):
+        builder = self.create_builder(EntryKey(kind="namespace", name=self.spell(cursor)), cursor=cursor)
+        builder.build()
+
     def visit_enum(self, cursor: cindex.Cursor):
         builder = self.create_builder(EntryKey(kind="enum", name=self.spell(cursor)), cursor=cursor)
         builder.build()

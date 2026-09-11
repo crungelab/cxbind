@@ -1,3 +1,4 @@
+from .namespace_renderer import NamespaceRenderer
 from .structural_renderer import StructuralRenderer
 from .class_renderer import ClassRenderer
 from .class_template_specialization_renderer import ClassTemplateSpecializationRenderer

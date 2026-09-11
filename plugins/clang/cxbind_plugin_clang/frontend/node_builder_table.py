@@ -8,9 +8,11 @@ from . import (
     ClassBuilder,
     ClassTemplateBuilder,
     EnumBuilder,
+    NamespaceBuilder,
 )
 
 NODE_BUILDER_TABLE = {
+    "namespace": NamespaceBuilder,
     "function": FunctionBuilder,
     "function_template": FunctionTemplateBuilder,
     "ctor": CtorBuilder,

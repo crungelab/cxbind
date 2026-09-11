@@ -27,7 +27,9 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.node: T_Node = None
 
     def create_pyname(self, name) -> str:
-        return self.format_type(name)
+        pyname = self.format_type(name)
+        pyname = self.session.register_pyname(pyname, self.node)
+        return pyname
 
     def should_cancel(self) -> bool:
         return False
