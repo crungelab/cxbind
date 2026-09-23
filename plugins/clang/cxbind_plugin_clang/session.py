@@ -186,13 +186,6 @@ class Session:
         name = self.camel(name)
         return name
 
-    def format_enum(self, name: str) -> str:
-        name = self.strip_prefixes(name)
-        name = self.snake(name).upper()
-        name = name.replace("__", "_")
-        name = name.rstrip("_")
-        return name
-
     def format_enum_constant(
         self, enum_constant_name: str, enum_name: str = None
     ) -> str:
