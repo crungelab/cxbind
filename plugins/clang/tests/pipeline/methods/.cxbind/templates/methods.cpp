@@ -5,10 +5,10 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
-#include "advanced.h"
+#include "methods.h"
 
 namespace py = pybind11;
 
-void register_advanced_py_auto(py::module &_tests, Registry &registry) {
+void register_methods_py_auto(py::module &_tests, Registry &registry) {
 {{body}}
 }

@@ -7,4 +7,4 @@ flags: [
 ]
 
 unit_files:
-  - path: advanced.unit.yaml
+  - path: methods.unit.yaml

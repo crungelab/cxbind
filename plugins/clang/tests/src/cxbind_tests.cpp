@@ -5,7 +5,7 @@
 namespace py = pybind11;
 
 void register_simple_py_auto(py::module &, Registry &registry);
-void register_advanced_py_auto(py::module &, Registry &registry);
+void register_methods_py_auto(py::module &, Registry &registry);
 void register_arguments_py_auto(py::module &, Registry &registry);
 void register_enums_py_auto(py::module &, Registry &registry);
 void register_exclude_py_auto(py::module &, Registry &registry);
@@ -40,8 +40,8 @@ PYBIND11_MODULE(cxbind_tests, m)
     auto _simple = m.def_submodule("test_simple");
     register_simple_py_auto(_simple, r);
 
-    auto _advanced = m.def_submodule("test_advanced");
-    register_advanced_py_auto(_advanced, r);
+    auto _methods = m.def_submodule("test_methods");
+    register_methods_py_auto(_methods, r);
 
     auto _arguments = m.def_submodule("test_arguments");
     register_arguments_py_auto(_arguments, r);

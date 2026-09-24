@@ -6,6 +6,7 @@ from loguru import logger
 from cxbind.spec import Spec, create_spec
 
 from ..node import Node
+from ..pyname_registry import PyBinding, PyKind
 
 from .builder import Builder
 from .build_context import BuildContext
@@ -14,6 +15,11 @@ T_Node = TypeVar("T_Node", bound=Node)
 
 
 class NodeBuilder(Builder, Generic[T_Node]):
+    # Kind of Python name this builder registers with the session's pyname
+    # registry. None means the node's pyname is assigned directly and is not
+    # tracked by the registry (no Python name of its own, or not yet migrated).
+    py_kind: PyKind | None = None
+
     def __init__(
         self,
         name: str,
@@ -26,10 +32,36 @@ class NodeBuilder(Builder, Generic[T_Node]):
         self.name = self.spec.alias or name
         self.node: T_Node = None
 
-    def create_pyname(self, name) -> str:
-        pyname = self.format_type(name)
-        pyname = self.session.register_pyname(pyname, self.node)
-        return pyname
+    # ------------------------------------------------------------------
+    # Naming
+    # ------------------------------------------------------------------
+
+    def create_pyname(self, name: str) -> str:
+        """Format a C++ name into a provisional pyname. Pure: no registration."""
+        return self.format_type(name)
+
+    def get_py_kind(self) -> PyKind | None:
+        return self.py_kind
+
+    def scope_binding(self) -> PyBinding | None:
+        """The binding of the Python scope this node is declared in; None = module."""
+        top = self.top_node
+        return getattr(top, "binding", None) if top is not None else None
+
+    def register_binding(self) -> None:
+        explicit = bool(self.spec.pyname)
+        base = self.spec.pyname or self.create_pyname(self.node.first_name)
+
+        kind = self.get_py_kind()
+        if kind is None:
+            self.node.pyname = base  # untracked: legacy path
+            return
+
+        self.node.binding = self.session.pynames.add(
+            self.node, kind, self.scope_binding(), base, explicit=explicit
+        )
+
+    # ------------------------------------------------------------------
 
     def should_cancel(self) -> bool:
         return False
@@ -45,10 +77,6 @@ class NodeBuilder(Builder, Generic[T_Node]):
             key = Node.make_key(self.cursor)
             spec = create_spec(key)
         return spec
-
-    def get_pyname(self) -> str:
-        pyname = self.spec.pyname or self.create_pyname(self.node.first_name)
-        return pyname
 
     def build(self) -> None:
         if self.should_cancel():
@@ -71,7 +99,10 @@ class NodeBuilder(Builder, Generic[T_Node]):
 
     def build_node(self):
         self.node.spec = self.spec
-        self.node.pyname = self.get_pyname()
 
+        # Check exclusion before registering, so excluded nodes never
+        # participate in name resolution.
         if self.node.spec.exclude:
             raise Exception(f"Node excluded: {self.node.name}")
+
+        self.register_binding()

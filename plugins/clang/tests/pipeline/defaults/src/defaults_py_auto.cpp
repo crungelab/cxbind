@@ -34,7 +34,6 @@ void register_defaults_py_auto(py::module &_tests, Registry &registry) {
         .value("DEFAULTS_ENUM_CLASS_7", DefaultsEnumClass::DEFAULTS_ENUM_CLASS_7)
         .value("DEFAULTS_ENUM_CLASS_8", DefaultsEnumClass::DEFAULTS_ENUM_CLASS_8)
         .value("DEFAULTS_ENUM_CLASS_9", DefaultsEnumClass::DEFAULTS_ENUM_CLASS_9)
-        .export_values()
     ;
     py::class_<Defaults> _Defaults(_tests, "Defaults");
     registry.on(_tests, "Defaults", _Defaults);

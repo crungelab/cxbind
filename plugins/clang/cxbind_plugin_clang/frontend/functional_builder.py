@@ -15,6 +15,7 @@ from cxbind.spec import (
 from cxbind.facade import Facade
 
 from ..node import Node, FunctionalNode, Parameter, ReturnValue, Type
+from ..pyname_registry import PyKind
 from .node_builder import NodeBuilder
 from .functional_build_pod import FunctionalBuildPod, ParamInfo
 from .param_builder import ParamBuilder, PARAM_BUILDER_TABLE
@@ -336,70 +337,24 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
 
         return Ownership.AUTOMATIC
 
-    """
-    def infer_ownership_from_type_kind(self, result_type: cindex.Type) -> Ownership:
-        kind = result_type.kind
-
-        if kind == cindex.TypeKind.LVALUEREFERENCE:
-            # Functions returning T& (const or not) are almost always
-            # aliasing persistent state (singleton accessors like
-            # ImGui::GetIO(), container element accessors, etc.), not
-            # handing back a temporary. `automatic` would default this
-            # to return_value_policy::copy, silently detaching the
-            # Python object from the real C++ instance. Reference it.
-            return Ownership.REF
-
-        if kind == cindex.TypeKind.RVALUEREFERENCE:
-            # T&& return is a genuine temporary being handed off.
-            return Ownership.MOVE
-
-        if kind == cindex.TypeKind.POINTER:
-            # Pointer returns are ambiguous (owning factory result vs.
-            # non-owning view) without more context, so leave pybind11's
-            # `automatic` (take_ownership) as the default rather than
-            # guessing — same as today's behavior.
-            return Ownership.AUTOMATIC
-
-        # Returned by value: `automatic` already does the right thing
-        # (move-construct the Python object), no override needed.
-        return Ownership.AUTOMATIC
-    """
-
-    """
-    def get_result_ownership(
-        self, result_type: cindex.Type
-    ) -> Ownership:
-        node = self.node
-        result_spec = node.returns.spec if node.returns is not None else None
-
-        base_decl = self.get_base_declaration(result_type)
-        if base_decl is not None:
-            base_key = Node.make_key(base_decl)
-            logger.debug(f"Base declaration: {base_decl}")
-            logger.debug(f"Base kind: {base_decl.kind}")
-            logger.debug(f"Base key: {base_key}")
-        else:
-            base_key = None
-
-        base_spec = self.lookup_spec(base_key)
-        logger.debug(f"base_spec: {base_spec}")
-
-        ownership = Ownership.AUTOMATIC  # default ownership
-
-        if result_spec is not None:
-            ownership = result_spec.ownership
-        elif base_spec is not None:
-            ownership = base_spec.ownership
-
-        return ownership
-    """
-
     #
     # -------- naming / specs / bindability --------
     #
 
     def create_pyname(self, name: str) -> str:
         return self.format_function(name)
+
+    def get_py_kind(self) -> PyKind | None:
+        kind = self.cursor.kind
+        if kind in (cindex.CursorKind.CONSTRUCTOR, cindex.CursorKind.DESTRUCTOR):
+            return None  # rendered as py::init / never bound; no Python name to register
+        if kind == cindex.CursorKind.CXX_METHOD:
+            if self.cursor.is_static_method():
+                return PyKind.STATIC_METHOD
+            return PyKind.METHOD
+        if kind == cindex.CursorKind.FUNCTION_DECL:
+            return PyKind.FUNCTION
+        return None  # typedefs to function types, etc.
 
     def should_cancel(self) -> bool:
         return super().should_cancel() or not self.is_function_bindable(self.cursor)
@@ -408,17 +363,6 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
         key = FunctionalNode.make_key(self.cursor, self.is_overloaded(self.cursor))
         spec = self.lookup_spec(key) or create_spec(key)
         return spec
-
-    def process_function_decl(self, decl: cindex.Cursor) -> bool:
-        """
-        for param in decl.get_children():
-            if param.kind == cindex.CursorKind.PARM_DECL and self.is_rvalue_ref(
-                param.type
-            ):
-                logger.debug(f"Found rvalue reference in function {decl.spelling}")
-                return False
-        """
-        return True
 
     def is_inlined(self, cursor: cindex.Cursor) -> bool:
         return any(tok.spelling == "inline" for tok in cursor.get_tokens())
@@ -439,8 +383,6 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             if "operator" in cursor.spelling:
                 return False
             if cursor.get_num_template_arguments() > 0:
-                return False
-            if not self.process_function_decl(cursor):
                 return False
 
             for argument in cursor.get_arguments():

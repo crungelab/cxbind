@@ -11,6 +11,7 @@ from cxbind.spec_registry import SpecRegistry
 from cxbind.unit import Unit
 
 from .node import Node, StructuralNode
+from .pyname_registry import PynameRegistry
 #from .node_registry import NodeRegistry
 
 current_session: ContextVar[Optional["Session"]] = ContextVar(
@@ -41,7 +42,6 @@ class Session:
 
         self.options = {"save": True}
         self.wrapped: dict[StructuralNode] = {}
-        self.pyname_registry: dict[str, Node] = {}
 
         self.target = ""
         self.flags: list[str] = unit.flags.copy()
@@ -53,6 +53,9 @@ class Session:
 
         self.node_stack: list[Node] = []
         self.prefixes = unit.prefixes
+
+        # Registered during build, resolved once at the start of render.
+        self.pynames = PynameRegistry(self.format_type)
 
         self.spec_registry = SpecRegistry()
         for spec in self.specs.values():
@@ -77,6 +80,9 @@ class Session:
     def get_current(cls) -> Optional["Session"]:
         return current_session.get()
 
+    def resolve(self) -> None:
+        self.pynames.resolve()
+
     def push_node(self, node) -> None:
         self.node_stack.append(node)
 
@@ -88,16 +94,6 @@ class Session:
         if len(self.node_stack) == 0:
             return None
         return self.node_stack[-1]
-
-    # TODO: Needs to be per-module.  Also need to rename node already registered if there is a conflict
-    def register_pyname(self, pyname: str, node: Node) -> str:
-        if pyname in self.pyname_registry:
-            logger.warning(f"Pyname '{pyname}' already exists for node: {node}")
-            logger.debug(f"Top node pyname: {self.top_node.pyname if self.top_node else 'None'}")
-            return f"{self.top_node.pyname}{pyname}"
-        self.pyname_registry[pyname] = node
-        #logger.debug(f"Registered pyname '{pyname}' for node: {node}")
-        return pyname
 
     def register_spec(self, spec: Spec) -> None:
         logger.debug(f"Registering spec: {spec.name}")

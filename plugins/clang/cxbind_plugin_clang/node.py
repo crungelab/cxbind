@@ -1,9 +1,16 @@
 from __future__ import annotations
 
-from typing import Optional, Literal, Union, Any
+from typing import TYPE_CHECKING, Optional, Literal, Union, Any
 from typing_extensions import Annotated
 
-from pydantic import BaseModel, Field, TypeAdapter, ConfigDict
+from pydantic import (
+    BaseModel,
+    Field,
+    TypeAdapter,
+    ConfigDict,
+    PrivateAttr,
+    computed_field,
+)
 
 from clang import cindex
 from loguru import logger
@@ -21,16 +28,52 @@ from cxbind.spec import (
 )
 from cxbind.facade import Facade
 
+if TYPE_CHECKING:
+    from .pyname_registry import PyBinding
+
 
 class Node(Entry):
-    pyname: str | None = None
+    # Name for nodes the pyname registry doesn't track (no py_kind, or not yet
+    # migrated). Loads from "pyname" so serialized nodes round-trip; dumping
+    # goes through the computed `pyname` below instead.
+    legacy_pyname: str | None = Field(
+        None, validation_alias="pyname", exclude=True, repr=False
+    )
     children: list["Node"] = Field(default_factory=list)
     parent: Optional["Node"] = Field(None, exclude=True, repr=False)
 
     spec: Spec | None = Field(None, exclude=True, repr=False)
     facade: Facade | None = Field(None, exclude=True, repr=False)
 
+    # Private: not validated, not serialized, not part of the schema.
+    # Shallow-copied by model_copy(), so clones share their source's binding.
+    _binding: Optional[PyBinding] = PrivateAttr(default=None)
+
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    @property
+    def binding(self) -> PyBinding | None:
+        return self._binding
+
+    @binding.setter
+    def binding(self, value: PyBinding | None) -> None:
+        self._binding = value
+
+    @computed_field
+    @property
+    def pyname(self) -> str | None:
+        if self._binding is not None:
+            return self._binding.pyname
+        return self.legacy_pyname
+
+    @pyname.setter
+    def pyname(self, value: str | None) -> None:
+        if self._binding is not None:
+            logger.warning(
+                f"Setting pyname '{value}' on {self.name}, which has a binding "
+                f"('{self._binding.pyname}'); the binding's name takes precedence"
+            )
+        self.legacy_pyname = value
 
     def __repr__(self) -> str:
         return (

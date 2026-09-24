@@ -3,6 +3,7 @@ from loguru import logger
 from cxbind.extra import ExtraMethod, ExtraInitMethod, ExtraReprMethod, ExtraProperty
 
 from ...node import StructuralNode, FunctionalNode, FieldNode
+from ...pyname_registry import PyBinding, PyKind
 
 from .node_renderer import NodeRenderer
 
@@ -10,7 +11,7 @@ from .node_renderer import NodeRenderer
 class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
     def render(self):
         node = self.node
-        pyname = node.pyname
+        pyname = node.pyname  # resolved via node.binding
 
         self.end_chain()
 
@@ -50,12 +51,24 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
             else:
                 self.render_standard_method(method)
 
+    def make_extra_node(self, use_node: FunctionalNode, name: str) -> FunctionalNode:
+        """
+        Clone a free function to render as a method of this class under `name`.
+
+        The clone gets its own binding. Setting other_node.pyname would not
+        work: a copied binding takes precedence over the legacy pyname.
+        """
+        other_node = use_node.clone()
+        other_node.mogrified = True
+        other_node.binding = PyBinding(
+            other_node, PyKind.METHOD, self.node.binding, name, explicit=True
+        )
+        return other_node
+
     def render_using(self, method: ExtraMethod):
         use_node: FunctionalNode = self.session.node_registry.get(method.use)
         if use_node is not None:
-            other_node = use_node.clone()
-            other_node.mogrified = True
-            other_node.pyname = method.name
+            other_node = self.make_extra_node(use_node, method.name)
             self.context.render_node(other_node)
 
     def render_init(self, method: ExtraInitMethod):
@@ -162,33 +175,6 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
             self.out("}")
         self.out("}")
 
-    '''
-    def render_kwargs_init(self, method: ExtraInitMethod):
-        logger.debug("renderering kwargs_init for: {self.node}")
-        self.begin_chain()
-        node = self.node
-        self.out(f".def(py::init([](const py::kwargs& kwargs)")
-        self.out("{")
-        with self.out:
-            if method.use is not None:
-                self.out(f"{node.name} obj = {method.use.name}();")
-            else:
-                self.out(f"{node.name} obj{{}};")
-            for child in node.children:
-                if type(child) is FieldNode:
-                    if child.spec.flatten:
-                        logger.debug(f"Flattening field: {child.first_name}")
-                        self.render_kwarg_field_flattened(child)
-                    else:
-                        self.render_kwarg_field(
-                            target=f"obj.{child.first_name}",
-                            pyname=child.pyname,
-                            cursor=child.cursor,
-                        )
-            self.out("return obj;")
-        self.out("}))")
-    '''
-
     def render_kwarg_field(self, target: str, pyname: str, cursor):
         """Emit `if (kwargs.contains(...)) { ... obj.<target> = value; }` for a single field."""
         is_char_ptr = self.is_char_ptr(cursor)
@@ -223,50 +209,6 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
                 pyname=nested_pyname,
                 cursor=nested_cursor,
             )
-
-    '''
-    def render_kwargs_init(self, method: ExtraInitMethod):
-        logger.debug("renderering kwargs_init for: {self.node}")
-        self.begin_chain()
-        node = self.node
-        self.out(f".def(py::init([](const py::kwargs& kwargs)")
-        self.out("{")
-        with self.out:
-            if method.use is not None:
-                self.out(f"{node.name} obj = {method.use.name}();")
-            else:
-                self.out(f"{node.name} obj{{}};")
-            for child in node.children:
-                cursor = child.cursor
-                typename = None
-                is_char_ptr = self.is_char_ptr(cursor)
-                if is_char_ptr:
-                    typename = "std::string"
-                else:
-                    # typename = cursor.type.spelling
-                    typename = cursor.type.get_canonical().spelling
-                if type(child) is FieldNode:
-                    if child.spec.flatten:
-                        logger.debug(f"Flattening field: {child.first_name}")
-                    self.out(f'if (kwargs.contains("{child.pyname}"))')
-                    self.out("{")
-                    with self.out:
-                        if is_char_ptr:
-                            self.out(
-                                f'auto _value = kwargs["{child.pyname}"].cast<{typename}>();'
-                            )
-                            self.out(f"char* value = (char*)malloc(_value.size());")
-                            self.out(f"strcpy(value, _value.c_str());")
-                        else:
-                            self.out(
-                                f'auto value = kwargs["{child.pyname}"].cast<{typename}>();'
-                            )
-                        self.out(f"obj.{child.first_name} = value;")
-                    self.out("}")
-            self.out("return obj;")
-        # self.out("}), py::return_value_policy::automatic_reference);")
-        self.out("}))")
-    '''
 
     def render_repr(self, method: ExtraReprMethod):
         node = self.node
@@ -328,9 +270,7 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
             # use_node = self.session.node_registry.get(method.use)
             use_node = self.runner.node_registry.get(method.use)
             if use_node is not None:
-                other_node = use_node.clone()
-                other_node.mogrified = True
-                other_node.pyname = method.name
+                other_node = self.make_extra_node(use_node, method.name)
                 self.context.render_node(other_node)
             else:
                 raise ValueError(f"Node not found for method use: {method.use}")

@@ -34,7 +34,9 @@ class Builder(Worker[BuildContext]):
     def build(self) -> None:
         raise NotImplementedError("Builder.build must be implemented in subclasses")
 
-    def create_builder(self, entry_key: EntryKey, cursor: cindex.Cursor = None) -> "Builder":
+    def create_builder(
+        self, entry_key: EntryKey, cursor: cindex.Cursor = None
+    ) -> "Builder":
         return self.context.create_builder(entry_key, cursor)
 
     def visit(self, cursor: cindex.Cursor):
@@ -64,23 +66,33 @@ class Builder(Worker[BuildContext]):
         logger.debug(f"visit_none: {cursor.spelling}")
 
     def visit_namespace(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="namespace", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="namespace", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_enum(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="enum", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="enum", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_field(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="field", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="field", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_constructor(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="ctor", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="ctor", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_function(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="function", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="function", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_function_template(self, cursor: cindex.Cursor):
@@ -88,7 +100,6 @@ class Builder(Worker[BuildContext]):
         logger.debug(f"Function template semantic parent: {sp.spelling}")
         lp = cursor.lexical_parent
         logger.debug(f"Function template lexical parent: {lp.spelling}")
-
 
         if sp != lp:
             # Ignore function templates that are not defined in the same scope as they are declared
@@ -109,7 +120,9 @@ class Builder(Worker[BuildContext]):
                 f"Skipping method declared in a different scope: {cursor.spelling}"
             )
             return
-        builder = self.create_builder(EntryKey(kind="method", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="method", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_struct(self, cursor: cindex.Cursor):
@@ -123,20 +136,10 @@ class Builder(Worker[BuildContext]):
         builder = self.create_builder(EntryKey(kind="struct", name=name), cursor=cursor)
         builder.build()
 
-    """
-    def visit_struct(self, cursor: cindex.Cursor):
-        name = self.spell(cursor)
-        logger.debug(f"Struct name: '{name}'")
-        if "unnamed struct" in name:
-            logger.debug(f"Anonymous struct detected: {name}")
-            name = self.session.camel(cu.anonymous_struct_name(cursor))
-            logger.debug(f"Renamed to: {name}")
-        builder = self.create_builder(f"struct@{name}", cursor=cursor)
-        builder.build()
-    """
-
     def visit_class(self, cursor: cindex.Cursor):
-        builder = self.create_builder(EntryKey(kind="class", name=self.spell(cursor)), cursor=cursor)
+        builder = self.create_builder(
+            EntryKey(kind="class", name=self.spell(cursor)), cursor=cursor
+        )
         builder.build()
 
     def visit_class_template(self, cursor: cindex.Cursor):
@@ -155,13 +158,13 @@ class Builder(Worker[BuildContext]):
         # pass
         raise NotImplementedError
 
-    '''
+    """
     def visit_typedef_decl(self, cursor: cindex.Cursor):
         builder = self.create_builder(EntryKey(kind="typedef", name=self.spell(cursor)), cursor=cursor)
         builder.build()
-    '''
+    """
 
-    '''
+    """
     def visit_typedef_decl(self, cursor: cindex.Cursor):
         #logger.debug(f"Not implemented:  visit_typedef_decl: {cursor.spelling}")
         if cursor.type.get_canonical().kind == cindex.TypeKind.FUNCTIONPROTO:
@@ -170,4 +173,4 @@ class Builder(Worker[BuildContext]):
 
         pass
         #raise NotImplementedError
-    '''
+    """

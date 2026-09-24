@@ -19,17 +19,12 @@ from .backend.generator import Generator
 from .node import Node
 from .clang_runner import ClangRunner
 
-"""
-class BuildResult:
-    def __init__(self, source: str, session: Session, node: Node):
-        self.source = source
-        self.session = session
-        self.node = node
-"""
+
 class BuildResult:
     def __init__(self, source: str, node: Node):
         self.source = source
         self.node = node
+
 
 class Compiler(Tool):
     def __init__(self, unit: Unit) -> None:
@@ -71,23 +66,21 @@ class Compiler(Tool):
 
         frontend = Frontend(source)
         root = frontend.build()
-        #logger.debug(f"Built root node: {root}")
+        # logger.debug(f"Built root node: {root}")
         runner.update_specs(session.specs)
-        # runner.root.add_child(node)
-        """
-        for node in root.traverse():
-            runner.add_node(node)
-        """
-        #self.build_results.append(BuildResult(source, session, root))
+
         self.build_results.append(BuildResult(source, root))
 
     def generate(self) -> None:
         session = self.my_session
         session.make_current()
 
+        # All sources and transforms are done: assign final pynames before rendering.
+        session.resolve()
+
         text_list = []
         for build_result in self.build_results:
-            #build_result.session.make_current()
+            # build_result.session.make_current()
             generator = Generator(build_result.source, build_result.node)
             text_list.append(generator.generate())
 
@@ -120,12 +113,3 @@ class Compiler(Tool):
 
         if self.unit.generate:
             plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
-
-    """
-    def run(self):
-        self.build()
-
-        self.transform()
-
-        self.generate()
-    """

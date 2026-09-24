@@ -20,7 +20,6 @@ void register_enums_py_auto(py::module &_tests, Registry &registry) {
         .value("VALUE1", ScopedEnum::Value1)
         .value("VALUE2", ScopedEnum::Value2)
         .value("VALUE3", ScopedEnum::Value3)
-        .export_values()
     ;
     py::enum_<RedundantEnum>(_tests, "RedundantEnum", py::arithmetic())
         .value("VALUE1", RedundantEnum::RedundantEnumValue1)
@@ -44,6 +43,41 @@ void register_enums_py_auto(py::module &_tests, Registry &registry) {
         .value("VALUE1", EnumStruct::Enum::Value1)
         .value("VALUE2", EnumStruct::Enum::Value2)
         .value("VALUE3", EnumStruct::Enum::Value3)
+        .export_values()
+    ;
+    py::enum_<primaries::CicpId>(_tests, "PrimariesCicpId", py::arithmetic())
+        .value("REC709", primaries::CicpId::Rec709)
+        .value("UNSPECIFIED", primaries::CicpId::Unspecified)
+        .value("BT2020", primaries::CicpId::Bt2020)
+    ;
+    py::enum_<transfer::CicpId>(_tests, "TransferCicpId", py::arithmetic())
+        .value("REC709", transfer::CicpId::Rec709)
+        .value("UNSPECIFIED", transfer::CicpId::Unspecified)
+        .value("LINEAR", transfer::CicpId::Linear)
+    ;
+    py::enum_<left::inner::Level>(_tests, "LeftInnerLevel", py::arithmetic())
+        .value("LOW", left::inner::Level::Low)
+        .value("HIGH", left::inner::Level::High)
+    ;
+    py::enum_<right::inner::Level>(_tests, "RightInnerLevel", py::arithmetic())
+        .value("LOW", right::inner::Level::Low)
+        .value("MID", right::inner::Level::Mid)
+        .value("HIGH", right::inner::Level::High)
+    ;
+    py::class_<Widget> _Widget(_tests, "Widget");
+    registry.on(_tests, "Widget", _Widget);
+        _Widget
+        .def_readwrite("id", &Widget::id)
+        ;
+
+        py::enum_<Widget::Kind>(_Widget, "Kind", py::arithmetic())
+            .value("SMALL", Widget::Kind::KindSmall)
+            .value("LARGE", Widget::Kind::KindLarge)
+            .export_values()
+        ;
+    py::enum_<Gadget::Kind>(_tests, "Kind", py::arithmetic())
+        .value("ON", Gadget::Kind::KindOn)
+        .value("OFF", Gadget::Kind::KindOff)
         .export_values()
     ;
 

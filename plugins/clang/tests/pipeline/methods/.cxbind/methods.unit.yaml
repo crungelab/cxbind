@@ -1,0 +1,5 @@
+source: 'src/methods.h'
+target: 'src/methods_py_auto.cpp'
+
+specs:
+  'method@Methods::ignore_me': {exclude: true}

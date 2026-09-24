@@ -12,7 +12,6 @@ from pydantic import (
     TypeAdapter,
     field_validator,
     model_validator,
-    BeforeValidator,
 )
 from pydantic_core import core_schema
 from loguru import logger
@@ -42,8 +41,41 @@ class Spec(Entry):
 class NamespaceSpec(Spec):
     kind: Literal["namespace"]
 
+
 class TemplateSpec(Spec):
-    pass
+    """Base for template specs.
+
+    Normalizes the `specializations` list so each item is a dict carrying the
+    template's name. Accepted item forms:
+      - dict:        used as-is, inheriting the parent's name if absent
+      - list/tuple:  treated as template args
+      - scalar:      treated as a name
+    Each specialization's `kind` comes from the default on its model.
+    """
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_specializations(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+
+        specs = data.get("specializations")
+        if not specs:
+            return data
+
+        parent_name = data.get("name")
+        normalized = []
+        for item in specs:
+            if isinstance(item, dict):
+                if "name" not in item and parent_name is not None:
+                    item = {"name": parent_name, **item}
+                normalized.append(item)
+            elif isinstance(item, (list, tuple)):
+                normalized.append({"name": parent_name, "template_args": list(item)})
+            else:
+                normalized.append({"name": str(item)})
+
+        return {**data, "specializations": normalized}
 
 
 class ParamDirection(str, Enum):
@@ -111,7 +143,11 @@ class FunctionSpec(FunctionalSpec):
 
 
 class FunctionTemplateSpecializationSpec(FunctionSpec):
-    kind: Literal["function_template_specialization"]
+    # Defaulted: specializations are nested under their template, so the
+    # kind is implied and never supplied by the input.
+    kind: Literal["function_template_specialization"] = (
+        "function_template_specialization"
+    )
     template_args: list[str] = Field(default_factory=list)
 
 
@@ -120,32 +156,6 @@ class FunctionTemplateSpec(TemplateSpec):
     specializations: list[FunctionTemplateSpecializationSpec] = Field(
         default_factory=list
     )
-
-    @model_validator(mode="before")
-    @classmethod
-    def _normalize_specializations(cls, data: Any) -> Any:
-        if not isinstance(data, dict):
-            return data
-
-        specs = data.get("specializations")
-        if not specs:
-            return data
-
-        normalized = []
-        for item in specs:
-            if isinstance(item, dict):
-                if "name" not in item and "name" in data:
-                    item = {"name": data["name"], **item}
-                normalized.append(item)
-            elif isinstance(item, (list, tuple)):
-                normalized.append(
-                    {"name": data.get("name"), "template_args": list(item)}
-                )
-            else:
-                normalized.append({"name": str(item)})
-
-        data["specializations"] = normalized
-        return data
 
 
 class MethodSpec(FunctionalSpec):
@@ -180,9 +190,7 @@ class StructuralExtra(Extra):
         normalized = []
         for key, item in v.items():
             if isinstance(item, dict):
-                if "name" not in item:
-                    item = {"name": key, **item}
-                normalized.append(item)
+                normalized.append({"name": key, **item})
 
         return normalized
 
@@ -195,12 +203,11 @@ class StructuralExtra(Extra):
         normalized = []
         for key, item in v.items():
             if isinstance(item, dict):
-                if "name" not in item:
-                    item = {"name": key, **item}
-                if item["name"] in special_methods and "kind" not in item:
-                    item["kind"] = item["name"]
-                else:
-                    item["kind"] = "standard"
+                item = {"name": key, **item}
+                if "kind" not in item:
+                    item["kind"] = (
+                        item["name"] if item["name"] in special_methods else "standard"
+                    )
                 normalized.append(item)
 
         return normalized
@@ -216,17 +223,20 @@ class StructuralSpec(Spec):
 
     @model_validator(mode="before")
     @classmethod
-    def validate(cls, data: Any) -> Any:
+    def _apply_wrapper(cls, data: Any) -> Any:
         if not isinstance(data, dict):
             return data
 
-        if "wrapper" in data:
-            if data["wrapper"] in WRAPPER_FACADES:
-                data["facade"] = {"kind": data["wrapper"]}
-            else:
-                data["facade"] = {"kind": "wrapper", "wrapper": data["wrapper"]}
+        wrapper = data.get("wrapper")
+        if wrapper is None or data.get("facade") is not None:
+            return data
 
-        return data
+        if wrapper in WRAPPER_FACADES:
+            facade = {"kind": wrapper}
+        else:
+            facade = {"kind": "wrapper", "wrapper": wrapper}
+
+        return {**data, "facade": facade}
 
 
 class StructSpec(StructuralSpec):
@@ -238,39 +248,16 @@ class ClassSpec(StructuralSpec):
 
 
 class ClassTemplateSpecializationSpec(ClassSpec):
-    kind: Literal["class_template_specialization"]
+    # Defaulted: see FunctionTemplateSpecializationSpec.
+    kind: Literal["class_template_specialization"] = "class_template_specialization"
     template_args: list[str] = Field(default_factory=list)
 
 
 class ClassTemplateSpec(TemplateSpec):
     kind: Literal["class_template"]
-    specializations: list[ClassTemplateSpecializationSpec] = Field(default_factory=list)
-
-    @model_validator(mode="before")
-    @classmethod
-    def _normalize_specializations(cls, data: Any) -> Any:
-        if not isinstance(data, dict):
-            return data
-
-        specs = data.get("specializations")
-        if not specs:
-            return data
-
-        normalized = []
-        for item in specs:
-            if isinstance(item, dict):
-                if "name" not in item and "name" in data:
-                    item = {"name": data["name"], **item}
-                normalized.append(item)
-            elif isinstance(item, (list, tuple)):
-                normalized.append(
-                    {"name": data.get("name"), "template_args": list(item)}
-                )
-            else:
-                normalized.append({"name": str(item)})
-
-        data["specializations"] = normalized
-        return data
+    specializations: list[ClassTemplateSpecializationSpec] = Field(
+        default_factory=list
+    )
 
 
 class EnumSpec(Spec):

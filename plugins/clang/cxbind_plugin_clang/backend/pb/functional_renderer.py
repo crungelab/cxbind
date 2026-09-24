@@ -7,6 +7,7 @@ from cxbind.spec import Spec, create_spec, Ownership
 from cxbind.facade import Facade
 
 from ...node import FunctionalNode, Parameter
+from ...pyname_registry import PyKind
 from .node_renderer import NodeRenderer
 from .param_renderer import ParamRenderer, PARAM_RENDERER_TABLE
 from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
@@ -79,16 +80,22 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         cursor = node.cursor
         params = node.params
         cname = node.name if node.spec.alias else "&" + node.name
-        pyname = node.pyname
 
-        def_call = ""
-        if cursor.is_static_method():
-            def_call = ".def_static"
+        # Python-side decisions come from the binding: the resolved name, and
+        # .def vs .def_static. Falls back to the cursor for untracked nodes.
+        binding = node.binding
+        pyname = node.pyname
+        if binding is not None:
+            is_static = binding.kind is PyKind.STATIC_METHOD
         else:
-            def_call = ".def"
+            is_static = cursor.is_static_method()
+
+        def_call = ".def_static" if is_static else ".def"
 
         self.begin_chain()
 
+        # C++-side decisions stay on the cursor: overload_cast depends on the
+        # C++ spelling, not the Python name.
         if self.is_overloaded(cursor):
             logger.debug(f"Overloaded function rendered: {cursor.spelling}")
             extra = ""
@@ -97,6 +104,8 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
             cname = f"py::overload_cast<{self.param_types(params)}>({cname}{extra})"
 
         if self.should_wrap_function():
+            # Shape of the C++ callable, so cursor-based: mogrified free
+            # functions are Python methods but have no implicit `this`.
             is_non_static_method = (
                 cursor.kind == cindex.CursorKind.CXX_METHOD
                 and not cursor.is_static_method()
