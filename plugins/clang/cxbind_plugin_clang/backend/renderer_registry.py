@@ -19,15 +19,3 @@ class RendererRegistry:
     def resolve(cls, kind: str, facade: str | None):
         renderer_cls = cls._registry.get((kind, facade))
         return renderer_cls
-
-    """
-    @classmethod
-    def resolve(cls, kind: str, facade: str | None):
-        logger.debug(f"Resolving renderer for kind={kind}, facade={facade}")
-        renderer_cls = cls._registry.get((kind, facade))
-        if renderer_cls:
-            logger.debug(f"Found renderer: {renderer_cls} for kind={kind}, facade={facade}")
-        else:
-            logger.debug(f"No renderer found for kind={kind}, facade={facade}")
-        return renderer_cls
-    """

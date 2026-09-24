@@ -20,7 +20,6 @@ current_render_context: ContextVar[Optional["RenderContext"]] = ContextVar(
 class RenderContext(WorkContext):
     def __init__(self) -> None:
         super().__init__()
-        # self.out = RenderStream()
         self.streams: dict[str, RenderStream] = {}
         self.stream_stack: list[RenderStream] = []
         self.push_stream("default")
@@ -79,7 +78,6 @@ class RenderContext(WorkContext):
         self.stream_stack.append(stream)
 
     def pop_stream(self, destroy: bool = False) -> RenderStream:
-        # return self.stream_stack.pop()
         stream = self.stream_stack.pop()
         if destroy:
             for key, val in self.streams.items():
@@ -95,18 +93,6 @@ class RenderContext(WorkContext):
     def create_renderer(self, node: Node) -> "Renderer":
         from .pb.node_renderer_manufacturer import NodeRendererManufacturer
         return NodeRendererManufacturer.create_renderer(node)
-
-    '''
-    def create_renderer(self, node: Node) -> "Renderer":
-        from .pb.node_renderer_manufacturer import NODE_RENDERER_TABLE
-
-        cls: Type = NODE_RENDERER_TABLE.get(node.kind, None)
-        if cls is None:
-            logger.warning(f"No renderer for node kind: {node.kind}")
-            return None
-        renderer = cls(node)
-        return renderer
-    '''
 
     def render_node(self, node: Node) -> None:
         renderer = self.create_renderer(node)

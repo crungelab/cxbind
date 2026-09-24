@@ -113,7 +113,6 @@ class Session:
         self.spec_registry.register(spec)
 
     def lookup_spec(self, key: str) -> Spec:
-        #spec = self.specs.get(key)
         spec = self.spec_registry.get(key)
         logger.debug(f"Looking up spec for key: {key}, specs: {self.specs}, spec: {spec}")
         return spec
@@ -193,8 +192,6 @@ class Session:
         name = name.rstrip("_")
 
         if name.isdigit():
-            # if name.isnumeric():
-            # name = f"_{name}"
             name = self.strip_prefixes(enum_constant_name).upper()
 
         return name
