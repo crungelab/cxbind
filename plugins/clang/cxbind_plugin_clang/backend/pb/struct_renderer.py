@@ -1,10 +1,10 @@
 from . import StructuralRenderer
 
-from ..renderer_registry import RendererRegistry
+from ..renderer_registry import PbRendererRegistry
 
 from ...node import StructNode
 
 
-@RendererRegistry.register("struct")
+@PbRendererRegistry.register("struct")
 class StructRenderer(StructuralRenderer[StructNode]):
     pass

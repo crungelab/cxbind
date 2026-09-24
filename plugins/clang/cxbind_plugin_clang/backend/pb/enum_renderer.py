@@ -3,12 +3,12 @@ from loguru import logger
 
 from .node_renderer import NodeRenderer
 
-from ..renderer_registry import RendererRegistry
+from ..renderer_registry import PbRendererRegistry
 
 from ...node import EnumNode
 
 
-@RendererRegistry.register("enum")
+@PbRendererRegistry.register("enum")
 class EnumRenderer(NodeRenderer[EnumNode]):
     def render(self):
         # logger.debug(f"Building Enum: {self.node.name}")

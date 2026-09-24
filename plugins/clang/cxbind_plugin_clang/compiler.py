@@ -3,7 +3,6 @@ from pathlib import Path
 
 from loguru import logger
 import jinja2
-from rich import print
 
 from cxbind.tool import Tool
 from cxbind.unit import Unit
@@ -15,9 +14,15 @@ from cxbind.transformer import Transformer, _registry as transformer_registry
 
 from .session import Session
 from .frontend import Frontend
-from .backend.generator import Generator
 from .node import Node
 from .clang_runner import ClangRunner
+from .backend.backend import Backend
+from .backend.pb.pb_backend import PbBackend
+
+
+BACKENDS: dict[str, type[Backend]] = {
+    "pb": PbBackend,
+}
 
 
 class BuildResult:
@@ -39,9 +44,23 @@ class Compiler(Tool):
         searchpath = [config_searchpath, default_searchpath]
         loader = jinja2.FileSystemLoader(searchpath=searchpath)
         self.jinja_env = jinja2.Environment(loader=loader)
-        self.build_results: list[BuildResult] = []
 
-    def create_transformer(self, transform: Transform) -> Transformer:
+        self.build_results: list[BuildResult] = []
+        self.backends: list[Backend] = self.create_backends()
+
+    def create_backends(self) -> list[Backend]:
+        backends = []
+        for kind, target in self.unit.targets.items():
+            backend_cls = BACKENDS.get(kind)
+            if backend_cls is None:
+                raise ValueError(
+                    f"{self.unit.name}: clang plugin has no backend for target "
+                    f"{kind!r} (supports: {', '.join(BACKENDS)})"
+                )
+            backends.append(backend_cls(self, target))
+        return backends
+
+    def create_transformer(self, transform: Transform) -> Transformer | None:
         transformer_cls = transformer_registry.get(type(transform))
         if transformer_cls is None:
             logger.warning(
@@ -51,7 +70,8 @@ class Compiler(Tool):
         return transformer_cls(self.unit)
 
     def build(self):
-        sources = self.unit.sources
+        # Copy so repeated builds don't keep appending to unit.sources.
+        sources = list(self.unit.sources or [])
         if self.unit.source is not None:
             sources.append(self.unit.source)
 
@@ -66,43 +86,23 @@ class Compiler(Tool):
 
         frontend = Frontend(source)
         root = frontend.build()
-        # logger.debug(f"Built root node: {root}")
         runner.update_specs(session.specs)
 
         self.build_results.append(BuildResult(source, root))
 
     def generate(self) -> None:
+        if not self.backends:
+            logger.warning(f"{self.unit.name}: no targets, nothing to generate")
+            return
+
         session = self.my_session
         session.make_current()
 
         # All sources and transforms are done: assign final pynames before rendering.
         session.resolve()
 
-        text_list = []
-        for build_result in self.build_results:
-            # build_result.session.make_current()
-            generator = Generator(build_result.source, build_result.node)
-            text_list.append(generator.generate())
-
-        text = "\n".join(text_list)
-
-        # Jinja
-        context = {"body": text}
-
-        unit_template_path = self.unit.template
-
-        if unit_template_path:
-            template = self.jinja_env.get_template(unit_template_path)
-        else:
-            template = self.jinja_env.get_template(f"{self.unit.name}.cpp")
-
-        rendered = template.render(context)
-
-        filename = self.unit.target
-        with open(filename, "w") as fh:
-            fh.write(rendered)
-
-        print(f"[bold green]Generated[/bold green]: {filename}", ":thumbs_up:")
+        for backend in self.backends:
+            backend.run()
 
     def run(self):
         runner = ClangRunner.get_current()

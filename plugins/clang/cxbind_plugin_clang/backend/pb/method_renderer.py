@@ -1,10 +1,10 @@
 from .functional_renderer import FunctionalRenderer
 
-from ..renderer_registry import RendererRegistry
+from ..renderer_registry import PbRendererRegistry
 
 from ...node import MethodNode
 
 
-@RendererRegistry.register("method")
+@PbRendererRegistry.register("method")
 class MethodRenderer(FunctionalRenderer[MethodNode]):
     pass

@@ -1,35 +1,29 @@
-import os
-from pathlib import Path
-
-from loguru import logger
-import jinja2
-
 from ..node import RootNode
 
 from .render_context import RenderContext
-from .pb import NodeRenderer
+from .renderer import Renderer
 
 
-class Generator(NodeRenderer):
-    def __init__(self, source: str, node: RootNode, **kwargs):
-        super().__init__(node)
-        self.render_context = RenderContext(**kwargs)
+class Generator:
+    """Renders one built source through a backend's render context."""
 
-        BASE_PATH = Path(".")
-        self.path = BASE_PATH / source
+    def __init__(self, context: RenderContext, source: str, node: RootNode) -> None:
+        self.context = context
+        self.source = source
+        self.node = node
 
-        config_searchpath = BASE_PATH / ".cxbind" / "templates"
-        default_searchpath = Path(
-            os.path.dirname(os.path.abspath(__file__)), "templates"
+    def create_root_renderer(self) -> Renderer:
+        raise NotImplementedError(
+            f"{type(self).__name__} does not implement create_root_renderer"
         )
-        searchpath = [config_searchpath, default_searchpath]
-        loader = jinja2.FileSystemLoader(searchpath=searchpath)
-        self.jinja_env = jinja2.Environment(loader=loader)
 
-    def generate(self):
-        self.render_context.make_current()
-        with self.out:
-            self.render()
-            self.end_chain()
+    def finish(self, root: Renderer) -> None:
+        """Hook run after the root has rendered, inside the output stream."""
 
-        return self.text
+    def generate(self) -> str:
+        self.context.make_current()
+        root = self.create_root_renderer()
+        with root.out:
+            root.render()
+            self.finish(root)
+        return root.text

@@ -1,5 +1,4 @@
-from typing import TYPE_CHECKING, Type, Optional
-import contextlib
+from typing import TYPE_CHECKING, Optional
 from contextvars import ContextVar
 
 from loguru import logger
@@ -18,13 +17,17 @@ current_render_context: ContextVar[Optional["RenderContext"]] = ContextVar(
 
 
 class RenderContext(WorkContext):
+    """Stream management shared by all backends.
+
+    Subclasses supply `create_renderer`, which decides which renderer
+    family (pb, pyi, ...) a node is rendered with.
+    """
+
     def __init__(self) -> None:
         super().__init__()
         self.streams: dict[str, RenderStream] = {}
         self.stream_stack: list[RenderStream] = []
         self.push_stream("default")
-
-        self.chaining = False
 
     def make_current(self):
         current_render_context.set(self)
@@ -32,6 +35,8 @@ class RenderContext(WorkContext):
     @classmethod
     def get_current(cls) -> Optional["RenderContext"]:
         return current_render_context.get()
+
+    # --- streams ---------------------------------------------------------
 
     @property
     def out(self) -> RenderStream:
@@ -49,9 +54,7 @@ class RenderContext(WorkContext):
     def open_stream(self, name: str) -> RenderStream:
         stream = self.streams.get(name)
         if stream is None:
-            indentation = 0
-            if len(self.stream_stack):
-                indentation = self.stream_stack[-1].indentation
+            indentation = self.stream_stack[-1].indentation if self.stream_stack else 0
             stream = RenderStream(indentation)
             self.streams[name] = stream
         return stream
@@ -68,14 +71,7 @@ class RenderContext(WorkContext):
             self.destroy_stream(name)
 
     def push_stream(self, name: str) -> None:
-        stream = self.streams.get(name)
-        if stream is None:
-            indentation = 0
-            if len(self.stream_stack):
-                indentation = self.stream_stack[-1].indentation
-            stream = RenderStream(indentation)
-            self.streams[name] = stream
-        self.stream_stack.append(stream)
+        self.stream_stack.append(self.open_stream(name))
 
     def pop_stream(self, destroy: bool = False) -> RenderStream:
         stream = self.stream_stack.pop()
@@ -90,9 +86,12 @@ class RenderContext(WorkContext):
         for stream in streams:
             self.out.inject(stream)
 
+    # --- renderers -------------------------------------------------------
+
     def create_renderer(self, node: Node) -> "Renderer":
-        from .pb.node_renderer_manufacturer import NodeRendererManufacturer
-        return NodeRendererManufacturer.create_renderer(node)
+        raise NotImplementedError(
+            f"{type(self).__name__} does not implement create_renderer"
+        )
 
     def render_node(self, node: Node) -> None:
         renderer = self.create_renderer(node)

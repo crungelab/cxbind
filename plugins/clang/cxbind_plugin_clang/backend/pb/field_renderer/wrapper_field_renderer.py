@@ -1,11 +1,11 @@
 from cxbind.facade import WrapperFacade
 
-from ...renderer_registry import RendererRegistry
+from ...renderer_registry import PbRendererRegistry
 
 from .field_renderer import FacadeFieldRenderer
 
 
-@RendererRegistry.register("field", "wrapper")
+@PbRendererRegistry.register("field", "wrapper")
 class WrapperFieldRenderer(FacadeFieldRenderer[WrapperFacade]):
     def render(self):
         node = self.node

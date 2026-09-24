@@ -1,9 +1,9 @@
 from ...node import FunctionNode
 
-from ..renderer_registry import RendererRegistry
+from ..renderer_registry import PbRendererRegistry
 
 from .functional_renderer import FunctionalRenderer
 
-@RendererRegistry.register("function")
+@PbRendererRegistry.register("function")
 class FunctionRenderer(FunctionalRenderer[FunctionNode]):
     pass

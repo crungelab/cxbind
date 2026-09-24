@@ -1,11 +1,11 @@
 from cxbind.facade import PyCapsuleFacade
 
-from ...renderer_registry import RendererRegistry
+from ...renderer_registry import PbRendererRegistry
 
 from .field_renderer import FacadeFieldRenderer
 
 
-@RendererRegistry.register("field", "pycapsule")
+@PbRendererRegistry.register("field", "pycapsule")
 class PyCapsuleFieldRenderer(FacadeFieldRenderer[PyCapsuleFacade]):
     def render(self):
         node = self.node

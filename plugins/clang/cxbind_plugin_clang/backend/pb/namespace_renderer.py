@@ -1,10 +1,10 @@
 from .node_renderer import NodeRenderer
 
-from ..renderer_registry import RendererRegistry
+from ..renderer_registry import PbRendererRegistry
 
 from ...node import NamespaceNode
 
 
-@RendererRegistry.register("namespace")
+@PbRendererRegistry.register("namespace")
 class NamespaceRenderer(NodeRenderer[NamespaceNode]):
     pass

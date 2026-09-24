@@ -1,7 +1,7 @@
 from ...node import Node
 
 from ..renderer import Renderer
-from ..renderer_registry import RendererRegistry
+from ..renderer_registry import PbRendererRegistry
 
 
 class NodeRendererManufacturer:
@@ -9,7 +9,7 @@ class NodeRendererManufacturer:
     def create_renderer(node: Node) -> Renderer:
         facade_kind = node.facade.kind if node.facade else None
 
-        renderer_cls = RendererRegistry.resolve(node.kind, facade_kind)
+        renderer_cls = PbRendererRegistry.resolve(node.kind, facade_kind)
 
         if renderer_cls is None:
             raise ValueError(f"Unsupported node kind={node.kind}, facade={facade_kind}")

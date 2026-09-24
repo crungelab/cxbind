@@ -7,12 +7,12 @@ from cxbind.facade import Facade
 
 from ....node import FieldNode
 
-from ...renderer_registry import RendererRegistry
+from ...renderer_registry import PbRendererRegistry
 
 from ..node_renderer import NodeRenderer
 
 
-@RendererRegistry.register("field")
+@PbRendererRegistry.register("field")
 class FieldRenderer(NodeRenderer[FieldNode]):
     def render(self):
         node = self.node

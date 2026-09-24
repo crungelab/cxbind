@@ -38,7 +38,7 @@ class RunnerFactory:
     def create_tool(self, unit: Unit) -> Tool:
         tool_name = unit.tool
         if tool_name is None:
-            tool_name = "clang"
+            tool_name = "clang_pb"
 
         tool = self.tool_factories[tool_name].produce(unit)
         return tool
