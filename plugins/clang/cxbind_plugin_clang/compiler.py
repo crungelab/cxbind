@@ -19,9 +19,11 @@ from .clang_runner import ClangRunner
 from .backend.backend import Backend
 from .backend.pb.pb_backend import PbBackend
 
+from .backend.pyi.pyi_backend import PyiBackend
 
 BACKENDS: dict[str, type[Backend]] = {
     "pb": PbBackend,
+    "pyi": PyiBackend,
 }
 
 
@@ -113,3 +115,9 @@ class Compiler(Tool):
 
         if self.unit.generate:
             plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
+            for backend in self.backends:
+                backend.schedule(runner)
+        '''
+        if self.unit.generate:
+            plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
+        '''

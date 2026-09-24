@@ -8,6 +8,9 @@ from cxbind.facade import Facade
 
 from ...node import FunctionalNode, Parameter
 from ...pyname_registry import PyKind
+
+from ..py_signature import PySignature
+
 from .node_renderer import NodeRenderer
 from .param_renderer import ParamRenderer, PARAM_RENDERER_TABLE
 from .return_renderer import ReturnRenderer, RETURN_RENDERER_TABLE
@@ -21,13 +24,44 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         super().__init__(node)
         self.node = node
         self._pod = FunctionalRenderPod(node)
+        self.pod.signature = PySignature.from_node(node, self.format_field)
         self.create_param_renderers()
         self.create_return_renderer()
+
+    '''
+    def __init__(self, node: T_Node) -> None:
+        super().__init__(node)
+        self.node = node
+        self._pod = FunctionalRenderPod(node)
+        self.create_param_renderers()
+        self.create_return_renderer()
+    '''
 
     @property
     def pod(self) -> FunctionalRenderPod:
         return self._pod
 
+    def create_param_renderers(self):
+        node = self.node
+        sig = self.pod.signature
+
+        for param in node.params:
+            facade_kind = (
+                param.type.facade.kind if param.type.facade is not None else None
+            )
+            renderer_cls = PARAM_RENDERER_TABLE.get(facade_kind, ParamRenderer)
+            self.pod.arg_renderers.append(renderer_cls(param))
+
+        self.pod.param_renderers = [
+            arg_renderer
+            for arg_renderer in self.pod.arg_renderers
+            if arg_renderer.param.name not in sig.excluded
+        ]
+
+        self.pod.out_params = [param.name for param in sig.out_params]
+        self.pod.has_out_params = sig.has_out_params
+
+    '''
     def create_param_renderers(self):
         node = self.node
         # logger.debug(f"Creating parameter renderers for node: {node.name}")
@@ -60,6 +94,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
         out_params = [param.name for param in node.params if param.is_out]
         self.pod.out_params = out_params
         self.pod.has_out_params = len(out_params) > 0
+    '''
 
     def create_return_renderer(self):
         node = self.node

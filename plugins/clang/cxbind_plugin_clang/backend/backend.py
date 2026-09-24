@@ -1,11 +1,13 @@
 from typing import TYPE_CHECKING
 
+import jinja2
 from rich import print
 
 from cxbind.target import Target
 
 if TYPE_CHECKING:
     from ..compiler import Compiler, BuildResult
+    from cxbind.runner.plan import Plan
 
 
 class Backend:
@@ -19,6 +21,9 @@ class Backend:
     def unit(self):
         return self.compiler.unit
 
+    def schedule(self, runner) -> None:
+        """Hook: register any extra runner tasks (called from Compiler.run)."""
+
     def run(self) -> None:
         self.process()
         self.render()
@@ -27,18 +32,25 @@ class Backend:
         """Hook for backend-local preparation. Nodes are already resolved."""
 
     def render(self) -> None:
-        text = "\n".join(
+        text = self.render_body()
+        template = self.select_template()
+        self.write(template.render({"body": text}))
+
+    # --- pieces subclasses can reuse ------------------------------------
+
+    def render_body(self) -> str:
+        return "\n".join(
             self.generate_source(result) for result in self.compiler.build_results
         )
 
-        template_name = self.target.template or self.default_template()
-        template = self.compiler.jinja_env.get_template(template_name)
-        rendered = template.render({"body": text})
+    def select_template(self) -> jinja2.Template:
+        name = self.target.template or self.default_template()
+        return self.compiler.jinja_env.get_or_select_template(name)
 
+    def write(self, rendered: str) -> None:
         filename = self.target.path
         with open(filename, "w") as fh:
             fh.write(rendered)
-
         print(f"[bold green]Generated[/bold green]: {filename}", ":thumbs_up:")
 
     # --- hooks -----------------------------------------------------------
@@ -46,5 +58,5 @@ class Backend:
     def generate_source(self, result: "BuildResult") -> str:
         raise NotImplementedError
 
-    def default_template(self) -> str:
+    def default_template(self) -> str | list[str]:
         raise NotImplementedError

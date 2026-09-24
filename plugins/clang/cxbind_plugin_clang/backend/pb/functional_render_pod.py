@@ -3,12 +3,26 @@ from clang import cindex
 from ...node import FunctionalNode, Parameter
 
 from ..render_pod import RenderPod
+from ..py_signature import PySignature
 
 from .param_renderer import ParamRenderer, PARAM_RENDERER_TABLE
 from .return_renderer import ReturnRenderer
 
+
+
 class FunctionalRenderPod(RenderPod):
     node: FunctionalNode
+
+    def __init__(self, node: FunctionalNode):
+        super().__init__(node)
+        self.signature: PySignature = None
+        self.return_renderer: ReturnRenderer = None
+        self.arg_renderers: list[ParamRenderer] = []
+        self.param_renderers: list[ParamRenderer] = []
+        self.has_out_params: bool = False
+        self.out_params: list[str] = []
+
+    """
     def __init__(self, node: FunctionalNode):
         super().__init__(node)
         self.return_renderer: ReturnRenderer = None
@@ -16,6 +30,7 @@ class FunctionalRenderPod(RenderPod):
         self.param_renderers: list[ParamRenderer] = []
         self.has_out_params: bool = False
         self.out_params: list[Parameter] = []
+    """
 
     def render_params(self):
         for i, param_renderer in enumerate(self.param_renderers):

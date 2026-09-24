@@ -16,17 +16,26 @@ class Phase(Task):
         for task in self.tasks:
             task.run()
 
+
 class BuildPhase(Phase):
     def __init__(self):
         super().__init__()
         self.priority = 10
+
 
 class TransformPhase(Phase):
     def __init__(self):
         super().__init__()
         self.priority = 20
 
+
 class GeneratePhase(Phase):
     def __init__(self):
         super().__init__()
         self.priority = 30
+
+
+class AssemblyPhase(Phase):
+    def __init__(self):
+        super().__init__()
+        self.priority = 40

@@ -48,25 +48,3 @@ class CallbackParamRenderer(FacadeParamRenderer[CallbackFacade]):
         }};
         """
         out(value)
-
-    '''
-    def render(self):
-        out = self.out
-        param_name = self.param.name
-        param_type = self.param.type
-        value = f"""\
-        cxbind::thunk_state _{self.context_param}({param_name});
-        auto {self.context_param} = &_{self.context_param};
-        auto _{param_name} = +[](int value, void* ctx) -> bool {{
-            auto& ts = *static_cast<cxbind::thunk_state*>(ctx);
-            // ... use ts, acquire GIL, call Python, etc ...
-            py::gil_scoped_acquire gil;
-            py::object result = ts.cb(value);
-            return result.cast<bool>();
-        }};
-        """
-        out(value)
-
-        logger.debug(f"CallbackParamRenderer: {self.param.name} type: {self.param.type.spelling}")
-        logger.debug(f"CallbackParamRenderer function prototype: {self.param.function_prototype}")
-    '''

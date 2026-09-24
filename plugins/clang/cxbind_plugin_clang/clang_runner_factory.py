@@ -9,5 +9,5 @@ class ClangRunnerFactory(RunnerFactory):
      def __init__(self):
         super().__init__(ClangRunner)
 
-        self.register_tool("clang_pb", Compiler)
+        self.register_tool("clang", Compiler)
         self.register_transformer(Mogrify, MogrifyTransformer)

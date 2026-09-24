@@ -6,13 +6,12 @@ from loguru import logger
 
 from .unit_base import UnitBase
 from .transform import Transform, _registry as TRANSFORM_REGISTRY
-from .target import Target, get_target_class, target_kinds, infer_legacy_kind
+from .target import Target, infer_legacy_kind
 
 
 class Unit(UnitBase):
     source: Optional[str] = None
     sources: Optional[List[str]] = []
-    targets: dict[str, Target] = {}
     mapped: Optional[List[str]] = []
     transforms: list[Transform] = []
     generate: bool = True
@@ -63,34 +62,6 @@ class Unit(UnitBase):
             self.generate = False
         return self
 
-    @field_validator("targets", mode="before")
-    @classmethod
-    def dispatch_targets(cls, v):
-        if v is None:
-            return {}
-        if not isinstance(v, dict):
-            raise TypeError("targets must be a mapping of kind -> target")
-
-        out = {}
-        for kind, raw in v.items():
-            if isinstance(raw, Target):
-                out[kind] = raw
-                continue
-
-            target_cls = get_target_class(kind)
-            if target_cls is None:
-                raise ValueError(
-                    f"Unknown target {kind!r} (known: {', '.join(target_kinds())})"
-                )
-
-            if isinstance(raw, str):
-                raw = {"path": raw}  # shorthand: `pyi: src/wgpu.pyi`
-            elif not isinstance(raw, dict):
-                raise TypeError(f"targets.{kind} must be a path or an object")
-
-            out[kind] = target_cls.model_validate(raw)
-        return out
-
     @field_validator("transforms", mode="before")
     @classmethod
     def dispatch_transforms(cls, v):
@@ -119,9 +90,10 @@ class Unit(UnitBase):
     # --- compat (remove once dawn reads `targets`) -----------------------
 
     def _single_target(self) -> Target | None:
-        if len(self.targets) == 1:
-            return next(iter(self.targets.values()))
-        return self.targets.get("pb")
+        active = {k: t for k, t in self.targets.items() if t is not None}
+        if len(active) == 1:
+            return next(iter(active.values()))
+        return active.get("pb")
 
     @property
     def target(self) -> str | None:

@@ -6,10 +6,14 @@ flags: [
     '-I./src'
 ]
 
+targets:
+  pyi: 'tests.pyi'
+
 units:
   arguments:
     source: 'src/arguments.h'
-    target: 'src/arguments_py_auto.cpp'
+    targets:
+      pb: 'src/arguments_py_auto.cpp'
 
     specs:
       'method@Arguments::ignore_me': {exclude: true}

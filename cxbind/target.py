@@ -1,15 +1,22 @@
 """Output targets for a unit.
 
-A unit lists its outputs under ``targets``, keyed by kind:
+Targets are keyed by kind and may be set on the project, the unit, or both:
 
+    # project
     targets:
-      pb: src/imgui_pb.cpp
-      pyi:
-        path: crunge/imgui/_imgui.pyi
-        template: imgui.pyi
+      pb: 'src/{name}_py_auto.cpp'
+      pyi: 'tests.pyi'
 
-Kinds are shared vocabulary across plugins. A unit only checks that a kind
-exists; each plugin decides which kinds it actually supports.
+    # unit
+    targets:
+      pyi: null          # opt out of an inherited target
+      pb:
+        path: 'src/special.cpp'
+        template: 'special.cpp'
+
+Paths and templates may use {name} and {module}, expanded per unit when
+targets are merged. Kinds are shared vocabulary across plugins; each plugin
+decides which kinds it actually supports.
 """
 
 from pathlib import PurePath
@@ -40,6 +47,24 @@ class Target(BaseModel):
                 f"Target kind {kind!r} already registered by {existing.__name__}"
             )
         _registry[kind] = cls
+
+    def expand(self, **fields: Any) -> "Target":
+        """Copy with {placeholders} in path and template filled in."""
+
+        def fmt(value: str | None) -> str | None:
+            if value is None:
+                return None
+            try:
+                return value.format(**fields)
+            except KeyError as e:
+                raise ValueError(
+                    f"targets.{self.kind}: unknown placeholder {e} in {value!r} "
+                    f"(available: {', '.join(fields)})"
+                ) from None
+
+        return self.model_copy(
+            update={"path": fmt(self.path), "template": fmt(self.template)}
+        )
 
 
 class PbTarget(Target):
@@ -78,6 +103,53 @@ def get_target_class(kind: str) -> type[Target] | None:
 
 def target_kinds() -> list[str]:
     return list(_registry)
+
+
+def dispatch_targets(v: Any) -> dict[str, Target | None]:
+    """Validate a raw `targets` mapping into Target subclasses.
+
+    A value of None is kept: it marks an inherited target as removed.
+    """
+    if v is None:
+        return {}
+    if not isinstance(v, dict):
+        raise TypeError("targets must be a mapping of kind -> target")
+
+    out: dict[str, Target | None] = {}
+    for kind, raw in v.items():
+        target_cls = get_target_class(kind)
+        if target_cls is None:
+            raise ValueError(
+                f"Unknown target {kind!r} (known: {', '.join(target_kinds())})"
+            )
+
+        if raw is None or isinstance(raw, Target):
+            out[kind] = raw
+            continue
+        if isinstance(raw, str):
+            raw = {"path": raw}  # shorthand: `pyi: src/wgpu.pyi`
+        elif not isinstance(raw, dict):
+            raise TypeError(f"targets.{kind} must be a path, an object, or null")
+
+        out[kind] = target_cls.model_validate(raw)
+    return out
+
+
+def merge_targets(
+    inherited: dict[str, Target | None],
+    own: dict[str, Target | None],
+    **fields: Any,
+) -> dict[str, Target]:
+    """Unit targets override project targets per kind; None removes one.
+
+    The result has placeholders expanded and no None entries.
+    """
+    merged = {**inherited, **own}
+    return {
+        kind: target.expand(**fields)
+        for kind, target in merged.items()
+        if target is not None
+    }
 
 
 # Legacy single-target unit files only have a path, so the kind is guessed
