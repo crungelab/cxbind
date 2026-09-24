@@ -43,7 +43,6 @@ T myFunction(T a, T b) {
 
 // Test usage of specialized classes
 
-int testSpecialized(MyClass2<int> &obj) {
-    obj.setValue(42);
-    return obj.getValue();
+int Specialized(const MyClass2<int> &obj) {
+    return obj.getValue() * 2;
 }

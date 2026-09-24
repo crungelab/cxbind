@@ -1,7 +1,7 @@
 import unittest
 from loguru import logger
 
-from cxbind_tests.test_templates import MyClassFloatDouble as MyClass, MyClassI, test_specialized
+from cxbind_tests.test_templates import MyClassFloatDouble as MyClass, MyClassI, specialized
 
 
 class Test(unittest.TestCase):
@@ -15,6 +15,6 @@ class Test(unittest.TestCase):
         value = myclass.get_value()
         logger.debug(f"Value: {value}")
         self.assertEqual(value, 2)
-        result = test_specialized(myclass)
+        result = specialized(myclass)
         logger.debug(f"Result: {result}")
-        self.assertEqual(result, 42)
+        self.assertEqual(result, 4)
