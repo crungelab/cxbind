@@ -15,12 +15,14 @@ class PyiBackend(Backend):
 
     def process(self) -> None:
         self.missing: Counter[tuple[str, str | None]] = Counter()
+        self.unmapped: Counter[str] = Counter()
         self.imports: set[Import] = set()
 
     def generate_source(self, result) -> str:
         generator = PyiGenerator(result.source, result.node)
         text = generator.generate()
         self.missing.update(generator.context.missing)
+        self.unmapped.update(generator.context.types.unmapped)
         self.imports |= generator.context.imports
         return text
 
@@ -39,10 +41,19 @@ class PyiBackend(Backend):
             imports=self.imports,
         )
         self.assembler.add(self.target.path, fragment)
+        self.report()
 
+    def report(self) -> None:
+        name = self.unit.name
         if self.missing:
             lines = "\n".join(
                 f"  {count:5d}  kind={kind}, facade={facade}"
                 for (kind, facade), count in self.missing.most_common()
             )
-            logger.warning(f"{self.unit.name}: no pyi renderer for:\n{lines}")
+            logger.warning(f"{name}: no pyi renderer for:\n{lines}")
+        if self.unmapped:
+            lines = "\n".join(
+                f"  {count:5d}  {spelling}"
+                for spelling, count in self.unmapped.most_common()
+            )
+            logger.warning(f"{name}: typed as Any:\n{lines}")

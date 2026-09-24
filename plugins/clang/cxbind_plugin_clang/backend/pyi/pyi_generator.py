@@ -7,6 +7,7 @@ from .pyi_render_context import PyiRenderContext
 
 class PyiGenerator(Generator):
     context: PyiRenderContext
+    indent_body = False
 
     def __init__(self, source: str, node) -> None:
         super().__init__(PyiRenderContext(), source, node)

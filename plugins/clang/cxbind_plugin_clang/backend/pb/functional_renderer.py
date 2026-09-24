@@ -23,19 +23,20 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
     def __init__(self, node: T_Node) -> None:
         super().__init__(node)
         self.node = node
-        self._pod = FunctionalRenderPod(node)
-        self.pod.signature = PySignature.from_node(node, self.format_field)
+        self._pod = FunctionalRenderPod(
+            node, PySignature.from_node(node, self.format_field)
+        )
         self.create_param_renderers()
         self.create_return_renderer()
 
-    '''
+    """
     def __init__(self, node: T_Node) -> None:
         super().__init__(node)
         self.node = node
         self._pod = FunctionalRenderPod(node)
         self.create_param_renderers()
         self.create_return_renderer()
-    '''
+    """
 
     @property
     def pod(self) -> FunctionalRenderPod:
@@ -43,7 +44,7 @@ class FunctionalRenderer(NodeRenderer[T_Node]):
 
     def create_param_renderers(self):
         node = self.node
-        sig = self.pod.signature
+        sig = self.pod.pysig
 
         for param in node.params:
             facade_kind = (

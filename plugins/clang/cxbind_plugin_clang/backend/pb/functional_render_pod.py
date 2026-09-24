@@ -13,9 +13,9 @@ from .return_renderer import ReturnRenderer
 class FunctionalRenderPod(RenderPod):
     node: FunctionalNode
 
-    def __init__(self, node: FunctionalNode):
+    def __init__(self, node: FunctionalNode, pysig: PySignature):
         super().__init__(node)
-        self.signature: PySignature = None
+        self.pysig: PySignature = pysig
         self.return_renderer: ReturnRenderer = None
         self.arg_renderers: list[ParamRenderer] = []
         self.param_renderers: list[ParamRenderer] = []

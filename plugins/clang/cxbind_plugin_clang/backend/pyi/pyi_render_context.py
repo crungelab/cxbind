@@ -5,6 +5,7 @@ from ...node import Node
 from ..render_context import RenderContext
 from ..renderer import Renderer
 from ..renderer_registry import PyiRendererRegistry
+from .type_mapper import TypeMapper
 
 
 class PyiRenderContext(RenderContext):
@@ -14,6 +15,7 @@ class PyiRenderContext(RenderContext):
         self.missing: Counter[tuple[str, str | None]] = Counter()
         # (module, name) pairs the rendered stub needs; name None = `import module`.
         self.imports: set[tuple[str, str | None]] = set()
+        self.types = TypeMapper(self.add_import)
 
     def add_import(self, module: str, name: str | None = None) -> None:
         self.imports.add((module, name))

@@ -1,1 +1,6 @@
 from .pyi_node_renderer import PyiNodeRenderer
+
+# Importing registers the renderers with PyiRendererRegistry.
+from . import functional_renderer  # noqa: F401
+from . import field_renderer  # noqa: F401
+from . import structural_renderer  # noqa: F401

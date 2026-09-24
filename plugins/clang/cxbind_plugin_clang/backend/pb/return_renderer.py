@@ -33,7 +33,7 @@ class ReturnRenderer(Renderer):
         self.use_return_temp = False
 
     def render(self):
-        sig = self.pod.signature
+        sig = self.pod.pysig
         self.use_return_temp = sig.has_out_params and sig.returns_value
         self.render_prolog()
         self.render_call()
@@ -96,7 +96,7 @@ class ReturnRenderer(Renderer):
         out << ";\n"
 
         if self.pod.has_out_params:
-            total_returns = self.pod.signature.outputs
+            total_returns = self.pod.pysig.outputs
             #total_returns = (1 if self.use_return_temp else 0) + len(self.pod.out_params)
 
             if total_returns == 1:
