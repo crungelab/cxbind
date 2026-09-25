@@ -3,7 +3,7 @@ from ...pyname_registry import PyKind
 
 from ..py_signature import PySignature
 from ..renderer_registry import PyiRendererRegistry
-from .pyi_node_renderer import PyiNodeRenderer
+from .pyi_node_renderer import PyiNodeRenderer, Declaration
 
 
 @PyiRendererRegistry.register("function")
@@ -12,18 +12,20 @@ from .pyi_node_renderer import PyiNodeRenderer
 @PyiRendererRegistry.register("ctor")
 class PyiFunctionalRenderer(PyiNodeRenderer[FunctionalNode]):
     def render(self):
+        # Standalone (non-overloaded) function; overload sets are rendered
+        # by the enclosing scope via render_overloads().
+        decorators, line = self.declaration()
+        for decorator in decorators:
+            self.out(decorator)
+        self.out(line)
+
+    def declaration(self) -> Declaration:
         node = self.node
         pysig = PySignature.from_node(node, self.format_field)
 
         is_ctor = node.kind == "ctor"
         is_method = node.kind in ("method", "ctor") or node.mogrified
         is_static = self.is_static()
-
-        if self.is_overloaded():
-            self.context.add_import("typing", "overload")
-            self.out("@overload")
-        if is_static:
-            self.out("@staticmethod")
 
         params = ["self"] if is_method and not is_static else []
         for p in pysig.params:
@@ -32,26 +34,14 @@ class PyiFunctionalRenderer(PyiNodeRenderer[FunctionalNode]):
 
         name = "__init__" if is_ctor else node.pyname
         returns = "None" if is_ctor else self.return_annotation(pysig)
-        self.out(f"def {name}({', '.join(params)}) -> {returns}: ...")
+        decorators = ("@staticmethod",) if is_static else ()
+        return decorators, f"def {name}({', '.join(params)}) -> {returns}: ..."
 
     def is_static(self) -> bool:
         node = self.node
         if node.binding is not None:
             return node.binding.kind is PyKind.STATIC_METHOD
         return node.kind == "method" and node.cursor.is_static_method()
-
-    def is_overloaded(self) -> bool:
-        node = self.node
-        if node.mogrified or node.parent is None:
-            return False
-        name = node.pyname
-        siblings = [
-            c for c in node.parent.children
-            if isinstance(c, FunctionalNode)
-            and c.kind == node.kind
-            and (c.kind == "ctor" or c.pyname == name)
-        ]
-        return len(siblings) > 1
 
     def return_annotation(self, pysig: PySignature) -> str:
         parts = []

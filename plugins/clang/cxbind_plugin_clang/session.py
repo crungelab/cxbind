@@ -1,6 +1,7 @@
 from typing import Optional
 from contextvars import ContextVar
 import re
+import keyword
 
 from clang import cindex
 from loguru import logger
@@ -157,6 +158,26 @@ class Session:
     def strip_prefixes(self, text: str, prefixes: list[str] = []) -> str:
         return self._strip_prefixes(text, prefixes + self.prefixes)
 
+    @staticmethod
+    def safe_identifier(name: str) -> str:
+        """Python keywords can't be identifiers: `in` -> `in_` (PEP 8)."""
+        return f"{name}_" if keyword.iskeyword(name) else name
+
+    def format_field(self, name: str) -> str:
+        name = self.strip_prefixes(name)
+        name = self.snake(name)
+        return self.safe_identifier(name)
+
+    def format_function(self, name: str) -> str:
+        name = self.strip_prefixes(name)
+        name = self.snake(name)
+        name = name.replace(",", "_")
+        name = name.replace("<", "_")
+        name = name.replace(">", "")
+        name = name.replace(" ", "")
+        return self.safe_identifier(name)
+
+    '''
     def format_field(self, name: str) -> str:
         name = self.strip_prefixes(name)
         name = self.snake(name)
@@ -170,6 +191,7 @@ class Session:
         name = name.replace(">", "")
         name = name.replace(" ", "")
         return name
+    '''
 
     def format_type(self, name: str) -> str:
         name = self.strip_prefixes(name)

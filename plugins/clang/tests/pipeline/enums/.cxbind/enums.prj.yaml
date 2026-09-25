@@ -6,6 +6,9 @@ flags: [
   '-I./src'
 ]
 
+targets:
+  pyi: 'src/enums.pyi'
+
 units:
   enums:
     source: 'src/enums.h'

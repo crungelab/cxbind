@@ -25,6 +25,20 @@ INDIRECT_KINDS = {K.POINTER, K.LVALUEREFERENCE, K.RVALUEREFERENCE}
 ARRAY_KINDS = {K.CONSTANTARRAY, K.INCOMPLETEARRAY}
 
 
+def py_path(binding) -> str:
+    """Full Python path of a binding: Widget.Kind for an enum bound in Widget.
+
+    Stubs must spell nested types this way: inside a nested class body,
+    Python name lookup skips enclosing class scopes.
+    """
+    names = []
+    b = binding
+    while b is not None:
+        names.append(b.pyname)
+        b = b.scope
+    return ".".join(reversed(names))
+
+
 def std_name(decl: cindex.Cursor) -> str:
     """Qualified name with inline namespaces (__cxx11, __1) dropped."""
     parts = qualified_name(decl).split("::")
@@ -47,7 +61,7 @@ class TypeMapper:
             for b in Session.get_current().pynames.bindings:
                 cursor = getattr(b.node, "cursor", None)
                 if b.kind is PyKind.TYPE and cursor is not None:
-                    self._classes[qualified_name(cursor)] = b.pyname
+                    self._classes[qualified_name(cursor)] = py_path(b)
         return self._classes.get(qualified)
 
     # --- entry points ----------------------------------------------------

@@ -7,7 +7,7 @@ flags: [
 ]
 
 targets:
-  pyi: 'tests.pyi'
+  pyi: 'src/arguments.pyi'
 
 units:
   arguments:

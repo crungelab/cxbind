@@ -18,8 +18,9 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         self.out(f"class {node.pyname}{self.bases()}:")
         with self.out:
             start = len(self.out.text)
+            self.context.push_exports()
 
-            for child in node.children:
+            def render_one(child):
                 # pybind registers every class at module scope, so nested
                 # types go after this class, not inside it.
                 if isinstance(child, StructuralNode):
@@ -29,8 +30,14 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
                 else:
                     self.context.render_node(child)
 
+            self.render_children(node.children, render_one)
+
             self.render_extra_methods()
             self.render_extra_properties()
+
+            # Constants that nested enums exported into this class.
+            for name, type_path in self.context.pop_exports().items():
+                self.out(f"{name}: ClassVar[{type_path}]")
 
             if len(self.out.text) == start:
                 self.out("...")

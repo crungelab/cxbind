@@ -14,3 +14,9 @@ class PyiGenerator(Generator):
 
     def create_root_renderer(self) -> Renderer:
         return PyiNodeRenderer(self.node)
+
+    def finish(self, root: Renderer) -> None:
+        # Module-level constants from export_values(), each declared once.
+        exports = self.context.pop_exports()
+        for name, type_path in exports.items():
+            root.out(f"{name}: {type_path}")
