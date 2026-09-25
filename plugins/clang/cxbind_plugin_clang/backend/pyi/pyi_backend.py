@@ -26,9 +26,13 @@ class PyiBackend(Backend):
         self.imports |= generator.context.imports
         return text
 
-    def default_template(self) -> list[str]:
-        # Per-unit template if one exists, otherwise the generic stub template.
-        return [f"{self.unit.name}.pyi", "default.pyi"]
+    def render_body(self) -> str:
+        # One blank line between sources; empty sources leave no gap.
+        parts = (self.generate_source(r) for r in self.compiler.build_results)
+        return "\n\n".join(p.strip("\n") for p in parts if p.strip())
+
+    def fallback_templates(self) -> list[str]:
+        return ["default.pyi.j2"]
 
     def render(self) -> None:
         # Don't write: several units may share this stub. The assembler

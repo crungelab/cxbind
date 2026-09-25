@@ -4,6 +4,7 @@ from pathlib import Path
 from loguru import logger
 import jinja2
 
+from cxbind.config import template_dirs
 from cxbind.tool import Tool
 from cxbind.unit import Unit
 from cxbind.runner.phase import BuildPhase, TransformPhase, GeneratePhase
@@ -18,8 +19,8 @@ from .node import Node
 from .clang_runner import ClangRunner
 from .backend.backend import Backend
 from .backend.pb.pb_backend import PbBackend
-
 from .backend.pyi.pyi_backend import PyiBackend
+
 
 BACKENDS: dict[str, type[Backend]] = {
     "pb": PbBackend,
@@ -37,22 +38,30 @@ class Compiler(Tool):
     def __init__(self, unit: Unit) -> None:
         super().__init__(unit)
         self.my_session = Session(self.unit)
-
-        BASE_PATH = Path(".")
-        config_searchpath = BASE_PATH / ".cxbind" / "templates"
-        default_searchpath = Path(
-            os.path.dirname(os.path.abspath(__file__)), "templates"
-        )
-        searchpath = [config_searchpath, default_searchpath]
-        loader = jinja2.FileSystemLoader(searchpath=searchpath)
-        self.jinja_env = jinja2.Environment(loader=loader)
-
+        self.jinja_env = self.create_jinja_env()
         self.build_results: list[BuildResult] = []
         self.backends: list[Backend] = self.create_backends()
+
+    def create_jinja_env(self) -> jinja2.Environment:
+        # Every .cxbind/templates from here up to the repo root, nearest
+        # first, then the plugin's own defaults.
+        default_searchpath = Path(os.path.dirname(os.path.abspath(__file__)), "templates")
+        searchpath = [*template_dirs(), default_searchpath]
+
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(searchpath=searchpath),
+            trim_blocks=True,    # drop the newline after {% ... %} tags
+            lstrip_blocks=True,  # drop indentation before them
+        )
+        env.filters["basename"] = lambda p: Path(p).name
+        env.filters["stem"] = lambda p: Path(p).stem
+        return env
 
     def create_backends(self) -> list[Backend]:
         backends = []
         for kind, target in self.unit.targets.items():
+            if target is None:
+                continue
             backend_cls = BACKENDS.get(kind)
             if backend_cls is None:
                 raise ValueError(
@@ -117,7 +126,3 @@ class Compiler(Tool):
             plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
             for backend in self.backends:
                 backend.schedule(runner)
-        '''
-        if self.unit.generate:
-            plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
-        '''

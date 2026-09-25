@@ -6,5 +6,5 @@ class PbBackend(Backend):
     def generate_source(self, result) -> str:
         return PbGenerator(result.source, result.node).generate()
 
-    def default_template(self) -> str:
-        return f"{self.unit.name}.cpp"
+    def fallback_templates(self) -> list[str]:
+        return ["default.cpp.j2"]

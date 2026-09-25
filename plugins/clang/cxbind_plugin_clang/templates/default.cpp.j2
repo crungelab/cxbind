@@ -1,0 +1,19 @@
+#include <limits>
+
+#include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
+
+#include <cxbind/cxbind.h>
+
+{% for source in sources %}
+#include "{{ source | basename }}"
+{% endfor %}
+
+namespace py = pybind11;
+
+{% block preamble %}
+{% endblock %}
+void register_{{ target.path | stem }}(py::module &_{{ unit.module }}, Registry &registry) {
+{{ body }}
+}

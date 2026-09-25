@@ -10,7 +10,7 @@
 
 namespace py = pybind11;
 
-void register_handles_py_auto(py::module &_tests, Registry &registry) {
+void register_transforms_2_py_auto(py::module &_tests, Registry &registry) {
     _tests
     .def("transforms_create_dummy", &transformsCreateDummy
         , py::arg("handle")

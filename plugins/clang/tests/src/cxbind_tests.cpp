@@ -26,7 +26,7 @@ void register_unit_2_py_auto(py::module &, Registry &registry);
 void register_repr_py_auto(py::module &, Registry &registry);
 void register_handles_py_auto(py::module &, Registry &registry);
 void register_transforms_py_auto(py::module &, Registry &registry);
-void register_internal_py_auto(py::module &, Registry &registry);
+void register_external_py_auto(py::module &, Registry &registry);
 void register_facades_py_auto(py::module &, Registry &registry);
 void register_callbacks_py_auto(py::module &, Registry &registry);
 
@@ -96,7 +96,7 @@ PYBIND11_MODULE(cxbind_tests, m)
     register_transforms_py_auto(_transforms, r);
 
     auto _internal = m.def_submodule("test_internal");
-    register_internal_py_auto(_internal, r);
+    register_external_py_auto(_internal, r);
 
     auto _facades = m.def_submodule("test_facades");
     register_facades_py_auto(_facades, r);

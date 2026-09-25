@@ -6,6 +6,9 @@ flags: [
     '-I./src'
 ]
 
+targets:
+  pyi: 'src/multiunit.pyi'
+
 unit_files:
   - path: unit_1.unit.yaml
   - path: unit_2.unit.yaml

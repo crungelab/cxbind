@@ -5,6 +5,7 @@
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
+
 #include "enums.h"
 
 namespace py = pybind11;

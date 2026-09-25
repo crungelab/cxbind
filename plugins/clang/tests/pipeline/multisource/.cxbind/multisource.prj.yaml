@@ -6,5 +6,8 @@ flags: [
   '-I./src'
 ]
 
+targets:
+  pyi: 'src/multisource.pyi'
+
 unit_files:
   - path: multisource.unit.yaml

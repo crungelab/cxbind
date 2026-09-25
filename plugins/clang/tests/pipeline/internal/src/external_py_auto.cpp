@@ -1,17 +1,20 @@
 #include <limits>
-#include <sstream>
 
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 
 #include <cxbind/cxbind.h>
+
 #include "external.h"
-#include "internal.h"
 
 namespace py = pybind11;
 
-void register_internal_py_auto(py::module &_tests, Registry &registry) {
+
+#include "external.h"
+#include "internal.h"
+
+void register_external_py_auto(py::module &_tests, Registry &registry) {
     py::class_<Internal> _Internal(_tests, "Internal");
     registry.on(_tests, "Internal", _Internal);
         _Internal

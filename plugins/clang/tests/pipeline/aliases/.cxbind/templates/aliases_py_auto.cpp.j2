@@ -1,0 +1,8 @@
+{% extends "default.cpp.j2" %}
+{% block preamble %}
+using AliasClassI = AliasClass<int>;
+
+using IntAddPtr = int (*)(int, int); 
+IntAddPtr aliasFunctionI = &aliasFunction<int>;
+
+{% endblock %}

@@ -1,9 +1,12 @@
+import shutil
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import jinja2
 from loguru import logger
 from rich import print
 
+from cxbind.config import CxbindConfig, load_config
 from cxbind.runner.phase import AssemblyPhase
 from cxbind.runner.task import LambdaTask
 
@@ -28,7 +31,8 @@ class StubAssembler:
     all units have generated.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, config: CxbindConfig) -> None:
+        self.config = config
         self.fragments: dict[str, list[StubFragment]] = {}
 
     @classmethod
@@ -37,7 +41,7 @@ class StubAssembler:
         # schedules the single assembly task.
         assembler = getattr(runner, "_stub_assembler", None)
         if assembler is None:
-            assembler = cls()
+            assembler = cls(load_config())
             runner._stub_assembler = assembler
             runner.plan.get_phase(AssemblyPhase).add_task(LambdaTask(assembler.assemble))
         return assembler
@@ -47,10 +51,10 @@ class StubAssembler:
 
     def assemble(self) -> None:
         for path, fragments in self.fragments.items():
-            self.assemble_one(path, fragments)
+            self.assemble_one(Path(path), fragments)
         self.fragments.clear()
 
-    def assemble_one(self, path: str, fragments: list[StubFragment]) -> None:
+    def assemble_one(self, path: Path, fragments: list[StubFragment]) -> None:
         units = ", ".join(f.unit for f in fragments)
 
         modules = {f.module for f in fragments}
@@ -69,17 +73,36 @@ class StubAssembler:
         for f in fragments:
             imports |= f.imports
 
-        body = "\n".join(f.body for f in fragments if f.body.strip())
+        # One blank line between units; empty fragments leave no gap.
+        body = "\n\n".join(f.body.strip("\n") for f in fragments if f.body.strip())
         rendered = fragments[0].template.render(
             {"imports": render_imports(imports), "body": body}
         )
 
+        path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as fh:
             fh.write(rendered)
 
         if len(fragments) > 1:
             logger.debug(f"{path}: merged stubs from {units}")
         print(f"[bold green]Generated[/bold green]: {path}", ":thumbs_up:")
+
+        self.copy_stub(path, fragments[0].module)
+
+    def copy_stub(self, path: Path, module: str | None) -> None:
+        """Mirror the stub per .cxbind/config.yaml `pyi_copy`, if set."""
+        pattern = self.config.pyi_copy
+        if not pattern:
+            return
+        try:
+            dest = Path(pattern.format(stem=path.stem, module=module))
+        except KeyError as e:
+            raise ValueError(
+                f"pyi_copy: unknown placeholder {e} in {pattern!r} (available: stem, module)"
+            ) from None
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(path, dest)
+        logger.debug(f"Copied {path} -> {dest}")
 
 
 def render_imports(imports: set[Import]) -> str:

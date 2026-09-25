@@ -1,7 +1,9 @@
-#include <iostream>
+#include <string>
 #include <map>
 #include <functional>
 #include <pybind11/pybind11.h>
+
+#include "callback.h"
 
 namespace py = pybind11;
 
