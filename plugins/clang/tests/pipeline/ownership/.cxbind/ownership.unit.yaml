@@ -2,5 +2,24 @@ source: 'src/ownership.h'
 target: 'src/ownership_py_auto.cpp'
 
 specs:
-  'struct@Ownership':
-    ownership: borrowed
+  # Regression: a spec that exists for another reason (stub lines, like the
+  # ImGui structs) must not change how the type is returned.
+  'struct@Settings':
+    stub:
+      members: |
+        # spec present, ownership unset: returns must still infer REF
+
+  'function@CreateWidget':
+    returns:
+      ownership: owned
+
+  'struct@Handle':
+    ownership: owned
+
+  'function@PeekHandle':
+    returns:
+      ownership: ref
+
+  'method@Parent::GetChild':
+    returns:
+      ownership: borrowed

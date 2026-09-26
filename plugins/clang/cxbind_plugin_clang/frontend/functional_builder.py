@@ -225,22 +225,20 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             builder: ParamBuilder = builder_cls(info)
             builder.build()
 
-    """
-    def build_params(self) -> None:
-        for info in self.get_param_infos():
-            builder = ParamBuilder(info)
-            builder.build()
-    """
+    def return_spec(self) -> ReturnSpec | None:
+        """The function's own `returns:` spec, from YAML or a transform."""
+        spec = self.node.spec
+        return spec.returns if spec is not None else None
 
     def build_return_value(self) -> None:
         logger.debug(f"Building return value for function: {self.name}")
 
-        spec = self.node.returns.spec if self.node.returns is not None else None
+        spec = self.return_spec()
         ret_type = self.build_return_type(spec)
         result_type = self.get_function_result_type()
 
         ownership = (
-            self.get_result_ownership(result_type)
+            self.get_result_ownership(result_type, spec, ret_type.facade)
             if result_type is not None
             else Ownership.AUTOMATIC
         )
@@ -295,21 +293,28 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             return None
         return spec.ownership
 
-    def get_result_ownership(self, result_type: cindex.Type) -> Ownership:
-        node = self.node
-        result_spec = node.returns.spec if node.returns is not None else None
-
+    def get_result_ownership(
+        self,
+        result_type: cindex.Type,
+        result_spec: ReturnSpec | None,
+        facade: Facade | None,
+    ) -> Ownership:
         base_decl = self.get_base_declaration(result_type)
         base_key = Node.make_key(base_decl) if base_decl is not None else None
         base_spec = self.lookup_spec(base_key)
 
         # Explicit settings win: the function's return spec, then the
         # returned type's spec. A spec that exists for other reasons (a stub,
-        # a facade, excludes) must not silently switch off inference.
+        # a facade) must not silently switch off inference.
         for spec in (result_spec, base_spec):
             ownership = self.explicit_ownership(spec)
             if ownership is not None:
                 return ownership
+
+        # A facade converts the returned value (wrapper, capsule, ...), so the
+        # C++ type's kind says nothing about what Python receives.
+        if facade is not None:
+            return Ownership.AUTOMATIC
 
         return self.infer_ownership_from_type_kind(result_type)
 

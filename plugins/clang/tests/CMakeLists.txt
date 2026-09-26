@@ -47,10 +47,15 @@ set(cxbind_DIR "${TESTS_SOURCE_DIR}/../../../cxbind/share/cmake/cxbind")
 find_package(cxbind REQUIRED)
 
 #
-# Root module
+# One extension module per pipeline case, built into the cxbind_tests package:
+#   build/cxbind_tests/test_<case>.so  ->  import cxbind_tests.test_<case>
+# Separate modules keep cases from colliding (C++ ODR, pybind11 type registry).
 #
-pybind11_add_module(${THIS} MODULE src/cxbind_tests.cpp)
-cxbind_module(${THIS})
+set(PACKAGE_DIR "${TESTS_BINARY_DIR}/cxbind_tests")
+file(MAKE_DIRECTORY "${PACKAGE_DIR}")
+if(NOT EXISTS "${PACKAGE_DIR}/__init__.py")
+    file(WRITE "${PACKAGE_DIR}/__init__.py" "")
+endif()
 
 #
 # Pipeline exclusion list
@@ -79,14 +84,49 @@ foreach(case_dir IN LISTS PIPELINE_CASE_DIRS)
         continue()
     endif()
 
-    if(EXISTS "${PIPELINE_DIR}/${case_dir}/CMakeLists.txt")
-        message(STATUS "Adding pipeline case: ${case_dir}")
-
-        add_subdirectory(
-            "${PIPELINE_DIR}/${case_dir}"
-            "${TESTS_BINARY_DIR}/pipeline/${case_dir}"
-        )
-
+    # Each generated file defines register_<stem>(); the stem is the name.
+    # CONFIGURE_DEPENDS re-runs the glob when units are added or removed.
+    file(GLOB GENERATED CONFIGURE_DEPENDS
+        "${PIPELINE_DIR}/${case_dir}/src/*_py_auto.cpp")
+    if(NOT GENERATED)
+        message(STATUS "No generated sources yet for pipeline case: ${case_dir}")
+        continue()
     endif()
+
+    set(MODULE "test_${case_dir}")
+    set(DECLS "")
+    set(CALLS "")
+    foreach(src IN LISTS GENERATED)
+        get_filename_component(stem "${src}" NAME_WE)
+        string(APPEND DECLS "void register_${stem}(py::module &, Registry &registry);\n")
+        string(APPEND CALLS "    register_${stem}(m, registry);\n")
+    endforeach()
+
+    configure_file(
+        "${TESTS_SOURCE_DIR}/src/module_init.cpp.in"
+        "${TESTS_BINARY_DIR}/init/${MODULE}.cpp"
+        @ONLY
+    )
+
+    message(STATUS "Adding pipeline case: ${case_dir} -> cxbind_tests.${MODULE}")
+
+    pybind11_add_module(${MODULE} MODULE
+        "${TESTS_BINARY_DIR}/init/${MODULE}.cpp"
+        ${GENERATED}
+    )
+    # Each test module gets its own pybind11 internals, and so its own type
+    # registry: cases can bind same-named global types (Widget, Handle)
+    # without colliding. Tests only; real modules share internals on purpose.
+    target_compile_definitions(${MODULE} PRIVATE
+        "PYBIND11_BUILD_ABI=\"_${MODULE}\""
+    )
+
+    cxbind_module(${MODULE})
+
+
+    target_include_directories(${MODULE} PRIVATE "${PIPELINE_DIR}/${case_dir}/src")
+    set_target_properties(${MODULE} PROPERTIES
+        LIBRARY_OUTPUT_DIRECTORY "${PACKAGE_DIR}"
+    )
 
 endforeach()
