@@ -26,19 +26,16 @@ void register_enums_py_auto(py::module &_tests, Registry &registry) {
         .value("VALUE1", RedundantEnum::RedundantEnumValue1)
         .value("VALUE2", RedundantEnum::RedundantEnumValue2)
         .value("VALUE3", RedundantEnum::RedundantEnumValue3)
-        .export_values()
     ;
     py::enum_<ns::NsRedundantEnum>(_tests, "NsRedundantEnum", py::arithmetic())
         .value("VALUE1", ns::NsRedundantEnum::NsRedundantEnumValue1)
         .value("VALUE2", ns::NsRedundantEnum::NsRedundantEnumValue2)
         .value("VALUE3", ns::NsRedundantEnum::NsRedundantEnumValue3)
-        .export_values()
     ;
     py::enum_<TypedefEnum>(_tests, "TypedefEnum", py::arithmetic())
         .value("VALUE1", TypedefEnum::TypedefEnumValue1)
         .value("VALUE2", TypedefEnum::TypedefEnumValue2)
         .value("VALUE3", TypedefEnum::TypedefEnumValue3)
-        .export_values()
     ;
     py::enum_<EnumStruct::Enum>(_tests, "Enum", py::arithmetic())
         .value("VALUE1", EnumStruct::Enum::Value1)
@@ -74,12 +71,10 @@ void register_enums_py_auto(py::module &_tests, Registry &registry) {
         py::enum_<Widget::Kind>(_Widget, "Kind", py::arithmetic())
             .value("SMALL", Widget::Kind::KindSmall)
             .value("LARGE", Widget::Kind::KindLarge)
-            .export_values()
         ;
     py::enum_<Gadget::Kind>(_tests, "Kind", py::arithmetic())
         .value("ON", Gadget::Kind::KindOn)
         .value("OFF", Gadget::Kind::KindOff)
-        .export_values()
     ;
 
 }
