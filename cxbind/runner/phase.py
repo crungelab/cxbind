@@ -29,6 +29,12 @@ class TransformPhase(Phase):
         self.priority = 20
 
 
+class SynthesisPhase(Phase):
+    def __init__(self):
+        super().__init__()
+        self.priority = 25  # after TransformPhase, before GeneratePhase
+
+
 class GeneratePhase(Phase):
     def __init__(self):
         super().__init__()

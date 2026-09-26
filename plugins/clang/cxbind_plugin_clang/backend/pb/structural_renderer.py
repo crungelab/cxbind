@@ -48,28 +48,6 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
                     self.render_init(method)
             elif method.name == "__repr__":
                 self.render_repr(method)
-            else:
-                self.render_standard_method(method)
-
-    def make_extra_node(self, use_node: FunctionalNode, name: str) -> FunctionalNode:
-        """
-        Clone a free function to render as a method of this class under `name`.
-
-        The clone gets its own binding. Setting other_node.pyname would not
-        work: a copied binding takes precedence over the legacy pyname.
-        """
-        other_node = use_node.clone()
-        other_node.mogrified = True
-        other_node.binding = PyBinding(
-            other_node, PyKind.METHOD, self.node.binding, name, explicit=True
-        )
-        return other_node
-
-    def render_using(self, method: ExtraMethod):
-        use_node: FunctionalNode = self.session.node_registry.get(method.use)
-        if use_node is not None:
-            other_node = self.make_extra_node(use_node, method.name)
-            self.context.render_node(other_node)
 
     def render_init(self, method: ExtraInitMethod):
         self.begin_chain()
@@ -262,36 +240,6 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
             self.out('ss << ")";')
             self.out("return ss.str();")
         self.out("})")
-
-    def render_standard_method(self, method: ExtraMethod):
-        node = self.node
-        self.begin_chain()
-        if method.use is not None:
-            # use_node = self.session.node_registry.get(method.use)
-            use_node = self.runner.node_registry.get(method.use)
-            if use_node is not None:
-                other_node = self.make_extra_node(use_node, method.name)
-                self.context.render_node(other_node)
-            else:
-                raise ValueError(f"Node not found for method use: {method.use}")
-        else:
-            logger.warning(
-                f"Unsupported extra method '{method.name}' for node {node.name}: no function provided"
-            )
-
-    """
-    def render_standard_method(self, method: ExtraMethod):
-        node = self.node
-        self.begin_chain()
-        if method.use is not None:
-            self.out(
-                f'.def("{method.name}", &{method.use})'
-            )
-        else:
-            logger.warning(
-                f"Unsupported extra method '{method.name}' for node {node.name}: no function provided"
-            )
-    """
 
     def render_extra_properties(self):
         node = self.node

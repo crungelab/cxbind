@@ -110,8 +110,6 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
                 self.render_init(method)
             elif method.name == "__repr__":
                 self.out("def __repr__(self) -> str: ...")
-            else:
-                self.render_standard_method(method)
 
     def render_init(self, method: ExtraInitMethod):
         if method.gen_kwargs:
@@ -126,20 +124,6 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         else:
             params = ["self"]
         self.out(f"def __init__({', '.join(params)}) -> None: ...")
-
-    def render_standard_method(self, method: ExtraMethod):
-        if method.use is None:
-            return
-        use_node: FunctionalNode = self.runner.node_registry.get(method.use)
-        if use_node is None:
-            return
-        # Same as pb: render the free function as a method under method.name.
-        other = use_node.clone()
-        other.mogrified = True
-        other.binding = PyBinding(
-            other, PyKind.METHOD, self.node.binding, method.name, explicit=True
-        )
-        self.context.render_node(other)
 
     def render_extra_properties(self):
         spec = self.node.spec

@@ -27,6 +27,7 @@ from cxbind.spec import (
     FieldSpec,
 )
 from cxbind.facade import Facade
+from cxbind.extra import StructuralExtra
 
 if TYPE_CHECKING:
     from .pyname_registry import PyBinding
@@ -276,6 +277,19 @@ class FieldNode(DeclNode):
 class StructuralNode(DeclNode):
     spec: StructuralSpec | None = Field(None, exclude=True, repr=False)
 
+    # This node's extras: a private copy of spec.extra that transforms may
+    # add to. The spec itself is never modified (specs are shared between units).
+    _extra: StructuralExtra | None = PrivateAttr(default=None)
+
+    @property
+    def extra(self) -> StructuralExtra:
+        if self._extra is None:
+            self._extra = (
+                self.spec.extra.model_copy(deep=True)
+                if self.spec is not None
+                else StructuralExtra()
+            )
+        return self._extra
 
 class StructNode(StructuralNode):
     kind: Literal["struct"]

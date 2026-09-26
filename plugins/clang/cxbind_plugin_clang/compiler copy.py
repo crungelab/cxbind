@@ -7,13 +7,11 @@ import jinja2
 from cxbind.config import template_dirs
 from cxbind.tool import Tool
 from cxbind.unit import Unit
-from cxbind.runner.phase import BuildPhase, TransformPhase, SynthesisPhase,GeneratePhase
+from cxbind.runner.phase import BuildPhase, TransformPhase, GeneratePhase
 from cxbind.runner.task import LambdaTask
 
 from cxbind.transform import Transform
 from cxbind.transformer import Transformer, _registry as transformer_registry
-
-from .extra_synthesizer import ExtraSynthesizer
 
 from .session import Session
 from .frontend import Frontend
@@ -103,13 +101,6 @@ class Compiler(Tool):
 
         self.build_results.append(BuildResult(source, root))
 
-    def synthesize(self) -> None:
-        session = self.my_session
-        session.make_current()
-        ExtraSynthesizer(session, ClangRunner.get_current().node_registry).run(
-            [result.node for result in self.build_results]
-        )
-
     def generate(self) -> None:
         if not self.backends:
             logger.warning(f"{self.unit.name}: no targets, nothing to generate")
@@ -118,7 +109,7 @@ class Compiler(Tool):
         session = self.my_session
         session.make_current()
 
-        # Synthesis is done: assign final pynames before rendering.
+        # All sources and transforms are done: assign final pynames before rendering.
         session.resolve()
 
         for backend in self.backends:
@@ -132,7 +123,6 @@ class Compiler(Tool):
         plan.get_phase(TransformPhase).add_task(LambdaTask(self.transform))
 
         if self.unit.generate:
-            plan.get_phase(SynthesisPhase).add_task(LambdaTask(self.synthesize))
             plan.get_phase(GeneratePhase).add_task(LambdaTask(self.generate))
             for backend in self.backends:
                 backend.schedule(runner)

@@ -1,0 +1,44 @@
+from loguru import logger
+
+from cxbind.unit import Unit
+from cxbind.extra import ExtraStandardMethod
+from .transform import Mogrify
+from .node import Node, FunctionNode
+from .clang_runner import ClangRunner
+
+class MogrifyTransformer:
+    def __init__(self, unit: Unit):
+        self.unit = unit
+
+    def transform(self, transform: Mogrify):
+        runner = ClangRunner.get_current()
+        #logger.debug(f"Transforming spec: {transform.target}")
+
+        spec = self.unit.specs.get(transform.target)
+
+        if spec is None:
+            raise ValueError(f"Spec not found for target: {transform.target}")
+        #logger.debug(f"Spec: {spec}")
+
+        spec_name = spec.name
+
+        spec_node = runner.node_registry.get(spec.key)
+        if spec_node is None:
+            raise ValueError(f"Node not found for spec: {spec_name}")
+        #logger.debug(f"Spec node: {spec_node}")
+
+        target_pyname = spec.pyname or spec_node.pyname
+
+        for node in runner.node_registry:
+            #logger.debug(f"Checking node: {node}")
+            if not isinstance(node, FunctionNode):
+                continue
+            #logger.debug(f"Checking function node: {node.name}")
+            first_param = node.params[0] if node.params else None
+            #logger.debug(f"First parameter: {first_param}")
+            if first_param and spec_name in first_param.type.spelling:
+                #logger.debug(f"Found matching function node: {node}")
+                name = node.pyname
+                name = name.removeprefix(target_pyname.lower() + "_")
+                name = name.removesuffix("_" + target_pyname.lower())
+                spec.extra.add_method(ExtraStandardMethod(name=name, use=node.key))

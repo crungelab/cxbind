@@ -30,17 +30,10 @@ class StructuralBuilder(NodeBuilder[T_Node]):
     def should_cancel(self):
         if not self.is_class_bindable(self.cursor):
             return True
-        """
-        # Only map top level classes for now
-        if isinstance(self.top_node, StructBaseNode):
-            return True
-        """
 
         return super().should_cancel()
 
     def is_class_bindable(self, cursor):
-        if cursor.spelling == "Init":  # TODO: Why?
-            return False
         if not self.is_cursor_visitable(cursor):
             return False
         if not cursor.is_definition():
