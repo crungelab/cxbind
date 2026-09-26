@@ -1,7 +1,5 @@
-from cxbind.extra import ExtraMethod, ExtraInitMethod
-
-from ...node import StructuralNode, FunctionalNode, FieldNode
-from ...pyname_registry import PyBinding, PyKind
+from ...node import StructuralNode, FieldNode, CtorNode
+from ...extra_node import InitNode
 
 from ..renderer_registry import PyiRendererRegistry
 from .pyi_node_renderer import PyiNodeRenderer
@@ -15,9 +13,7 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         node = self.node
         nested: list[StructuralNode] = []
 
-        #self.out(f"class {node.pyname}{self.bases()}:")
         self.out(f"class {node.pyname}{self.class_args()}:")
-
         with self.out:
             start = len(self.out.text)
             self.context.push_exports()
@@ -32,10 +28,16 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
                 else:
                     self.context.render_node(child)
 
+            # Real members and synthesized extras (inits, __repr__, used
+            # functions) are all children now.
             self.render_children(node.children, render_one)
 
-            self.render_extra_methods()
             self.render_extra_properties()
+
+            if not self.has_init():
+                # pybind11's inherited default; always raises TypeError.
+                self.context.add_import("typing", "Any")
+                self.out("def __init__(self, *args: Any, **kwargs: Any) -> None: ...")
 
             # Constants that nested enums exported into this class.
             for name, type_path in self.context.pop_exports().items():
@@ -58,15 +60,10 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         # requires the stub to declare one too.
         args.append("metaclass=_pybind11_type")
         return f"({', '.join(args)})"
-    
-    '''
-    def bases(self) -> str:
-        spec = self.node.spec
-        if spec is None or not spec.extends:
-            return ""
-        names = [self.types.class_name(base) or self.types.any(base) for base in spec.extends]
-        return f"({', '.join(names)})"
-    '''
+
+    def has_init(self) -> bool:
+        """Whether pb binds a constructor: real or synthesized."""
+        return any(isinstance(c, (CtorNode, InitNode)) for c in self.node.children)
 
     # --- fields ----------------------------------------------------------
 
@@ -74,62 +71,15 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
     def is_flattened(field: FieldNode) -> bool:
         return field.spec is not None and field.spec.flatten
 
-    def flattened_fields(self, field: FieldNode) -> list[tuple[str, str]]:
-        record = field.cursor.type.get_canonical()
-        return [
-            (self.format_field(nested.spelling), self.types.map_cx(nested.type))
-            for nested in record.get_fields()
-        ]
-
     def render_flattened_fields(self, field: FieldNode):
-        for name, annotation in self.flattened_fields(field):
-            self.out(f"{name}: {annotation}")
+        record = field.cursor.type.get_canonical()
+        for nested in record.get_fields():
+            self.out(f"{self.format_field(nested.spelling)}: {self.types.map_cx(nested.type)}")
 
-    def init_fields(self) -> list[tuple[str, str]]:
-        """(pyname, annotation) for every field an __init__ can set, flattened included."""
-        out = []
-        for child in self.node.children:
-            if type(child) is not FieldNode:
-                continue
-            if self.is_flattened(child):
-                out += self.flattened_fields(child)
-            elif child.type is not None:
-                out.append((child.pyname, self.types.map(child.type)))
-            else:
-                out.append((child.pyname, self.types.map_cx(child.cursor.type)))
-        return out
-
-    # --- extras ----------------------------------------------------------
-
-    def render_extra_methods(self):
-        spec = self.node.spec
-        if spec is None:
-            return
-        for method in spec.extra.methods:
-            if method.name == "__init__":
-                self.render_init(method)
-            elif method.name == "__repr__":
-                self.out("def __repr__(self) -> str: ...")
-
-    def render_init(self, method: ExtraInitMethod):
-        if method.gen_kwargs:
-            params = [f"{name}: {ann} = ..." for name, ann in self.init_fields()]
-            params = ["self", "*", *params] if params else ["self"]
-        elif method.gen_args:
-            params = ["self", *(f"{name}: {ann}" for name, ann in self.init_fields())]
-        elif method.use is not None:
-            # py::init(&factory): the factory's signature, unknown here.
-            self.context.add_import("typing", "Any")
-            params = ["self", "*args: Any", "**kwargs: Any"]
-        else:
-            params = ["self"]
-        self.out(f"def __init__({', '.join(params)}) -> None: ...")
+    # --- extras still driven by the spec ---------------------------------
 
     def render_extra_properties(self):
-        spec = self.node.spec
-        if spec is None:
-            return
-        for prop in spec.extra.properties:
+        for prop in self.node.extra.properties:
             self.context.add_import("typing", "Any")
             self.out("@property")
             self.out(f"def {prop.name}(self) -> Any: ...")

@@ -30,16 +30,6 @@ class Test(unittest.TestCase):
         logger.debug(f"Result: {result}")
         self.assertEqual(result, 5)
 
-    '''
-    def test_kw_inits_flatten(self):
-        kw_inits_flatten = KwInitsFlatten()
-        kw_inits_flatten.base.a = 2
-        kw_inits_flatten.base.b = 3
-        result = kw_inits_flatten.add()
-        logger.debug(f"Result: {result}")
-        self.assertEqual(result, 5)
-    '''
-
     def test_args_init(self):
         args_inits = ArgsInits(2, 3)
         result = args_inits.add()

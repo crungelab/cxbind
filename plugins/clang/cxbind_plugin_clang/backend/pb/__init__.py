@@ -11,3 +11,5 @@ from .function_renderer import FunctionRenderer
 from .function_template_specialization_renderer import FunctionTemplateSpecializationRenderer
 from .ctor_renderer import CtorRenderer
 from .node_renderer import NodeRenderer
+from .init_renderer import InitRenderer
+from .repr_renderer import ReprRenderer
