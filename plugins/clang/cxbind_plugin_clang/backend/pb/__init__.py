@@ -13,3 +13,4 @@ from .ctor_renderer import CtorRenderer
 from .node_renderer import NodeRenderer
 from .init_renderer import InitRenderer
 from .repr_renderer import ReprRenderer
+from .property_renderer import PropertyRenderer

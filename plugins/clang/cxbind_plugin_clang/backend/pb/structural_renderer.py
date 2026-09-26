@@ -23,20 +23,7 @@ class StructuralRenderer[T_Node: StructuralNode](NodeRenderer[T_Node]):
 
         with self.enter(node):
             # Real members and synthesized extras (inits, __repr__, used
-            # functions) are all children now, in spec order.
+            # functions, properties) are all children, in spec order.
             super().render()
 
-            self.render_extra_properties()
-
         self.end_chain()
-
-    def render_extra_properties(self):
-        node = self.node
-        for prop in node.extra.properties:
-            getter = prop.getter
-            setter = prop.setter
-            self.begin_chain()
-            if setter is not None:
-                self.out(f'.def_property("{prop.name}", &{getter}, &{setter})')
-            else:
-                self.out(f'.def_property_readonly("{prop.name}", &{getter})')

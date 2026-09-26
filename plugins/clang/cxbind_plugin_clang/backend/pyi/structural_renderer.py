@@ -29,10 +29,8 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
                     self.context.render_node(child)
 
             # Real members and synthesized extras (inits, __repr__, used
-            # functions) are all children now.
+            # functions, properties) are all children.
             self.render_children(node.children, render_one)
-
-            self.render_extra_properties()
 
             if not self.has_init():
                 # pybind11's inherited default; always raises TypeError.
@@ -65,8 +63,6 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         """Whether pb binds a constructor: real or synthesized."""
         return any(isinstance(c, (CtorNode, InitNode)) for c in self.node.children)
 
-    # --- fields ----------------------------------------------------------
-
     @staticmethod
     def is_flattened(field: FieldNode) -> bool:
         return field.spec is not None and field.spec.flatten
@@ -75,14 +71,3 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         record = field.cursor.type.get_canonical()
         for nested in record.get_fields():
             self.out(f"{self.format_field(nested.spelling)}: {self.types.map_cx(nested.type)}")
-
-    # --- extras still driven by the spec ---------------------------------
-
-    def render_extra_properties(self):
-        for prop in self.node.extra.properties:
-            self.context.add_import("typing", "Any")
-            self.out("@property")
-            self.out(f"def {prop.name}(self) -> Any: ...")
-            if prop.setter is not None:
-                self.out(f"@{prop.name}.setter")
-                self.out(f"def {prop.name}(self, value: Any) -> None: ...")

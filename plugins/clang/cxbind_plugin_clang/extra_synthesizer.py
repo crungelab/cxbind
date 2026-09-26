@@ -28,9 +28,6 @@ from .session import Session
 
 
 class ExtraSynthesizer:
-    # Kinds migrated from spec-driven rendering to nodes. Grow one per step.
-    ENABLED = (ExtraStandardMethod, ExtraInitMethod, ExtraReprMethod)
-
     def __init__(self, session: Session, node_registry) -> None:
         self.session = session
         self.node_registry = node_registry
@@ -47,8 +44,7 @@ class ExtraSynthesizer:
             self.synthesize(structure)
 
     def synthesize(self, structure: StructuralNode) -> None:
-        #extra = structure.spec.extra
-        extra = structure.extra   # was: structure.spec.extra
+        extra = structure.extra
         for method in extra.methods:
             match method:
                 case ExtraInitMethod():
@@ -58,8 +54,6 @@ class ExtraSynthesizer:
                 case ExtraStandardMethod():
                     self.synthesize_method(structure, method)
         for prop in extra.properties:
-            if not isinstance(prop, self.ENABLED):
-                continue
             self.synthesize_property(structure, prop)
 
     # --- helpers ---------------------------------------------------------
