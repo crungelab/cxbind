@@ -288,31 +288,29 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
             facade=facade,
         )
 
+    @staticmethod
+    def explicit_ownership(spec) -> Ownership | None:
+        """A spec's ownership, but only if the user actually set it."""
+        if spec is None or "ownership" not in spec.model_fields_set:
+            return None
+        return spec.ownership
+
     def get_result_ownership(self, result_type: cindex.Type) -> Ownership:
         node = self.node
         result_spec = node.returns.spec if node.returns is not None else None
 
         base_decl = self.get_base_declaration(result_type)
-        if base_decl is not None:
-            base_key = Node.make_key(base_decl)
-            logger.debug(f"Base declaration: {base_decl}")
-            logger.debug(f"Base kind: {base_decl.kind}")
-            logger.debug(f"Base key: {base_key}")
-        else:
-            base_key = None
-
+        base_key = Node.make_key(base_decl) if base_decl is not None else None
         base_spec = self.lookup_spec(base_key)
-        logger.debug(f"base_spec: {base_spec}")
 
-        if result_spec is not None:
-            return result_spec.ownership
-        elif base_spec is not None:
-            return base_spec.ownership
+        # Explicit settings win: the function's return spec, then the
+        # returned type's spec. A spec that exists for other reasons (a stub,
+        # a facade, excludes) must not silently switch off inference.
+        for spec in (result_spec, base_spec):
+            ownership = self.explicit_ownership(spec)
+            if ownership is not None:
+                return ownership
 
-        # No explicit spec on the return type or its base declaration —
-        # fall back to inferring ownership from the return type's own kind,
-        # mirroring the pointer/reference dispatch used for parameter
-        # direction classification.
         return self.infer_ownership_from_type_kind(result_type)
 
     def infer_ownership_from_type_kind(self, result_type: cindex.Type) -> Ownership:
@@ -347,7 +345,9 @@ class FunctionalBuilder(NodeBuilder[T_Node]):
     def get_py_kind(self) -> PyKind | None:
         kind = self.cursor.kind
         if kind in (cindex.CursorKind.CONSTRUCTOR, cindex.CursorKind.DESTRUCTOR):
-            return None  # rendered as py::init / never bound; no Python name to register
+            return (
+                None  # rendered as py::init / never bound; no Python name to register
+            )
         if kind == cindex.CursorKind.CXX_METHOD:
             if self.cursor.is_static_method():
                 return PyKind.STATIC_METHOD

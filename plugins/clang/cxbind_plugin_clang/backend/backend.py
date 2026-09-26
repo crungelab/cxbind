@@ -54,9 +54,18 @@ class Backend:
         name = self.target.template or self.default_template()
         return self.compiler.jinja_env.get_or_select_template(name)
 
+    '''
     def default_template(self) -> list[str]:
         # Named after the file it produces: src/foo_py_auto.cpp -> foo_py_auto.cpp.j2
         return [f"{Path(self.target.path).name}.j2", *self.fallback_templates()]
+    '''
+
+    def default_template(self) -> list[str]:
+        return [self.template_name(), *self.fallback_templates()]
+
+    def template_name(self) -> str:
+        """The per-output template this backend looks for first."""
+        raise NotImplementedError
 
     def fallback_templates(self) -> list[str]:
         """Generic templates to try when the target has none of its own."""

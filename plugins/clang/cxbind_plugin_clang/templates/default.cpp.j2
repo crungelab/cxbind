@@ -14,6 +14,6 @@ namespace py = pybind11;
 
 {% block preamble %}
 {% endblock %}
-void register_{{ target.path | stem }}(py::module &_{{ unit.module }}, Registry &registry) {
+void register_{{ unit.name }}_py_auto(py::module &_{{ unit.module }}, Registry &registry) {
 {{ body }}
 }

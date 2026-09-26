@@ -24,7 +24,7 @@ void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
         {
             return SDLWindowWrapper(wrapperOutFn());
         }
-        )
+        , py::return_value_policy::reference)
     .def("capsule_in_fn", [](py::capsule context, int width, int height)
         {
             return capsuleInFn(static_cast<ImGuiContext *>(context.get_pointer()), width, height);
@@ -39,7 +39,7 @@ void register_wrappers_py_auto(py::module &_tests, Registry &registry) {
         }
         , py::arg("width")
         , py::arg("height")
-        )
+        , py::return_value_policy::reference)
     ;
 
     py::class_<WrapperStruct> _WrapperStruct(_tests, "WrapperStruct");
