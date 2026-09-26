@@ -3,4 +3,6 @@
 {{ imports }}
 {% endif %}
 
+class _pybind11_type(type): ...  # stand-in for pybind11's metaclass
+
 {{ body }}

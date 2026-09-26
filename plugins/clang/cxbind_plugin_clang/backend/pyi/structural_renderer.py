@@ -15,7 +15,9 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         node = self.node
         nested: list[StructuralNode] = []
 
-        self.out(f"class {node.pyname}{self.bases()}:")
+        #self.out(f"class {node.pyname}{self.bases()}:")
+        self.out(f"class {node.pyname}{self.class_args()}:")
+
         with self.out:
             start = len(self.out.text)
             self.context.push_exports()
@@ -46,12 +48,25 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         for child in nested:
             self.context.render_node(child)
 
+    def class_args(self) -> str:
+        """Everything inside `class Name(...)`: base classes plus the metaclass."""
+        spec = self.node.spec
+        args = []
+        if spec is not None and spec.extends:
+            args += [self.types.class_name(b) or self.types.any(b) for b in spec.extends]
+        # pybind11 creates every class with its own metaclass; stubtest
+        # requires the stub to declare one too.
+        args.append("metaclass=_pybind11_type")
+        return f"({', '.join(args)})"
+    
+    '''
     def bases(self) -> str:
         spec = self.node.spec
         if spec is None or not spec.extends:
             return ""
         names = [self.types.class_name(base) or self.types.any(base) for base in spec.extends]
         return f"({', '.join(names)})"
+    '''
 
     # --- fields ----------------------------------------------------------
 

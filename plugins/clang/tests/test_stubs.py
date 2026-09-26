@@ -26,6 +26,7 @@ class TestStubs(unittest.TestCase):
                 sys.executable, "-m", "mypy.stubtest",
                 *modules,
                 "--mypy-config-file", str(TESTS / "mypy.ini"),
+                "--allowlist", str(TESTS / "stubtest_allowlist.txt"),
                 "--concise",
             ],
             capture_output=True,

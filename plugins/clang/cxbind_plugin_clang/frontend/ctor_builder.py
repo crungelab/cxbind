@@ -22,7 +22,6 @@ class CtorBuilder(MethodBuilder):
     def create_node(self):
         name = self.resolve_spelling(self.name)
         self.node = CtorNode(kind='ctor', name=name, cursor=self.cursor)
-        #self.node = CtorNode(kind='ctor', name=self.name, cursor=self.cursor)
 
     def resolve_spelling(self, spelling: str) -> str:
         args = self.context.template_args
@@ -30,11 +29,3 @@ class CtorBuilder(MethodBuilder):
             replacement = ", ".join(args)
             spelling = re.sub(r'<[^>]*>', f'<{replacement}>', spelling)
         return spelling
-
-    def build_node(self):
-        super().build_node()
-
-        if self.top_node.spec.readonly:
-            return
-                
-        self.top_node.has_constructor = True

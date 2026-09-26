@@ -39,7 +39,8 @@ class PyiEnumRenderer(PyiNodeRenderer[EnumNode]):
         self.context.add_import("typing", "ClassVar")
         out = self.out
 
-        out(f"class {name}:")
+        #out(f"class {name}:")
+        out(f"class {name}(metaclass=_pybind11_type):")
         with out:
             for constant in constants:
                 out(f"{constant}: ClassVar[{path}]")

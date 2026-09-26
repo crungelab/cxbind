@@ -1,0 +1,6 @@
+# stubtest resolves runtime types by __name__, not __qualname__, so
+# Widget.Kind's members look like the module-level Kind (Gadget's).
+cxbind_tests.test_enums.Widget.Kind.SMALL
+cxbind_tests.test_enums.Widget.Kind.LARGE
+cxbind_tests.test_enums.Widget.SMALL
+cxbind_tests.test_enums.Widget.LARGE

@@ -275,8 +275,6 @@ class FieldNode(DeclNode):
 
 class StructuralNode(DeclNode):
     spec: StructuralSpec | None = Field(None, exclude=True, repr=False)
-    constructible: bool = True
-    has_constructor: bool = False
 
 
 class StructNode(StructuralNode):
