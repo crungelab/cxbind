@@ -6,8 +6,8 @@ specs:
     extra:
       properties:
         x:
-          getter: "Properties::getX"
-          setter: "Properties::setX"
+          getter: "getX"
+          setter: "setX"
 
         y:
-          getter: "Properties::getY"
+          getter: "getY"

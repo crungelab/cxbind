@@ -7,6 +7,8 @@ synthesized members take part in name resolution like any other node.
 
 from loguru import logger
 
+from cxbind.entry import EntryKey
+
 from cxbind.extra import (
     ExtraInitMethod,
     ExtraReprMethod,
@@ -115,9 +117,41 @@ class ExtraSynthesizer:
         )
         structure.add_child(clone)
 
+    def accessor_key(self, structure: StructuralNode, ref: str) -> EntryKey:
+        """Resolve a property getter/setter reference to an entry key.
+
+        `getX`               -> method@<Structure>::getX  (member of the owner)
+        `Properties::getX`   -> method@Properties::getX   (already qualified)
+        `function@b2GetMass` -> used as-is                (any explicit key)
+        """
+        if "@" in ref:
+            return EntryKey.parse(ref)
+        if "::" in ref:
+            return EntryKey.build(kind="method", name=ref)
+        return EntryKey.build(kind="method", name=f"{structure.name}::{ref}")
+
+    def resolve_accessor(
+        self, structure: StructuralNode, prop: ExtraProperty, role: str, ref: str
+    ) -> FunctionalNode:
+        key = self.accessor_key(structure, ref)
+        node = self.node_registry.get(key)
+        if node is None:
+            raise ValueError(
+                f"{structure.name}: property '{prop.name}' {role} {ref!r} "
+                f"not found (looked up {key}); overloaded functions need "
+                f"their full key with signature"
+            )
+        return node
+
     def synthesize_property(self, structure: StructuralNode, prop: ExtraProperty) -> None:
+        getter = self.resolve_accessor(structure, prop, "getter", prop.getter)
+        setter = (
+            self.resolve_accessor(structure, prop, "setter", prop.setter)
+            if prop.setter is not None
+            else None
+        )
         node = PropertyNode.create(
-            structure, prop.name, getter=prop.getter, setter=prop.setter, origin=prop
+            structure, prop.name, getter=getter, setter=setter, origin=prop
         )
         # A property is a Python attribute: it must not silently shadow a field.
         node.binding = self.session.pynames.add(

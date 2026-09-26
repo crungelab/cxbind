@@ -24,7 +24,7 @@ from pydantic import Field
 from cxbind.entry import EntryKey
 from cxbind.extra import Extra, ExtraInitMethod, ExtraReprMethod, ExtraProperty
 
-from .node import Node, FieldNode
+from .node import Node, FieldNode, FunctionalNode
 
 
 class ExtraNode(Node):
@@ -93,8 +93,10 @@ class ReprNode(ExtraNode):
 
 class PropertyNode(ExtraNode):
     kind: Literal["property"] = "property"
-    getter: str
-    setter: str | None = None
+    # Resolved accessor functions (methods, or free functions taking the
+    # structure first). References, not children: they belong elsewhere.
+    getter: FunctionalNode = Field(exclude=True, repr=False)
+    setter: FunctionalNode | None = Field(None, exclude=True, repr=False)
 
     @property
     def readonly(self) -> bool:
