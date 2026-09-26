@@ -140,7 +140,7 @@ class Node(Entry):
             if cursor.type.get_canonical().kind == cindex.TypeKind.FUNCTIONPROTO:
                 kind = "function_prototype"
             else:
-                #logger.debug(f"Unsupported cursor kind: {cursor.kind}")
+                # logger.debug(f"Unsupported cursor kind: {cursor.kind}")
                 return None
         elif cursor.kind == cindex.CursorKind.CLASS_TEMPLATE:
             kind = "class_template"
@@ -149,7 +149,7 @@ class Node(Entry):
         elif cursor.kind == cindex.CursorKind.TYPE_ALIAS_DECL:
             kind = "type_alias"
         else:
-            #logger.debug(f"Unsupported cursor kind: {cursor.kind}")
+            # logger.debug(f"Unsupported cursor kind: {cursor.kind}")
             return None
             # raise ValueError(f"Unsupported cursor kind: {cursor.kind}")
 
@@ -197,8 +197,10 @@ class DeclNode(Node):
         other.cursor = self.cursor
         return other
 
+
 class NamespaceNode(DeclNode):
     kind: Literal["namespace"] = "namespace"
+
 
 class TemplateNode(Node):
     pass
@@ -291,6 +293,7 @@ class StructuralNode(DeclNode):
             )
         return self._extra
 
+
 class StructNode(StructuralNode):
     kind: Literal["struct"]
 
@@ -309,6 +312,8 @@ class ClassTemplateNode(TemplateNode):
 
 class EnumNode(DeclNode):
     kind: Literal["enum"]
+    # Set by EnumExportResolver during synthesis; None = not yet decided.
+    exported: bool | None = Field(None, exclude=True, repr=False)
 
 
 NodeUnion = Annotated[

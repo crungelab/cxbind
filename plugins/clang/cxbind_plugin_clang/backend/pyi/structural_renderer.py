@@ -1,4 +1,4 @@
-from ...node import StructuralNode, FieldNode, CtorNode
+from ...node import StructuralNode, CtorNode
 from ...extra_node import InitNode
 
 from ..renderer_registry import PyiRendererRegistry
@@ -23,14 +23,13 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
                 # types go after this class, not inside it.
                 if isinstance(child, StructuralNode):
                     nested.append(child)
-                elif type(child) is FieldNode and self.is_flattened(child):
-                    self.render_flattened_fields(child)
                 else:
                     self.context.render_node(child)
 
             # Real members and synthesized extras (inits, __repr__, used
             # functions, properties) are all children.
             self.render_children(node.children, render_one)
+            self.render_stub_members()
 
             if not self.has_init():
                 # pybind11's inherited default; always raises TypeError.
@@ -59,15 +58,19 @@ class PyiStructuralRenderer(PyiNodeRenderer[StructuralNode]):
         args.append("metaclass=_pybind11_type")
         return f"({', '.join(args)})"
 
+    def render_stub_members(self):
+        spec = self.node.spec
+        if spec is None:
+            return
+        for dotted in spec.stub.imports:
+            module, _, name = dotted.rpartition(".")
+            self.context.add_import(module, name) if module else self.context.add_import(name)
+        for line in spec.stub.members:
+            self.out(line)
+
     def has_init(self) -> bool:
-        """Whether pb binds a constructor: real or synthesized."""
-        return any(isinstance(c, (CtorNode, InitNode)) for c in self.node.children)
-
-    @staticmethod
-    def is_flattened(field: FieldNode) -> bool:
-        return field.spec is not None and field.spec.flatten
-
-    def render_flattened_fields(self, field: FieldNode):
-        record = field.cursor.type.get_canonical()
-        for nested in record.get_fields():
-            self.out(f"{self.format_field(nested.spelling)}: {self.types.map_cx(nested.type)}")
+        """Whether a constructor is bound: real, synthesized, or declared by hand."""
+        if any(isinstance(c, (CtorNode, InitNode)) for c in self.node.children):
+            return True
+        spec = self.node.spec
+        return spec is not None and any("def __init__" in l for l in spec.stub.members)

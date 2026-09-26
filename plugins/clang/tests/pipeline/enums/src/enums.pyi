@@ -233,6 +233,8 @@ class Widget(metaclass=_pybind11_type):
         def __invert__(self) -> int: ...
 
     def __init__(self, *args: Any, **kwargs: Any) -> None: ...
+    SMALL: ClassVar[Widget.Kind]
+    LARGE: ClassVar[Widget.Kind]
 
 class Kind(metaclass=_pybind11_type):
     ON: ClassVar[Kind]
@@ -263,3 +265,5 @@ VALUE_3: SimpleEnum
 VALUE1: Enum
 VALUE2: Enum
 VALUE3: Enum
+ON: Kind
+OFF: Kind

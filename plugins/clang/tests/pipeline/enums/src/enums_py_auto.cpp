@@ -71,10 +71,12 @@ void register_enums_py_auto(py::module &_tests, Registry &registry) {
         py::enum_<Widget::Kind>(_Widget, "Kind", py::arithmetic())
             .value("SMALL", Widget::Kind::KindSmall)
             .value("LARGE", Widget::Kind::KindLarge)
+            .export_values()
         ;
     py::enum_<Gadget::Kind>(_tests, "Kind", py::arithmetic())
         .value("ON", Gadget::Kind::KindOn)
         .value("OFF", Gadget::Kind::KindOff)
+        .export_values()
     ;
 
 }

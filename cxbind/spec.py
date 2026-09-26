@@ -17,7 +17,9 @@ from pydantic_core import core_schema
 from loguru import logger
 
 from .entry import Entry, EntryKey, EntryKeySet
-from .extra import special_methods, Extra, ExtraProperty, ExtraMethodUnion
+
+# from .extra import special_methods, Extra, ExtraProperty, ExtraMethodUnion
+from .extra import StructuralExtra
 from .facade import WRAPPER_FACADES, FacadeUnion
 
 
@@ -170,48 +172,17 @@ class FieldSpec(Spec):
     kind: Literal["field"]
     flatten: bool = False
 
+class StubSpec(BaseModel):
+    # Dotted names to import: "collections.abc.Iterator" -> from collections.abc import Iterator
+    imports: list[str] = []
+    # Stub lines appended to the class body, for members bound by hand.
+    members: list[str] = []
 
-class StructuralExtra(Extra):
-    properties: list[ExtraProperty] = Field(default_factory=list)
-    methods: list[ExtraMethodUnion] = Field(default_factory=list)
-
-    def add_property(self, property_: ExtraProperty) -> None:
-        self.properties.append(property_)
-
-    def add_method(self, method: ExtraMethodUnion) -> None:
-        self.methods.append(method)
-
-    @field_validator("properties", mode="before")
+    @field_validator("members", mode="before")
     @classmethod
-    def _normalize_properties(cls, v: Any) -> Any:
-        if not isinstance(v, dict):
-            return v
-
-        normalized = []
-        for key, item in v.items():
-            if isinstance(item, dict):
-                normalized.append({"name": key, **item})
-
-        return normalized
-
-    @field_validator("methods", mode="before")
-    @classmethod
-    def _normalize_methods(cls, v: Any) -> Any:
-        if not isinstance(v, dict):
-            return v
-
-        normalized = []
-        for key, item in v.items():
-            if isinstance(item, dict):
-                item = {"name": key, **item}
-                if "kind" not in item:
-                    item["kind"] = (
-                        item["name"] if item["name"] in special_methods else "standard"
-                    )
-                normalized.append(item)
-
-        return normalized
-
+    def split_block(cls, v):
+        # Accept a YAML block string as well as a list of lines.
+        return v.splitlines() if isinstance(v, str) else v
 
 class StructuralSpec(Spec):
     extends: list[str] | None = None
@@ -220,6 +191,7 @@ class StructuralSpec(Spec):
     holder: str | None = None
     ownership: Ownership = Ownership.AUTOMATIC
     extra: StructuralExtra = Field(default_factory=StructuralExtra)
+    stub: StubSpec = Field(default_factory=StubSpec)
 
     @model_validator(mode="before")
     @classmethod
@@ -255,9 +227,7 @@ class ClassTemplateSpecializationSpec(ClassSpec):
 
 class ClassTemplateSpec(TemplateSpec):
     kind: Literal["class_template"]
-    specializations: list[ClassTemplateSpecializationSpec] = Field(
-        default_factory=list
-    )
+    specializations: list[ClassTemplateSpecializationSpec] = Field(default_factory=list)
 
 
 class EnumSpec(Spec):

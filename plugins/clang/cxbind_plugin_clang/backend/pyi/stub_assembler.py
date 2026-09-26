@@ -78,6 +78,8 @@ class StubAssembler:
         rendered = fragments[0].template.render(
             {"imports": render_imports(imports), "body": body}
         )
+        if not rendered.endswith("\n"):
+            rendered += "\n"
 
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as fh:

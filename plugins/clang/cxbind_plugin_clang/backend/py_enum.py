@@ -61,7 +61,12 @@ class PyEnum:
         # (ImGuiWindowFlags_None, ImGuiChildFlags_None) exist to keep names
         # unique in a shared scope; exporting the stripped names (NONE) would
         # collide, and at runtime the last enum registered would win.
-        stripped = any(has_prefix(e.spelling, node.first_name) for e in enumerators)
-        exported = not scoped and not stripped
+        # Decided per scope by EnumExportResolver (it needs every enum in the
+        # scope at once). Fallback for nodes it didn't see: the simple rule.
+        if node.exported is not None:
+            exported = node.exported
+        else:
+            stripped = any(has_prefix(e.spelling, node.first_name) for e in enumerators)
+            exported = not scoped and not stripped
 
         return cls(node=node, constants=constants, scoped=scoped, exported=exported)

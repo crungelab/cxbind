@@ -63,6 +63,8 @@ class Backend:
         return []
 
     def write(self, rendered: str) -> None:
+        if not rendered.endswith("\n"):
+            rendered += "\n"
         path = Path(self.target.path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as fh:

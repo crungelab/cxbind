@@ -14,6 +14,7 @@ from cxbind.transform import Transform
 from cxbind.transformer import Transformer, _registry as transformer_registry
 
 from .extra_synthesizer import ExtraSynthesizer
+from .enum_export_resolver import EnumExportResolver
 
 from .session import Session
 from .frontend import Frontend
@@ -106,9 +107,9 @@ class Compiler(Tool):
     def synthesize(self) -> None:
         session = self.my_session
         session.make_current()
-        ExtraSynthesizer(session, ClangRunner.get_current().node_registry).run(
-            [result.node for result in self.build_results]
-        )
+        roots = [result.node for result in self.build_results]
+        ExtraSynthesizer(session, ClangRunner.get_current().node_registry).run(roots)
+        EnumExportResolver(session).run(roots)
 
     def generate(self) -> None:
         if not self.backends:
