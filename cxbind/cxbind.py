@@ -3,115 +3,137 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .plugin import Plugin
 
-import os, sys
+import os
 from pathlib import Path
 from importlib.metadata import entry_points
 
 from loguru import logger
 
 from .project import Project
+from .unit import Unit
 from .factory.project_factory import ProjectFactory
 from .tool import Tool
-
 from .runner.runner_factory import RunnerFactory
-from .runner.runner import Runner
+from .manifest import Manifest
+from .report import Report, REPORT_NAME
+
+DEFAULT_RUNNER = "clang"
+
+
+class CxBindError(Exception):
+    """A user-facing error: no project, unknown unit, missing plugin.
+
+    Raised instead of exiting so CxBind can be used from other Python code;
+    the CLI turns it into a message and a nonzero exit status.
+    """
 
 
 class CxBind:
-    def __init__(self):
+    """The cxbind application: plugins, project loading, generation.
+
+    Runs in the current directory, which must be the project directory:
+    target paths in project files are relative to it.
+    """
+
+    def __init__(self) -> None:
+        self.project_dir = Path(os.getcwd())
+        self.cxbind_dir = self.project_dir / ".cxbind"
+        self.state_dir = self.project_dir / "_cxbind"   # generated per run; gitignored
         self.runner_factories: dict[str, RunnerFactory] = {}
-        self.prj_dir = Path(os.getcwd(), ".cxbind")
-
-        log_level = "DEBUG"
-        log_format = "<level>{level: <8}</level> | {file}:{line: >4} - {message}"
-        # logger.add(sys.stderr, level=log_level, format=log_format, colorize=True, backtrace=True, diagnose=True)
-        # logger.add(sys.stderr, level=log_level, colorize=True, backtrace=True, diagnose=True)
-        logger.add(
-            "cxbind.log",
-            mode="w",
-            level=log_level,
-            format=log_format,
-            colorize=False,
-            backtrace=True,
-            diagnose=True,
-        )
-        # logger.add("cxbind.log", level=log_level, colorize=False, backtrace=True, diagnose=True)
-
         self.install_plugins()
 
-    def install_plugins(self):
-        plugin_eps = entry_points(group="cxbind.plugins")
-        logger.debug(f"plugin_eps: {plugin_eps}")
+    # --- plugins ---------------------------------------------------------
 
-        for ep in plugin_eps:
-            logger.debug(f"ep: {ep}")
-            plugin: Plugin = ep.load()()
-            logger.debug(f"plugin: {plugin}")
+    def install_plugins(self) -> None:
+        for ep in entry_points(group="cxbind.plugins"):
+            logger.debug(f"Installing plugin: {ep}")
+            plugin: "Plugin" = ep.load()()
             plugin.install(self)
 
-
-    def register_runner_factory(self, name: str, factory: RunnerFactory):
-        """
-        Register a runner class with a name.
-        """
+    def register_runner_factory(self, name: str, factory: RunnerFactory) -> None:
         if name in self.runner_factories:
             logger.warning(f"Runner {name} already registered. Overwriting.")
         self.runner_factories[name] = factory
 
+    # --- project ---------------------------------------------------------
+
     def load_project(self) -> Project:
-        path = next(self.prj_dir.glob("*.prj.yaml"), None)
+        if not self.cxbind_dir.is_dir():
+            raise CxBindError(f"No .cxbind directory found in {self.project_dir}")
+
+        path = next(self.cxbind_dir.glob("*.prj.yaml"), None)
         if path is not None:
             project = ProjectFactory().load(path)
         else:
-            project = ProjectFactory().create(self.prj_dir, "default")
+            project = ProjectFactory().create(self.cxbind_dir, "default")
 
         if project.is_empty():
-            logger.error("No units found in project.")
-            sys.exit(1)
+            raise CxBindError(f"No units found in project ({self.cxbind_dir})")
 
         return project
 
     def choose_runner_factory(self, project: Project) -> RunnerFactory:
-        runner_name = project.runner
-        if runner_name is None:
-            runner_name = "clang"
+        runner_name = project.runner or DEFAULT_RUNNER
+        factory = self.runner_factories.get(runner_name)
+        if factory is None:
+            installed = ", ".join(self.runner_factories) or "none"
+            raise CxBindError(
+                f"Runner '{runner_name}' is not registered (installed: {installed}). "
+                f"Make sure a plugin that provides it is installed."
+            )
+        return factory
 
-        if runner_name not in self.runner_factories:
-            logger.error(f"Runner {runner_name} not registered. Make sure a plugin has been installed that registers this runner.")
-            sys.exit(1)
+    # --- generation ------------------------------------------------------
 
-        return self.runner_factories[runner_name]
-
-    def gen(self, name):
-        logger.debug(f"gen: {name}")
-
+    def gen(self, name: str) -> None:
         project = self.load_project()
         unit = project.get_unit(name)
+        if unit is None:
+            known = ", ".join(project.units) or "none"
+            raise CxBindError(f"Unknown unit '{name}' (units: {known})")
+        self.generate(project, [unit])
 
-        runner_factory = self.choose_runner_factory(project)
-        tool = runner_factory.create_tool(unit)
-        logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
-
-        runner = runner_factory.produce(project)
-        runner.run([tool])
-
-    def gen_all(self):
-        path = Path(os.getcwd(), ".cxbind")
-        if not path.exists():
-            print("No .cxbind directory found.")
-            return
-
+    def gen_all(self) -> None:
         project = self.load_project()
+        self.generate(project, list(project.units.values()))
 
+
+
+    def generate(self, project: Project, units: list[Unit]) -> None:
         runner_factory = self.choose_runner_factory(project)
 
         tools: list[Tool] = []
-        for unit in project.units.values():
+        for unit in units:
             tool = runner_factory.create_tool(unit)
             logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
-            logger.debug(f"unit: {unit}")
-
             tools.append(tool)
 
         runner = runner_factory.produce(project)
+
+        # Reset only once generation is really about to happen: a config
+        # error above shouldn't wipe the record of the last successful run.
+        report = Report(self.project_dir, project.name or self.project_dir.name)
+        Manifest(self.state_dir).reset()
+        try:
+            with report.active():
+                runner.run(tools)
+        finally:
+            report.write(self.state_dir / REPORT_NAME)
+
+    '''
+    def generate(self, project: Project, units: list[Unit]) -> None:
+        runner_factory = self.choose_runner_factory(project)
+
+        tools: list[Tool] = []
+        for unit in units:
+            tool = runner_factory.create_tool(unit)
+            logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
+            tools.append(tool)
+
+        runner = runner_factory.produce(project)
+
+        # Reset only once generation is really about to happen: a config
+        # error above shouldn't wipe the record of the last successful run.
+        Manifest(self.state_dir).reset()
         runner.run(tools)
+    '''

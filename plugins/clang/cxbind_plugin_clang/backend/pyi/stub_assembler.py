@@ -7,8 +7,10 @@ from loguru import logger
 from rich import print
 
 from cxbind.config import CxbindConfig, load_config
+from cxbind.report import Report
 from cxbind.runner.phase import AssemblyPhase
 from cxbind.runner.task import LambdaTask
+from cxbind.manifest import Manifest
 
 # (module, name); name None means a plain `import module`.
 Import = tuple[str, str | None]
@@ -84,6 +86,10 @@ class StubAssembler:
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w") as fh:
             fh.write(rendered)
+
+        Manifest().record(path)
+        if (report := Report.current()) is not None:
+            report.output(", ".join(f.unit for f in fragments), "pyi", path)
 
         if len(fragments) > 1:
             logger.debug(f"{path}: merged stubs from {units}")

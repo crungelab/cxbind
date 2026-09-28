@@ -2,6 +2,8 @@ from collections import Counter
 
 from loguru import logger
 
+from cxbind.report import Report
+
 from ..backend import Backend
 from .pyi_generator import PyiGenerator
 from .stub_assembler import StubAssembler, StubFragment, Import
@@ -53,6 +55,23 @@ class PyiBackend(Backend):
 
     def report(self) -> None:
         name = self.unit.name
+        if (report := Report.current()) is not None:
+            report.table(
+                name, "Node kinds without a stub renderer", ["Count", "Kind", "Facade"],
+                [[count, kind, facade or ""] for (kind, facade), count in self.missing.most_common()],
+            )
+            report.table(
+                name, "C++ types stubbed as Any", ["Count", "C++ type"],
+                [[count, f"`{spelling}`"] for spelling, count in self.unmapped.most_common()],
+            )
+        if self.missing or self.unmapped:
+            logger.warning(
+                f"{name}: {len(self.missing)} node kind(s) without a stub renderer, "
+                f"{len(self.unmapped)} type(s) stubbed as Any (see _cxbind/report.md)"
+            )
+    '''
+    def report(self) -> None:
+        name = self.unit.name
         if self.missing:
             lines = "\n".join(
                 f"  {count:5d}  kind={kind}, facade={facade}"
@@ -65,3 +84,4 @@ class PyiBackend(Backend):
                 for spelling, count in self.unmapped.most_common()
             )
             logger.warning(f"{name}: typed as Any:\n{lines}")
+    '''

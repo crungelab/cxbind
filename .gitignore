@@ -41,3 +41,9 @@ build/
 # CMake install output staged into the package
 /cxbind/include/
 /cxbind/share/
+
+# CxBind state directory
+_cxbind/
+
+# CxTest state directory
+_cxtest/

@@ -4,7 +4,9 @@ from pathlib import Path
 import jinja2
 from rich import print
 
+from cxbind.report import Report
 from cxbind.target import Target
+from cxbind.manifest import Manifest
 
 if TYPE_CHECKING:
     from ..compiler import Compiler, BuildResult
@@ -54,12 +56,6 @@ class Backend:
         name = self.target.template or self.default_template()
         return self.compiler.jinja_env.get_or_select_template(name)
 
-    '''
-    def default_template(self) -> list[str]:
-        # Named after the file it produces: src/foo_py_auto.cpp -> foo_py_auto.cpp.j2
-        return [f"{Path(self.target.path).name}.j2", *self.fallback_templates()]
-    '''
-
     def default_template(self) -> list[str]:
         return [self.template_name(), *self.fallback_templates()]
 
@@ -71,6 +67,7 @@ class Backend:
         """Generic templates to try when the target has none of its own."""
         return []
 
+
     def write(self, rendered: str) -> None:
         if not rendered.endswith("\n"):
             rendered += "\n"
@@ -79,6 +76,21 @@ class Backend:
         with open(path, "w") as fh:
             fh.write(rendered)
         print(f"[bold green]Generated[/bold green]: {path}", ":thumbs_up:")
+        Manifest().record(path)
+        if (report := Report.current()) is not None:
+            report.output(self.unit.name, self.target.kind, path)
+
+    '''
+    def write(self, rendered: str) -> None:
+        if not rendered.endswith("\n"):
+            rendered += "\n"
+        path = Path(self.target.path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "w") as fh:
+            fh.write(rendered)
+        print(f"[bold green]Generated[/bold green]: {path}", ":thumbs_up:")
+        Manifest().record(path)
+    '''
 
     # --- hooks -----------------------------------------------------------
 
