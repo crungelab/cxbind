@@ -2,8 +2,9 @@ runner: dawn
 
 module: wgpu
 
+language: c++
+
 flags: [
-    '-x', 'c++',
     '-std=c++17',
     '-I./src'
 ]
