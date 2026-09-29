@@ -119,21 +119,3 @@ class CxBind:
                 runner.run(tools)
         finally:
             report.write(self.state_dir / REPORT_NAME)
-
-    '''
-    def generate(self, project: Project, units: list[Unit]) -> None:
-        runner_factory = self.choose_runner_factory(project)
-
-        tools: list[Tool] = []
-        for unit in units:
-            tool = runner_factory.create_tool(unit)
-            logger.debug(f"Generating {unit.name} with {tool.__class__.__name__}")
-            tools.append(tool)
-
-        runner = runner_factory.produce(project)
-
-        # Reset only once generation is really about to happen: a config
-        # error above shouldn't wipe the record of the last successful run.
-        Manifest(self.state_dir).reset()
-        runner.run(tools)
-    '''

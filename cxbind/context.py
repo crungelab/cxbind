@@ -2,13 +2,11 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from contextvars import ContextVar, Token
-from typing import ClassVar, Generic, Iterator, TypeVar
+from typing import ClassVar
+from collections.abc import Generator
 
 
-T = TypeVar("T", bound="Context")
-
-
-class Context(Generic[T]):
+class Context[T: Context]():
     _current_var: ClassVar[ContextVar[T]]
 
     def __init_subclass__(cls, **kwargs):
@@ -19,7 +17,7 @@ class Context(Generic[T]):
         return type(self)._current_var.set(self)
 
     @contextmanager
-    def use(self: T) -> Iterator[T]:
+    def use(self: T) -> Generator[T, None, None]:
         token = self.make_current()
         try:
             yield self

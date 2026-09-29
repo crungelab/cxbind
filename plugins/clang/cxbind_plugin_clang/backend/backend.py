@@ -80,18 +80,6 @@ class Backend:
         if (report := Report.current()) is not None:
             report.output(self.unit.name, self.target.kind, path)
 
-    '''
-    def write(self, rendered: str) -> None:
-        if not rendered.endswith("\n"):
-            rendered += "\n"
-        path = Path(self.target.path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with open(path, "w") as fh:
-            fh.write(rendered)
-        print(f"[bold green]Generated[/bold green]: {path}", ":thumbs_up:")
-        Manifest().record(path)
-    '''
-
     # --- hooks -----------------------------------------------------------
 
     def generate_source(self, result: "BuildResult") -> str:

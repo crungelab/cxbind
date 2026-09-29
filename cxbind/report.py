@@ -18,12 +18,12 @@ from __future__ import annotations
 import os
 import time
 from collections import Counter
+from collections.abc import Generator
 from contextlib import contextmanager
 from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Iterator
 
 from loguru import logger
 
@@ -72,7 +72,7 @@ class Report:
         return _current.get()
 
     @contextmanager
-    def active(self) -> Iterator["Report"]:
+    def active(self) -> Generator["Report", None, None]:
         """Make this the current report and collect WARNING+ log records."""
         self.started = datetime.now()
         start = time.monotonic()
