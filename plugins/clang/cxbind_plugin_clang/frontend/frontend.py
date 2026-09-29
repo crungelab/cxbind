@@ -5,10 +5,12 @@ from loguru import logger
 
 from clang import cindex
 
+from ..node import RootNode
+
 from .builder import Builder
 from .build_context import BuildContext
 
-from ..node import RootNode
+from .diagnostics import check_diagnostics
 
 
 class Frontend(Builder):
@@ -38,6 +40,21 @@ class Frontend(Builder):
         self.mapped.add(self.path.name)
         logger.debug(f"mapped: {self.mapped}")
         logger.debug(f"parsing {self.path} with {self.flags}")
+
+        tu = cindex.TranslationUnit.from_source(
+            self.path,
+            args=self.flags,
+            options=cindex.TranslationUnit.PARSE_SKIP_FUNCTION_BODIES,
+        )
+
+        # Stop here on any error: the parse is incomplete, so visiting it would
+        # generate bindings from whatever part clang managed to read.
+        check_diagnostics(tu, self.path.name, self.path, self.flags)
+
+        self.visit_overloads(tu.cursor)
+        logger.debug(f"Overloads: {self.overloaded}")
+
+        '''
         tu = cindex.TranslationUnit.from_source(
             self.path,
             args=self.flags,
@@ -50,6 +67,7 @@ class Frontend(Builder):
 
         self.visit_overloads(tu.cursor)
         logger.debug(f"Overloads: {self.overloaded}")
+        '''
 
         self.visit(tu.cursor)
 
