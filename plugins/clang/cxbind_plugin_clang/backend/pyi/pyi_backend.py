@@ -33,10 +33,16 @@ class PyiBackend(Backend):
         parts = (self.generate_source(r) for r in self.compiler.build_results)
         return "\n\n".join(p.strip("\n") for p in parts if p.strip())
 
+    def template_names(self) -> list[str]:
+        # One stub per module, shared by every unit in it: _imgui.pyi.j2
+        return [f"_{self.unit.module}.pyi.j2"]
+
+    '''
     def template_name(self) -> str:
         # One stub per module, shared by every unit in it: _imgui.pyi.j2
         return f"_{self.unit.module}.pyi.j2"
-
+    '''
+    
     def fallback_templates(self) -> list[str]:
         return ["default.pyi.j2"]
 

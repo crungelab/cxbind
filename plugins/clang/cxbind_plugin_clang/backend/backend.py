@@ -7,6 +7,7 @@ from rich import print
 from cxbind.report import Report
 from cxbind.target import Target
 from cxbind.manifest import Manifest
+from cxbind.outputs import write_output
 
 if TYPE_CHECKING:
     from ..compiler import Compiler, BuildResult
@@ -56,18 +57,43 @@ class Backend:
         name = self.target.template or self.default_template()
         return self.compiler.jinja_env.get_or_select_template(name)
 
+
+    def unit_template_names(self, filename: str) -> list[str]:
+        """Template names for a per-unit template, most specific first.
+
+        A unit loaded from .cxbind/effects/x.unit.yaml looks for
+        templates/effects/<filename> first, then templates/<filename>.
+        """
+        names = [filename]
+        subdir = self.unit.config_subdir
+        if subdir is not None and subdir.parts:
+            names.insert(0, f"{subdir.as_posix()}/{filename}")
+        return names
+
+    def default_template(self) -> list[str]:
+        return [*self.template_names(), *self.fallback_templates()]
+
+    def template_names(self) -> list[str]:
+        """The per-output template this backend looks for first."""
+        raise NotImplementedError
+
+    '''
     def default_template(self) -> list[str]:
         return [self.template_name(), *self.fallback_templates()]
 
     def template_name(self) -> str:
         """The per-output template this backend looks for first."""
         raise NotImplementedError
+    '''
 
     def fallback_templates(self) -> list[str]:
         """Generic templates to try when the target has none of its own."""
         return []
 
+    def write(self, rendered: str) -> None:
+        write_output(self.unit.name, self.target.kind, Path(self.target.path), rendered)
 
+    '''
     def write(self, rendered: str) -> None:
         if not rendered.endswith("\n"):
             rendered += "\n"
@@ -79,6 +105,7 @@ class Backend:
         Manifest().record(path)
         if (report := Report.current()) is not None:
             report.output(self.unit.name, self.target.kind, path)
+    '''
 
     # --- hooks -----------------------------------------------------------
 

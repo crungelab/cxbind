@@ -20,8 +20,8 @@ class UnitLoader(UnitBaseLoader):
         unit = Unit.model_validate(data)
 
         if unit.name is None:
-            #unit.name = path.stem
             unit.name = path.stem.split('.')[0]
+            unit.path = path
 
         logger.debug(f"unit: {unit}")
 

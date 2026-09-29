@@ -37,7 +37,7 @@ class Frontend(Builder):
 
         self.mapped.add(self.path.name)
         logger.debug(f"mapped: {self.mapped}")
-
+        logger.debug(f"parsing {self.path} with {self.flags}")
         tu = cindex.TranslationUnit.from_source(
             self.path,
             args=self.flags,

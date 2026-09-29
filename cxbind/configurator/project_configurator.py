@@ -20,7 +20,7 @@ class ProjectConfigurator:
             self.load_unit(unit_path)
 
         for unit in project.units.values():
-            UnitConfigurator(project, unit).configure()
+            UnitConfigurator(unit, project).configure()
 
         return project
 

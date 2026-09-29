@@ -18,7 +18,7 @@ class Project(UnitBase):
     unit_files: list[UnitFile] = {}
     units: UnitDict = {}
 
-    path: Path = Field(None, exclude=True, repr=False)
+    #path: Path = Field(None, exclude=True, repr=False)
 
     def add_unit(self, unit: Unit):
         self.units[unit.name] = unit

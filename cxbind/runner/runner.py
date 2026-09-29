@@ -7,6 +7,7 @@ from .plan import Plan
 
 from ..context import Context
 from ..project import Project
+from ..progress import RunProgress, task_name
 
 
 class Runner(Context["Runner"]):
@@ -22,8 +23,14 @@ class Runner(Context["Runner"]):
         return self._plan
 
     def run(self, tasks: list["Task"]) -> None:
-        with self.use():
+        # One step per task (a unit), plus one for the plan: the deferred work,
+        # such as assembling stubs from several units.
+        with self.use(), RunProgress(len(tasks) + 1) as progress:
             for task in tasks:
+                progress.working_on(task_name(task))
                 task.run()
+                progress.advance()
+            progress.working_on("assembling outputs")
             self.plan.run()
+            progress.advance()
             self.plan.clear()

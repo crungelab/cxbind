@@ -1,3 +1,5 @@
+from loguru import logger
+
 from .task import Task
 from .phase import Phase
 
@@ -25,4 +27,5 @@ class Plan(Phase):
 
     def run(self) -> None:
         for child in self.tasks:
+            logger.debug(f"Running child task: {child}")
             child.run()

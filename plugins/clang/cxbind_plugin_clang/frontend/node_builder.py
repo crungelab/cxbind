@@ -95,6 +95,7 @@ class NodeBuilder(Builder, Generic[T_Node]):
         pass
 
     def register_node(self):
+        logger.debug(f"Registering node: {self.node.name}")
         self.runner.register_node(self.node)
 
     def build_node(self):

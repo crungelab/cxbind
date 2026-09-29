@@ -11,6 +11,7 @@ from cxbind.report import Report
 from cxbind.runner.phase import AssemblyPhase
 from cxbind.runner.task import LambdaTask
 from cxbind.manifest import Manifest
+from cxbind.outputs import write_output
 
 # (module, name); name None means a plain `import module`.
 Import = tuple[str, str | None]
@@ -56,6 +57,42 @@ class StubAssembler:
             self.assemble_one(Path(path), fragments)
         self.fragments.clear()
 
+
+    def assemble_one(self, path: Path, fragments: list[StubFragment]) -> None:
+        units = ", ".join(f.unit for f in fragments)
+
+        modules = {f.module for f in fragments}
+        if len(modules) > 1:
+            raise ValueError(
+                f"{path}: units ({units}) disagree on module: {sorted(map(str, modules))}"
+            )
+
+        templates = {f.template.name for f in fragments}
+        if len(templates) > 1:
+            raise ValueError(
+                f"{path}: units ({units}) use different templates: {sorted(templates)}"
+            )
+
+        imports: set[Import] = set()
+        for f in fragments:
+            imports |= f.imports
+
+        # One blank line between units; empty fragments leave no gap.
+        body = "\n\n".join(f.body.strip("\n") for f in fragments if f.body.strip())
+        rendered = fragments[0].template.render(
+            {"imports": render_imports(imports), "body": body}
+        )
+        if not rendered.endswith("\n"):
+            rendered += "\n"
+
+        write_output(units, "pyi", path, rendered)
+
+        if len(fragments) > 1:
+            logger.debug(f"{path}: merged stubs from {units}")
+
+        self.copy_stub(path, fragments[0].module)
+
+    '''
     def assemble_one(self, path: Path, fragments: list[StubFragment]) -> None:
         units = ", ".join(f.unit for f in fragments)
 
@@ -96,6 +133,7 @@ class StubAssembler:
         print(f"[bold green]Generated[/bold green]: {path}", ":thumbs_up:")
 
         self.copy_stub(path, fragments[0].module)
+    '''
 
     def copy_stub(self, path: Path, module: str | None) -> None:
         """Mirror the stub per .cxbind/config.yaml `pyi_copy`, if set."""

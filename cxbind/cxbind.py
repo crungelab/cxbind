@@ -15,6 +15,7 @@ from .factory.project_factory import ProjectFactory
 from .tool import Tool
 from .runner.runner_factory import RunnerFactory
 from .manifest import Manifest
+from .outputs import Outputs
 from .report import Report, REPORT_NAME
 
 DEFAULT_RUNNER = "clang"
@@ -85,21 +86,21 @@ class CxBind:
 
     # --- generation ------------------------------------------------------
 
-    def gen(self, name: str) -> None:
+    def gen(self, name: str, check: bool = False) -> Outputs:
         project = self.load_project()
         unit = project.get_unit(name)
         if unit is None:
             known = ", ".join(project.units) or "none"
             raise CxBindError(f"Unknown unit '{name}' (units: {known})")
-        self.generate(project, [unit])
+        return self.generate(project, [unit], check=check)
 
-    def gen_all(self) -> None:
+    def gen_all(self, check: bool = False) -> Outputs:
         project = self.load_project()
-        self.generate(project, list(project.units.values()))
+        return self.generate(project, list(project.units.values()), check=check)
 
-
-
-    def generate(self, project: Project, units: list[Unit]) -> None:
+    def generate(self, project: Project, units: list[Unit], check: bool = False) -> Outputs:
+        """Generate `units`. With check=True nothing is written: the returned Outputs
+        (and the report) say what would change."""
         runner_factory = self.choose_runner_factory(project)
 
         tools: list[Tool] = []
@@ -110,12 +111,18 @@ class CxBind:
 
         runner = runner_factory.produce(project)
 
-        # Reset only once generation is really about to happen: a config
-        # error above shouldn't wipe the record of the last successful run.
-        report = Report(self.project_dir, project.name or self.project_dir.name)
-        Manifest(self.state_dir).reset()
+        # Only a run of every unit can tell orphans (files no longer generated)
+        # from files another unit produces.
+        complete = len(units) == len(project.units)
+        report = Report(self.project_dir, project.name or self.project_dir.name, check=check)
+        outputs = Outputs(self.project_dir, Manifest(self.state_dir), check=check, complete=complete)
+        # Outputs.active() reads the previous manifest and (in a complete normal run)
+        # resets it, only once generation is really about to happen: a config error
+        # above shouldn't wipe the record of the last successful run.
         try:
-            with report.active():
+            with report.active(), outputs.active():
                 runner.run(tools)
+                outputs.finish()
         finally:
             report.write(self.state_dir / REPORT_NAME)
+        return outputs
